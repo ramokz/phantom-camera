@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/phantom_camera.gd" id="1_f64k6"]
+
+[node name="PhantomCamera" type="Node3D"]
+script = ExtResource("1_f64k6")

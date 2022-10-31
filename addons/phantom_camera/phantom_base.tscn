@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dybrysq7ulbfs"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/phantom_camera_base.gd" id="1_i5ard"]
+
+[node name="PhantomBase" type="Node3D"]
+script = ExtResource("1_i5ard")

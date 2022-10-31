@@ -1,0 +1,91 @@
+[gd_scene load_steps=3 format=3 uid="uid://pis3jtxy5bp7"]
+
+[ext_resource type="Texture2D" uid="uid://dsk4q5b4asbas" path="res://icon.svg" id="1_6mk5p"]
+[ext_resource type="Theme" uid="uid://blxd0u3vrdgbl" path="res://addons/phantom_camera/editor/editor_theme.tres" id="1_grwau"]
+
+[node name="ListTarget" type="HBoxContainer"]
+offset_right = 182.0
+offset_bottom = 26.0
+theme = ExtResource("1_grwau")
+theme_type_variation = &"CellHBox"
+
+[node name="BaseButton" type="BaseButton" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+editor_description = ""
+visible = true
+modulate = Color(1, 1, 1, 1)
+self_modulate = Color(1, 1, 1, 1)
+show_behind_parent = false
+top_level = false
+clip_children = false
+light_mask = 1
+texture_filter = 0
+texture_repeat = 0
+material = null
+use_parent_material = false
+clip_contents = false
+custom_minimum_size = Vector2i(24, 24)
+layout_direction = 0
+layout_mode = 2
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 24.0
+offset_bottom = 27.0
+grow_horizontal = 1
+grow_vertical = 1
+rotation = 0.0
+scale = Vector2(1, 1)
+pivot_offset = Vector2(0, 0)
+size_flags_horizontal = 1
+size_flags_vertical = 1
+size_flags_stretch_ratio = 1.0
+auto_translate = true
+tooltip_text = ""
+focus_neighbor_left = NodePath("")
+focus_neighbor_top = NodePath("")
+focus_neighbor_right = NodePath("")
+focus_neighbor_bottom = NodePath("")
+focus_next = NodePath("")
+focus_previous = NodePath("")
+focus_mode = 2
+mouse_filter = 0
+mouse_force_pass_scroll_events = true
+mouse_default_cursor_shape = 0
+theme = null
+theme_type_variation = &""
+disabled = false
+toggle_mode = false
+shortcut_in_tooltip = true
+button_pressed = false
+action_mode = 1
+button_mask = 1
+keep_pressed_outside = false
+shortcut = null
+button_group = null
+script = null
+
+[node name="TextureRect" type="TextureRect" parent="BaseButton"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_6mk5p")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ItemLabel" type="Label" parent="."]
+layout_mode = 2
+offset_left = 28.0
+offset_right = 172.0
+offset_bottom = 27.0
+text = "Phantom_Camera_1"

@@ -1,0 +1,13 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://blxd0u3vrdgbl"]
+
+[ext_resource type="FontFile" uid="uid://dcktvis0s2vdd" path="res://addons/phantom_camera/fonts/Heebo-Black.ttf" id="1_02r7d"]
+[ext_resource type="FontFile" uid="uid://dx1l0o1o2v6it" path="res://addons/phantom_camera/fonts/Heebo-Regular.ttf" id="1_e0gpq"]
+
+[resource]
+CellHBox/base_type = &"HBoxContainer"
+CellHBox/constants/separation = 4
+HBoxContainer/constants/separation = 20
+Label/fonts/font = ExtResource("1_e0gpq")
+ListHeader/base_type = &"Label"
+ListHeader/font_sizes/font_size = 18
+ListHeader/fonts/font = ExtResource("1_02r7d")
