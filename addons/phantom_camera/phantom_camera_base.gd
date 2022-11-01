@@ -4,14 +4,18 @@ extends Node
 var _active_camera: Node3D
 var _active_phan_cam_list: Array[int]
 
-@onready var _camera: Camera3D = get_viewport().get_camera_3d()
+@onready var _camera:= get_parent()
+
+#func _enter_tree() -> void:
+#	print("The parent is: ", get_parent())
 
 func _enter_tree() -> void:
-	print(get_owner())
-	print("Base enters tree")
-
-func _ready() -> void:
-	print(get_owner())
+	if _camera is Camera3D:
+		print("Camera is Camera3D")
+	elif _camera is Camera2D:
+		print("Camera is Camera2D")
+	else:
+		print("Is not a child of a Camera")
 
 #func set_active_cam(phan_cam: Node3D) -> void:
 ##	print(_active_phan_cam_list)
