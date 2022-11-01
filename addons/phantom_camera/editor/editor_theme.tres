@@ -1,9 +1,29 @@
-[gd_resource type="Theme" load_steps=3 format=3 uid="uid://blxd0u3vrdgbl"]
+[gd_resource type="Theme" load_steps=7 format=3 uid="uid://blxd0u3vrdgbl"]
 
 [ext_resource type="FontFile" uid="uid://dcktvis0s2vdd" path="res://addons/phantom_camera/fonts/Heebo-Black.ttf" id="1_02r7d"]
 [ext_resource type="FontFile" uid="uid://dx1l0o1o2v6it" path="res://addons/phantom_camera/fonts/Heebo-Regular.ttf" id="1_e0gpq"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aoo3k"]
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yi0vm"]
+bg_color = Color(1, 1, 1, 1)
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dyj2s"]
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7jds0"]
+draw_center = false
+
 [resource]
+Button/colors/icon_hover_color = Color(0.882353, 0.0862745, 0.290196, 1)
+Button/colors/icon_hover_pressed_color = Color(0.882353, 0.0862745, 0.290196, 1)
+Button/colors/icon_pressed_color = Color(0.68, 0.068, 0.221, 1)
+Button/styles/focus = SubResource("StyleBoxFlat_aoo3k")
+Button/styles/hover = SubResource("StyleBoxFlat_yi0vm")
+Button/styles/normal = SubResource("StyleBoxFlat_dyj2s")
+Button/styles/pressed = SubResource("StyleBoxFlat_7jds0")
 CellHBox/base_type = &"HBoxContainer"
 CellHBox/constants/separation = 4
 HBoxContainer/constants/separation = 20
