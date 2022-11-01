@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://q48qefjcyunq"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/phantom_camera_base.gd" id="1_qfnt6"]
+[ext_resource type="Script" path="res://addons/phantom_camera/phantom_camera.gd" id="2_af57i"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+
+[node name="PhantomCameraBase" type="Node3D" parent="Camera3D"]
+script = ExtResource("1_qfnt6")
+
+[node name="PhantomCamera" type="Node3D" parent="."]
+transform = Transform3D(0.627311, -0.343196, 0.699069, 0, 0.897659, 0.440691, -0.778769, -0.27645, 0.563112, 6.9901, 3.66463, 4.07142)
+script = ExtResource("2_af57i")
+look_at_target_path = NodePath("")
+follow_target_path = NodePath("")
+is_camera_active = false
+camera_smoothing = 0.0
+follow_offset = Vector3(0, 0, 0)
+
+[node name="PhantomCamera2" type="Node3D" parent="."]
+script = ExtResource("2_af57i")
+look_at_target_path = NodePath("")
+follow_target_path = NodePath("")
+is_camera_active = false
+camera_smoothing = 0.0
+follow_offset = Vector3(0, 0, 0)
