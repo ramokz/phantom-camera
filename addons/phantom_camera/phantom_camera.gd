@@ -1,5 +1,5 @@
-extends Node3D
 @tool
+extends Node3D
 
 
 @onready var _look_at_target_node: Node3D
@@ -31,6 +31,25 @@ var _set_initial_position: bool = false
 #
 #	if follow_target_path:
 #		_follow_target_node = get_node(follow_target_path)
+
+func _enter_tree() -> void:
+	add_to_group("phantom_camera")
+	if is_camera_active:
+		PhantomCameraManager.set_active_cam(self)
+
+	if look_at_target_path:
+		_look_at_target_node = get_node(look_at_target_path)
+
+	if follow_target_path:
+		_follow_target_node = get_node(follow_target_path)
+#		set_position(_follow_target_node.position)
+
+	PhantomCameraManager.phantom_camera_added_to_scene(self)
+
+func _exit_tree() -> void:
+	remove_from_group("phantom_camera")
+	if is_camera_active:
+		PhantomCameraManager.remove_phan_cam_from_list(self)
 
 
 func set_active_camera(state: bool) -> void:
@@ -74,19 +93,4 @@ func _process(delta: float) -> void:
 #	set_position(_follow_target.position)
 
 
-func _enter_tree() -> void:
-	add_to_group("phantom_camera")
-	if is_camera_active:
-		PhantomCameraManager.set_active_cam(self)
 
-	if look_at_target_path:
-		_look_at_target_node = get_node(look_at_target_path)
-
-	if follow_target_path:
-		_follow_target_node = get_node(follow_target_path)
-#		set_position(_follow_target_node.position)
-
-func _exit_tree() -> void:
-	remove_from_group("phantom_camera")
-	if is_camera_active:
-		PhantomCameraManager.remove_phan_cam_from_list(self)
