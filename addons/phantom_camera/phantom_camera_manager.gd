@@ -1,7 +1,25 @@
+@tool
 extends Node
 
 var _active_camera: Node3D
 var _active_phan_cam_list: Array[int]
+
+
+func _enter_tree() -> void:
+	print("Pcam Editor has entered the tree")
+#	get_tree().connect("node_added", _added_to_scene.bind(get_tree().root))
+
+
+#func _added_to_scene(node: Node) -> void:
+#	if node.get_parent() == get_tree().root:
+#		print("Same scene")
+#	else:
+#		print("A new scene was entered")
+
+
+func phantom_camera_added_to_scene(pcam: Node3D) -> void:
+	print("Phantom Camera added to scene as: ", pcam)
+
 
 func set_active_cam(phan_cam: Node3D) -> void:
 #	print(_active_phan_cam_list)
