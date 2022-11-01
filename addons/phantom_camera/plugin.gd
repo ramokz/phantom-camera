@@ -10,6 +10,8 @@ const PhantomBasePlugin = preload("res://addons/phantom_camera/gizmos/PhantomBas
 var phantom_camera_gizmo_plugin = PhantomCameraPlugin.new()
 var phantom_base_gizmo_plugin = PhantomBasePlugin.new()
 
+var phantom_camera_inspector_plugin
+
 # Dock
 var dock: Control
 
@@ -22,9 +24,14 @@ func _enter_tree() -> void:
 	add_node_3d_gizmo_plugin(phantom_camera_gizmo_plugin)
 	add_node_3d_gizmo_plugin(phantom_base_gizmo_plugin)
 
+	phantom_camera_inspector_plugin = preload("res://addons/phantom_camera/inspector/phantom_camera_inspector_plugin.gd")
+	phantom_camera_inspector_plugin = phantom_camera_inspector_plugin.new()
+	add_inspector_plugin(phantom_camera_inspector_plugin)
+
 	dock = preload("res://addons/phantom_camera/editor/phantom_camera_editor.tscn").instantiate()
 	add_control_to_bottom_panel(dock, "Phantom Camera Editor")
 	dock.editor_interface = get_editor_interface()
+
 
 func _exit_tree() -> void:
 	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
@@ -34,6 +41,9 @@ func _exit_tree() -> void:
 
 	remove_node_3d_gizmo_plugin(phantom_camera_gizmo_plugin)
 	remove_node_3d_gizmo_plugin(phantom_base_gizmo_plugin)
+
+	# Inspector
+	remove_inspector_plugin(phantom_camera_inspector_plugin)
 
 	# Dock
 	remove_control_from_bottom_panel(dock)
