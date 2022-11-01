@@ -9,6 +9,11 @@ offset_right = 1152.0
 offset_bottom = 31.0
 theme = ExtResource("1_ed8b7")
 script = ExtResource("2_71r8e")
+_phantom_camera_hbox = NodePath("")
+_follow_target_hbox = NodePath("")
+_look_at_target_hbox = NodePath("")
+_priority_line_edit = NodePath("")
+preview_check_button = NodePath("")
 
 [node name="ListTargetPhantomCamera" parent="." instance=ExtResource("2_da4c0")]
 layout_mode = 2
