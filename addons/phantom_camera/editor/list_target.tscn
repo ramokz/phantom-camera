@@ -4,13 +4,24 @@
 [ext_resource type="Texture2D" uid="uid://csu27nh68pavh" path="res://addons/phantom_camera/editor/icons/LocateNode.svg" id="2_68b3j"]
 [ext_resource type="Script" path="res://addons/phantom_camera/editor/scripts/editor_locate_button.gd" id="2_nneh0"]
 
-[node name="ListTarget" type="HBoxContainer"]
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -970.0
+offset_bottom = -621.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ListTarget" type="HBoxContainer" parent="."]
+layout_mode = 0
 offset_right = 182.0
 offset_bottom = 27.0
 theme = ExtResource("1_grwau")
 theme_type_variation = &"CellHBox"
 
-[node name="LocateButton" type="Button" parent="."]
+[node name="LocateButton" type="Button" parent="ListTarget"]
 clip_contents = true
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
@@ -20,7 +31,7 @@ icon = ExtResource("2_68b3j")
 expand_icon = true
 script = ExtResource("2_nneh0")
 
-[node name="ItemLabel" type="Label" parent="."]
+[node name="ItemLabel" type="Label" parent="ListTarget"]
 layout_mode = 2
 offset_left = 28.0
 offset_right = 172.0

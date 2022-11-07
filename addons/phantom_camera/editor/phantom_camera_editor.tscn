@@ -1,12 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://bi3ytu1vb7fyv"]
+[gd_scene load_steps=4 format=3 uid="uid://bi3ytu1vb7fyv"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/phantom_camera_editor.gd" id="1_ooofk"]
-[ext_resource type="PackedScene" uid="uid://dl40s8ubnul0s" path="res://addons/phantom_camera/phantom_camera_list_item.tscn" id="2_fhgwx"]
 [ext_resource type="Theme" uid="uid://blxd0u3vrdgbl" path="res://addons/phantom_camera/editor/editor_theme.tres" id="2_td105"]
 [ext_resource type="Texture2D" uid="uid://dsk4q5b4asbas" path="res://icon.svg" id="3_j1t5u"]
 
 [node name="Phantom Camera Editor" type="Control"]
-custom_minimum_size = Vector2i(0, 200)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -45,7 +44,7 @@ size_flags_stretch_ratio = 4.0
 theme_type_variation = &"CellHBox"
 
 [node name="LocateButton" type="TextureRect" parent="VBoxContainer/VBoxContainer2/PhantomCameraListItem/ListTarget"]
-custom_minimum_size = Vector2i(24, 24)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 offset_top = 3.0
 offset_right = 24.0
@@ -74,7 +73,7 @@ size_flags_stretch_ratio = 4.0
 theme_type_variation = &"CellHBox"
 
 [node name="LocateButton" type="TextureRect" parent="VBoxContainer/VBoxContainer2/PhantomCameraListItem/ListTarget2"]
-custom_minimum_size = Vector2i(24, 24)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 offset_top = 3.0
 offset_right = 24.0
@@ -102,7 +101,7 @@ size_flags_stretch_ratio = 4.0
 theme_type_variation = &"CellHBox"
 
 [node name="LocateButton" type="TextureRect" parent="VBoxContainer/VBoxContainer2/PhantomCameraListItem/ListTarget3"]
-custom_minimum_size = Vector2i(24, 24)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 offset_top = 3.0
 offset_right = 24.0
@@ -139,7 +138,7 @@ theme_type_variation = &"ListHeader"
 text = "Preview"
 
 [node name="ColorRect" type="ColorRect" parent="VBoxContainer/VBoxContainer2"]
-custom_minimum_size = Vector2i(0, 2)
+custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 offset_top = 34.0
 offset_right = 1152.0
@@ -156,26 +155,10 @@ grow_vertical = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+[node name="PhantomCameraList" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 offset_right = 1152.0
-offset_bottom = 72.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-
-[node name="PhantomCameraListItem" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_fhgwx")]
-layout_mode = 2
-
-[node name="ColorRect" type="ColorRect" parent="VBoxContainer/ScrollContainer/VBoxContainer"]
-custom_minimum_size = Vector2i(0, 2)
-layout_mode = 2
-offset_top = 35.0
-offset_right = 1152.0
-offset_bottom = 37.0
-color = Color(0.415686, 0.415686, 0.415686, 0.301961)
-
-[node name="PhantomCameraListItem2" parent="VBoxContainer/ScrollContainer/VBoxContainer" instance=ExtResource("2_fhgwx")]
-layout_mode = 2
-offset_top = 41.0
-offset_bottom = 72.0

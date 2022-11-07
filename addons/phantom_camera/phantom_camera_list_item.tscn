@@ -2,43 +2,56 @@
 
 [ext_resource type="Theme" uid="uid://blxd0u3vrdgbl" path="res://addons/phantom_camera/editor/editor_theme.tres" id="1_ed8b7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/editor/phantom_camera_list_item.gd" id="2_71r8e"]
-[ext_resource type="PackedScene" uid="uid://pis3jtxy5bp7" path="res://addons/phantom_camera/editor/list_target.tscn" id="2_da4c0"]
+[ext_resource type="PackedScene" uid="uid://drp7df147dbbh" path="res://addons/phantom_camera/editor/list_target.tscn" id="2_da4c0"]
 
 [node name="PhantomCameraListItem" type="HBoxContainer"]
 offset_right = 1152.0
 offset_bottom = 31.0
 theme = ExtResource("1_ed8b7")
 script = ExtResource("2_71r8e")
-_phantom_camera_hbox = NodePath("")
-_follow_target_hbox = NodePath("")
-_look_at_target_hbox = NodePath("")
-_priority_line_edit = NodePath("")
-preview_check_button = NodePath("")
 
-[node name="ListTargetPhantomCamera" parent="." instance=ExtResource("2_da4c0")]
+[node name="ListTargetPhantomCameraName" parent="." instance=ExtResource("2_da4c0")]
+unique_name_in_owner = true
 layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_right = 306.0
 offset_bottom = 31.0
+grow_horizontal = 1
+grow_vertical = 1
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
 
 [node name="ListTargetFollowTarget" parent="." instance=ExtResource("2_da4c0")]
+unique_name_in_owner = true
 layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 326.0
 offset_right = 632.0
 offset_bottom = 31.0
+grow_horizontal = 1
+grow_vertical = 1
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
 
 [node name="ListTargetLookAtTarget" parent="." instance=ExtResource("2_da4c0")]
 layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 652.0
 offset_right = 958.0
 offset_bottom = 31.0
+grow_horizontal = 1
+grow_vertical = 1
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
 
 [node name="PriorityLineEdit" type="LineEdit" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 offset_left = 978.0
 offset_right = 1055.0
