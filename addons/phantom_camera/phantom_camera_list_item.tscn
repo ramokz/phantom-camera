@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dl40s8ubnul0s"]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Theme" uid="uid://blxd0u3vrdgbl" path="res://addons/phantom_camera/editor/editor_theme.tres" id="1_ed8b7"]
-[ext_resource type="Script" path="res://addons/phantom_camera/editor/phantom_camera_list_item.gd" id="2_71r8e"]
+[ext_resource type="Script" path="res://addons/phantom_camera/editor/scripts/phantom_camera_list_item.gd" id="2_71r8e"]
 [ext_resource type="PackedScene" uid="uid://drp7df147dbbh" path="res://addons/phantom_camera/editor/list_target.tscn" id="2_da4c0"]
 
 [node name="PhantomCameraListItem" type="HBoxContainer"]

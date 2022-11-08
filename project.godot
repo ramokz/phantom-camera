@@ -21,6 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Phantom-Camera"
+run/main_scene="res://addons/phantom_camera/test scenes/test_scene.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
 

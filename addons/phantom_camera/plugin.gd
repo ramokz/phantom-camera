@@ -19,7 +19,7 @@ func _enter_tree() -> void:
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/phantom_camera_manager.gd")
 
 	add_custom_type(PHANTOM_CAMERA, "Node3D", preload("phantom_camera.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon.svg"))
-	add_custom_type(PHANTOM_CAMERA_BASE, "Node3D", preload("phantom_camera_base.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon.svg"))
+	add_custom_type(PHANTOM_CAMERA_BASE, "Node3D", preload("phantom_camera_base.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
 
 	add_node_3d_gizmo_plugin(phantom_camera_gizmo_plugin)
 	add_node_3d_gizmo_plugin(phantom_base_gizmo_plugin)
@@ -28,9 +28,10 @@ func _enter_tree() -> void:
 	phantom_camera_inspector_plugin = phantom_camera_inspector_plugin.new()
 	add_inspector_plugin(phantom_camera_inspector_plugin)
 
-	dock = preload("res://addons/phantom_camera/editor/phantom_camera_editor.tscn").instantiate()
-	add_control_to_bottom_panel(dock, "Phantom Camera Editor")
-	dock.editor_interface = get_editor_interface()
+#	TODO - Future Update
+#	dock = preload("res://addons/phantom_camera/editor/phantom_camera_editor.tscn").instantiate()
+#	add_control_to_bottom_panel(dock, "Phantom Camera Editor")
+#	dock.editor_interface = get_editor_interface()
 
 
 func _exit_tree() -> void:
@@ -45,6 +46,7 @@ func _exit_tree() -> void:
 	# Inspector
 	remove_inspector_plugin(phantom_camera_inspector_plugin)
 
+#	TODO - Future Update
 	# Dock
-	remove_control_from_bottom_panel(dock)
-	dock.free()
+#	remove_control_from_bottom_panel(dock)
+#	dock.free()

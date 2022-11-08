@@ -1,5 +1,5 @@
 @tool
-extends Node
+extends Node3D
 
 var _active_camera: Node3D
 var _active_phan_cam_list: Array[int]
@@ -17,6 +17,13 @@ func _enter_tree() -> void:
 	else:
 		print("Is not a child of a Camera")
 
+	add_to_group(PhantomCameraManager.PHANTOM_CAMERA_BASE_GROUP_NAME)
+	PhantomCameraManager.update_check_pcam_base_group()
+
+
+func _exit_tree() -> void:
+	remove_from_group(PhantomCameraManager.PHANTOM_CAMERA_BASE_GROUP_NAME)
+	PhantomCameraManager.update_check_pcam_base_group()
 #func set_active_cam(phan_cam: Node3D) -> void:
 ##	print(_active_phan_cam_list)
 ##	_active_phan_cam_list.
@@ -46,9 +53,9 @@ func _enter_tree() -> void:
 ##	print("Current cam list after removal of cam is:", _active_phan_cam_list)
 
 
-func _process(delta: float) -> void:
-	if (_active_phan_cam_list.size() > 0 && _camera):
-		pass
+#func _process(delta: float) -> void:
+#	if (_active_phan_cam_list.size() > 0 && _camera):
+#		pass
 #		print(main_camera)
 #		_camera.set_position(_active_camera.position)
 #		_camera.set_rotation(_active_camera.get_rotation())

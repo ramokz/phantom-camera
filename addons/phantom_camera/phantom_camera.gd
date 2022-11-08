@@ -1,7 +1,6 @@
 @tool
 extends Node3D
 
-
 var look_at_target_node: Node3D
 @export var look_at_target_path: NodePath:
 	set(value):
@@ -20,6 +19,7 @@ var follow_target_node: Node3D
 @export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
 
 @export var follow_offset: Vector3
+@export var look_offset: Vector3
 
 var _initial_position: Vector3 = position
 var _follow_target_initial_position: Vector3
@@ -86,7 +86,7 @@ func _process(delta: float) -> void:
 			)
 
 	if look_at_target_node:
-		look_at(look_at_target_node.position)
+		look_at(look_at_target_node.position + look_offset)
 
 
 #func _set_position() -> void:

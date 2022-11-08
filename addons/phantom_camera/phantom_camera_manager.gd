@@ -3,8 +3,10 @@ extends Node
 
 var _active_camera: Node3D
 var _active_phan_cam_list: Array[int]
+var pcam_base_list: Array
 
 const PHANTOM_CAMERA_GROUP_NAME: String = "phantom_camera"
+const PHANTOM_CAMERA_BASE_GROUP_NAME: String = "phantom_camera_base"
 
 func _enter_tree() -> void:
 	print("Pcam Editor has entered the tree")
@@ -23,6 +25,12 @@ func phantom_camera_added_to_scene(pcam: Node3D) -> void:
 
 #	 TODO - Add Camera to Editor with ID
 
+func update_check_pcam_base_group() -> void:
+
+	var pcam_base_group_nodes = get_tree().get_nodes_in_group(PHANTOM_CAMERA_BASE_GROUP_NAME)
+
+	if pcam_base_group_nodes.size() > 0:
+		pcam_base_list = get_tree().get_nodes_in_group(PHANTOM_CAMERA_BASE_GROUP_NAME)
 
 func set_active_cam(phan_cam: Node3D) -> void:
 #	print(_active_phan_cam_list)

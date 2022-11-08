@@ -12,7 +12,7 @@
 [node name="PhantomCameraBase" type="Node3D" parent="Camera3D"]
 script = ExtResource("1_qfnt6")
 
-[node name="PhantomCamera2" type="Node3D" parent="."]
+[node name="PhantomCameraPlayer" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.948683, 0.316228, 0, -0.316228, 0.948683, 4, 1, 3.01379)
 script = ExtResource("2_af57i")
 look_at_target_path = NodePath("../MeshInstance3D")
@@ -20,15 +20,18 @@ follow_target_path = NodePath("../MeshInstance3D")
 is_camera_active = false
 camera_smoothing = 0.0
 follow_offset = Vector3(0, 1, 3)
+look_offset = Vector3(0, 0, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0.0137856)
 mesh = SubResource("CapsuleMesh_g0eml")
 
 [node name="PhantomCamera" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.82132)
 script = ExtResource("2_af57i")
 look_at_target_path = NodePath("")
 follow_target_path = NodePath("")
-is_camera_active = false
+is_camera_active = true
 camera_smoothing = 0.0
 follow_offset = Vector3(0, 0, 0)
+look_offset = Vector3(0, 0, 0)

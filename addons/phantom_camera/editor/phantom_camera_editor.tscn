@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://bi3ytu1vb7fyv"]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/phantom_camera_editor.gd" id="1_ooofk"]
+[ext_resource type="Script" path="res://addons/phantom_camera/editor/scripts/phantom_camera_editor.gd" id="1_ooofk"]
 [ext_resource type="Theme" uid="uid://blxd0u3vrdgbl" path="res://addons/phantom_camera/editor/editor_theme.tres" id="2_td105"]
 [ext_resource type="Texture2D" uid="uid://dsk4q5b4asbas" path="res://icon.svg" id="3_j1t5u"]
 
