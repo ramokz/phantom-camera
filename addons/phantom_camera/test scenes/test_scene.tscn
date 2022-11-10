@@ -5,7 +5,7 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
 
-[node name="Node3D" type="Node3D"]
+[node name="Root" type="Node3D"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
 
@@ -17,8 +17,8 @@ transform = Transform3D(1, 0, 0, 0, 0.948683, 0.316228, 0, -0.316228, 0.948683, 
 script = ExtResource("2_af57i")
 look_at_target_path = NodePath("../MeshInstance3D")
 follow_target_path = NodePath("../MeshInstance3D")
-is_camera_active = false
 camera_smoothing = 0.0
+priority = 10
 follow_offset = Vector3(0, 1, 3)
 look_offset = Vector3(0, 0, 0)
 
@@ -31,7 +31,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.82132)
 script = ExtResource("2_af57i")
 look_at_target_path = NodePath("")
 follow_target_path = NodePath("")
-is_camera_active = true
 camera_smoothing = 0.0
 follow_offset = Vector3(0, 0, 0)
 look_offset = Vector3(0, 0, 0)

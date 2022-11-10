@@ -1,5 +1,9 @@
 @tool
+class_name PhantomCamera3D
+
 extends Node3D
+
+@icon("res://addons/phantom_camera/icons/PhantomCameraIcon.svg")
 
 var look_at_target_node: Node3D
 @export var look_at_target_path: NodePath:
@@ -15,8 +19,13 @@ var follow_target_node: Node3D
 		if has_node(follow_target_path):
 			follow_target_node = get_node(follow_target_path)
 
-@export var is_camera_active: bool: set = set_active_camera
+#@export var is_camera_active: bool: set = set_active_camera
 @export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
+
+@export_range(1, 100, 1, "or_greater") var priority: int = 1:
+	set(value):
+		priority = value
+		PhantomCameraManager.pcam_priority_updated(self)
 
 @export var follow_offset: Vector3
 @export var look_offset: Vector3
@@ -33,9 +42,12 @@ var _set_initial_position: bool = false
 #		_follow_target_node = get_node(follow_target_path)
 
 func _enter_tree() -> void:
-	add_to_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME)
-	if is_camera_active:
-		PhantomCameraManager.set_active_cam(self)
+#	add_to_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME)
+	PhantomCameraManager.phantom_camera_added_to_scene(self)
+
+
+#	if is_camera_active:
+#		PhantomCameraManager.set_active_cam(self)
 
 	if look_at_target_path:
 		look_at_target_node = get_node(look_at_target_path)
@@ -44,28 +56,27 @@ func _enter_tree() -> void:
 		follow_target_node = get_node(follow_target_path)
 #		set_position(_follow_target_node.position)
 
-	PhantomCameraManager.phantom_camera_added_to_scene(self)
-
 func _exit_tree() -> void:
-	remove_from_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME)
-	if is_camera_active:
-		PhantomCameraManager.remove_phan_cam_from_list(self)
+#	remove_from_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME)
+	PhantomCameraManager.phantom_camera_removed_from_scene(self)
+#	if is_camera_active:
+#		PhantomCameraManager.remove_phan_cam_from_list(self)
 
 
-func set_active_camera(state: bool) -> void:
-	is_camera_active = !is_camera_active
-
-	if state == true:
-		PhantomCameraManager.set_active_cam(self)
-		is_camera_active = true
-	else:
-		PhantomCameraManager.remove_phan_cam_from_list(self)
-		is_camera_active = false
-#	elif not is_camera_active and PhantomCameraBase._active_camera == self:
-	if follow_target_node:
-		print("Follow target exists")
-#		print(follow_target.position)
-		_follow_target_initial_position = follow_target_node.position
+#func set_active_camera(state: bool) -> void:
+#	is_camera_active = !is_camera_active
+#
+#	if state == true:
+#		PhantomCameraManager.set_active_cam(self)
+#		is_camera_active = true
+#	else:
+#		PhantomCameraManager.remove_phan_cam_from_list(self)
+#		is_camera_active = false
+##	elif not is_camera_active and PhantomCameraBase._active_camera == self:
+#	if follow_target_node:
+#		print("Follow target exists")
+##		print(follow_target.position)
+#		_follow_target_initial_position = follow_target_node.position
 
 
 func _process(delta: float) -> void:

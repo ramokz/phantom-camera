@@ -13,9 +13,15 @@ _global_script_classes=[{
 "class": &"CustomPluginGizmo",
 "language": &"GDScript",
 "path": "res://addons/phantom_camera/gizmos/CustomGizmo.gd"
+}, {
+"base": "Node3D",
+"class": &"PhantomCamera3D",
+"language": &"GDScript",
+"path": "res://addons/phantom_camera/phantom_camera.gd"
 }]
 _global_script_class_icons={
-"CustomPluginGizmo": ""
+"CustomPluginGizmo": "",
+"PhantomCamera3D": "res://addons/phantom_camera/icons/PhantomCameraIcon.svg"
 }
 
 [application]
