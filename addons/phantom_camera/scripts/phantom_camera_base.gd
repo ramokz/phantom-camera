@@ -1,5 +1,5 @@
 @tool
-extends Node3D
+extends Node
 
 var _active_camera: Node3D
 var _active_phan_cam_list: Array[int]
@@ -8,18 +8,23 @@ var _camera
 
 func _enter_tree() -> void:
 	_camera = get_parent()
-#	if _camera is Camera3D:
-#		print("Camera is Camera3D")
-#	elif _camera is Camera2D:
-#		print("Camera is Camera2D")
-#	else:
-#		printerr("Is not a child of a Camera")
+	if _camera is Camera3D:
+		print("Camera is Camera3D")
+		PhantomCameraManager.camera_base_3D = _camera
+	elif _camera is Camera2D:
+		print("Camera is Camera2D")
+		PhantomCameraManager.camera_base_2D = _camera
+	else:
+		printerr("Is not a child of a Camera")
 
-	add_to_group(PhantomCameraManager.PHANTOM_CAMERA_BASE_GROUP_NAME)
 
 
 func _exit_tree() -> void:
-	remove_from_group(PhantomCameraManager.PHANTOM_CAMERA_BASE_GROUP_NAME)
+#	TODO - Needs proper implementation when having multiple cameras
+	if PhantomCameraManager.camera_base_2D == _camera:
+		PhantomCameraManager.camera_base_2D = null
+	elif PhantomCameraManager.camera_base_3D == _camera:
+		PhantomCameraManager.camera_base_3D = null
 
 
 #func _process(delta: float) -> void:

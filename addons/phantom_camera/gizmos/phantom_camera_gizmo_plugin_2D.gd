@@ -1,6 +1,6 @@
 extends CustomPluginGizmo
 
-var _spatial_script: Script = preload("res://addons/phantom_camera/phantom_camera.gd")
+var _spatial_script: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_2D.gd")
 var _icon: Texture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon.svg")
 
 

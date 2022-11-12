@@ -1,26 +1,26 @@
 @tool
 extends Node
 
-var _active_pcam: PhantomCamera3D
+var _active_pcam
 var _active_pcam_priority: int = 0
-var pcam_list: Array[PhantomCamera3D]
+var pcam_list: Array
 var pcam_base_list: Array
 
-const PHANTOM_CAMERA_GROUP_NAME: String = "phantom_camera"
-const PHANTOM_CAMERA_BASE_GROUP_NAME: String = "phantom_camera_base"
+var camera_base_2D: Camera2D
+var camera_base_3D: Camera3D
 
 func _enter_tree() -> void:
 	print("Pcam Editor has entered the tree")
 
 
-func phantom_camera_added_to_scene(pcam: PhantomCamera3D) -> void:
+func phantom_camera_added_to_scene(pcam) -> void:
 	pcam_list.append(pcam)
 #	_check_active_camera_from_list(pcam)
 	find_pcam_with_highest_priority()
 #	 TODO - Add Camera to Editor with ID
 
 
-func phantom_camera_removed_from_scene(pcam: PhantomCamera3D) -> void:
+func phantom_camera_removed_from_scene(pcam) -> void:
 #	TODO - Could use some performance enhancements in case there are many Phantom Cameras
 	pcam_list.erase(pcam)
 	print("Removed: ", pcam, " from scene")
@@ -46,7 +46,7 @@ func find_pcam_with_highest_priority() -> void:
 			_active_pcam_priority = pcam_item.priority
 			print("Changing new active cam to: ", _active_pcam)
 
-func pcam_priority_updated(pcam: PhantomCamera3D) -> void:
+func pcam_priority_updated(pcam) -> void:
 
 #	TODO - Should also check whether if the existing active cam
 	if pcam.priority > _active_pcam_priority:
@@ -63,7 +63,13 @@ func pcam_priority_updated(pcam: PhantomCamera3D) -> void:
 
 
 func _process(delta: float) -> void:
-	pass
+	if camera_base_2D:
+		print("Has camera 2D")
+
+	if camera_base_3D:
+		camera_base_3D.position = _active_pcam.get_position()
+
+#		print("Has camera 3D")
 
 #func set_active_cam(phan_cam: Node3D) -> void:
 ##	print(_active_phan_cam_list)
