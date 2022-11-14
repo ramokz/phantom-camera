@@ -7,8 +7,8 @@ class_name PhantomCamera3D
 
 var _follow_target_offset: Vector3 = Vector3(0, 0, 3)
 
-var _if_phantom_camera_3D: bool = true
-var _if_phantom_camera_2D: bool
+var _if_pcam_3D: bool = true
+var _if_pcam_2D: bool
 
 var _has_follow_target: bool = false
 var _follow_target_path: NodePath
@@ -18,14 +18,23 @@ var _look_at_target_node: Node
 var _look_at_target_path: NodePath
 var _has_look_at_target: bool = false
 
+var transition_easing: Tween
+
 #func is_3D_phantom_camera() -> void:
-#	_if_phantom_camera_3D = true
+#	_if_pcam_3D = true
 #	notify_property_list_changed()
+
+@export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
+
+@export_range(1, 100, 1, "or_greater") var priority: int = 1:
+	set(value):
+		priority = value
+		PhantomCameraManager.pcam_priority_updated(self)
 
 func _get_property_list() -> Array:
 	var ret: Array
 
-	if _if_phantom_camera_2D:
+	if _if_pcam_2D:
 		ret.append({
 			"name": "Follow Target 2D",
 			"type": TYPE_VECTOR2,
@@ -33,7 +42,7 @@ func _get_property_list() -> Array:
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
 
-	if _if_phantom_camera_3D:
+	if _if_pcam_3D:
 		ret.append({
 			"name": "Follow Target 3D",
 			"type": TYPE_NODE_PATH,
@@ -130,27 +139,14 @@ func _get(property: StringName):
 #			follow_target_node = get_node(follow_target_path)
 
 #@export var is_camera_active: bool: set = set_active_camera
-@export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
 
-@export_range(1, 100, 1, "or_greater") var priority: int = 1:
-	set(value):
-		priority = value
-		PhantomCameraManager.pcam_priority_updated(self)
 
 var _initial_position
 var _follow_target_initial_position
 var _set_initial_position: bool = false
 
-#func _ready() -> void:
-#	if look_at_target_path:
-#		_look_at_target_node = get_node(look_at_target_path)
-#
-#	if follow_target_path:
-#		_follow_target_node = get_node(follow_target_path)
-
 func _enter_tree() -> void:
 	PhantomCameraManager.phantom_camera_added_to_scene(self)
-
 
 	if _look_at_target_path:
 		_look_at_target_node = get_node(_look_at_target_path)

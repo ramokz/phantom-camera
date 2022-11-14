@@ -1,38 +1,41 @@
-[gd_scene load_steps=4 format=3 uid="uid://dnhrves1ovtkc"]
+[gd_scene load_steps=5 format=3 uid="uid://dnhrves1ovtkc"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_base.gd" id="1_qfnt6"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_3D.gd" id="2_y3dy8"]
+[ext_resource type="PackedScene" uid="uid://74kqx8jdeqfb" path="res://addons/phantom_camera/test_scenes/Models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
 
 [node name="Root" type="Node3D"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01735, 0, 3.30186)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.89035, 2.26164, 3.014)
 
 [node name="PhantomCameraBase" type="Node" parent="Camera3D"]
 script = ExtResource("1_qfnt6")
 
+[node name="3DPrototypeCube" parent="." instance=ExtResource("3_f5qrw")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+
 [node name="----------------------------------------------------------" type="Node" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.06971, 0, 0.0137856)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.636, 0.5, 0)
 mesh = SubResource("CapsuleMesh_g0eml")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.06971, 0, 4.01379)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.636, 2.5, 3)
 script = ExtResource("2_y3dy8")
 camera_smoothing = 0.0
-priority = 10
+priority = 2
 "Follow Target 3D" = NodePath("../MeshInstance3D")
-"Follow Target Offset" = Vector3(0, 0, 4)
+"Follow Target Offset" = Vector3(0, 2, 3)
 "Look At Target 3D" = NodePath("")
 
-[node name="PhantomCamera3D2" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.01735, 0, 3.30186)
+[node name="PhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.89035, 2.26164, 3.014)
 script = ExtResource("2_y3dy8")
 camera_smoothing = 0.0
-priority = 15
+priority = 3
 "Follow Target 3D" = NodePath("")
-"Look At Target 3D" = NodePath("../MeshInstance3D")
-"Look At Target Offset 3D" = null
+"Look At Target 3D" = NodePath("")

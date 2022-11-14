@@ -4,8 +4,8 @@
 extends Node
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon.svg")
 
-var _if_phantom_camera_3D: bool
-var _if_phantom_camera_2D: bool
+var _if_pcam_3D: bool
+var _if_pcam_2D: bool
 
 var _has_follow_target: bool = false
 var _follow_target_path: NodePath
@@ -13,17 +13,17 @@ var _look_at_target_path: NodePath
 var _has_look_at_target: bool = false
 
 func is_2D_phantom_camera() -> void:
-	_if_phantom_camera_2D = true
+	_if_pcam_2D = true
 	notify_property_list_changed()
 
 func is_3D_phantom_camera() -> void:
-	_if_phantom_camera_3D = true
+	_if_pcam_3D = true
 	notify_property_list_changed()
 
 func _get_property_list() -> Array:
 	var ret: Array
 
-	if _if_phantom_camera_2D:
+	if _if_pcam_2D:
 		ret.append({
 			"name": "Follow Target 2D",
 			"type": TYPE_VECTOR2,
@@ -31,7 +31,7 @@ func _get_property_list() -> Array:
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
 
-	if _if_phantom_camera_3D:
+	if _if_pcam_3D:
 		ret.append({
 			"name": "Follow Target 3D",
 			"type": TYPE_NODE_PATH,
