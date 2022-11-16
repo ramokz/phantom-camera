@@ -54,7 +54,7 @@ func find_pcam_with_highest_priority() -> void:
 			_active_pcam = pcam_item
 			_active_pcam_priority = pcam_item.priority
 
-			_pcam_tween_transition(5)
+			_pcam_tween_transition(_active_pcam.transition_duration)
 
 
 func pcam_priority_updated(pcam) -> void:
@@ -64,7 +64,7 @@ func pcam_priority_updated(pcam) -> void:
 		_pcam_tween_complete = false
 
 		_active_pcam_has_changed = true
-		_pcam_tween_transition(5)
+		_pcam_tween_transition(_active_pcam.transition_duration)
 
 
 	elif pcam == _active_pcam:
@@ -76,24 +76,30 @@ func pcam_priority_updated(pcam) -> void:
 			_active_pcam_priority = pcam.priority
 
 
-
-
-
 func _pcam_tween_transition(duration: float, pcam_changed_mid_tween: bool = false) -> void:
 	_pcam_initial_position = _active_pcam.get_position()
 
 	if not _pcam_position_changed:
 		_pcam_tween = get_tree().create_tween()
 		_pcam_tween_elasped_time_duration = duration
-		_pcam_tween.tween_property(camera_base_3D, "position", _active_pcam.get_position(), duration)
+		_pcam_tween_property(duration)
 		_pcam_tween.tween_callback(pcam_tween_complete)
 	else:
 #		print("Target move during tween")
 		_pcam_tween_elasped_time_duration -= _pcam_tween.get_total_elapsed_time()
 		_pcam_tween.kill()
 		_pcam_tween = get_tree().create_tween()
-		_pcam_tween.tween_property(camera_base_3D, "position", _active_pcam.get_position(), _pcam_tween_elasped_time_duration)
+		_pcam_tween_property(_pcam_tween_elasped_time_duration)
 		_pcam_tween.tween_callback(pcam_tween_complete)
+
+func _pcam_tween_property(duration: float) -> void:
+	if _active_pcam._follow_target_offset:
+		_pcam_tween.parallel().tween_property(camera_base_3D, "position", _active_pcam.get_position(), duration)
+
+	if _active_pcam.has_look_at_target:
+		print("Starting look_at tween")
+		_pcam_tween.parallel().tween_method(camera_base_3D.look_at.bind(Vector3.UP), Vector3(0,0,0), Vector3(0,0,0), duration)
+
 
 func pcam_tween_complete() -> void:
 	print("Tween complete")
@@ -113,52 +119,21 @@ func _process(delta: float) -> void:
 #	if camera_base_3D && not _active_pcam_has_changed:
 
 	if camera_base_3D:
-#		New Tweening
-#		if _active_pcam_has_changed && not _pcam_tween.is_running():
-#	#		print(_active_pcam_has_changed)
-#	#		print("Changing to different pcam")
-#			_pcam_tween_transition(_active_pcam, 5)
-#		elif _active_pcam_has_changed && _pcam_tween.is_running():
-#			_pcam_tween_transition(_active_pcam, 5, true)
-#		else:
-#			print("Fixed on pcam")
 		if _pcam_tween_complete:
-			camera_base_3D.position = _active_pcam.get_position()
+			if _active_pcam.has_follow_target:
+				camera_base_3D.position = _active_pcam.get_position()
+			if _active_pcam.has_look_at_target:
+				camera_base_3D.look_at(
+					_active_pcam.look_at_target_node.get_position() + \
+					Vector3(_active_pcam.look_at_target_offset.x, _active_pcam.look_at_target_offset.y, 0))
 		elif not _pcam_tween_complete and _pcam_initial_position != _active_pcam.get_position():
-#			print("Position has changed")
 			_pcam_position_changed = true
-			_pcam_tween_transition(5)
+			_pcam_tween_transition(_active_pcam.transition_duration)
 
-
-#	if _active_pcam_has_changed:
-#		_pcam_transition(camera_base_3D, _active_pcam.get_position())
-
-#		print("Has camera 3D")
-
-#func set_active_cam(phan_cam: Node3D) -> void:
-##	print(_active_phan_cam_list)
-##	_active_phan_cam_list.
-#	var phan_cam_id: int = phan_cam.get_instance_id()
-#
-#	if not _active_phan_cam_list.has(phan_cam_id):
-#		_active_phan_cam_list.append(phan_cam_id)
-#	else:
-#		_active_phan_cam_list.pop_at(_active_phan_cam_list.find(phan_cam_id))
-#		_active_phan_cam_list.append(phan_cam_id)
-#
-#	_active_camera = phan_cam
-##	print(phan_cam.name)
-#
-##	print("Current cam list after adding of cam is:", _active_phan_cam_list)
-#
-#
-#func remove_phan_cam_from_list(phan_cam: Node3D) -> void:
-#
-#	var phan_cam_id: int = phan_cam.get_instance_id()
-#
-#	if _active_camera == phan_cam:
-#		_active_phan_cam_list.pop_at(_active_phan_cam_list.find(phan_cam_id))
-#	else:
-#		_active_phan_cam_list.pop_at(_active_phan_cam_list.find(phan_cam_id))
-#
-##	print("Current cam list after removal of cam is:", _active_phan_cam_list)
+#		if _active_pcam.has_look_at_target:
+#			if _pcam_tween_complete:
+#				camera_base_3D.look_at(
+#					_active_pcam.look_at_target_node.get_position() + \
+#					Vector3(_active_pcam.look_at_target_offset.x, _active_pcam.look_at_target_offset.y, 0))
+#			elif not _pcam_tween_complete and _pcam_initial_position != _active_pcam.get_position():
+#				pass

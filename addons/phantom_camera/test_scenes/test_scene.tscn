@@ -9,7 +9,7 @@
 [node name="Root" type="Node3D"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.89035, 2.26164, 3.014)
+transform = Transform3D(0.578408, 0, 0.815748, 0, 1, 0, -0.815748, 0, 0.578408, 4.58829, 0.5, 7.49149)
 
 [node name="PhantomCameraBase" type="Node" parent="Camera3D"]
 script = ExtResource("1_qfnt6")
@@ -20,22 +20,31 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 [node name="----------------------------------------------------------" type="Node" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.636, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.357292, 0.5, 4.49149)
+mesh = SubResource("CapsuleMesh_g0eml")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.658, 0.5, 0)
 mesh = SubResource("CapsuleMesh_g0eml")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.636, 2.5, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.58829, 0.5, 7.49149)
 script = ExtResource("2_y3dy8")
+transition_duration = 10.0
 camera_smoothing = 0.0
-priority = 2
-"Follow Target 3D" = NodePath("../MeshInstance3D")
-"Follow Target Offset" = Vector3(0, 2, 3)
-"Look At Target 3D" = NodePath("")
+priority = 4
+"Follow Target" = NodePath("../MeshInstance3D")
+"Follow Parameters/Follow Target Offset" = Vector3(4.231, 0, 3)
+"Look At Target" = NodePath("../MeshInstance3D")
+"Look At Parameters/Look At Target Offset" = Vector2(0, 0)
 
 [node name="PhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.89035, 2.26164, 3.014)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.645, 0.5, 3)
 script = ExtResource("2_y3dy8")
+transition_duration = 10.0
 camera_smoothing = 0.0
 priority = 3
-"Follow Target 3D" = NodePath("")
-"Look At Target 3D" = NodePath("")
+"Follow Target" = NodePath("../MeshInstance3D2")
+"Follow Parameters/Follow Target Offset" = Vector3(1.987, 0, 3)
+"Look At Target" = NodePath("../MeshInstance3D2")
+"Look At Parameters/Look At Target Offset" = Vector2(0, 0)
