@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7ja4woxol8yc"
-path.s3tc="res://.godot/imported/CheckerPatternDark.png-e371e5ee2c23caab1ce21c794ae9f174.s3tc.ctex"
-path.etc2="res://.godot/imported/CheckerPatternDark.png-e371e5ee2c23caab1ce21c794ae9f174.etc2.ctex"
+path.s3tc="res://.godot/imported/CheckerPatternDark.png-8ae632445ee20a27fa0bee6b2811929d.s3tc.ctex"
+path.etc2="res://.godot/imported/CheckerPatternDark.png-8ae632445ee20a27fa0bee6b2811929d.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc", "etc2"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/phantom_camera/test_scenes/Textures/CheckerPatternDark.png"
-dest_files=["res://.godot/imported/CheckerPatternDark.png-e371e5ee2c23caab1ce21c794ae9f174.s3tc.ctex", "res://.godot/imported/CheckerPatternDark.png-e371e5ee2c23caab1ce21c794ae9f174.etc2.ctex"]
+source_file="res://addons/phantom_camera/examples/Textures/CheckerPatternDark.png"
+dest_files=["res://.godot/imported/CheckerPatternDark.png-8ae632445ee20a27fa0bee6b2811929d.s3tc.ctex", "res://.godot/imported/CheckerPatternDark.png-8ae632445ee20a27fa0bee6b2811929d.etc2.ctex"]
 
 [params]
 
