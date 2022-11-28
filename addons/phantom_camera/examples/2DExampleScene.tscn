@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://drum4kurlccca"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_base.gd" id="1_7hhgo"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_2D.gd" id="2_mgsut"]
+
+[node name="Node2D" type="Node2D"]
+position = Vector2(-1, 0)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(596, 324)
+
+[node name="PhantomCameraBase" type="Node" parent="Camera2D"]
+script = ExtResource("1_7hhgo")
+
+[node name="PhantomCamera2D" type="Node2D" parent="."]
+position = Vector2(259, 211)
+script = ExtResource("2_mgsut")
+follow_offset = Vector2(0, 0)
+look_offset = Vector2(0, 0)
