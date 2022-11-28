@@ -1,123 +1,146 @@
 @tool
-#extends "res://addons/phantom_camera/scripts/phantom_camera.gd"
 extends Node3D
 class_name PhantomCamera3D
-
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon.svg")
-
 
 var _if_pcam_3D: bool = true
 var _if_pcam_2D: bool
 
 ##################
-# Follow Variables
+# General - Variables
 ##################
+var _priority_property_name: StringName = "Priority"
+var priority: int = 1
+
+##################
+# Follow - Variables
+##################
+var _follow_target_property_name: StringName = "Follow Target"
 var follow_target_node: Node
 var _follow_target_path: NodePath
 var has_follow_target: bool = false
-var _follow_target_offset: Vector3 = Vector3(0, 0, 3)
+
+var _follow_target_offset_property_name: StringName = "Follow Parameters/Follow Target Offset"
+var follow_target_offset: Vector3 = Vector3(0, 0, 3)
 
 ###################
-# Look At Variables
+# Look At - Variables
 ###################
+var _look_at_target_property_name: StringName = "Look At Target"
 var look_at_target_node: Node
 var _look_at_target_path: NodePath
 var has_look_at_target: bool = false
-var look_at_target_offset: Vector2 = Vector2(0, 0)
+
+var _look_at_target_offset_property_name: StringName = "Look At Parameters/Look At Target Offset"
+var look_at_target_offset: Vector3
 
 #################
-# Tween Variables
+# Tween - Variables
 #################
-var transition_easing: Tween.EaseType
+var _tween_ease_property_name: StringName = "Tween Properties / Ease"
+var tween_ease: Tween.EaseType
 
+var _tween_transition_property_name: StringName = "Tween Properties / Transition"
+var tween_transition: Tween.TransitionType
 
-@export var transition_duration: float = 1:
-	set(value):
-		if value < 0:
-			value = 0
-		transition_duration = value
+var _tween_duration_property_name: StringName = "Tween Properties / Duration"
+var tween_duration: float = 1
 
-@export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
-#@export_range(0, 1000, 0.001, "or_greater") var transition_duration: float = 0
-@export_range(1, 100, 1, "or_greater") var priority: int = 1:
-	set(value):
-		priority = value
-		PhantomCameraManager.pcam_priority_updated(self)
+#	TODO - Camera Smoothing
+#@export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
 
 
 func _get_property_list() -> Array:
 	var ret: Array
 
-#	ret.append({
-#		"name": "Transition Duration",
-#		"type": TYPE_INT,
-#		"hint": PROPERTY_HINT_ENUM,
-#		"hint_string": PoolString,
-#		"usage": PROPERTY_USAGE_DEFAULT
-#	})
+	######################
+	# General - Properties
+	######################
+	ret.append({
+		"name": _priority_property_name,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
 
-#	ret.append({
-#		"name": "Transition Duration",
-#		"type": TYPE_FLOAT,
-#		"hint": PROPERTY_HINT_RANGE,
-#		"hint_string": "0, 100, 0.001, or_greater",
-#		"usage": PROPERTY_USAGE_DEFAULT
-#	})
-#
-#	ret.append({
-#		"name": "Properties",
-#		"type": TYPE_NIL,
-#		"hint": "Outline_",
-#		"usage": PROPERTY_USAGE_GROUP
-#	})
+	#####################
+	# Follow - Properties
+	#####################
+	ret.append({
+		"name": _follow_target_property_name,
+		"type": TYPE_NODE_PATH,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
 
-	if _if_pcam_2D:
+	if has_follow_target:
 		ret.append({
-			"name": "Follow Target 2D",
-			"type": TYPE_VECTOR2,
+			"name": _follow_target_offset_property_name,
+			"type": TYPE_VECTOR3,
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
 
-	if _if_pcam_3D:
+	######################
+	# Look At - Properties
+	######################
+	ret.append({
+		"name": _look_at_target_property_name,
+		"type": TYPE_NODE_PATH,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
+
+	if has_look_at_target:
 		ret.append({
-			"name": "Follow Target",
-			"type": TYPE_NODE_PATH,
+			"name": _look_at_target_offset_property_name,
+			"type": TYPE_VECTOR3,
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
 
-		if has_follow_target:
-			ret.append({
-				"name": "Follow Parameters/Follow Target Offset",
-				"type": TYPE_VECTOR3,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT
-			})
-
-		ret.append({
-			"name": "Look At Target",
-			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_NONE,
-			"usage": PROPERTY_USAGE_DEFAULT
-		})
-
-		if has_look_at_target:
-			ret.append({
-				"name": "Look At Parameters/Look At Target Offset",
-				"type": TYPE_VECTOR2,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT
-			})
+	####################
+	# Tween - Properties
+	####################
+	ret.append({
+		"name": _tween_duration_property_name,
+		"type": TYPE_FLOAT,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
+	ret.append({
+		"name": _tween_ease_property_name,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": tween_ease,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
+	ret.append({
+		"name": _tween_transition_property_name,
+		"type": TYPE_STRING,
+		"hint": PROPERTY_HINT_ENUM,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
 
 	return ret
 
 
 func _set(property: StringName, value) -> bool:
-	if property == "Transition Duration":
-		transition_duration = value
 
-	if property == "Follow Target":
+	######################
+	# General - Properties
+	######################
+	if property == _priority_property_name:
+		if value < 1:
+			priority = 1
+		else:
+			priority = value
+		PhantomCameraManager.pcam_priority_updated(self)
+
+	#####################
+	# Follow - Properties
+	#####################
+	if property == _follow_target_property_name:
 		_follow_target_path = value
 		var valueNodePath: NodePath = value as NodePath
 		if not valueNodePath.is_empty():
@@ -129,8 +152,17 @@ func _set(property: StringName, value) -> bool:
 			follow_target_node = null
 
 		notify_property_list_changed()
+	if property == _follow_target_offset_property_name:
+		if value == Vector3.ZERO:
+			printerr("Follow Offset cannot be 0,0,0, resetting to 0,0,1")
+			follow_target_offset = Vector3(0,0,1)
+		else:
+			follow_target_offset = value
 
-	if property == "Look At Target":
+	######################
+	# Look At - Properties
+	######################
+	if property == _look_at_target_property_name:
 		_look_at_target_path = value
 		var valueNodePath: NodePath = value as NodePath
 		if not valueNodePath.is_empty():
@@ -142,29 +174,46 @@ func _set(property: StringName, value) -> bool:
 			look_at_target_node = null
 
 		notify_property_list_changed()
-
-	if property == "Follow Parameters/Follow Target Offset":
-		if value == Vector3.ZERO:
-			printerr("Follow Offset cannot be 0,0,0, resetting to 0,0,1")
-			_follow_target_offset = Vector3(0,0,1)
-		else:
-			_follow_target_offset = value
-
-	if property == "Look At Parameters/Look At Target Offset":
+	if property == _look_at_target_offset_property_name:
 		look_at_target_offset = value
 
+	####################
+	# Tween - Properties
+	####################
+	if property == _tween_duration_property_name:
+		tween_duration = value
+	if property == _tween_transition_property_name:
+		tween_transition = value
+	if property == _tween_ease_property_name:
+		tween_ease = value
 
 	return false
 
 
 func _get(property: StringName):
-	if property == "Transition Duration": return transition_duration
 
-	if property == "Follow Target": return _follow_target_path
-	if property == "Follow Parameters/Follow Target Offset": return _follow_target_offset
+	######################
+	# General - Properties
+	######################
+	if property == _priority_property_name: return priority
 
-	if property == "Look At Target": return _look_at_target_path
-	if property == "Look At Parameters/Look At Target Offset": return look_at_target_offset
+	#####################
+	# Follow - Properties
+	#####################
+	if property == _follow_target_property_name: return _follow_target_path
+	if property == _follow_target_offset_property_name: return follow_target_offset
+
+	######################
+	# Look At - Properties
+	######################
+	if property == _look_at_target_property_name: return _look_at_target_path
+	if property == _look_at_target_offset_property_name: return look_at_target_offset
+
+	####################
+	# Tween - Properties
+	####################
+	if property == _tween_duration_property_name: return tween_duration
+	if property == _tween_ease_property_name: return tween_ease
 
 
 func _enter_tree() -> void:
@@ -182,20 +231,19 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
-#	 TODO - Should only follow if currently active camera
-#	print(follow_target_node)
-#	print(_follow_target_offset)
 	if follow_target_node:
 
-		if camera_smoothing == 0:
+#		if camera_smoothing == 0:
 			set_position(
-				follow_target_node.position + _follow_target_offset
+				follow_target_node.position + follow_target_offset
 			)
-		else:
-			# TODO - Change camera_smoothing value to something more sensible in the editor
-			set_position(
-				position.lerp(
-					follow_target_node.position + _follow_target_offset,
-					delta / camera_smoothing * 10
-				)
-			)
+#		else:
+#			# TODO - Change camera_smoothing value to something more sensible in the editor
+#			set_position(
+#				position.lerp(
+#					follow_target_node.position + _follow_target_offset,
+#					delta / camera_smoothing * 10
+#				)
+#			)
+	if look_at_target_node:
+		look_at(look_at_target_node.position)

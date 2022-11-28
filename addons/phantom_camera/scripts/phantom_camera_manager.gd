@@ -15,8 +15,6 @@ var _active_pcam_has_changed: bool = false
 # Tween Variables
 ##################
 var _pcam_tween: Tween
-
-# Custom Tweening should be either of these two
 var _tween_default_ease: Tween.EaseType
 var _easing: Tween.TransitionType
 
@@ -31,9 +29,7 @@ func _enter_tree() -> void:
 
 func phantom_camera_added_to_scene(pcam) -> void:
 	pcam_list.append(pcam)
-#	_check_active_camera_from_list(pcam)
 	find_pcam_with_highest_priority()
-#	 TODO - Add Camera to Editor with ID
 
 
 func phantom_camera_removed_from_scene(pcam) -> void:
@@ -53,7 +49,7 @@ func find_pcam_with_highest_priority() -> void:
 			_active_pcam = pcam_item
 			_active_pcam_priority = pcam_item.priority
 
-			_pcam_tween_transition(_active_pcam.transition_duration)
+			_pcam_tween_transition(_active_pcam.tween_duration)
 
 
 func pcam_priority_updated(pcam) -> void:
@@ -63,7 +59,7 @@ func pcam_priority_updated(pcam) -> void:
 		_pcam_tween_complete = false
 
 		_active_pcam_has_changed = true
-		_pcam_tween_transition(_active_pcam.transition_duration)
+		_pcam_tween_transition(_active_pcam.tween_duration)
 
 
 	elif pcam == _active_pcam:
@@ -92,7 +88,7 @@ func _pcam_tween_transition(duration: float, pcam_changed_mid_tween: bool = fals
 
 
 func _pcam_tween_property(duration: float) -> void:
-	if _active_pcam._follow_target_offset:
+	if _active_pcam.follow_target_offset:
 		_pcam_tween.parallel().tween_property(camera_base_3D, "position", _active_pcam.get_position(), duration)
 
 	if _active_pcam.has_look_at_target:
@@ -107,7 +103,6 @@ func pcam_tween_complete() -> void:
 
 
 func _process(delta: float) -> void:
-
 	if camera_base_3D:
 		if _pcam_tween_complete:
 			if _active_pcam.has_follow_target:
@@ -118,7 +113,7 @@ func _process(delta: float) -> void:
 					Vector3(_active_pcam.look_at_target_offset.x, _active_pcam.look_at_target_offset.y, 0))
 		elif not _pcam_tween_complete and _pcam_initial_position != _active_pcam.get_position():
 			_pcam_position_changed = true
-			_pcam_tween_transition(_active_pcam.transition_duration)
+			_pcam_tween_transition(_active_pcam.tween_duration)
 
 #		if _active_pcam.has_look_at_target:
 #			if _pcam_tween_complete:
