@@ -1,10 +1,6 @@
 @tool
-extends Node3D
-class_name PhantomCamera3D
-@icon("res://addons/phantom_camera/icons/PhantomCameraIcon.svg")
-
-var _if_pcam_3D: bool = true
-var _if_pcam_2D: bool
+class_name PhantomCamera3D extends Node3D
+@icon("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg")
 
 ##################
 # General - Variables
@@ -108,25 +104,24 @@ func _get_property_list() -> Array:
 		"hint": PROPERTY_HINT_NONE,
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
-	ret.append({
-		"name": _tween_ease_property_name,
-		"type": TYPE_INT,
-		"hint": PROPERTY_HINT_ENUM,
-		"hint_string": tween_ease,
-		"usage": PROPERTY_USAGE_DEFAULT
-	})
-	ret.append({
-		"name": _tween_transition_property_name,
-		"type": TYPE_STRING,
-		"hint": PROPERTY_HINT_ENUM,
-		"usage": PROPERTY_USAGE_DEFAULT
-	})
+#	ret.append({
+#		"name": _tween_transition_property_name,
+#		"type": TYPE_STRING,
+#		"hint": PROPERTY_HINT_ENUM,
+#		"usage": PROPERTY_USAGE_DEFAULT
+#	})
+#	ret.append({
+#		"name": _tween_ease_property_name,
+#		"type": TYPE_INT,
+#		"hint": PROPERTY_HINT_ENUM,
+#		"hint_string": tween_ease,
+#		"usage": PROPERTY_USAGE_DEFAULT
+#	})
 
 	return ret
 
 
 func _set(property: StringName, value) -> bool:
-
 	######################
 	# General - Properties
 	######################
@@ -182,16 +177,15 @@ func _set(property: StringName, value) -> bool:
 	####################
 	if property == _tween_duration_property_name:
 		tween_duration = value
-	if property == _tween_transition_property_name:
-		tween_transition = value
-	if property == _tween_ease_property_name:
-		tween_ease = value
+#	if property == _tween_transition_property_name:
+#		tween_transition = value
+#	if property == _tween_ease_property_name:
+#		tween_ease = value
 
 	return false
 
 
 func _get(property: StringName):
-
 	######################
 	# General - Properties
 	######################
@@ -213,7 +207,8 @@ func _get(property: StringName):
 	# Tween - Properties
 	####################
 	if property == _tween_duration_property_name: return tween_duration
-	if property == _tween_ease_property_name: return tween_ease
+#	if property == _tween_transition_property_name: return tween_transition
+#	if property == _tween_ease_property_name: return tween_ease
 
 
 func _enter_tree() -> void:
@@ -230,7 +225,7 @@ func _exit_tree() -> void:
 	PhantomCameraManager.phantom_camera_removed_from_scene(self)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if follow_target_node:
 
 #		if camera_smoothing == 0:
