@@ -21,8 +21,8 @@ var dock: Control
 func _enter_tree() -> void:
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/phantom_camera_manager.gd")
 
-	add_custom_type(PHANTOM_CAMERA_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera_2D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon.svg"))
-	add_custom_type(PHANTOM_CAMERA_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon.svg"))
+	add_custom_type(PHANTOM_CAMERA_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera_2D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg"))
+	add_custom_type(PHANTOM_CAMERA_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg"))
 
 	add_custom_type(PHANTOM_CAMERA_BASE, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_base.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
 
