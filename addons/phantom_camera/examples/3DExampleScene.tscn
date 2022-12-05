@@ -9,40 +9,68 @@
 [node name="Root" type="Node3D"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-0.847777, -0.43784, 0.299282, 0, 0.564309, 0.825563, -0.530352, 0.699894, -0.478408, 0.357292, 0.5, 7.49149)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.84681, 0.5, 3)
 
 [node name="PhantomCameraBase" type="Node" parent="Camera3D"]
 script = ExtResource("1_qfnt6")
 
-[node name="3DPrototypeCube" parent="." instance=ExtResource("3_f5qrw")]
+[node name="PhantomCamera3D2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.85435, 0.5197, 0, -0.5197, 0.85435, 9.84681, 2.831, 3.832)
+script = ExtResource("2_y3dy8")
+Priority = 16
+"Follow Target" = NodePath("../Model 2")
+"Follow Parameters/Follow Target Offset" = Vector3(0, 2.331, 3.832)
+"Look At Target" = NodePath("../Model 2")
+"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Tween Properties / Duration" = 3.0
+"Tween Properties / Transition" = 10
+"Tween Properties / Ease" = 2
+
+[node name="Floor" parent="." instance=ExtResource("3_f5qrw")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 
 [node name="----------------------------------------------------------" type="Node" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="Model 1" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.357292, 0.5, 4.49149)
 mesh = SubResource("CapsuleMesh_g0eml")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.658, 0.5, 0)
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.357292, 0.5, 7.49149)
+script = ExtResource("2_y3dy8")
+Priority = 1
+"Follow Target" = NodePath("../Model 1")
+"Follow Parameters/Follow Target Offset" = Vector3(0, 0, 3)
+"Look At Target" = NodePath("../Model 1")
+"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Tween Properties / Duration" = 5.0
+"Tween Properties / Transition" = 0
+"Tween Properties / Ease" = 0
+
+[node name="-----------------------------------------------------------" type="Node" parent="."]
+
+[node name="Model 2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.84681, 0.5, 0)
 mesh = SubResource("CapsuleMesh_g0eml")
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(-0.847777, -0.43784, 0.299283, 0, 0.564309, 0.825564, -0.530352, 0.699894, -0.478409, 0.357292, 0.5, 7.49149)
-script = ExtResource("2_y3dy8")
-transition_duration = 3.0
-camera_smoothing = 0.0
-priority = 2
-<null> = null
-<null> = null
-"Follow Parameters/Follow Target Offset" = Vector3(0, 0, 3)
-"Look At Target" = NodePath("")
-
 [node name="PhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.778592, 0.31159, -0.544707, 0, 0.868017, 0.496534, 0.62753, -0.386598, 0.675831, 7.34, 2.613, 2.876)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.84681, 0.5, 3)
 script = ExtResource("2_y3dy8")
-transition_duration = 5.0
-camera_smoothing = 0.0
-<null> = null
-<null> = null
+Priority = 18
+"Follow Target" = NodePath("../Model 2")
+"Follow Parameters/Follow Target Offset" = Vector3(0, 0, 3)
+"Look At Target" = NodePath("../Model 2")
+"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Tween Properties / Duration" = 3.0
+"Tween Properties / Transition" = 6
+"Tween Properties / Ease" = 2
+
+[node name="PhantomCamera3D3" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.55639, 2.842, 6.00709)
+script = ExtResource("2_y3dy8")
+Priority = 1
+"Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
+"Tween Properties / Duration" = 1.0
+"Tween Properties / Transition" = 5
+"Tween Properties / Ease" = 0

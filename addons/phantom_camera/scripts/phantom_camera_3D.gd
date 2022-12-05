@@ -1,12 +1,22 @@
 @tool
-class_name PhantomCamera3D extends Node3D
+class_name PhantomCamera3D
+extends Node3D
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg")
 
-##################
+#####################
 # General - Variables
-##################
+#####################
 var _priority_property_name: StringName = "Priority"
 var priority: int = 1
+const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
+const PHANTOM_CAMERA_BASE_GROUP_NAME: StringName = "phantom_camera_base_group"
+
+##############
+# Phantom base
+##############
+var camera_base_group: Array
+var phantom_camera_base_owner: PhantomCameraBase
+var scene_has_multiple_phantom_camera_bases: bool
 
 ##################
 # Follow - Variables
@@ -33,11 +43,31 @@ var look_at_target_offset: Vector3
 #################
 # Tween - Variables
 #################
-var _tween_ease_property_name: StringName = "Tween Properties / Ease"
-var tween_ease: Tween.EaseType
-
 var _tween_transition_property_name: StringName = "Tween Properties / Transition"
 var tween_transition: Tween.TransitionType
+enum TweenTransitions {
+	TRANS_LINEAR = 0,
+	TRANS_SINE = 1,
+	TRANS_QUINT = 2,
+	TRANS_QUART = 3,
+	TRANS_QUAD = 4,
+	TRANS_EXPO = 5,
+	TRANS_ELASTIC = 6,
+	TRANS_CUBIC = 7,
+	TRANS_CIRC = 8,
+	TRANS_BOUNCE = 9,
+	TRANS_BACK = 10,
+}
+
+
+var _tween_ease_property_name: StringName = "Tween Properties / Ease"
+var tween_ease: Tween.EaseType
+enum TweenEases {
+	EASE_IN = 0,
+	EASE_OUT = 1,
+	EASE_IN_OUT = 2,
+	EASE_OUT_IN = 3,
+}
 
 var _tween_duration_property_name: StringName = "Tween Properties / Duration"
 var tween_duration: float = 1
@@ -45,7 +75,9 @@ var tween_duration: float = 1
 #	TODO - Camera Smoothing
 #@export_range(0, 100, 1, "or_greater") var camera_smoothing: float = 0
 
-
+############
+# Properties
+############
 func _get_property_list() -> Array:
 	var ret: Array
 
@@ -104,20 +136,29 @@ func _get_property_list() -> Array:
 		"hint": PROPERTY_HINT_NONE,
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
-#	ret.append({
-#		"name": _tween_transition_property_name,
-#		"type": TYPE_STRING,
-#		"hint": PROPERTY_HINT_ENUM,
-#		"usage": PROPERTY_USAGE_DEFAULT
-#	})
-#	ret.append({
-#		"name": _tween_ease_property_name,
-#		"type": TYPE_INT,
-#		"hint": PROPERTY_HINT_ENUM,
-#		"hint_string": tween_ease,
-#		"usage": PROPERTY_USAGE_DEFAULT
-#	})
 
+	ret.append({
+		"name": _tween_transition_property_name,
+		"type": TYPE_NIL,
+		"hint_string": "Transition_",
+		"usage": PROPERTY_USAGE_GROUP
+	})
+
+	ret.append({
+		"name": _tween_transition_property_name,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": ",".join(PackedStringArray(TweenTransitions.keys())),
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
+
+	ret.append({
+		"name": _tween_ease_property_name,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": ",".join(PackedStringArray(TweenEases.keys())),
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
 	return ret
 
 
@@ -130,7 +171,12 @@ func _set(property: StringName, value) -> bool:
 			priority = 1
 		else:
 			priority = value
-		PhantomCameraManager.pcam_priority_updated(self)
+
+		if phantom_camera_base_owner:
+			phantom_camera_base_owner.phantom_camera_priority_updated(self)
+		else:
+#			Has no Phantom Camera Base
+			pass
 
 	#####################
 	# Follow - Properties
@@ -177,11 +223,24 @@ func _set(property: StringName, value) -> bool:
 	####################
 	if property == _tween_duration_property_name:
 		tween_duration = value
-#	if property == _tween_transition_property_name:
-#		tween_transition = value
-#	if property == _tween_ease_property_name:
-#		tween_ease = value
-
+	if property == _tween_transition_property_name:
+		match value:
+			Tween.TRANS_LINEAR: 	tween_transition = Tween.TRANS_LINEAR
+			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
+			Tween.TRANS_QUINT: 		tween_transition = Tween.TRANS_QUINT
+			Tween.TRANS_QUART: 		tween_transition = Tween.TRANS_QUART
+			Tween.TRANS_QUAD: 		tween_transition = Tween.TRANS_QUAD
+			Tween.TRANS_EXPO: 		tween_transition = Tween.TRANS_EXPO
+			Tween.TRANS_ELASTIC: 	tween_transition = Tween.TRANS_ELASTIC
+			Tween.TRANS_CUBIC:		tween_transition = Tween.TRANS_CUBIC
+			Tween.TRANS_BOUNCE: 	tween_transition = Tween.TRANS_BOUNCE
+			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
+	if property == _tween_ease_property_name:
+		match value:
+			Tween.EASE_IN: 			tween_ease = Tween.EASE_IN
+			Tween.EASE_OUT: 		tween_ease = Tween.EASE_OUT
+			Tween.EASE_IN_OUT: 		tween_ease = Tween.EASE_IN_OUT
+			Tween.EASE_OUT_IN: 		tween_ease = Tween.EASE_OUT_IN
 	return false
 
 
@@ -207,12 +266,30 @@ func _get(property: StringName):
 	# Tween - Properties
 	####################
 	if property == _tween_duration_property_name: return tween_duration
-#	if property == _tween_transition_property_name: return tween_transition
-#	if property == _tween_ease_property_name: return tween_ease
+	if property == _tween_transition_property_name: return tween_transition
+	if property == _tween_ease_property_name: return tween_ease
 
 
+##############
+# Initializers
+##############
 func _enter_tree() -> void:
-	PhantomCameraManager.phantom_camera_added_to_scene(self)
+	add_to_group("phantom_camera_group")
+
+	camera_base_group = get_tree().get_nodes_in_group(PHANTOM_CAMERA_BASE_GROUP_NAME)
+
+	if camera_base_group.size() > 0:
+		if camera_base_group.size() == 1:
+			phantom_camera_base_owner = camera_base_group[0]
+			phantom_camera_base_owner.phantom_camera_added_to_scene(self)
+			pass
+		else:
+			for camera_base in camera_base_group:
+				print("Multiple PhantomCameraBases in scene")
+	else:
+		print("No camera base added")
+
+	phantom_camera_base_owner.phantom_camera_added_to_scene(self)
 
 	if _look_at_target_path:
 		look_at_target_node = get_node(_look_at_target_path)
@@ -222,9 +299,13 @@ func _enter_tree() -> void:
 #		set_position(follow_target_node.position)
 
 func _exit_tree() -> void:
-	PhantomCameraManager.phantom_camera_removed_from_scene(self)
+	phantom_camera_base_owner.phantom_camera_removed_from_scene(self)
+	print("phantom_camera leaving tree")
 
 
+###########
+# Functions
+###########
 func _physics_process(delta: float) -> void:
 	if follow_target_node:
 

@@ -31,13 +31,13 @@ var phantom_camera_group: Array[Node]
 #		for n in phantom_camera_group:
 #			var _phantom_camera_list_item_instance = phantom_camera_list_item.instantiate()
 #
-#			var _pcam_name: String = n.get_name()
+#			var _phantom_camera_name: String = n.get_name()
 #
-#			var _pcam_follow_target: String = ""
+#			var _phantom_camera_follow_target: String = ""
 #			if n.follow_target_node:
-#				_pcam_follow_target = n.follow_target_node.get_name()
+#				_phantom_camera_follow_target = n.follow_target_node.get_name()
 #
-#			_phantom_camera_list_item_instance.init(_pcam_name, _pcam_follow_target)
+#			_phantom_camera_list_item_instance.init(_phantom_camera_name, _phantom_camera_follow_target)
 #			%PhantomCameraList.add_child(_phantom_camera_list_item_instance)
 #	else:
 #		print("No phantom cameras in tree")

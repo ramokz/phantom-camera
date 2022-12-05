@@ -23,11 +23,17 @@ _global_script_classes=[{
 "class": &"PhantomCamera3D",
 "language": &"GDScript",
 "path": "res://addons/phantom_camera/scripts/phantom_camera_3D.gd"
+}, {
+"base": "Node",
+"class": &"PhantomCameraBase",
+"language": &"GDScript",
+"path": "res://addons/phantom_camera/scripts/phantom_camera_base.gd"
 }]
 _global_script_class_icons={
 "CustomPluginGizmo": "",
-"PhantomCamera2D": "",
-"PhantomCamera3D": "res://addons/phantom_camera/icons/PhantomCameraIcon.svg"
+"PhantomCamera2D": "res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg",
+"PhantomCamera3D": "res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg",
+"PhantomCameraBase": ""
 }
 
 [application]
