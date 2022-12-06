@@ -45,6 +45,7 @@ var look_at_target_offset: Vector3
 #################
 var _tween_transition_property_name: StringName = "Tween Properties / Transition"
 var tween_transition: Tween.TransitionType
+var tween_linear: bool
 enum TweenTransitions {
 	TRANS_LINEAR = 0,
 	TRANS_SINE = 1,
@@ -57,6 +58,7 @@ enum TweenTransitions {
 	TRANS_CIRC = 8,
 	TRANS_BOUNCE = 9,
 	TRANS_BACK = 10,
+	CUSTOM = 11
 }
 
 
@@ -152,13 +154,14 @@ func _get_property_list() -> Array:
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
 
-	ret.append({
-		"name": _tween_ease_property_name,
-		"type": TYPE_INT,
-		"hint": PROPERTY_HINT_ENUM,
-		"hint_string": ",".join(PackedStringArray(TweenEases.keys())),
-		"usage": PROPERTY_USAGE_DEFAULT
-	})
+	if not tween_linear:
+		ret.append({
+			"name": _tween_ease_property_name,
+			"type": TYPE_INT,
+			"hint": PROPERTY_HINT_ENUM,
+			"hint_string": ",".join(PackedStringArray(TweenEases.keys())),
+			"usage": PROPERTY_USAGE_DEFAULT
+		})
 	return ret
 
 
@@ -224,9 +227,13 @@ func _set(property: StringName, value) -> bool:
 	if property == _tween_duration_property_name:
 		tween_duration = value
 	if property == _tween_transition_property_name:
+		tween_linear = false
 		match value:
-			Tween.TRANS_LINEAR: 	tween_transition = Tween.TRANS_LINEAR
+			Tween.TRANS_LINEAR:
+				tween_transition = Tween.TRANS_LINEAR
+				tween_linear = true # Disables Easing property as it has no effect on Linear transitions
 			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
+			Tween.TRANS_SINE: 		tween_transition = Tween.TRANS_SINE
 			Tween.TRANS_QUINT: 		tween_transition = Tween.TRANS_QUINT
 			Tween.TRANS_QUART: 		tween_transition = Tween.TRANS_QUART
 			Tween.TRANS_QUAD: 		tween_transition = Tween.TRANS_QUAD
@@ -235,6 +242,10 @@ func _set(property: StringName, value) -> bool:
 			Tween.TRANS_CUBIC:		tween_transition = Tween.TRANS_CUBIC
 			Tween.TRANS_BOUNCE: 	tween_transition = Tween.TRANS_BOUNCE
 			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
+			11:
+				print("Transition is custom")
+				tween_transition = 11
+		notify_property_list_changed()
 	if property == _tween_ease_property_name:
 		match value:
 			Tween.EASE_IN: 			tween_ease = Tween.EASE_IN
