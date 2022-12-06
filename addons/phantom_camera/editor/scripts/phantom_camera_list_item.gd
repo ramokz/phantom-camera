@@ -1,7 +1,7 @@
 @tool
 extends Node
 
-var phantom_camera_name: String
+var _phantom_camera_name: String
 var _phantom_camer_name_label: Label
 
 var _look_at_target_label: Label
@@ -18,13 +18,13 @@ var _preview: bool
 #@export var _priority_line_edit: NodePath
 #@export var preview_check_button: NodePath
 
-func init(pcam_name: String, pcam_follow_name: String) -> void:
-	phantom_camera_name = pcam_name
-	follow_target_name = pcam_follow_name
+func init(phantom_camera_name: String, phantom_camera_follow_name: String) -> void:
+	_phantom_camera_name = phantom_camera_name
+	follow_target_name = phantom_camera_follow_name
 
 func _ready() -> void:
 	_phantom_camer_name_label = %ListTargetPhantomCameraName.get_child(0).get_child(1) as Label
-	_phantom_camer_name_label.text = phantom_camera_name
+	_phantom_camer_name_label.text = _phantom_camera_name
 
 	if not follow_target_name.is_empty():
 		_follow_target_Label = %ListTargetFollowTarget.get_child(0).get_child(1) as Label
