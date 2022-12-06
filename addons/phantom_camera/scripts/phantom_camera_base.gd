@@ -7,7 +7,7 @@ extends Node
 ##################
 #  General Variables
 var _camera_3D: Camera3D
-var _active_phantom_camera
+var _active_phantom_camera: PhantomCamera3D
 var phantom_camera_list_3D: Array[PhantomCamera3D]
 var _active_phantom_camera_priority: int
 var _active_phantom_camera_has_changed: bool
@@ -100,15 +100,29 @@ func _phantom_camera_tween_transition(duration: float) -> void:
 		_phantom_camera_tween_elasped_time_duration -= _phantom_camera_tween.get_total_elapsed_time()
 		_phantom_camera_tween.kill()
 		_phantom_camera_tween = get_tree().create_tween()
-		_phantom_camera_tween_property(_phantom_camera_tween_elasped_time_duration)
+		_phantom_camera_tween_property(_phantom_camera_tween_elasped_time_duration, _phantom_camera_tween_elasped_time_duration)
 		_phantom_camera_tween.tween_callback(phantom_camera_tween_resetter)
 
 
-func _phantom_camera_tween_property(duration: float) -> void:
+func _phantom_camera_tween_property(duration: float, elapsed_time: float = 0.0) -> void:
 		_phantom_camera_tween.parallel().tween_property(_camera_3D, "position", _active_phantom_camera.get_position(), duration) \
 			.set_trans(_active_phantom_camera.tween_transition) \
 			.set_ease(_active_phantom_camera.tween_ease)
 		_phantom_camera_tween.parallel().tween_property(_camera_3D, "rotation", _active_phantom_camera.get_rotation(), duration)
+#		print(_camera_3D.get_position())
+#		print(_active_phantom_camera.get_position())
+#		print(duration)
+#		print(elapsed_time)
+#		print(_active_phantom_camera.tween_transition)
+#		print(_active_phantom_camera.tween_ease)
+
+		#_camera_3D.position = Tween.interpolate_value(
+		#	_camera_3D.get_position(), _active_phantom_camera.get_position(), \
+		#	elapsed_time, \
+		#	duration,\
+		#	_active_phantom_camera.tween_transition,
+		#	_active_phantom_camera.tween_ease)
+		#_phantom_camera_tween.parallel().tween_property(_camera_3D, "rotation", _active_phantom_camera.get_rotation(), duration)
 
 
 func phantom_camera_tween_resetter() -> void:
@@ -121,3 +135,4 @@ func _physics_process(delta: float) -> void:
 	if not _active_cam_missing and _phantom_camera_tween_complete:
 		_camera_3D.set_position(_active_phantom_camera.get_position())
 		_camera_3D.set_rotation(_active_phantom_camera.get_rotation())
+
