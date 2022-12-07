@@ -1,33 +1,33 @@
 @tool
 extends Node
 
-const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
-const PHANTOM_CAMERA_BASE_GROUP_NAME: StringName = "phantom_camera_base_group"
+#const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
+#const PHANTOM_CAMERA_BASE_GROUP_NAME: StringName = "phantom_camera_base_group"
 
 
 
-var _active_phantom_camera
-var _active_phantom_camera_priority: int = 0
-var phantom_camera_list: Array
-var phantom_camera_base_list: Array
-
-var camera_base_2D: Camera2D
-var camera_base_3D: Camera3D
-var camera_base = preload("res://addons/phantom_camera/scripts/phantom_camera_base.gd")
-
-var _active_phantom_camera_has_changed: bool = false
+#var _active_phantom_camera
+#var _active_phantom_camera_priority: int = 0
+#var phantom_camera_list: Array
+#var phantom_camera_base_list: Array
+#
+#var camera_base_2D: Camera2D
+#var camera_base_3D: Camera3D
+#var camera_base = preload("res://addons/phantom_camera/scripts/phantom_camera_base.gd")
+#
+#var _active_phantom_camera_has_changed: bool = false
 
 ##################
 # Tween Variables
 ##################
-var _phantom_camera_tween: Tween
-var _tween_default_ease: Tween.EaseType
-var _easing: Tween.TransitionType
-
-var _phantom_camera_initial_position
-var _phantom_camera_tween_complete: bool
-var _phantom_camera_position_changed: bool
-var _phantom_camera_tween_elasped_time_duration: float
+#var _phantom_camera_tween: Tween
+#var _tween_default_ease: Tween.EaseType
+#var _easing: Tween.TransitionType
+#
+#var _phantom_camera_initial_position
+#var _phantom_camera_tween_complete: bool
+#var _phantom_camera_position_changed: bool
+#var _phantom_camera_tween_elasped_time_duration: float
 
 
 
