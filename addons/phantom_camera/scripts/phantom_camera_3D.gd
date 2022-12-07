@@ -7,7 +7,7 @@ extends Node3D
 # General - Variables
 #####################
 var _priority_property_name: StringName = "Priority"
-var priority: int = 1
+var _priority: int = 1
 const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
 const PHANTOM_CAMERA_BASE_GROUP_NAME: StringName = "phantom_camera_base_group"
 
@@ -15,7 +15,7 @@ const PHANTOM_CAMERA_BASE_GROUP_NAME: StringName = "phantom_camera_base_group"
 # Phantom base
 ##############
 var camera_base_group: Array
-var phantom_camera_base_owner: PhantomCameraBase
+var phantom_camera_base_owner: PhantomCameraHost3D
 var scene_has_multiple_phantom_camera_bases: bool
 
 ##################
@@ -81,12 +81,12 @@ var tween_duration: float = 1
 # Properties
 ############
 func _get_property_list() -> Array:
-	var ret: Array
+	var property_list: Array
 
 	######################
 	# General - Properties
 	######################
-	ret.append({
+	property_list.append({
 		"name": _priority_property_name,
 		"type": TYPE_INT,
 		"hint": PROPERTY_HINT_NONE,
@@ -96,7 +96,7 @@ func _get_property_list() -> Array:
 	#####################
 	# Follow - Properties
 	#####################
-	ret.append({
+	property_list.append({
 		"name": _follow_target_property_name,
 		"type": TYPE_NODE_PATH,
 		"hint": PROPERTY_HINT_NONE,
@@ -104,7 +104,7 @@ func _get_property_list() -> Array:
 	})
 
 	if has_follow_target:
-		ret.append({
+		property_list.append({
 			"name": _follow_target_offset_property_name,
 			"type": TYPE_VECTOR3,
 			"hint": PROPERTY_HINT_NONE,
@@ -114,7 +114,7 @@ func _get_property_list() -> Array:
 	######################
 	# Look At - Properties
 	######################
-	ret.append({
+	property_list.append({
 		"name": _look_at_target_property_name,
 		"type": TYPE_NODE_PATH,
 		"hint": PROPERTY_HINT_NONE,
@@ -122,7 +122,7 @@ func _get_property_list() -> Array:
 	})
 
 	if has_look_at_target:
-		ret.append({
+		property_list.append({
 			"name": _look_at_target_offset_property_name,
 			"type": TYPE_VECTOR3,
 			"hint": PROPERTY_HINT_NONE,
@@ -132,21 +132,21 @@ func _get_property_list() -> Array:
 	####################
 	# Tween - Properties
 	####################
-	ret.append({
+	property_list.append({
 		"name": _tween_duration_property_name,
 		"type": TYPE_FLOAT,
 		"hint": PROPERTY_HINT_NONE,
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
 
-	ret.append({
+	property_list.append({
 		"name": _tween_transition_property_name,
 		"type": TYPE_NIL,
 		"hint_string": "Transition_",
 		"usage": PROPERTY_USAGE_GROUP
 	})
 
-	ret.append({
+	property_list.append({
 		"name": _tween_transition_property_name,
 		"type": TYPE_INT,
 		"hint": PROPERTY_HINT_ENUM,
@@ -155,14 +155,14 @@ func _get_property_list() -> Array:
 	})
 
 	if not tween_linear:
-		ret.append({
+		property_list.append({
 			"name": _tween_ease_property_name,
 			"type": TYPE_INT,
 			"hint": PROPERTY_HINT_ENUM,
 			"hint_string": ",".join(PackedStringArray(TweenEases.keys())),
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
-	return ret
+	return property_list
 
 
 func _set(property: StringName, value) -> bool:
@@ -170,16 +170,7 @@ func _set(property: StringName, value) -> bool:
 	# General - Properties
 	######################
 	if property == _priority_property_name:
-		if value < 1:
-			priority = 1
-		else:
-			priority = value
-
-		if phantom_camera_base_owner:
-			phantom_camera_base_owner.phantom_camera_priority_updated(self)
-		else:
-#			Has no Phantom Camera Base
-			pass
+		set_priority(value)
 
 	#####################
 	# Follow - Properties
@@ -259,7 +250,7 @@ func _get(property: StringName):
 	######################
 	# General - Properties
 	######################
-	if property == _priority_property_name: return priority
+	if property == _priority_property_name: return _priority
 
 	#####################
 	# Follow - Properties
@@ -282,7 +273,7 @@ func _get(property: StringName):
 
 
 ##############
-# Initializers
+# Private Functions
 ##############
 func _enter_tree() -> void:
 	add_to_group("phantom_camera_group")
@@ -307,16 +298,13 @@ func _enter_tree() -> void:
 
 	if _follow_target_path:
 		follow_target_node = get_node(_follow_target_path)
-#		set_position(follow_target_node.position)
+
 
 func _exit_tree() -> void:
 	phantom_camera_base_owner.phantom_camera_removed_from_scene(self)
 	print("phantom_camera leaving tree")
 
 
-###########
-# Functions
-###########
 func _physics_process(delta: float) -> void:
 	if follow_target_node:
 
@@ -334,3 +322,21 @@ func _physics_process(delta: float) -> void:
 #			)
 	if look_at_target_node:
 		look_at(look_at_target_node.position)
+
+##################
+# Public Functions
+##################
+func set_priority(value: int) -> void:
+	if value < 1:
+		_priority = 1
+	else:
+		_priority = value
+
+	if phantom_camera_base_owner:
+		phantom_camera_base_owner.phantom_camera_priority_updated(self)
+	else:
+#			TODO - Add logic to handle Phantom Camera Base in scene
+		pass
+
+func get_priority() -> int:
+	return _priority

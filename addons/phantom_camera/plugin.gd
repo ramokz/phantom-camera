@@ -4,6 +4,7 @@ extends EditorPlugin
 const PHANTOM_CAMERA_MANAGER: String = "PhantomCameraManager"
 const PHANTOM_CAMERA_BASE: String = "PhantomCameraBase"
 const PHANTOM_CAMERA_3D: String = "PhantomCamera3D"
+const PHANTOM_CAMERA_HOST_3D: String = "PhantomCameraHost3D"
 const PHANTOM_CAMERA_2D: String = "PhantomCamera2D"
 
 const PhantomCamera2DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_2D.gd")
@@ -25,6 +26,7 @@ func _enter_tree() -> void:
 	add_custom_type(PHANTOM_CAMERA_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg"))
 
 	add_custom_type(PHANTOM_CAMERA_BASE, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_base.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
+	add_custom_type(PHANTOM_CAMERA_HOST_3D, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
 
 	add_node_3d_gizmo_plugin(phantom_camera_2D_gizmo_plugin)
 	add_node_3d_gizmo_plugin(phantom_camera_3D_gizmo_plugin)
@@ -46,6 +48,7 @@ func _exit_tree() -> void:
 	remove_custom_type(PHANTOM_CAMERA_2D)
 	remove_custom_type(PHANTOM_CAMERA_3D)
 	remove_custom_type(PHANTOM_CAMERA_BASE)
+	remove_custom_type(PHANTOM_CAMERA_HOST_3D)
 
 	remove_node_3d_gizmo_plugin(phantom_camera_2D_gizmo_plugin)
 	remove_node_3d_gizmo_plugin(phantom_camera_3D_gizmo_plugin)
