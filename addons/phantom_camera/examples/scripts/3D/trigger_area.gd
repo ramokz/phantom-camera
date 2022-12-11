@@ -1,6 +1,14 @@
 extends Area3D
 
+@export var area_pcam: PhantomCamera3D
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	connect("area_entered", _entered_area)
+	connect("area_exited", _exited_area)
+
+
+func _entered_area(area_3D: Area3D) -> void:
+	area_pcam.set_priority(20)
+
+func _exited_area(area_3D: Area3D) -> void:
+	area_pcam.set_priority(1)
