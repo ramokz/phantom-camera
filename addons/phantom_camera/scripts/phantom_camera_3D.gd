@@ -250,8 +250,9 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	phantom_camera_host_owner.phantom_camera_removed_from_scene(self)
-	print("phantom_camera leaving tree")
+	if phantom_camera_host_owner:
+		phantom_camera_host_owner.phantom_camera_removed_from_scene(self)
+		print("phantom_camera leaving tree")
 
 
 func _physics_process(delta: float) -> void:
