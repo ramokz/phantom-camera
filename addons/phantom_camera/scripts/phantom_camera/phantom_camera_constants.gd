@@ -1,18 +1,22 @@
 extends RefCounted
 
+const PhantomCameraVariables = preload("phantom_camera_variables.gd")
+const PhantomCameraHost = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
+
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
 const PHANTOM_CAMERA_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"
 
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
-const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = "Follow Parameters/Follow Target Offset"
 
-
+const FOLLOW_PARAMETERS_STRINGNAME: StringName = "Follow Parameters/"
+const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_STRINGNAME + "Follow Target Offset"
 
 # TWEEN Variables
-const TWEEN_TRANSITION_PROPERTY_NAME: StringName = "Tween Properties / Transition"
-const TWEEN_EASE_PROPERTY_NAME: StringName = "Tween Properties / Ease"
-const TWEEN_DURATION_PROPERTY_NAME: StringName = "Tween Properties / Duration"
+const TWEEN_CATEGORY_NAME: StringName = "Tween Propertieszz/"
+const TWEEN_TRANSITION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Transition"
+const TWEEN_EASE_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Ease"
+const TWEEN_DURATION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Duration"
 
 enum TweenTransitions {
 	TRANS_LINEAR = 0,
