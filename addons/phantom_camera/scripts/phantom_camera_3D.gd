@@ -12,12 +12,17 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 # Look At - Variables
 #####################
 const _look_at_target_property_name: StringName = "Look At Target"
-var look_at_target_node: Node
+var look_at_target_node: Node3D
 var _look_at_target_path: NodePath
 var has_look_at_target: bool = false
 
 const _look_at_target_offset_property_name: StringName = "Look At Parameters/Look At Target Offset"
 var look_at_target_offset: Vector3
+
+
+#func _init() -> void:
+
+#	Properties.follow_target_offset = Vector3.ZERO
 
 ############
 # Properties
@@ -121,7 +126,6 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	if Properties.phantom_camera_host_owner:
 		Properties.phantom_camera_host_owner.phantom_camera_removed_from_scene(self)
-		print("phantom_camera leaving tree")
 
 
 func _physics_process(delta: float) -> void:

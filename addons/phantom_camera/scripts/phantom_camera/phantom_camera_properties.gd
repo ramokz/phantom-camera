@@ -28,11 +28,8 @@ var tween_ease: Tween.EaseType
 
 var tween_duration: float = 1
 
-var is_3D: bool = true
+var is_2D: bool
 
-
-#func _init() -> void:
-#	print("Hiii")
 
 func add_priority_properties() -> Array:
 	var _property_list: Array
@@ -46,6 +43,7 @@ func add_priority_properties() -> Array:
 
 	return _property_list
 
+
 func add_follow_properties() -> Array:
 	var _property_list: Array
 
@@ -57,22 +55,23 @@ func add_follow_properties() -> Array:
 	})
 
 	if has_follow_target:
-		if is_3D:
+		if is_2D:
+			_property_list.append({
+				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
+				"type": TYPE_VECTOR2,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT
+			})
+		else:
 			_property_list.append({
 				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
 				"type": TYPE_VECTOR3,
 				"hint": PROPERTY_HINT_NONE,
 				"usage": PROPERTY_USAGE_DEFAULT
 			})
-#		else:
-#			_property_list.append({
-#				"name": PhantomCameraConstants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-#				"type": TYPE_VECTOR2,
-#				"hint": PROPERTY_HINT_NONE,
-#				"usage": PROPERTY_USAGE_DEFAULT
-#			})
 
 	return _property_list
+
 
 func add_tween_properties() -> Array:
 	var _property_list: Array
@@ -113,29 +112,43 @@ func add_tween_properties() -> Array:
 
 	return _property_list
 
+
 #func set_priority_property(property: StringName, value, pcam: Node):
 #	if property == Constants.PRIORITY_PROPERTY_NAME:
 #		set_priority(value, pcam, phantom_camera_host_owner)
+
 
 func set_follow_properties(property: StringName, value, phantom_camera: Node):
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME:
 		follow_target_path = value
 		var valueNodePath: NodePath = value as NodePath
 		if not valueNodePath.is_empty():
+			_reset_follow_target_offset()
+
 			has_follow_target = true
 			if phantom_camera.has_node(follow_target_path):
 				follow_target_node = phantom_camera.get_node(follow_target_path)
 		else:
+			_reset_follow_target_offset()
 			has_follow_target = false
 			follow_target_node = null
-
 		phantom_camera.notify_property_list_changed()
+
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
-		if value == Vector3.ZERO:
-			printerr("Follow Offset cannot be 0,0,0, resetting to 0,0,1")
-			follow_target_offset = Vector3(0,0,1)
-		else:
+		if value is Vector3:
+			if value == Vector3.ZERO:
+				printerr("Follow Offset cannot be 0,0,0, resetting to 0,0,1")
+				follow_target_offset = Vector3(0,0,1)
+			else:
+				follow_target_offset = value
+		elif value is Vector2:
 			follow_target_offset = value
+
+func _reset_follow_target_offset() -> void:
+	if is_2D:
+		follow_target_offset = Vector2.ZERO
+	else:
+		follow_target_offset = Vector3.ZERO
 
 func set_tween_properties(property: StringName, value, phantom_camera):
 	####################

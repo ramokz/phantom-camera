@@ -1,19 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://drum4kurlccca"]
+[gd_scene load_steps=4 format=3 uid="uid://dyhjn80ltm86i"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_base.gd" id="1_7hhgo"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
+[ext_resource type="Texture2D" uid="uid://dsk4q5b4asbas" path="res://icon.svg" id="2_ic1vx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_2D.gd" id="2_mgsut"]
 
 [node name="Node2D" type="Node2D"]
-position = Vector2(-1, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(596, 324)
+position = Vector2(776, 453)
+current = true
 
-[node name="PhantomCameraBase" type="Node" parent="Camera2D"]
-script = ExtResource("1_7hhgo")
+[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+script = ExtResource("1_eayfa")
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(92, 247)
+texture = ExtResource("2_ic1vx")
+
+[node name="Icon2" type="Sprite2D" parent="."]
+position = Vector2(808, 140)
+texture = ExtResource("2_ic1vx")
+
+[node name="Icon3" type="Sprite2D" parent="."]
+position = Vector2(283, 496)
+texture = ExtResource("2_ic1vx")
 
 [node name="PhantomCamera2D" type="Node2D" parent="."]
-position = Vector2(259, 211)
+position = Vector2(92, 247)
 script = ExtResource("2_mgsut")
-follow_offset = Vector2(0, 0)
-look_offset = Vector2(0, 0)
+Priority = 0
+"Follow Target" = NodePath("../Icon")
+"Follow Parameters/Follow Target Offset" = Vector2(0, 0)
+"Tween Properties/Duration" = 1.0
+"Tween Properties/Transition" = 0
