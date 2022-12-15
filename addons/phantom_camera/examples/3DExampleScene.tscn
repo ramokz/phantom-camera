@@ -1,6 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://bfoddyw5rcj6q"]
+[gd_scene load_steps=11 format=3 uid="uid://bpi3kf8qtn4py"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host_3D.gd" id="1_ilukb"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host_3D.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/Models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="4_moad5"]
@@ -20,12 +20,13 @@ size = Vector3(2, 0.1, 2)
 size = Vector3(3, 1, 3)
 
 [node name="Root" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0127372, 3.5, 7.32989)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -0.0127372, 3.5, 7.32989)
+transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.846381, -0.0127372, 3.5, 7.32989)
 
 [node name="PhantomCameraHost3D" type="Node" parent="Camera3D"]
-script = ExtResource("1_ilukb")
+script = ExtResource("1_1ouug")
 
 [node name="Floor" parent="." instance=ExtResource("3_f5qrw")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
@@ -33,22 +34,23 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 [node name="----------------------------------------------------------" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -0.0127372, 3.5, 7.32989)
+transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.846381, -0.0127372, 3.5, 7.32989)
 script = ExtResource("2_y3dy8")
-Priority = 3
+Priority = 1
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
 "Follow Parameters/Follow Target Offset" = Vector3(0, 3, 3)
 "Look At Target" = NodePath("../PlayerCharacterBody3D")
 "Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
-"Tween Properties / Duration" = 1.0
-"Tween Properties / Transition" = 1
-"Tween Properties / Ease" = 0
+"Tween Properties/Duration" = 1.0
+"Tween Properties/Transition" = 1
+"Tween Properties/Ease" = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0127372, 0.5, 4.32989)
 script = ExtResource("5_c85ys")
 
 [node name="PlayerMeshInstance" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, 0, 0, 0)
 mesh = SubResource("CapsuleMesh_g0eml")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_flw6w")
@@ -68,10 +70,9 @@ transform = Transform3D(0.999978, 0.00625297, -0.00198618, 0, 0.302733, 0.953075
 script = ExtResource("2_y3dy8")
 Priority = 1
 "Follow Target" = NodePath("")
-"Look At Target" = NodePath("../Area3D")
-"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
-"Tween Properties / Duration" = 1.0
-"Tween Properties / Transition" = 0
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 1.0
+"Tween Properties/Transition" = 0
 
 [node name="Area3D" type="Area3D" parent="." node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00365114, 0, 0.126347)
