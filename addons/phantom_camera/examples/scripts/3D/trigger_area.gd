@@ -11,4 +11,4 @@ func _entered_area(area_3D: Area3D) -> void:
 	area_pcam.set_priority(20)
 
 func _exited_area(area_3D: Area3D) -> void:
-	area_pcam.set_priority(1)
+	area_pcam.set_priority(0)
