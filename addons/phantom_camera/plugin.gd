@@ -3,6 +3,8 @@ extends EditorPlugin
 
 #const PHANTOM_CAMERA_MANAGER: String = "PhantomCameraManager"
 
+const PHANTOM_CAMERA_HOST: String = "PhantomCameraHost"
+
 const PHANTOM_CAMERA_2D: String = "PhantomCamera2D"
 const PHANTOM_CAMERA_HOST_2D: String = "PhantomCameraHost2D"
 
@@ -27,6 +29,7 @@ func _enter_tree() -> void:
 	add_custom_type(PHANTOM_CAMERA_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera_2D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg"))
 	add_custom_type(PHANTOM_CAMERA_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg"))
 
+	add_custom_type(PHANTOM_CAMERA_HOST, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
 	add_custom_type(PHANTOM_CAMERA_HOST_2D, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host_2D.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
 	add_custom_type(PHANTOM_CAMERA_HOST_3D, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
 

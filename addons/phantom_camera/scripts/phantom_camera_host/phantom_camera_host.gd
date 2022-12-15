@@ -1,4 +1,5 @@
 @tool
+class_name PhantomCameraHost
 extends Node
 
 ##################
@@ -94,9 +95,14 @@ func _find_phantom_camera_with_highest_priority(should_animate: bool = true) -> 
 func _process(delta: float) -> void:
 	if _active_cam_missing: return
 	if not should_tween:
-		camera.set_position(_active_phantom_camera.get_position())
-		camera.set_rotation(_active_phantom_camera.get_rotation())
-		pass
+		if camera is Camera3D:
+			camera.set_position(_active_phantom_camera.get_position())
+			camera.set_rotation(_active_phantom_camera.get_rotation())
+		elif camera is Camera2D:
+			pass
+#			camera.set_global_position(_active_phantom_camera.get_global_position())
+#			camera.set_global_rotation(_active_phantom_camera.get_global_rotation())
+			pass
 	else:
 		if tween_duration < _active_phantom_camera.get_tween_duration():
 			_move_target(delta)

@@ -20,10 +20,9 @@ size = Vector3(2, 0.1, 2)
 size = Vector3(3, 1, 3)
 
 [node name="Root" type="Node3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0127372, 3.5, 7.32989)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.846381, -0.0127372, 3.5, 7.32989)
+transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.84638, -0.0127372, 3.5, 7.32989)
 
 [node name="PhantomCameraHost3D" type="Node" parent="Camera3D"]
 script = ExtResource("1_1ouug")
@@ -36,11 +35,10 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.846381, -0.0127372, 3.5, 7.32989)
 script = ExtResource("2_y3dy8")
-Priority = 1
+Priority = 3
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
 "Follow Parameters/Follow Target Offset" = Vector3(0, 3, 3)
-"Look At Target" = NodePath("../PlayerCharacterBody3D")
-"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Look At Target" = NodePath("")
 "Tween Properties/Duration" = 1.0
 "Tween Properties/Transition" = 1
 "Tween Properties/Ease" = 0
@@ -66,11 +64,12 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 [node name="-----------------------------------------------------------" type="Node" parent="."]
 
 [node name="AreaPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.999978, 0.00625297, -0.00198618, 0, 0.302733, 0.953075, 0.00656083, -0.953055, 0.302726, -0.00998449, 6.54311, 2.20464)
+transform = Transform3D(0.999999, 0, 0, 0, 0.268619, 0.963246, 0, -0.963246, 0.268619, 0, 5.833, 1.62664)
 script = ExtResource("2_y3dy8")
 Priority = 1
 "Follow Target" = NodePath("")
-"Look At Target" = NodePath("")
+"Look At Target" = NodePath("../Node3D")
+"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
 "Tween Properties/Duration" = 1.0
 "Tween Properties/Transition" = 0
 
@@ -94,3 +93,5 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -0.000132173, -0.154535, -0.602159)
 text = "Zone Trigger"
 font_size = 64
+
+[node name="Node3D" type="Node3D" parent="."]
