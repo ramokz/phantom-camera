@@ -6,7 +6,7 @@ extends Node
 # Variables
 ##################
 #  General Variables
-var _active_phantom_camera_priority: int
+var _active_phantom_camera_priority: int = -1
 var _active_cam_missing: bool
 
 # Tweening Variables
@@ -41,29 +41,6 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	remove_from_group(PHANTOM_CAMERA_HOST_GROUP_NAME)
 
-func _move_target(delta: float) -> void:
-	tween_duration += delta
-	camera.set_position(
-		Tween.interpolate_value(
-			_previous_active_phantom_camera_position, \
-			_active_phantom_camera.get_position() - _previous_active_phantom_camera_position,
-			tween_duration, \
-			_active_phantom_camera.get_tween_duration(), \
-			_active_phantom_camera.get_tween_transition(),
-			Tween.EASE_IN_OUT
-		)
-	)
-	camera.set_rotation(
-		Tween.interpolate_value(
-			_previous_active_phantom_camera_rotation, \
-			_active_phantom_camera.get_rotation() - _previous_active_phantom_camera_rotation,
-			tween_duration, \
-			_active_phantom_camera.get_tween_duration(), \
-			_active_phantom_camera.get_tween_transition(),
-			Tween.EASE_IN_OUT
-		)
-	)
-
 func _assign_new_active_phantom_camera(phantom_camera: Node) -> void:
 	var no_previous_pcam: bool
 
@@ -92,6 +69,29 @@ func _find_phantom_camera_with_highest_priority(should_animate: bool = true) -> 
 
 		_active_cam_missing = false
 
+func _move_target(delta: float) -> void:
+	tween_duration += delta
+	camera.set_position(
+		Tween.interpolate_value(
+			_previous_active_phantom_camera_position, \
+			_active_phantom_camera.get_position() - _previous_active_phantom_camera_position,
+			tween_duration, \
+			_active_phantom_camera.get_tween_duration(), \
+			_active_phantom_camera.get_tween_transition(),
+			Tween.EASE_IN_OUT
+		)
+	)
+	camera.set_rotation(
+		Tween.interpolate_value(
+			_previous_active_phantom_camera_rotation, \
+			_active_phantom_camera.get_rotation() - _previous_active_phantom_camera_rotation,
+			tween_duration, \
+			_active_phantom_camera.get_tween_duration(), \
+			_active_phantom_camera.get_tween_transition(),
+			Tween.EASE_IN_OUT
+		)
+	)
+
 func _process(delta: float) -> void:
 	if _active_cam_missing: return
 	if not should_tween:
@@ -99,10 +99,8 @@ func _process(delta: float) -> void:
 			camera.set_position(_active_phantom_camera.get_position())
 			camera.set_rotation(_active_phantom_camera.get_rotation())
 		elif camera is Camera2D:
-			pass
-#			camera.set_global_position(_active_phantom_camera.get_global_position())
-#			camera.set_global_rotation(_active_phantom_camera.get_global_rotation())
-			pass
+			camera.set_global_position(_active_phantom_camera.get_global_position())
+			camera.set_global_rotation(_active_phantom_camera.get_global_rotation())
 	else:
 		if tween_duration < _active_phantom_camera.get_tween_duration():
 			_move_target(delta)
@@ -124,7 +122,7 @@ func phantom_camera_removed_from_scene(phantom_camera) -> void:
 	_phantom_camera_list.erase(phantom_camera)
 	if phantom_camera == _active_phantom_camera:
 		_active_cam_missing = true
-		_active_phantom_camera_priority = 0
+		_active_phantom_camera_priority = -1
 		_find_phantom_camera_with_highest_priority()
 
 

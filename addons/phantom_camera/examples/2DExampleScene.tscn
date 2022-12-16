@@ -1,35 +1,56 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyhjn80ltm86i"]
+[gd_scene load_steps=7 format=3 uid="uid://dyhjn80ltm86i"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
 [ext_resource type="Texture2D" uid="uid://dsk4q5b4asbas" path="res://icon.svg" id="2_ic1vx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_2D.gd" id="2_mgsut"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xj4ar"]
+size = Vector2(80, 180)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_166sx"]
+size = Vector2(1150, 80)
 
 [node name="Node2D" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(776, 453)
+position = Vector2(558, 312)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("1_eayfa")
-
-[node name="Icon" type="Sprite2D" parent="."]
-position = Vector2(92, 247)
-texture = ExtResource("2_ic1vx")
 
 [node name="Icon2" type="Sprite2D" parent="."]
 position = Vector2(808, 140)
 texture = ExtResource("2_ic1vx")
 
 [node name="Icon3" type="Sprite2D" parent="."]
-position = Vector2(283, 496)
+position = Vector2(585, 497)
 texture = ExtResource("2_ic1vx")
 
 [node name="PhantomCamera2D" type="Node2D" parent="."]
-position = Vector2(92, 247)
+position = Vector2(558, 312)
 script = ExtResource("2_mgsut")
 Priority = 0
-"Follow Target" = NodePath("../Icon")
+"Follow Target" = NodePath("../CharacterBody2D")
 "Follow Parameters/Follow Target Offset" = Vector2(0, 0)
 "Tween Properties/Duration" = 1.0
 "Tween Properties/Transition" = 0
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(558, 312)
+script = ExtResource("4_jnuod")
+metadata/_edit_group_ = true
+
+[node name="Icon" type="Sprite2D" parent="CharacterBody2D"]
+texture = ExtResource("2_ic1vx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("RectangleShape2D_xj4ar")
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(557, 595)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_166sx")

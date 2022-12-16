@@ -25,17 +25,13 @@ func _set(property: StringName, value) -> bool:
 	if property == Constants.PRIORITY_PROPERTY_NAME:
 		Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
 
-
 	Properties.set_follow_properties(property, value, self)
-
-
 	Properties.set_tween_properties(property, value, self)
 
 	return false
 
 
 func _get(property: StringName):
-
 #	return PhantomCameraProperties.get_properties(property)
 	######################
 	# General - Properties
@@ -81,11 +77,14 @@ func _physics_process(delta: float) -> void:
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
 
+
 func get_priority() -> int:
 	return Properties.priority
 
+
 func get_tween_duration() -> float:
 	return Properties.tween_duration
+
 
 func get_tween_transition() -> int:
 	return Properties.tween_transition

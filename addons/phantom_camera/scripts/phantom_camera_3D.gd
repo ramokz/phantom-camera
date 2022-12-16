@@ -111,6 +111,7 @@ func _get(property: StringName):
 	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: return Properties.tween_transition
 	if property == Constants.TWEEN_EASE_PROPERTY_NAME: return Properties.tween_ease
 
+
 ###################
 # Private Functions
 ###################
@@ -142,11 +143,14 @@ func _physics_process(delta: float) -> void:
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
 
+
 func get_priority() -> int:
 	return Properties.priority
 
+
 func get_tween_duration() -> float:
 	return Properties.tween_duration
+
 
 func get_tween_transition() -> int:
 	return Properties.tween_transition
