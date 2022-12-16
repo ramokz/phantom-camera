@@ -1,7 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://bpi3kf8qtn4py"]
+[gd_scene load_steps=11 format=3 uid="uid://sbscq77w8x23"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host_3D.gd" id="1_1ouug"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_3D.gd" id="2_y3dy8"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/Models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
@@ -24,7 +24,7 @@ size = Vector3(3, 1, 3)
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.84638, -0.0127372, 3.5, 7.32989)
 
-[node name="PhantomCameraHost3D" type="Node" parent="Camera3D"]
+[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
 script = ExtResource("1_1ouug")
 
 [node name="Floor" parent="." instance=ExtResource("3_f5qrw")]

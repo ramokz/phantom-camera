@@ -17,35 +17,23 @@ _global_script_classes=[{
 "base": "Node2D",
 "class": &"PhantomCamera2D",
 "language": &"GDScript",
-"path": "res://addons/phantom_camera/scripts/phantom_camera_2D.gd"
+"path": "res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd"
 }, {
 "base": "Node3D",
 "class": &"PhantomCamera3D",
 "language": &"GDScript",
-"path": "res://addons/phantom_camera/scripts/phantom_camera_3D.gd"
+"path": "res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd"
 }, {
 "base": "Node",
 "class": &"PhantomCameraHost",
 "language": &"GDScript",
 "path": "res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"
-}, {
-"base": "Node",
-"class": &"PhantomCameraHost2D",
-"language": &"GDScript",
-"path": "res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host_2D.gd"
-}, {
-"base": "Node",
-"class": &"PhantomCameraHost3D",
-"language": &"GDScript",
-"path": "res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host_3D.gd"
 }]
 _global_script_class_icons={
 "CustomPluginGizmo": "",
 "PhantomCamera2D": "res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg",
 "PhantomCamera3D": "res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg",
-"PhantomCameraHost": "",
-"PhantomCameraHost2D": "",
-"PhantomCameraHost3D": ""
+"PhantomCameraHost": ""
 }
 
 [application]

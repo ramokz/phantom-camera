@@ -27,6 +27,7 @@ var _previous_active_phantom_camera_rotation
 var should_tween: bool
 var tween_duration: float
 
+
 func _enter_tree() -> void:
 	camera = get_parent()
 	if camera is Camera3D or camera is Camera2D:
@@ -40,6 +41,7 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_from_group(PHANTOM_CAMERA_HOST_GROUP_NAME)
+
 
 func _assign_new_active_phantom_camera(phantom_camera: Node) -> void:
 	var no_previous_pcam: bool
@@ -69,6 +71,7 @@ func _find_phantom_camera_with_highest_priority(should_animate: bool = true) -> 
 
 		_active_cam_missing = false
 
+
 func _move_target(delta: float) -> void:
 	tween_duration += delta
 	camera.set_position(
@@ -91,6 +94,7 @@ func _move_target(delta: float) -> void:
 			Tween.EASE_IN_OUT
 		)
 	)
+
 
 func _process(delta: float) -> void:
 	if _active_cam_missing: return

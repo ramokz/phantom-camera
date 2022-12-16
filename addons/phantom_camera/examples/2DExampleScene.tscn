@@ -1,8 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dyhjn80ltm86i"]
+[gd_scene load_steps=7 format=3 uid="uid://7mfjsp87f1gr"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
 [ext_resource type="Texture2D" uid="uid://dsk4q5b4asbas" path="res://icon.svg" id="2_ic1vx"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_2D.gd" id="2_mgsut"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xj4ar"]
