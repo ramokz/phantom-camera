@@ -4,7 +4,6 @@ extends Node2D
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg")
 
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const Utils: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_utils.gd")
 
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
@@ -54,10 +53,9 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
-#	PhantomCameraProperties = PhantomCameraVariables.new()
 	Properties.is_2D = true;
-	Properties.phantom_camera_host_owner = Utils.assign_phantom_camera_host(self)
-	Utils.enter_tree(self)
+	Properties.enter_tree(self)
+	Properties.assign_phantom_camera_host(self)
 
 
 func _exit_tree() -> void:

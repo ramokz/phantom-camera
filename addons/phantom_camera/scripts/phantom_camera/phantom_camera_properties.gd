@@ -31,6 +31,11 @@ var tween_duration: float = 1
 var is_2D: bool
 
 
+func enter_tree(phantom_camera: Node):
+	phantom_camera.add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
+	if phantom_camera.Properties.follow_target_path:
+		phantom_camera.Properties.follow_target_node = phantom_camera.get_node(phantom_camera.Properties.follow_target_path)
+
 func add_priority_properties() -> Array:
 	var _property_list: Array
 

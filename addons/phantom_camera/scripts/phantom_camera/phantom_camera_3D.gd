@@ -4,7 +4,6 @@ extends Node3D
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg")
 
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const Utils: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_utils.gd")
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
@@ -107,7 +106,7 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
-	Utils.enter_tree(self)
+	Properties.enter_tree(self)
 	Properties.assign_phantom_camera_host(self)
 	if _look_at_target_path:
 		look_at_target_node = get_node(_look_at_target_path)
