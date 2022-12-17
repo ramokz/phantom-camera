@@ -3,9 +3,10 @@ extends RefCounted
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const PhantomCameraProperties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd")
+const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 const PhantomCameraHost = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
-var phantom_camera_host_owner
+var phantom_camera_host_owner: PhantomCameraHost
 
 var priority: int = 0
 
@@ -113,9 +114,9 @@ func add_tween_properties() -> Array:
 	return _property_list
 
 
-#func set_priority_property(property: StringName, value, pcam: Node):
-#	if property == Constants.PRIORITY_PROPERTY_NAME:
-#		set_priority(value, pcam, phantom_camera_host_owner)
+func set_priority_property(property: StringName, value, phantom_camera: Node):
+	if property == Constants.PRIORITY_PROPERTY_NAME:
+		set_priority(value, phantom_camera)
 
 
 func set_follow_properties(property: StringName, value, phantom_camera: Node):
@@ -144,11 +145,13 @@ func set_follow_properties(property: StringName, value, phantom_camera: Node):
 		elif value is Vector2:
 			follow_target_offset = value
 
+
 func _reset_follow_target_offset() -> void:
 	if is_2D:
 		follow_target_offset = Vector2.ZERO
 	else:
 		follow_target_offset = Vector3.ZERO
+
 
 func set_tween_properties(property: StringName, value, phantom_camera):
 	####################
@@ -183,18 +186,33 @@ func set_tween_properties(property: StringName, value, phantom_camera):
 			Tween.EASE_OUT_IN: 		tween_ease = Tween.EASE_OUT_IN
 
 
-func set_priority(value: int, phantom_camera, phantom_camera_host: PhantomCameraHost) -> void:
+func set_priority(value: int, phantom_camera: Node) -> void:
 	if value < 0:
 		printerr("Phantom Camera's priority cannot be less than 0")
 		priority = 0
 	else:
 		priority = value
 
-	if phantom_camera_host:
-		phantom_camera_host.phantom_camera_priority_updated(phantom_camera)
-	else:
-#		TODO - Add logic to handle Phantom Camera Host in scene
-		pass
+	if phantom_camera_host_owner:
+		phantom_camera_host_owner.phantom_camera_priority_updated(phantom_camera)
+#	else:
+##		TODO - Add logic to handle Phantom Camera Host in scene
+#		printerr("Trying to change priority without a Phantom Camera Host - Please attached one to a Camera3D")
+#		pass
+
+
+func assign_phantom_camera_host(phantom_camera: Node):
+	camera_host_group = phantom_camera.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+
+	if phantom_camera.Properties.camera_host_group.size() > 0:
+		if phantom_camera.Properties.camera_host_group.size() == 1:
+			phantom_camera_host_owner = phantom_camera.Properties.camera_host_group[0]
+			phantom_camera_host_owner.phantom_camera_added_to_scene(phantom_camera)
+		else:
+			for camera_host in phantom_camera.Properties.camera_host_group:
+				print("Multiple PhantomCameraBases in scene")
+				return null
+	return null
 
 # NOTE - Throws an error at the minute, needs to find a reusable solution
 #func get_properties(property: StringName):

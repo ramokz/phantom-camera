@@ -20,10 +20,6 @@ const _look_at_target_offset_property_name: StringName = "Look At Parameters/Loo
 var look_at_target_offset: Vector3
 
 
-#func _init() -> void:
-
-#	Properties.follow_target_offset = Vector3.ZERO
-
 ############
 # Properties
 ############
@@ -57,11 +53,7 @@ func _get_property_list() -> Array:
 
 
 func _set(property: StringName, value) -> bool:
-	if property == Constants.PRIORITY_PROPERTY_NAME:
-		Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
-
-#	Properties.set_priority_property(property, value, self)
-
+	Properties.set_priority_property(property, value, self)
 	Properties.set_follow_properties(property, value, self)
 
 	if property == _look_at_target_property_name:
@@ -85,10 +77,9 @@ func _set(property: StringName, value) -> bool:
 
 
 func _get(property: StringName):
-
 #	return PhantomCameraProperties.get_properties(property)
 	######################
-	# General - Properties
+	# Priority - Properties
 	######################
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
 
@@ -116,10 +107,8 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
-#	PhantomCameraProperties = PhantomCameraVariables.new()
-	Properties.phantom_camera_host_owner = Utils.assign_phantom_camera_host(self)
 	Utils.enter_tree(self)
-
+	Properties.assign_phantom_camera_host(self)
 	if _look_at_target_path:
 		look_at_target_node = get_node(_look_at_target_path)
 
@@ -140,8 +129,12 @@ func _physics_process(delta: float) -> void:
 ##################
 # Public Functions
 ##################
+func assign_phantom_camera_host() -> void:
+	Properties.assign_phantom_camera_host(self)
+
+
 func set_priority(value: int) -> void:
-	Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
+	Properties.set_priority(value, self)
 
 
 func get_priority() -> int:

@@ -2,9 +2,11 @@
 class_name PhantomCameraHost
 extends Node
 
-##################
+const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+
+###########
 # Variables
-##################
+###########
 #  General Variables
 var _active_phantom_camera_priority: int = -1
 var _active_cam_missing: bool
@@ -14,8 +16,6 @@ var _phantom_camera_tween: Tween
 var _tween_default_ease: Tween.EaseType
 var _easing: Tween.TransitionType
 
-const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
-const PHANTOM_CAMERA_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"
 
 var camera: Node
 var _active_phantom_camera: Node
@@ -28,19 +28,27 @@ var should_tween: bool
 var tween_duration: float
 
 
+###################
+# Private Functions
+###################
 func _enter_tree() -> void:
 	camera = get_parent()
 	if camera is Camera3D or camera is Camera2D:
-		add_to_group(PHANTOM_CAMERA_HOST_GROUP_NAME)
-		var phantom_camera_group_nodes := get_tree().get_nodes_in_group(PHANTOM_CAMERA_GROUP_NAME)
+		add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+		var phantom_camera_group_nodes := get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
 		for phantom_camera in phantom_camera_group_nodes:
 			_phantom_camera_list.append(phantom_camera)
 	else:
 		printerr("PhantomCameraHost is not a child of a Camera")
 
+	var phantom_cameras_in_scene: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
+	for phantom_camera in phantom_cameras_in_scene:
+		phantom_camera_added_to_scene(phantom_camera)
+		phantom_camera.assign_phantom_camera_host()
+
 
 func _exit_tree() -> void:
-	remove_from_group(PHANTOM_CAMERA_HOST_GROUP_NAME)
+	remove_from_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
 
 
 func _assign_new_active_phantom_camera(phantom_camera: Node) -> void:

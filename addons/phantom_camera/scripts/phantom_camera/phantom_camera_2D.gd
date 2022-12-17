@@ -22,8 +22,7 @@ func _get_property_list() -> Array:
 
 
 func _set(property: StringName, value) -> bool:
-	if property == Constants.PRIORITY_PROPERTY_NAME:
-		Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
+	Properties.set_priority_property(property, value, self)
 
 	Properties.set_follow_properties(property, value, self)
 	Properties.set_tween_properties(property, value, self)
@@ -75,7 +74,7 @@ func _physics_process(delta: float) -> void:
 # Public Functions
 ##################
 func set_priority(value: int) -> void:
-	Properties.set_priority(value, self, Properties.phantom_camera_host_owner)
+	Properties.set_priority(value, self)
 
 
 func get_priority() -> int:

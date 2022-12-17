@@ -4,10 +4,6 @@ extends RefCounted
 # Scripts
 const PhantomCameraHost = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
-# Group Names
-const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
-const PHANTOM_CAMERA_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"
-
 # General
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 

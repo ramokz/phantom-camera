@@ -21,12 +21,6 @@ size = Vector3(3, 1, 3)
 
 [node name="Root" type="Node3D"]
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.84638, -0.0127372, 3.5, 7.32989)
-
-[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
-script = ExtResource("1_1ouug")
-
 [node name="Floor" parent="." instance=ExtResource("3_f5qrw")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 
@@ -64,11 +58,11 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 [node name="-----------------------------------------------------------" type="Node" parent="."]
 
 [node name="AreaPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.999999, 0, 0, 0, 0.268619, 0.963246, 0, -0.963246, 0.268619, 0, 5.833, 1.62664)
+transform = Transform3D(0.999996, 0.0023569, -0.000606214, 0, 0.2491, 0.968477, 0.00243361, -0.968474, 0.2491, 0, 5.833, 1.62664)
 script = ExtResource("2_y3dy8")
 Priority = 1
 "Follow Target" = NodePath("")
-"Look At Target" = NodePath("../Node3D")
+"Look At Target" = NodePath("../Area3D")
 "Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
 "Tween Properties/Duration" = 1.0
 "Tween Properties/Transition" = 0
@@ -94,4 +88,8 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 text = "Zone Trigger"
 font_size = 64
 
-[node name="Node3D" type="Node3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.84638, -0.0127372, 3.5, 7.32989)
+
+[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
+script = ExtResource("1_1ouug")
