@@ -43,10 +43,6 @@ run/main_scene="res://addons/phantom_camera/examples/3DExampleScene.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
 
-[autoload]
-
-PhantomCameraManager="*res://addons/phantom_camera/scripts/phantom_camera_manager.gd"
-
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
