@@ -1,7 +1,7 @@
 @tool
 extends RefCounted
 
-const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const PhantomCameraGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 static func set_priority(value: int, phantom_camera, phantom_camera_host: PhantomCameraHost) -> void:
 	if value < 1:

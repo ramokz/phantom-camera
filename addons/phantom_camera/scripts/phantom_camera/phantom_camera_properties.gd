@@ -1,10 +1,9 @@
 @tool
 extends RefCounted
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const PhantomCameraProperties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd")
-const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
-const PhantomCameraHost = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
+const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const PhantomCameraProperties: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd")
+const PhantomCameraGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 var phantom_camera_host_owner: PhantomCameraHost
 

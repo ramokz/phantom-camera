@@ -2,7 +2,7 @@
 class_name PhantomCameraHost
 extends Node
 
-const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const PhantomCameraGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 ###########
 # Variables

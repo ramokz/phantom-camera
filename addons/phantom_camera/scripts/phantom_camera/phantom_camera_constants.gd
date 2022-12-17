@@ -2,7 +2,7 @@
 extends RefCounted
 
 # Scripts
-const PhantomCameraHost = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
+const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
 # General
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"

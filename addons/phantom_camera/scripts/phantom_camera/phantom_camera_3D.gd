@@ -3,10 +3,10 @@ class_name PhantomCamera3D
 extends Node3D
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg")
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const Utils = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_utils.gd")
+const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const Utils: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_utils.gd")
 
-var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
+var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 #####################
 # Look At - Variables
@@ -111,7 +111,6 @@ func _enter_tree() -> void:
 	Properties.assign_phantom_camera_host(self)
 	if _look_at_target_path:
 		look_at_target_node = get_node(_look_at_target_path)
-
 
 func _exit_tree() -> void:
 	if Properties.phantom_camera_host_owner:
