@@ -25,6 +25,9 @@ var look_at_target_offset: Vector3
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
 
+#	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
+#	property_list.append_array(Properties.add_multiple_hosts_properties())
+
 	property_list.append_array(Properties.add_priority_properties())
 	property_list.append_array(Properties.add_follow_properties())
 
@@ -52,6 +55,8 @@ func _get_property_list() -> Array:
 
 
 func _set(property: StringName, value) -> bool:
+#	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
+#	Properties.set_phantom_host_property(property, value, self)
 	Properties.set_priority_property(property, value, self)
 	Properties.set_follow_properties(property, value, self)
 
@@ -77,9 +82,16 @@ func _set(property: StringName, value) -> bool:
 
 func _get(property: StringName):
 #	return PhantomCameraProperties.get_properties(property)
-	######################
+
+	#####################################
+	# Multiple Phantom Hosts - Properties
+	#####################################
+#	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
+#	if property == Constants.PHANTOM_CAMERA_HOST: return Properties.phantom_camera_host_owner.name
+
+	#######################
 	# Priority - Properties
-	######################
+	#######################
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
 
 	#####################
