@@ -7,6 +7,9 @@ const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/p
 # General
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 
+# Camera Hosts
+const PHANTOM_CAMERA_HOST: StringName = "Phantom Camera Host"
+
 # Follow
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
 const FOLLOW_PARAMETERS_STRINGNAME: StringName = "Follow Parameters/"

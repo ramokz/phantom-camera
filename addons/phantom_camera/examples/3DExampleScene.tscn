@@ -27,14 +27,14 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 [node name="----------------------------------------------------------" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.846381, -0.0127372, 3.5, 7.32989)
+transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.846381, -0.0127372, 3.5, 6.32989)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
-"Follow Parameters/Follow Target Offset" = Vector3(0, 3, 3)
+"Follow Parameters/Follow Target Offset" = Vector3(0, 3, 2)
 "Look At Target" = NodePath("")
 "Tween Properties/Duration" = 1.0
-"Tween Properties/Transition" = 1
+"Tween Properties/Transition" = 4
 "Tween Properties/Ease" = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
@@ -60,7 +60,7 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 [node name="AreaPhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(0.999996, 0.0023569, -0.000606214, 0, 0.2491, 0.968477, 0.00243361, -0.968474, 0.2491, 0, 5.833, 1.62664)
 script = ExtResource("2_y3dy8")
-Priority = 1
+Priority = 0
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("../Area3D")
 "Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
@@ -89,7 +89,7 @@ text = "Zone Trigger"
 font_size = 64
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.84638, -0.0127372, 3.5, 7.32989)
+transform = Transform3D(0.999999, 0.000656691, -0.00104362, 0, 0.846381, 0.532578, 0.00123304, -0.532578, 0.84638, -0.0127372, 3.5, 6.32989)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera3D"]
 script = ExtResource("1_1ouug")

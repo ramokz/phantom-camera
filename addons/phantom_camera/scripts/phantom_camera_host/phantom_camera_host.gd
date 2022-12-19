@@ -27,28 +27,58 @@ var _previous_active_phantom_camera_rotation
 var should_tween: bool
 var tween_duration: float
 
+var multiple_phantom_camera_hosts: bool
+var phantom_camera_host_group: Array[Node]
+
 
 ###################
 # Private Functions
 ###################
 func _enter_tree() -> void:
 	camera = get_parent()
+
 	if camera is Camera3D or camera is Camera2D:
 		add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
-		var phantom_camera_group_nodes := get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
+#		var already_multi_hosts: bool = multiple_phantom_camera_hosts
+
+		_check_camera_host_amount()
+
+		if multiple_phantom_camera_hosts:
+			printerr(
+				"Only one PhantomCameraHost can exist in a scene",
+				"\n",
+				"Multiple PhantomCameraHosts will be supported in https://github.com/MarcusSkov/phantom-camera/issues/26"
+			)
+			queue_free()
+
+		var phantom_camera_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
 		for phantom_camera in phantom_camera_group_nodes:
-			_phantom_camera_list.append(phantom_camera)
+			if not multiple_phantom_camera_hosts:
+
+				phantom_camera_added_to_scene(phantom_camera)
+				phantom_camera.assign_phantom_camera_host()
+#			else:
+#				phantom_camera.Properties.check_multiple_phantom_camera_host_property(phantom_camera, phantom_camera_host_group, true)
 	else:
 		printerr("PhantomCameraHost is not a child of a Camera")
-
-	var phantom_cameras_in_scene: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
-	for phantom_camera in phantom_cameras_in_scene:
-		phantom_camera_added_to_scene(phantom_camera)
-		phantom_camera.assign_phantom_camera_host()
 
 
 func _exit_tree() -> void:
 	remove_from_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+	_check_camera_host_amount()
+
+	var phantom_camera_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
+	for phantom_camera in phantom_camera_group_nodes:
+		if not multiple_phantom_camera_hosts:
+			phantom_camera.Properties.check_multiple_phantom_camera_host_property(phantom_camera)
+
+
+func _check_camera_host_amount():
+	phantom_camera_host_group = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+	if phantom_camera_host_group.size() > 1:
+		multiple_phantom_camera_hosts = true
+	else:
+		multiple_phantom_camera_hosts = false
 
 
 func _assign_new_active_phantom_camera(phantom_camera: Node) -> void:
@@ -106,6 +136,7 @@ func _move_target(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	if _active_cam_missing: return
+
 	if not should_tween:
 		if camera is Camera3D:
 			camera.set_position(_active_phantom_camera.get_position())
