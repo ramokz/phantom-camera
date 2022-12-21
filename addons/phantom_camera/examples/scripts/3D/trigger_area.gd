@@ -8,7 +8,9 @@ func _ready() -> void:
 
 
 func _entered_area(area_3D: Area3D) -> void:
-	area_pcam.set_priority(20)
+	if area_3D.get_parent() is CharacterBody3D:
+		area_pcam.set_priority(20)
 
 func _exited_area(area_3D: Area3D) -> void:
-	area_pcam.set_priority(0)
+	if area_3D.get_parent() is CharacterBody3D:
+		area_pcam.set_priority(0)
