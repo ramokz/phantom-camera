@@ -3,7 +3,7 @@ class_name PhantomCamera3D
 extends Node3D
 @icon("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg")
 
-const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 

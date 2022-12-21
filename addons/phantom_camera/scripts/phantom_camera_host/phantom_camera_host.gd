@@ -2,7 +2,7 @@
 class_name PhantomCameraHost
 extends Node
 
-const PhantomCameraGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 ###########
 # Variables
@@ -115,7 +115,7 @@ func _move_target(delta: float) -> void:
 	camera.set_position(
 		Tween.interpolate_value(
 			_previous_active_phantom_camera_position, \
-			_active_phantom_camera.get_position() - _previous_active_phantom_camera_position,
+			_active_phantom_camera.get_global_position() - _previous_active_phantom_camera_position,
 			tween_duration, \
 			_active_phantom_camera.get_tween_duration(), \
 			_active_phantom_camera.get_tween_transition(),
@@ -125,7 +125,7 @@ func _move_target(delta: float) -> void:
 	camera.set_rotation(
 		Tween.interpolate_value(
 			_previous_active_phantom_camera_rotation, \
-			_active_phantom_camera.get_rotation() - _previous_active_phantom_camera_rotation,
+			_active_phantom_camera.get_global_rotation() - _previous_active_phantom_camera_rotation,
 			tween_duration, \
 			_active_phantom_camera.get_tween_duration(), \
 			_active_phantom_camera.get_tween_transition(),
@@ -137,10 +137,12 @@ func _move_target(delta: float) -> void:
 func _process(delta: float) -> void:
 	if _active_cam_missing: return
 
+#	print(_active_phantom_camera.get_priority())
+
 	if not should_tween:
 		if camera is Camera3D:
-			camera.set_position(_active_phantom_camera.get_position())
-			camera.set_rotation(_active_phantom_camera.get_rotation())
+			camera.set_position(_active_phantom_camera.get_global_position())
+			camera.set_rotation(_active_phantom_camera.get_global_rotation())
 		elif camera is Camera2D:
 			camera.set_global_position(_active_phantom_camera.get_global_position())
 			camera.set_global_rotation(_active_phantom_camera.get_global_rotation())
