@@ -2,9 +2,16 @@ extends Node3D
 
 @onready var npc_pcam: PhantomCamera3D = %NPCPhantomCamera3D
 @onready var dialogueArea: Area3D = %DialogueArea3D
-@onready var dialogueLabel: Label3D = %DialogueExampleLabel
+@onready var dialogueLabel3D: Label3D = %DialogueExampleLabel
 
 @onready var player: CharacterBody3D = %PlayerCharacterBody3D
+
+var dialogue_label_initial_position: Vector3
+var dialogue_label_initial_rotation: Vector3
+
+var tween: Tween
+var tween_duration: float = 0.9
+var tween_transition: Tween.TransitionType = Tween.TRANS_QUAD
 
 var interactable: bool
 var is_interacting: bool
@@ -13,16 +20,24 @@ func _ready() -> void:
 	dialogueArea.connect("area_entered", _interactable)
 	dialogueArea.connect("area_exited", _not_interactable)
 
+	dialogueLabel3D.set_visible(false)
+
+	dialogue_label_initial_position = dialogueLabel3D.get_position()
+	dialogue_label_initial_rotation = dialogueLabel3D.get_rotation()
 
 func _interactable(area_3D: Area3D) -> void:
 	if area_3D.get_parent() is CharacterBody3D:
-		dialogueLabel.set_visible(true)
+		dialogueLabel3D.set_visible(true)
 		interactable = true
+
+		var tween: Tween = get_tree().create_tween().set_trans(tween_transition).set_ease(Tween.EASE_IN_OUT).set_loops()
+		tween.tween_property(dialogueLabel3D, "position", dialogue_label_initial_position - Vector3(0, -0.2, 0), tween_duration)
+		tween.tween_property(dialogueLabel3D, "position", dialogue_label_initial_position, tween_duration)
 
 
 func _not_interactable(area_3D: Area3D) -> void:
 	if area_3D.get_parent() is CharacterBody3D:
-		dialogueLabel.set_visible(false)
+		dialogueLabel3D.set_visible(false)
 		interactable = false
 
 
@@ -31,14 +46,19 @@ func _input(event) -> void:
 
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_F:
+			var tween: Tween = get_tree().create_tween() \
+				.set_parallel(true) \
+				.set_trans(Tween.TRANS_QUART) \
+				.set_ease(Tween.EASE_IN_OUT)
 			if not is_interacting:
 				npc_pcam.set_priority(20)
 				player.set_physics_process(false)
-				var tween: Tween = get_tree().create_tween()
-				tween.tween_property(player, "position", Vector3(-3.723, 0.5, -0.725), 0.6).set_trans(Tween.TRANS_QUAD)
-#				tween.tween_callback()
+				tween.tween_property(player, "position", Vector3(-3.723, 0.5, -0.725), 0.6).set_trans(tween_transition)
+				tween.tween_property(dialogueLabel3D, "rotation", Vector3(deg_to_rad(-20), deg_to_rad(53), 0), 0.6).set_trans(tween_transition)
+
 			else:
 				npc_pcam.set_priority(0)
 				player.set_physics_process(true)
+				tween.tween_property(dialogueLabel3D, "rotation", dialogue_label_initial_rotation, 0.9)
 
 			is_interacting = !is_interacting
