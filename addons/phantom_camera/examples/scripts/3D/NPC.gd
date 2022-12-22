@@ -6,6 +6,8 @@ extends Node3D
 
 @onready var player: CharacterBody3D = %PlayerCharacterBody3D
 
+@onready var move_to_location: Vector3 = %MoveToLocation.get_position()
+
 var dialogue_label_initial_position: Vector3
 var dialogue_label_initial_rotation: Vector3
 
@@ -53,7 +55,7 @@ func _input(event) -> void:
 			if not is_interacting:
 				npc_pcam.set_priority(20)
 				player.set_physics_process(false)
-				tween.tween_property(player, "position", Vector3(-3.723, 0.5, -0.725), 0.6).set_trans(tween_transition)
+				tween.tween_property(player, "position", move_to_location, 0.6).set_trans(tween_transition)
 				tween.tween_property(dialogueLabel3D, "rotation", Vector3(deg_to_rad(-20), deg_to_rad(53), 0), 0.6).set_trans(tween_transition)
 
 			else:

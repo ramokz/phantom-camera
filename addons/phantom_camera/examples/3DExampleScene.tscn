@@ -62,10 +62,10 @@ size = Vector3(14, 40, 6)
 size = Vector3(14, 40, 6)
 
 [sub_resource type="BoxMesh" id="BoxMesh_x0tgm"]
-size = Vector3(50, 2, 1)
+size = Vector3(50, 40, 5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t67ef"]
-size = Vector3(50, 2, 1)
+size = Vector3(50, 40, 5)
 
 [node name="Root" type="Node3D"]
 
@@ -116,7 +116,7 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 
 [node name="NPCPhantomCamera3D" type="Node3D" parent="Node2"]
 unique_name_in_owner = true
-transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.01018, 1.50739, -0.490703)
+transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.98802, 1.50739, 1.19719)
 script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Target" = NodePath("")
@@ -126,18 +126,18 @@ Priority = 0
 "Tween Properties/Ease" = 1
 
 [node name="DescriptionLabel" type="Label3D" parent="Node2"]
-transform = Transform3D(0.573577, -0.814813, -0.0842028, -2.63912e-09, -0.102793, 0.994703, -0.819152, -0.570538, -0.0589594, -2.47904, -0.413709, -0.954991)
+transform = Transform3D(0.573577, -0.814813, -0.0842028, -2.63912e-09, -0.102793, 0.994703, -0.819152, -0.570538, -0.0589594, -3.45688, -0.413709, 0.7329)
 text = "Input Example"
 font_size = 96
 
 [node name="DialogueExampleLabel" type="Label3D" parent="Node2"]
 unique_name_in_owner = true
-transform = Transform3D(1, 4.54671e-10, 1.65487e-10, 4.25644e-10, 0.939693, 0.34202, 0, -0.34202, 0.939693, -3.48954, 1.58641, -1.94157)
+transform = Transform3D(1, 4.54671e-10, 1.65487e-10, 4.25644e-10, 0.939693, 0.34202, 0, -0.34202, 0.939693, -4.46738, 1.58641, -0.253679)
 modulate = Color(1, 0.603922, 0.254902, 1)
 text = "Press [ F ] to change camera"
 
 [node name="InteractionZoneMesh" type="MeshInstance3D" parent="Node2"]
-transform = Transform3D(0.819152, 4.83851e-10, -0.573576, -3.92481e-09, 1, -6.3473e-09, 0.573576, 7.45058e-09, 0.819152, -2.48354, -0.5, -0.91257)
+transform = Transform3D(0.819152, 4.83851e-10, -0.573576, -3.92481e-09, 1, -6.3473e-09, 0.573576, 7.45058e-09, 0.819152, -3.46138, -0.5, 0.775321)
 mesh = SubResource("BoxMesh_7tjw4")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_hpllm")
@@ -152,7 +152,7 @@ monitorable = false
 shape = SubResource("BoxShape3D_65o6h")
 
 [node name="NPC" type="StaticBody3D" parent="Node2"]
-transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, -3.58554, 0.5, -1.96057)
+transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, -4.56338, 0.5, -0.272679)
 script = ExtResource("2_2n1da")
 
 [node name="PlayerCollisionShape3D2" type="CollisionShape3D" parent="Node2/NPC"]
@@ -164,6 +164,10 @@ transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("CapsuleMesh_g0eml")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_v5iy7")
+
+[node name="MoveToLocation" type="Node3D" parent="Node2"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.70084, 0.5, 0.962891)
 
 [node name="FixedCameraTriggerZone" type="Node" parent="."]
 
@@ -246,7 +250,7 @@ skeleton = NodePath("")
 shape = SubResource("BoxShape3D_lfaqs")
 
 [node name="Left Wall3" type="StaticBody3D" parent="Environment/Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -14.9083)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -6.90828)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Environment/Environment/Left Wall3"]
@@ -257,7 +261,7 @@ skeleton = NodePath("")
 shape = SubResource("BoxShape3D_jxmqm")
 
 [node name="Back Wall" type="StaticBody3D" parent="Environment/Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 8.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 10.5)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Environment/Environment/Back Wall"]
