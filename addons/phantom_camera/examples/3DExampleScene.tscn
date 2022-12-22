@@ -1,12 +1,28 @@
-[gd_scene load_steps=18 format=3 uid="uid://sbscq77w8x23"]
+[gd_scene load_steps=24 format=3 uid="uid://sbscq77w8x23"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/Models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tpc7d"]
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v5iy7"]
+albedo_color = Color(0.988235, 0.478431, 0.905882, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7tjw4"]
+size = Vector3(2, 0.5, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hpllm"]
+transparency = 1
+albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_65o6h"]
+size = Vector3(2, 0.5, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flw6w"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
@@ -33,31 +49,83 @@ material = SubResource("StandardMaterial3D_umkiq")
 size = Vector3(6, 0.1, 10)
 
 [sub_resource type="BoxMesh" id="BoxMesh_gyp5s"]
-size = Vector3(20, 2, 40)
+size = Vector3(20, 40, 40)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lfaqs"]
 size = Vector3(20, 2, 40)
 
 [sub_resource type="BoxMesh" id="BoxMesh_x0tgm"]
-size = Vector3(60, 2, 20)
+size = Vector3(50, 2, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_t67ef"]
-size = Vector3(60, 2, 20)
+size = Vector3(50, 2, 1)
 
 [node name="Root" type="Node3D"]
 
 [node name="------ Camera ------" type="Node" parent="."]
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.5547, 0.83205, 0, -0.83205, 0.5547, -0.0127372, 3.5, 6.32989)
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.5547, 0.83205, 0, -0.83205, 0.5547, 0.0451293, 3.5, 5.82771)
 
-[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
+
+[node name="NPCPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.01018, 1.50739, -0.490703)
+script = ExtResource("2_y3dy8")
+Priority = 0
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 0.9
+"Tween Properties/Transition" = 4
+"Tween Properties/Ease" = 1
+
+[node name="NPC" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, -3.58554, 0.5, -1.96057)
+script = ExtResource("2_2n1da")
+
+[node name="PlayerCollisionShape3D2" type="CollisionShape3D" parent="NPC"]
+transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_tpc7d")
+
+[node name="NPCMesh" type="MeshInstance3D" parent="NPC"]
+transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_g0eml")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_v5iy7")
+
+[node name="InteractionZoneMesh" type="MeshInstance3D" parent="NPC"]
+transform = Transform3D(0.821378, -2.68591e-26, -0.570384, 0, 1, 0, 0.570384, 0, 0.821378, 1.10236, -1.13636, 1.04841)
+mesh = SubResource("BoxMesh_7tjw4")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_hpllm")
+metadata/_edit_group_ = true
+
+[node name="DialogueArea3D" type="Area3D" parent="NPC/InteractionZoneMesh"]
+unique_name_in_owner = true
+transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+monitorable = false
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="NPC/InteractionZoneMesh/DialogueArea3D"]
+shape = SubResource("BoxShape3D_65o6h")
+
+[node name="DescriptionLabel" type="Label3D" parent="NPC"]
+transform = Transform3D(0.598646, -0.0829222, 0.79671, -1.66322e-08, 0.994627, 0.103522, -0.801014, -0.0619728, 0.59543, 1.0085, 0.395309, -0.972127)
+text = "Input Example"
+
+[node name="DialogueExampleLabel" type="Label3D" parent="NPC"]
+unique_name_in_owner = true
+transform = Transform3D(0.598646, -0.278372, 0.751087, -1.49012e-08, 0.937671, 0.347525, -0.801014, -0.208044, 0.561333, 0.0961049, 1.19065, 0.0192566)
+visible = false
+modulate = Color(1, 0.605156, 0.255513, 1)
+text = "Press [ F ] to change camera"
 
 [node name="------ Player ------" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.5547, 0.832051, 0, -0.832051, 0.554701, -0.0127372, 3.5, 6.32989)
+transform = Transform3D(1, 0, 0, 0, 0.5547, 0.832051, 0, -0.832051, 0.554701, 0.0451293, 3.5, 5.82771)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
@@ -69,8 +137,10 @@ Priority = 3
 "Tween Properties/Ease" = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0127372, 0.5, 4.32989)
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0451293, 0.5, 3.82771)
 script = ExtResource("5_c85ys")
+metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
 transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, 0, 0, 0)
@@ -88,105 +158,110 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 
 [node name="------ Green Area ------" type="Node" parent="."]
 
-[node name="GreenAreaPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.628737, -0.347197, 0.695803, 0, 0.894788, 0.446489, -0.777616, -0.280725, 0.562587, 7, 5, 10)
+[node name="------ Purple Area ------" type="Node" parent="."]
+
+[node name="Green Zone" type="Node" parent="."]
+
+[node name="GreenAreaPhantomCamera3D" type="Node3D" parent="Green Zone"]
+transform = Transform3D(0.56988, 0.634856, -0.521721, -7.97027e-09, 0.634907, 0.772587, 0.821726, -0.440282, 0.361821, 0.976269, 5, 7.89326)
 script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Target" = NodePath("")
-"Look At Target" = NodePath("../PlayerCharacterBody3D")
-"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Look At Target" = NodePath("")
 "Tween Properties/Duration" = 1.2
 "Tween Properties/Transition" = 2
 "Tween Properties/Ease" = 2
 
-[node name="GreenArea3D" type="Area3D" parent="." node_paths=PackedStringArray("area_pcam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 4)
+[node name="GreenArea3D" type="Area3D" parent="Green Zone" node_paths=PackedStringArray("area_pcam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
 priority = 5.0
 script = ExtResource("4_moad5")
 area_pcam = NodePath("../GreenAreaPhantomCamera3D")
 metadata/_edit_group_ = true
 
-[node name="ZoneTrigger" type="Label3D" parent="GreenArea3D"]
+[node name="ZoneTrigger" type="Label3D" parent="Green Zone/GreenArea3D"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -0.00378323, 0.47531, 2.81546)
 text = "Zone Trigger"
 font_size = 64
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="GreenArea3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Green Zone/GreenArea3D"]
 mesh = SubResource("BoxMesh_p0hcn")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="GreenArea3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Green Zone/GreenArea3D"]
 shape = SubResource("BoxShape3D_ctyr8")
 
-[node name="------ Purple Area ------" type="Node" parent="."]
+[node name="PurpleTriggerZone" type="Node" parent="."]
 
-[node name="PurpleAreaPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(-0.472499, -0.481917, 0.737901, 0, 0.837258, 0.546806, -0.881329, 0.258366, -0.395604, 7.18402, 5.833, 0.471558)
+[node name="PurpleAreaPhantomCamera3D" type="Node3D" parent="PurpleTriggerZone"]
+transform = Transform3D(-0.470025, 0.37395, -0.799522, 0.000633255, 0.90596, 0.42336, 0.88265, 0.198484, -0.426062, 0.814095, 4.18658, -10.4148)
 script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Target" = NodePath("")
-"Look At Target" = NodePath("../PlayerCharacterBody3D")
-"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Look At Target" = NodePath("")
 "Tween Properties/Duration" = 1.2
 "Tween Properties/Transition" = 5
 "Tween Properties/Ease" = 0
 
-[node name="PurpleArea3D" type="Area3D" parent="." node_paths=PackedStringArray("area_pcam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, -6)
+[node name="PurpleArea3D" type="Area3D" parent="PurpleTriggerZone" node_paths=PackedStringArray("area_pcam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -6)
 priority = 5.0
 script = ExtResource("4_moad5")
 area_pcam = NodePath("../PurpleAreaPhantomCamera3D")
 metadata/_edit_group_ = true
 
-[node name="ZoneTrigger" type="Label3D" parent="PurpleArea3D"]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -0.00378323, 0.47531, 2.81546)
-text = "Zone Trigger"
+[node name="ZoneTrigger" type="Label3D" parent="PurpleTriggerZone/PurpleArea3D"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -0.00378323, 2.12181, 1.81725)
+text = "Fixed Camera
+- Look At - "
 font_size = 64
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="PurpleArea3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PurpleTriggerZone/PurpleArea3D"]
 mesh = SubResource("BoxMesh_d2g24")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PurpleArea3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PurpleTriggerZone/PurpleArea3D"]
 shape = SubResource("BoxShape3D_ctyr8")
 
 [node name="------ Environment ------" type="Node" parent="."]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
 
 [node name="Environment" type="Node3D" parent="."]
 
 [node name="Floor" parent="Environment" instance=ExtResource("3_f5qrw")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
 
 [node name="Left Wall" type="StaticBody3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.5, -11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0.5, -11)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Environment/Left Wall"]
 mesh = SubResource("BoxMesh_gyp5s")
-skeleton = NodePath("../../../GreenArea3D")
+skeleton = NodePath("../../../Green Zone/GreenArea3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Left Wall"]
 shape = SubResource("BoxShape3D_lfaqs")
 
 [node name="Left Wall2" type="StaticBody3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.9994, 0.501687, -11.0005)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.9994, 0.501687, -11.0005)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Environment/Left Wall2"]
 mesh = SubResource("BoxMesh_gyp5s")
-skeleton = NodePath("../../../GreenArea3D")
+skeleton = NodePath("../../../Green Zone/GreenArea3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Left Wall2"]
 shape = SubResource("BoxShape3D_lfaqs")
 
 [node name="Back Wall" type="StaticBody3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 19)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 8.5)
 metadata/_edit_group_ = true
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Environment/Back Wall"]
 mesh = SubResource("BoxMesh_x0tgm")
-skeleton = NodePath("../../../GreenArea3D")
+skeleton = NodePath("../../../Green Zone/GreenArea3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Back Wall"]
 shape = SubResource("BoxShape3D_t67ef")
