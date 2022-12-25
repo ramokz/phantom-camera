@@ -13,7 +13,7 @@ Keeps a persistent position relative to a target node.
 Retains the forward vector at a specified target.
 
 ## Tween
-Change the tweening behaviour between one another. The property changes the   how the using Godot's built-in tweening system. More information about  
+Change how a PhantomCamera transitions and eases when moving between PhanttomCameras.
 
 # Roadmap
 See the [project page](https://github.com/users/MarcusSkov/projects/3/views/8) for upcoming features
