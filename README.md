@@ -1,6 +1,6 @@
 # Phantom Camera
 
-Control and dynamically tween between cameras in 2D and 3D scenes. 
+Control and dynamically tween between cameras in 2D and 3D scenes in your Godot projects.
 The addon is designed to work alongside the a scene's Camera2D and Camera3D nodes.
 
 Note: This addon is only compatible with Godot 4.0
