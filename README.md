@@ -11,11 +11,17 @@ Retains the forward vector at a specified target.
 ### Tween
 Change how the camera transitions and eases between PhantomCameras.
 
-## Installation
-TBD
-
 ## How to use
 See the [[Phantom Camera - Wiki]].
+
+### Demo Scenes
+A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples` titled `2DExampleScene` and `3DExampleScene` respectively,
+
+## Installation
+1. Download the repo and copy `addons/phantom_camera` to your root Godot directory under `res://`.
+2. Enable the plugin inside `Project/Project Setttings/Plugins`
+3. And that's it!
+For more help, see [Godot's official documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html)
 
 ## Roadmap
 See the [project page](https://github.com/users/MarcusSkov/projects/3/views/8) for upcoming features.
@@ -47,3 +53,5 @@ Issues, PRs, suggestions and feedback are welcome. Please create an Issue for bu
 ## Credits
 - [Unity's Cinemachine Package](https://unity.com/unity/features/editor/art-and-design/cinemachine) for the key inspiration
 - [Godot](https://godotengine.org/) for their amazing work creating the engine
+
+[MIT License](https://github.com/ramokz/phantom-camera/blob/main/LICENSE)
