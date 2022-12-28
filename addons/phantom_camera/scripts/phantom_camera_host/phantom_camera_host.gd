@@ -1,6 +1,7 @@
 @tool
 class_name PhantomCameraHost
 extends Node
+@icon("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
 
 const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 

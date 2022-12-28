@@ -20,7 +20,7 @@ func _enter_tree() -> void:
 	add_custom_type(PHANTOM_CAMERA_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg"))
 	add_custom_type(PHANTOM_CAMERA_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg"))
 
-	add_custom_type(PHANTOM_CAMERA_HOST, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"), preload("res://addons/phantom_camera/icons/PhantomBaseIcon.svg"))
+	add_custom_type(PHANTOM_CAMERA_HOST, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"), preload("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg"))
 
 	add_node_3d_gizmo_plugin(phantom_camera_2D_gizmo_plugin)
 	add_node_3d_gizmo_plugin(phantom_camera_3D_gizmo_plugin)
