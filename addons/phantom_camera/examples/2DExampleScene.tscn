@@ -32,6 +32,7 @@ texture = ExtResource("2_ic1vx")
 position = Vector2(558, 312)
 script = ExtResource("2_mgsut")
 Priority = 0
+"Trigger on Load" = true
 "Follow Target" = NodePath("../CharacterBody2D")
 "Follow Parameters/Follow Target Offset" = Vector2(0, 0)
 "Tween Properties/Duration" = 1.0

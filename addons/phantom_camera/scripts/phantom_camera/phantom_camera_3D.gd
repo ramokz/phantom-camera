@@ -29,6 +29,7 @@ func _get_property_list() -> Array:
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
 
 	property_list.append_array(Properties.add_priority_properties())
+	property_list.append_array(Properties.add_trigger_onload_properties())
 	property_list.append_array(Properties.add_follow_properties())
 
 	######################
@@ -58,6 +59,7 @@ func _set(property: StringName, value) -> bool:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	Properties.set_phantom_host_property(property, value, self)
 	Properties.set_priority_property(property, value, self)
+	Properties.set_trigger_onload_properties(property, value, self)	
 	Properties.set_follow_properties(property, value, self)
 
 	if property == _look_at_target_property_name:
@@ -76,7 +78,6 @@ func _set(property: StringName, value) -> bool:
 		look_at_target_offset = value
 
 	Properties.set_tween_properties(property, value, self)
-
 	return false
 
 
@@ -93,6 +94,11 @@ func _get(property: StringName):
 	# Priority - Properties
 	#######################
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
+
+	#############################
+	# Trigger Onload - Properties
+	#############################
+	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	#####################
 	# Follow - Properties

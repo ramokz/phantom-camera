@@ -14,6 +14,7 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
 	property_list.append_array(Properties.add_priority_properties())
+	property_list.append_array(Properties.add_trigger_onload_properties())
 	property_list.append_array(Properties.add_follow_properties())
 	property_list.append_array(Properties.add_tween_properties())
 
@@ -22,6 +23,7 @@ func _get_property_list() -> Array:
 
 func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
+	Properties.set_trigger_onload_properties(property, value, self)
 
 	Properties.set_follow_properties(property, value, self)
 	Properties.set_tween_properties(property, value, self)
@@ -35,6 +37,11 @@ func _get(property: StringName):
 	# General - Properties
 	######################
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
+
+	#############################
+	# Trigger Onload - Properties
+	#############################
+	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	#####################
 	# Follow - Properties

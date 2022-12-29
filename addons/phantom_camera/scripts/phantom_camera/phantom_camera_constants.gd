@@ -10,6 +10,9 @@ const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 # Camera Hosts
 const PHANTOM_CAMERA_HOST: StringName = "Phantom Camera Host"
 
+# Misc
+const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
+
 # Follow
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
 const FOLLOW_PARAMETERS_STRINGNAME: StringName = "Follow Parameters/"
