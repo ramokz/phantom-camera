@@ -107,7 +107,7 @@ func _find_phantom_camera_with_highest_priority(should_animate: bool = true) -> 
 	for phantom_camera in _phantom_camera_list:
 		if phantom_camera.get_priority() > _active_phantom_camera_priority:
 			_assign_new_active_phantom_camera(phantom_camera)
-
+		
 		_active_cam_missing = false
 
 
@@ -137,9 +137,7 @@ func _move_target(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	if _active_cam_missing: return
-
-#	print(_active_phantom_camera.get_priority())
-
+	
 	if not should_tween:
 		if camera is Camera3D:
 			camera.set_position(_active_phantom_camera.get_global_position())
@@ -161,7 +159,9 @@ func _process(delta: float) -> void:
 ##################
 func phantom_camera_added_to_scene(phantom_camera: Node) -> void:
 	_phantom_camera_list.append(phantom_camera)
-	_find_phantom_camera_with_highest_priority(false)
+	
+	if phantom_camera.Properties.trigger_onload:
+		_find_phantom_camera_with_highest_priority(false)
 
 
 func phantom_camera_removed_from_scene(phantom_camera) -> void:

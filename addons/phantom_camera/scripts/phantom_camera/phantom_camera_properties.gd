@@ -10,6 +10,8 @@ var camera_host_group: Array[Node]
 
 var priority: int = 0
 
+var trigger_onload: bool = true
+
 var follow_target_node: Node
 var follow_target_path: NodePath
 var has_follow_target: bool = false
@@ -62,6 +64,17 @@ func add_priority_properties() -> Array:
 
 	return _property_list
 
+func add_trigger_onload_properties() -> Array:
+	var _property_list: Array
+	
+	_property_list.append({
+		"name": Constants.TRIGGER_ONLOAD_NAME,
+		"type": TYPE_BOOL,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
+	
+	return _property_list
 
 func add_follow_properties() -> Array:
 	var _property_list: Array
@@ -142,6 +155,11 @@ func set_phantom_host_property(property: StringName, value, phantom_camera: Node
 func set_priority_property(property: StringName, value, phantom_camera: Node):
 	if property == Constants.PRIORITY_PROPERTY_NAME:
 		set_priority(value, phantom_camera)
+
+
+func set_trigger_onload_properties(property: StringName, value, phantom_camera: Node):
+	if property == Constants.TRIGGER_ONLOAD_NAME:
+		trigger_onload = value
 
 
 func set_follow_properties(property: StringName, value, phantom_camera: Node):
@@ -240,8 +258,10 @@ func assign_phantom_camera_host(phantom_camera: Node) -> void:
 #			multiple_phantom_camera_host_group.append(camera_host)
 #			return null
 
+
 func assign_specific_phantom_camera_host(phantom_camera: Node, phantom_camera_host: PhantomCameraHost) -> void:
 	phantom_camera_host_owner = phantom_camera_host
+
 
 func check_multiple_phantom_camera_host_property(phantom_camera: Node, multiple_host: bool = false) -> void:
 	if not multiple_host:
