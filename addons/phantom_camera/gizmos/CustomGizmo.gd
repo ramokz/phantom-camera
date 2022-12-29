@@ -34,6 +34,53 @@ func _has_gizmo(spatial: Node3D):
 
 func _init() -> void:
 	create_icon_material(_gizmo_name, _gizmo_icon, false, Color.WHITE)
+	create_material("main", Color(1, 0, 0, 1))
+
+
+func _draw_frustum() -> PackedVector3Array:
+	var lines = PackedVector3Array()
+	
+	var dis: float 		= 0.25
+	var width: float 	= dis * 1.25
+	var len: float 		= dis * 1.5
+
+	# Straight line
+#	lines.push_back(Vector3(0, 0, 0))
+#	lines.push_back(Vector3(0, 0, -len))
+
+
+	# Trapezoid
+	lines.push_back(Vector3(0, 0, 0))
+	lines.push_back(Vector3(-width, dis, -len))
+	
+	lines.push_back(Vector3(0, 0, 0))
+	lines.push_back(Vector3(width, dis, -len))
+	
+	lines.push_back(Vector3(0, 0, 0))
+	lines.push_back(Vector3(-width, -dis, -len))
+	
+	lines.push_back(Vector3(0, 0, 0))
+	lines.push_back(Vector3(width, -dis, -len))
+	
+	
+	# Square
+	## Left
+	lines.push_back(Vector3(-width, dis, -len))
+	lines.push_back(Vector3(-width, -dis, -len))
+	
+	## Bottom
+	lines.push_back(Vector3(-width, -dis, -len))
+	lines.push_back(Vector3(width, -dis, -len))
+	
+	## Right
+	lines.push_back(Vector3(width, -dis, -len))
+	lines.push_back(Vector3(width, dis, -len))
+	
+	## Top
+	lines.push_back(Vector3(width, dis, -len))
+	lines.push_back(Vector3(-width, dis, -len))
+	
+	return lines
 
 
 func _redraw(gizmo: EditorNode3DGizmo):
@@ -41,3 +88,6 @@ func _redraw(gizmo: EditorNode3DGizmo):
 
 	var icon: Material = get_material(_gizmo_name, gizmo)
 	gizmo.add_unscaled_billboard(icon, _gizmo_scale)
+	
+	var material = get_material("main", gizmo)
+	gizmo.add_lines(_draw_frustum(), material)
