@@ -34,7 +34,7 @@ func _has_gizmo(spatial: Node3D):
 
 func _init() -> void:
 	create_icon_material(_gizmo_name, _gizmo_icon, false, Color.WHITE)
-	create_material("main", Color(1, 0, 0, 1))
+	create_material("main", Color8(252, 127, 127, 255))
 
 
 func _draw_frustum() -> PackedVector3Array:
