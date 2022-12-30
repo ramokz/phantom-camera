@@ -35,6 +35,7 @@ Priority = 0
 "Trigger on Load" = true
 "Follow Target" = NodePath("../CharacterBody2D")
 "Follow Parameters/Follow Target Offset" = Vector2(0, 0)
+"Follow Parameters/Damping" = false
 "Tween Properties/Duration" = 1.0
 "Tween Properties/Transition" = 0
 

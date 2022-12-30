@@ -5,32 +5,32 @@ extends Node
 
 const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-###########
-# Variables
-###########
-#  General Variables
-var _active_phantom_camera_priority: int = -1
-var _active_cam_missing: bool
 
-# Tweening Variables
-var _phantom_camera_tween: Tween
+var _damping: float
+
+var _pcam_tween: Tween
 var _tween_default_ease: Tween.EaseType
 var _easing: Tween.TransitionType
 
-
 var camera: Node
-var _active_phantom_camera: Node
-var _phantom_camera_list: Array[Node]
+var _pcam_list: Array[Node]
 
-var _previous_active_phantom_camera_position
-var _previous_active_phantom_camera_rotation
+var _active_pcam: Node
+var _active_pcam_priority: int = -1
+var _active_pcam_missing: bool
+var _active_pcam_has_damping: bool
 
-var should_tween: bool
+var _previous_active_pcam_position
+var _previous_active_pcam_rotation
+
+var trigger_pcam_tween: bool
 var tween_duration: float
 
-var multiple_phantom_camera_hosts: bool
-var phantom_camera_host_group: Array[Node]
+var multiple_pcam_hosts: bool
+var pcam_host_group: Array[Node]
 
+var is_child_of_camera: bool = false
+var isCamera3D: bool
 
 ###################
 # Private Functions
@@ -38,13 +38,19 @@ var phantom_camera_host_group: Array[Node]
 func _enter_tree() -> void:
 	camera = get_parent()
 
-	if camera is Camera3D or camera is Camera2D:
+	if camera is Camera2D or camera is Camera3D:
+		is_child_of_camera = true
+		if camera is Camera2D:
+			isCamera3D = false
+		else:
+			isCamera3D = true
+		
 		add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_phantom_camera_hosts
 
 		_check_camera_host_amount()
 
-		if multiple_phantom_camera_hosts:
+		if multiple_pcam_hosts:
 			printerr(
 				"Only one PhantomCameraHost can exist in a scene",
 				"\n",
@@ -54,7 +60,7 @@ func _enter_tree() -> void:
 
 		var phantom_camera_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
 		for phantom_camera in phantom_camera_group_nodes:
-			if not multiple_phantom_camera_hosts:
+			if not multiple_pcam_hosts:
 
 				phantom_camera_added_to_scene(phantom_camera)
 				phantom_camera.assign_phantom_camera_host()
@@ -70,95 +76,109 @@ func _exit_tree() -> void:
 
 	var phantom_camera_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
 	for phantom_camera in phantom_camera_group_nodes:
-		if not multiple_phantom_camera_hosts:
+		if not multiple_pcam_hosts:
 			phantom_camera.Properties.check_multiple_phantom_camera_host_property(phantom_camera)
 
 
 func _check_camera_host_amount():
-	phantom_camera_host_group = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
-	if phantom_camera_host_group.size() > 1:
-		multiple_phantom_camera_hosts = true
+	pcam_host_group = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+	if pcam_host_group.size() > 1:
+		multiple_pcam_hosts = true
 	else:
-		multiple_phantom_camera_hosts = false
+		multiple_pcam_hosts = false
 
 
-func _assign_new_active_phantom_camera(phantom_camera: Node) -> void:
+func _assign_new_active_phantom_camera(pcam: Node) -> void:
 	var no_previous_pcam: bool
 
-	if _active_phantom_camera:
-		_previous_active_phantom_camera_position = camera.get_position()
-		_previous_active_phantom_camera_rotation = camera.get_rotation()
+	if _active_pcam:
+		_previous_active_pcam_position = camera.get_position()
+		_previous_active_pcam_rotation = camera.get_rotation()
 	else:
 		no_previous_pcam = true
 
-	_active_phantom_camera = phantom_camera
-	_active_phantom_camera_priority = phantom_camera.get_priority()
+	_active_pcam = pcam
+	_active_pcam_priority = pcam.get_priority()
+	_active_pcam_has_damping = pcam.Properties.follow_has_damping()
+	
 
 	if no_previous_pcam:
-		_previous_active_phantom_camera_position = _active_phantom_camera.get_position()
-		_previous_active_phantom_camera_rotation = _active_phantom_camera.get_rotation()
+		_previous_active_pcam_position = _active_pcam.get_position()
+		_previous_active_pcam_rotation = _active_pcam.get_rotation()
 
 	tween_duration = 0
-	should_tween = true
+	trigger_pcam_tween = true
 
 
 func _find_phantom_camera_with_highest_priority(should_animate: bool = true) -> void:
 #	if _phantom_camera_list.is_empty(): return
-	for phantom_camera in _phantom_camera_list:
-		if phantom_camera.get_priority() > _active_phantom_camera_priority:
-			_assign_new_active_phantom_camera(phantom_camera)
-		
-		_active_cam_missing = false
+	for pcam in _pcam_list:
+		if pcam.get_priority() > _active_pcam_priority:
+			_assign_new_active_phantom_camera(pcam)
+
+		_active_pcam_missing = false
 
 
-func _move_target(delta: float) -> void:
+func _tween_pcam(delta: float) -> void:
 	tween_duration += delta
 	camera.set_position(
 		Tween.interpolate_value(
-			_previous_active_phantom_camera_position, \
-			_active_phantom_camera.get_global_position() - _previous_active_phantom_camera_position,
-			tween_duration, \
-			_active_phantom_camera.get_tween_duration(), \
-			_active_phantom_camera.get_tween_transition(),
+			_previous_active_pcam_position,
+			_active_pcam.get_global_position() - _previous_active_pcam_position,
+			tween_duration,
+			_active_pcam.get_tween_duration(),
+			_active_pcam.get_tween_transition(),
 			Tween.EASE_IN_OUT
 		)
 	)
 	camera.set_rotation(
 		Tween.interpolate_value(
-			_previous_active_phantom_camera_rotation, \
-			_active_phantom_camera.get_global_rotation() - _previous_active_phantom_camera_rotation,
+			_previous_active_pcam_rotation, \
+			_active_pcam.get_global_rotation() - _previous_active_pcam_rotation,
 			tween_duration, \
-			_active_phantom_camera.get_tween_duration(), \
-			_active_phantom_camera.get_tween_transition(),
+			_active_pcam.get_tween_duration(), \
+			_active_pcam.get_tween_transition(),
 			Tween.EASE_IN_OUT
 		)
 	)
 
 
-func _process(delta: float) -> void:
-	if _active_cam_missing: return
-	
-	if not should_tween:
-		if camera is Camera3D:
-			camera.set_position(_active_phantom_camera.get_global_position())
-			camera.set_rotation(_active_phantom_camera.get_global_rotation())
-		elif camera is Camera2D:
-			camera.set_global_position(_active_phantom_camera.get_global_position())
-			camera.set_global_rotation(_active_phantom_camera.get_global_rotation())
+func _pcam_follow(delta: float) -> void:
+	if _active_pcam.Properties.follow_has_damping:
+		camera.set_position(
+			camera.get_position().lerp(
+				_active_pcam.get_global_position(),
+				delta * _active_pcam.Properties.follow_damping_value
+			)
+		)
 	else:
-		if tween_duration < _active_phantom_camera.get_tween_duration():
-			_move_target(delta)
+		camera.set_position(_active_pcam.get_global_position())
+	
+	camera.set_rotation(_active_pcam.get_global_rotation())
+
+
+func _process_pcam(delta: float) -> void:
+	if _active_pcam_missing or not is_child_of_camera: return
+
+	if not trigger_pcam_tween:
+		_pcam_follow(delta)
+	else:
+		if tween_duration < _active_pcam.get_tween_duration():
+			_tween_pcam(delta)
 		else:
-#			TODO Logic for having different follow / look at options
 			tween_duration = 0
-			should_tween = false
+			trigger_pcam_tween = false
+
+
+func _process(delta: float) -> void:
+	_process_pcam(delta)
 
 
 ##################
 # Public Functions
 ##################
 func phantom_camera_added_to_scene(phantom_camera: Node) -> void:
-	_phantom_camera_list.append(phantom_camera)
+	_pcam_list.append(phantom_camera)
 	
 	if phantom_camera.Properties.trigger_onload:
 		_find_phantom_camera_with_highest_priority(false)
@@ -172,14 +192,14 @@ func phantom_camera_removed_from_scene(phantom_camera) -> void:
 		_find_phantom_camera_with_highest_priority()
 
 
-func phantom_camera_priority_updated(phantom_camera: Node) -> void:
-	var current_pcam_priority: int = phantom_camera.get_priority()
+func phantom_camera_priority_updated(pcam: Node) -> void:
+	var current_pcam_priority: int = pcam.get_priority()
 
-	if current_pcam_priority >= _active_phantom_camera_priority and phantom_camera != _active_phantom_camera:
-		_assign_new_active_phantom_camera(phantom_camera)
-	elif phantom_camera == _active_phantom_camera:
-		if current_pcam_priority <= _active_phantom_camera_priority:
-			_active_phantom_camera_priority = current_pcam_priority
+	if current_pcam_priority >= _active_pcam_priority and pcam != _active_pcam:
+		_assign_new_active_phantom_camera(pcam)
+	elif pcam == _active_pcam:
+		if current_pcam_priority <= _active_pcam_priority:
+			_active_pcam_priority = current_pcam_priority
 			_find_phantom_camera_with_highest_priority()
 		else:
-			_active_phantom_camera_priority = current_pcam_priority
+			_active_pcam_priority = current_pcam_priority

@@ -7,7 +7,7 @@ extends CharacterBody3D
 @onready var _camera: Camera3D = %MainCamera3D
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity: float = 9.8
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"

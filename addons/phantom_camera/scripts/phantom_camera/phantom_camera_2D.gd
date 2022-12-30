@@ -8,9 +8,6 @@ const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/ph
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 
-############
-# Properties
-############
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
 	property_list.append_array(Properties.add_priority_properties())
@@ -32,26 +29,15 @@ func _set(property: StringName, value) -> bool:
 
 
 func _get(property: StringName):
-#	return PhantomCameraProperties.get_properties(property)
-	######################
-	# General - Properties
-	######################
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
 
-	#############################
-	# Trigger Onload - Properties
-	#############################
 	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
-	#####################
-	# Follow - Properties
-	#####################
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset
+	if property == Constants.FOLLOW_DAMPING_NAME: return Properties.follow_has_damping
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: return Properties.follow_damping_value
 
-	####################
-	# Tween - Properties
-	####################
 	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: return Properties.tween_duration
 	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: return Properties.tween_transition
 	if property == Constants.TWEEN_EASE_PROPERTY_NAME: return Properties.tween_ease
@@ -61,7 +47,7 @@ func _get(property: StringName):
 ###################
 func _enter_tree() -> void:
 	Properties.is_2D = true;
-	Properties.enter_tree(self)
+	Properties.camera_enter_tree(self)
 	Properties.assign_phantom_camera_host(self)
 
 

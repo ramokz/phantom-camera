@@ -1,8 +1,8 @@
 extends Node3D
 
 @onready var npc_pcam: PhantomCamera3D = %NPCPhantomCamera3D
-@onready var dialogueArea: Area3D = %DialogueArea3D
-@onready var dialogueLabel3D: Label3D = %DialogueExampleLabel
+@onready var dialogueArea: Area3D = %NPCInteractionArea3D
+@onready var dialogueLabel3D: Label3D = %NPCDialogueExampleLabel
 
 @onready var player: CharacterBody3D = %PlayerCharacterBody3D
 
