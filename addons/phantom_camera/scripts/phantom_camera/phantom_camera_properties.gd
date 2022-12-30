@@ -2,13 +2,13 @@
 extends RefCounted
 
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const PhantomCameraGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const PcamGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 var is_2D: bool
 
-var phantom_camera_host_owner: PhantomCameraHost
-var scene_has_multiple_phantom_camera_hosts: bool
-var camera_host_group: Array[Node]
+var pcam_host_owner: PhantomCameraHost
+var scene_has_multiple_pcam_hosts: bool
+var pcam_host_group: Array[Node]
 
 var priority: int = 0
 
@@ -28,21 +28,21 @@ var tween_linear: bool
 var tween_duration: float = 1
 
 
-func camera_enter_tree(phantom_camera: Node):
-	phantom_camera.add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
-	if phantom_camera.Properties.follow_target_path:
-		phantom_camera.Properties.follow_target_node = phantom_camera.get_node(phantom_camera.Properties.follow_target_path)
+func camera_enter_tree(pcam: Node):
+	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
+	if pcam.Properties.follow_target_path:
+		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 
 
 func add_multiple_hosts_properties() -> Array:
 	var _property_list: Array
 
-	if scene_has_multiple_phantom_camera_hosts:
+	if scene_has_multiple_pcam_hosts:
 		_property_list.append({
-			"name": Constants.PHANTOM_CAMERA_HOST,
+			"name": Constants.PCAM_HOST,
 			"type": TYPE_INT,
 			"hint": PROPERTY_HINT_ENUM,
-			"hint_string": ",".join(PackedStringArray(camera_host_group)),
+			"hint_string": ",".join(PackedStringArray(pcam_host_group)),
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
 
@@ -155,35 +155,35 @@ func add_tween_properties() -> Array:
 	return _property_list
 
 
-func set_phantom_host_property(property: StringName, value, phantom_camera: Node):
-	if property == Constants.PHANTOM_CAMERA_HOST:
+func set_phantom_host_property(property: StringName, value, pcam: Node):
+	if property == Constants.PCAM_HOST:
 		if value != null && value is int:
 			var host_node = instance_from_id(value)
-			phantom_camera_host_owner = host_node
+			pcam_host_owner = host_node
 
 
-func set_priority_property(property: StringName, value, phantom_camera: Node):
+func set_priority_property(property: StringName, value, pcam: Node):
 	if property == Constants.PRIORITY_PROPERTY_NAME:
-		set_priority(value, phantom_camera)
+		set_priority(value, pcam)
 
 
-func set_trigger_onload_properties(property: StringName, value, phantom_camera: Node):
+func set_trigger_onload_properties(property: StringName, value, pcam: Node):
 	if property == Constants.TRIGGER_ONLOAD_NAME:
 		trigger_onload = value
 
 
-func set_follow_properties(property: StringName, value, phantom_camera: Node):
+func set_follow_properties(property: StringName, value, pcam: Node):
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME:
 		follow_target_path = value
 		var valueNodePath: NodePath = value as NodePath
 		if not valueNodePath.is_empty():
 			follow_has_target = true
-			if phantom_camera.has_node(follow_target_path):
-				follow_target_node = phantom_camera.get_node(follow_target_path)
+			if pcam.has_node(follow_target_path):
+				follow_target_node = pcam.get_node(follow_target_path)
 		else:
 			follow_has_target = false
 			follow_target_node = null
-		phantom_camera.notify_property_list_changed()
+		pcam.notify_property_list_changed()
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:
@@ -197,13 +197,13 @@ func set_follow_properties(property: StringName, value, phantom_camera: Node):
 	
 	if property == Constants.FOLLOW_DAMPING_NAME:
 		follow_has_damping = value
-		phantom_camera.notify_property_list_changed()
+		pcam.notify_property_list_changed()
 	
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME:
 		follow_damping_value = value 
 
 
-func set_tween_properties(property: StringName, value, phantom_camera):
+func set_tween_properties(property: StringName, value, pcam: Node):
 	if property == Constants.TWEEN_DURATION_PROPERTY_NAME:
 		tween_duration = value
 	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME:
@@ -224,7 +224,7 @@ func set_tween_properties(property: StringName, value, phantom_camera):
 			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
 			11:
 				tween_transition = 11
-		phantom_camera.notify_property_list_changed()
+		pcam.notify_property_list_changed()
 	if property == Constants.TWEEN_EASE_PROPERTY_NAME:
 		match value:
 			Tween.EASE_IN: 			tween_ease = Tween.EASE_IN
@@ -233,48 +233,48 @@ func set_tween_properties(property: StringName, value, phantom_camera):
 			Tween.EASE_OUT_IN: 		tween_ease = Tween.EASE_OUT_IN
 
 
-func set_priority(value: int, phantom_camera: Node) -> void:
+func set_priority(value: int, pcam: Node) -> void:
 	if value < 0:
 		printerr("Phantom Camera's priority cannot be less than 0")
 		priority = 0
 	else:
 		priority = value
 
-	if phantom_camera_host_owner:
-		phantom_camera_host_owner.phantom_camera_priority_updated(phantom_camera)
+	if pcam_host_owner:
+		pcam_host_owner.pcam_priority_updated(pcam)
 #	else:
 ##		TODO - Add logic to handle Phantom Camera Host in scene
 #		printerr("Trying to change priority without a Phantom Camera Host - Please attached one to a Camera3D")
 #		pass
 
 
-func assign_phantom_camera_host(phantom_camera: Node) -> void:
-	camera_host_group = phantom_camera.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+func assign_pcam_host(pcam: Node) -> void:
+	pcam_host_group = pcam.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
-	if camera_host_group.size() == 1:
-		phantom_camera_host_owner = phantom_camera.Properties.camera_host_group[0]
-		phantom_camera_host_owner.phantom_camera_added_to_scene(phantom_camera)
+	if pcam_host_group.size() == 1:
+		pcam_host_owner = pcam.Properties.pcam_host_group[0]
+		pcam_host_owner.pcam_added_to_scene(pcam)
 #	else:
 #		for camera_host in camera_host_group:
 #			print("Multiple PhantomCameraBases in scene")
-#			print(phantom_camera_host_group)
-#			print(phantom_camera.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
-#			multiple_phantom_camera_host_group.append(camera_host)
+#			print(pcam_host_group)
+#			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
+#			multiple_pcam_host_group.append(camera_host)
 #			return null
 
 
-func assign_specific_phantom_camera_host(phantom_camera: Node, phantom_camera_host: PhantomCameraHost) -> void:
-	phantom_camera_host_owner = phantom_camera_host
+func assign_specific_pcam_host(pcam: Node, pcam_host: PhantomCameraHost) -> void:
+	pcam_host = pcam
 
 
-func check_multiple_phantom_camera_host_property(phantom_camera: Node, multiple_host: bool = false) -> void:
+func check_multiple_pcam_host_property(pcam: Node, multiple_host: bool = false) -> void:
 	if not multiple_host:
-		scene_has_multiple_phantom_camera_hosts = false
+		scene_has_multiple_pcam_hosts = false
 	else:
-		scene_has_multiple_phantom_camera_hosts = true
+		scene_has_multiple_pcam_hosts = true
 
-	phantom_camera.notify_property_list_changed()
-#	phantom_camera_host_group.append_array(host_group)
+	pcam.notify_property_list_changed()
+#	pcam_host_group.append_array(host_group)
 
 
 # NOTE - Throws an error at the minute, need to find a reusable solution

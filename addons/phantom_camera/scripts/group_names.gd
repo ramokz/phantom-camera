@@ -1,5 +1,5 @@
 @tool
 extends RefCounted
 
-const PHANTOM_CAMERA_GROUP_NAME: StringName = "phantom_camera_group"
-const PHANTOM_CAMERA_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"
+const PCAM_GROUP_NAME: StringName = "phantom_camera_group"
+const PCAM_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"

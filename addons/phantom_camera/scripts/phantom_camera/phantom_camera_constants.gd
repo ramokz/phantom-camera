@@ -5,7 +5,7 @@ const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/p
 
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 
-const PHANTOM_CAMERA_HOST: StringName = "Phantom Camera Host"
+const PCAM_HOST: StringName = "Phantom Camera Host"
 
 const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
 

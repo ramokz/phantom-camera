@@ -3,7 +3,7 @@ class_name PhantomCameraHost
 extends Node
 @icon("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
 
-const PhantomCameraGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 
 var _damping: float
@@ -45,8 +45,8 @@ func _enter_tree() -> void:
 		else:
 			isCamera3D = true
 		
-		add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
-#		var already_multi_hosts: bool = multiple_phantom_camera_hosts
+		add_to_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
+#		var already_multi_hosts: bool = multiple_pcam_hosts
 
 		_check_camera_host_amount()
 
@@ -58,37 +58,37 @@ func _enter_tree() -> void:
 			)
 			queue_free()
 
-		var phantom_camera_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
-		for phantom_camera in phantom_camera_group_nodes:
+		var pcam_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
+		for pcam in pcam_group_nodes:
 			if not multiple_pcam_hosts:
 
-				phantom_camera_added_to_scene(phantom_camera)
-				phantom_camera.assign_phantom_camera_host()
+				pcam_added_to_scene(pcam)
+				pcam.assign_pcam_host()
 #			else:
-#				phantom_camera.Properties.check_multiple_phantom_camera_host_property(phantom_camera, phantom_camera_host_group, true)
+#				pcam.Properties.check_multiple_pcam_host_property(pcam, pca,_host_group, true)
 	else:
 		printerr("PhantomCameraHost is not a child of a Camera")
 
 
 func _exit_tree() -> void:
-	remove_from_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+	remove_from_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 	_check_camera_host_amount()
 
-	var phantom_camera_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
-	for phantom_camera in phantom_camera_group_nodes:
+	var pcam_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
+	for pcam in pcam_group_nodes:
 		if not multiple_pcam_hosts:
-			phantom_camera.Properties.check_multiple_phantom_camera_host_property(phantom_camera)
+			pcam.Properties.check_multiple_pcam_host_property(pcam)
 
 
 func _check_camera_host_amount():
-	pcam_host_group = get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME)
+	pcam_host_group = get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 	if pcam_host_group.size() > 1:
 		multiple_pcam_hosts = true
 	else:
 		multiple_pcam_hosts = false
 
 
-func _assign_new_active_phantom_camera(pcam: Node) -> void:
+func _assign_new_active_pcam(pcam: Node) -> void:
 	var no_previous_pcam: bool
 
 	if _active_pcam:
@@ -110,11 +110,11 @@ func _assign_new_active_phantom_camera(pcam: Node) -> void:
 	trigger_pcam_tween = true
 
 
-func _find_phantom_camera_with_highest_priority(should_animate: bool = true) -> void:
-#	if _phantom_camera_list.is_empty(): return
+func _find_pcam_with_highest_priority(should_animate: bool = true) -> void:
+#	if _pcam_list.is_empty(): return
 	for pcam in _pcam_list:
 		if pcam.get_priority() > _active_pcam_priority:
-			_assign_new_active_phantom_camera(pcam)
+			_assign_new_active_pcam(pcam)
 
 		_active_pcam_missing = false
 
@@ -177,29 +177,29 @@ func _process(delta: float) -> void:
 ##################
 # Public Functions
 ##################
-func phantom_camera_added_to_scene(phantom_camera: Node) -> void:
-	_pcam_list.append(phantom_camera)
+func pcam_added_to_scene(pcam: Node) -> void:
+	_pcam_list.append(pcam)
 	
-	if phantom_camera.Properties.trigger_onload:
-		_find_phantom_camera_with_highest_priority(false)
+	if pcam.Properties.trigger_onload:
+		_find_pcam_with_highest_priority(false)
 
 
-func phantom_camera_removed_from_scene(pcam) -> void:
+func pcam_removed_from_scene(pcam) -> void:
 	_pcam_list.erase(pcam)
 	if pcam == _active_pcam:
 		_active_pcam_missing = true
 		_active_pcam_priority = -1
-		_find_phantom_camera_with_highest_priority()
+		_find_pcam_with_highest_priority()
 
 
-func phantom_camera_priority_updated(pcam: Node) -> void:
+func pcam_priority_updated(pcam: Node) -> void:
 	var current_pcam_priority: int = pcam.get_priority()
 
 	if current_pcam_priority >= _active_pcam_priority and pcam != _active_pcam:
-		_assign_new_active_phantom_camera(pcam)
+		_assign_new_active_pcam(pcam)
 	elif pcam == _active_pcam:
 		if current_pcam_priority <= _active_pcam_priority:
 			_active_pcam_priority = current_pcam_priority
-			_find_phantom_camera_with_highest_priority()
+			_find_pcam_with_highest_priority()
 		else:
 			_active_pcam_priority = current_pcam_priority

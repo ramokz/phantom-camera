@@ -6,7 +6,7 @@ var phantom_camera_list_item := preload("res://addons/phantom_camera/editor/phan
 
 var camera_list: VBoxContainer = $VBoxContainer/ScrollContainer/PhantomCameraList
 
-var phantom_camera_group: Array[Node]
+var pcam_group: Array[Node]
 
 #	TODO - Enable once Editor work resumes
 
@@ -27,17 +27,17 @@ var phantom_camera_group: Array[Node]
 #		n.queue_free()
 #
 #	if get_tree().get_nodes_in_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME):
-#		phantom_camera_group = get_tree().get_nodes_in_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME)
-#		for n in phantom_camera_group:
-#			var _phantom_camera_list_item_instance = phantom_camera_list_item.instantiate()
+#		pcam_group = get_tree().get_nodes_in_group(PhantomCameraManager.PHANTOM_CAMERA_GROUP_NAME)
+#		for n in pcam_group:
+#			var _pcam_list_item_instance = pcam_list_item.instantiate()
 #
-#			var _phantom_camera_name: String = n.get_name()
+#			var _pcam_name: String = n.get_name()
 #
-#			var _phantom_camera_follow_target: String = ""
+#			var _pcam_follow_target: String = ""
 #			if n.follow_target_node:
-#				_phantom_camera_follow_target = n.follow_target_node.get_name()
+#				_pcam_follow_target = n.follow_target_node.get_name()
 #
-#			_phantom_camera_list_item_instance.init(_phantom_camera_name, _phantom_camera_follow_target)
-#			%PhantomCameraList.add_child(_phantom_camera_list_item_instance)
+#			_pcam_list_item_instance.init(_pcam_name, _pcam_follow_target)
+#			%PhantomCameraList.add_child(_pcam_list_item_instance)
 #	else:
 #		print("No phantom cameras in tree")

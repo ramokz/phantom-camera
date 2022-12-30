@@ -1,7 +1,7 @@
 @tool
 extends EditorInspectorPlugin
 
-var _phantom_camera_script: Script = preload("res://addons/phantom_camera/scripts/phantom_camera.gd")
+#var _phantom_camera_script: Script = preload("res://addons/phantom_camera/scripts/phantom_camera.gd")
 
 
 # 	TODO - Enable again once work is resumed for inspector based tasks

@@ -48,12 +48,12 @@ func _get(property: StringName):
 func _enter_tree() -> void:
 	Properties.is_2D = true;
 	Properties.camera_enter_tree(self)
-	Properties.assign_phantom_camera_host(self)
+	Properties.assign_pcam_host(self)
 
 
 func _exit_tree() -> void:
-	if Properties.phantom_camera_host_owner:
-		Properties.phantom_camera_host_owner.phantom_camera_removed_from_scene(self)
+	if Properties.pcam_host_owner:
+		Properties.pcam_host_owner.pcam_removed_from_scene(self)
 
 
 func _physics_process(delta: float) -> void:
