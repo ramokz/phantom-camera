@@ -99,7 +99,7 @@ func _assign_new_active_phantom_camera(pcam: Node) -> void:
 
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
-	_active_pcam_has_damping = pcam.Properties.follow_has_damping()
+	_active_pcam_has_damping = pcam.Properties.follow_has_damping
 	
 
 	if no_previous_pcam:
@@ -185,7 +185,7 @@ func phantom_camera_added_to_scene(phantom_camera: Node) -> void:
 
 
 func phantom_camera_removed_from_scene(pcam) -> void:
-	pcam.erase(pcam)
+	_pcam_list.erase(pcam)
 	if pcam == _active_pcam:
 		_active_pcam_missing = true
 		_active_pcam_priority = -1
