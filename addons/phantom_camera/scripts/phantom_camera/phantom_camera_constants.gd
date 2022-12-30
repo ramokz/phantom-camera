@@ -1,24 +1,20 @@
 @tool
 extends RefCounted
 
-# Scripts
 const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
-# General
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 
-# Camera Hosts
 const PHANTOM_CAMERA_HOST: StringName = "Phantom Camera Host"
 
-# Misc
 const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
 
-# Follow
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
-const FOLLOW_PARAMETERS_STRINGNAME: StringName = "Follow Parameters/"
-const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_STRINGNAME + "Follow Target Offset"
+const FOLLOW_PARAMETERS_NAME: StringName = "Follow Parameters/"
+const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping"
+const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping Value"
+const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Follow Target Offset"
 
-# TWEEN Variables
 const TWEEN_CATEGORY_NAME: StringName = "Tween Properties/"
 const TWEEN_TRANSITION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Transition"
 const TWEEN_EASE_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Ease"

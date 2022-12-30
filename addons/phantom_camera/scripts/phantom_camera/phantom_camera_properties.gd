@@ -4,6 +4,8 @@ extends RefCounted
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const PhantomCameraGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
+var is_2D: bool
+
 var phantom_camera_host_owner: PhantomCameraHost
 var scene_has_multiple_phantom_camera_hosts: bool
 var camera_host_group: Array[Node]
@@ -14,24 +16,19 @@ var trigger_onload: bool = true
 
 var follow_target_node: Node
 var follow_target_path: NodePath
-var has_follow_target: bool = false
+var follow_has_target: bool = false
 
-var follow_target_offset
+var follow_target_offset # Type is set by either 2D or 3D PCAM clases
+var follow_has_damping: bool
+var follow_damping_value: float = 10
 
-###################
-# Tween - Variables
-###################
 var tween_transition: Tween.TransitionType
-var tween_linear: bool
-
 var tween_ease: Tween.EaseType
-
+var tween_linear: bool
 var tween_duration: float = 1
 
-var is_2D: bool
 
-
-func enter_tree(phantom_camera: Node):
+func camera_enter_tree(phantom_camera: Node):
 	phantom_camera.add_to_group(PhantomCameraGroupNames.PHANTOM_CAMERA_GROUP_NAME)
 	if phantom_camera.Properties.follow_target_path:
 		phantom_camera.Properties.follow_target_node = phantom_camera.get_node(phantom_camera.Properties.follow_target_path)
@@ -86,7 +83,7 @@ func add_follow_properties() -> Array:
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
-	if has_follow_target:
+	if follow_has_target:
 		if is_2D:
 			_property_list.append({
 				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
@@ -101,6 +98,22 @@ func add_follow_properties() -> Array:
 				"hint": PROPERTY_HINT_NONE,
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
+			
+		_property_list.append({
+			"name": Constants.FOLLOW_DAMPING_NAME,
+			"type": TYPE_BOOL,
+			"hint": PROPERTY_HINT_NONE,
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+			
+		if follow_has_damping:
+			_property_list.append({
+					"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
+					"type": TYPE_FLOAT,
+					"hint": PROPERTY_HINT_RANGE,
+					"hint_string": "0.01, 100, 0.01,",
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
 
 	return _property_list
 
@@ -108,9 +121,6 @@ func add_follow_properties() -> Array:
 func add_tween_properties() -> Array:
 	var _property_list: Array
 
-	####################
-	# Tween - Properties
-	####################
 	_property_list.append({
 		"name": Constants.TWEEN_DURATION_PROPERTY_NAME,
 		"type": TYPE_FLOAT,
@@ -167,14 +177,11 @@ func set_follow_properties(property: StringName, value, phantom_camera: Node):
 		follow_target_path = value
 		var valueNodePath: NodePath = value as NodePath
 		if not valueNodePath.is_empty():
-			_reset_follow_target_offset()
-
-			has_follow_target = true
+			follow_has_target = true
 			if phantom_camera.has_node(follow_target_path):
 				follow_target_node = phantom_camera.get_node(follow_target_path)
 		else:
-			_reset_follow_target_offset()
-			has_follow_target = false
+			follow_has_target = false
 			follow_target_node = null
 		phantom_camera.notify_property_list_changed()
 
@@ -187,19 +194,16 @@ func set_follow_properties(property: StringName, value, phantom_camera: Node):
 				follow_target_offset = value
 		elif value is Vector2:
 			follow_target_offset = value
-
-
-func _reset_follow_target_offset() -> void:
-	if is_2D:
-		follow_target_offset = Vector2.ZERO
-	else:
-		follow_target_offset = Vector3.ZERO
+	
+	if property == Constants.FOLLOW_DAMPING_NAME:
+		follow_has_damping = value
+		phantom_camera.notify_property_list_changed()
+	
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME:
+		follow_damping_value = value 
 
 
 func set_tween_properties(property: StringName, value, phantom_camera):
-	####################
-	# Tween - Properties
-	####################
 	if property == Constants.TWEEN_DURATION_PROPERTY_NAME:
 		tween_duration = value
 	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME:
@@ -273,22 +277,16 @@ func check_multiple_phantom_camera_host_property(phantom_camera: Node, multiple_
 #	phantom_camera_host_group.append_array(host_group)
 
 
-# NOTE - Throws an error at the minute, needs to find a reusable solution
+# NOTE - Throws an error at the minute, need to find a reusable solution
 #func get_properties(property: StringName):
-#	######################
 #	# General - Properties
-#	######################
 #	if property == PhantomCameraConstants.PRIORITY_PROPERTY_NAME: return priority
 #
-#	#####################
 #	# Follow - Properties
-#	#####################
 #	if property == PhantomCameraConstants.FOLLOW_TARGET_PROPERTY_NAME: return follow_target_path
 #	if property == PhantomCameraConstants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return follow_target_offset
 #
-#	####################
 #	# Tween - Properties
-#	####################
 #	if property == PhantomCameraConstants.TWEEN_DURATION_PROPERTY_NAME: return tween_duration
 #	if property == PhantomCameraConstants.TWEEN_TRANSITION_PROPERTY_NAME: return tween_transition
 #	if property == PhantomCameraConstants.TWEEN_EASE_PROPERTY_NAME: return tween_ease

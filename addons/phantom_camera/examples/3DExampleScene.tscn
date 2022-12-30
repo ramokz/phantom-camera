@@ -73,7 +73,7 @@ size = Vector3(50, 40, 5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.83205, 0.5547, 0, -0.5547, 0.83205, 0.0451293, 2.5, 6.82771)
+transform = Transform3D(1, 0, 0, 0, 0.832051, 0.5547, 0, -0.5547, 0.832051, 0.0451293, 2.5, 6.82771)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
@@ -81,12 +81,14 @@ script = ExtResource("1_1ouug")
 [node name="PlayerGroup" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(1, 0, 0, 0, 0.83205, 0.554701, 0, -0.5547, 0.832051, 0.0451293, 2.5, 6.82771)
+transform = Transform3D(1, 0, 0, 0, 0.832051, 0.5547, 0, -0.5547, 0.832051, 0.0451293, 2.5, 6.82771)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Trigger on Load" = true
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
 "Follow Parameters/Follow Target Offset" = Vector3(0, 2, 3)
+"Follow Parameters/Damping" = true
+"Follow Parameters/Damping Value" = 10.0
 "Look At Target" = NodePath("../PlayerCharacterBody3D")
 "Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
 "Tween Properties/Duration" = 1.0
@@ -99,23 +101,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0451293, 0.5, 3.82771)
 script = ExtResource("5_c85ys")
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance" type="MeshInstance3D" parent="PlayerGroup/PlayerCharacterBody3D"]
-transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, 0, 0, 0)
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerGroup/PlayerCharacterBody3D"]
 mesh = SubResource("CapsuleMesh_g0eml")
-skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_flw6w")
+
+[node name="PlayerArea3D" type="Area3D" parent="PlayerGroup/PlayerCharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D/PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_dy1i7")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_dy1i7")
 
-[node name="Area3D" type="Area3D" parent="PlayerGroup/PlayerCharacterBody3D"]
+[node name="NPCGroup" type="Node" parent="."]
 
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D/Area3D"]
-shape = SubResource("CapsuleShape3D_dy1i7")
-
-[node name="NPC Group" type="Node" parent="."]
-
-[node name="NPCPhantomCamera3D" type="Node3D" parent="NPC Group"]
+[node name="NPCPhantomCamera3D" type="Node3D" parent="NPCGroup"]
 unique_name_in_owner = true
 transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.98802, 1.50739, 1.19719)
 script = ExtResource("2_y3dy8")
@@ -127,47 +127,47 @@ Priority = 0
 "Tween Properties/Transition" = 4
 "Tween Properties/Ease" = 1
 
-[node name="DescriptionLabel" type="Label3D" parent="NPC Group"]
+[node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(0.573577, -0.814813, -0.0842028, -2.63912e-09, -0.102793, 0.994703, -0.819152, -0.570538, -0.0589594, -3.45688, -0.413709, 0.7329)
 text = "Input Example"
 font_size = 96
 
-[node name="DialogueExampleLabel" type="Label3D" parent="NPC Group"]
+[node name="NPCDialogueExampleLabel" type="Label3D" parent="NPCGroup"]
 unique_name_in_owner = true
 transform = Transform3D(1, 4.54671e-10, 1.65487e-10, 4.25644e-10, 0.939693, 0.34202, 0, -0.34202, 0.939693, -4.46738, 1.58641, -0.253679)
 modulate = Color(1, 0.603922, 0.254902, 1)
 text = "Press [ F ] to change camera"
 
-[node name="InteractionZoneMesh" type="MeshInstance3D" parent="NPC Group"]
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="NPCGroup"]
 transform = Transform3D(0.819152, 4.83851e-10, -0.573576, -3.92481e-09, 1, -6.3473e-09, 0.573576, 7.45058e-09, 0.819152, -3.46138, -0.5, 0.775321)
 mesh = SubResource("BoxMesh_7tjw4")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_hpllm")
 metadata/_edit_group_ = true
 
-[node name="DialogueArea3D" type="Area3D" parent="NPC Group/InteractionZoneMesh"]
+[node name="NPCInteractionArea3D" type="Area3D" parent="NPCGroup/NPCInteractionZoneMesh"]
 unique_name_in_owner = true
 transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 monitorable = false
 
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="NPC Group/InteractionZoneMesh/DialogueArea3D"]
+[node name="NPCInterationCollisionShape3D" type="CollisionShape3D" parent="NPCGroup/NPCInteractionZoneMesh/NPCInteractionArea3D"]
 shape = SubResource("BoxShape3D_65o6h")
 
-[node name="NPC" type="StaticBody3D" parent="NPC Group"]
+[node name="NPC" type="StaticBody3D" parent="NPCGroup"]
 transform = Transform3D(1, 4.83851e-10, 0, 4.25644e-10, 1, -7.45058e-09, 0, 7.45058e-09, 1, -4.56338, 0.5, -0.272679)
 script = ExtResource("2_2n1da")
 
-[node name="PlayerCollisionShape3D2" type="CollisionShape3D" parent="NPC Group/NPC"]
+[node name="PlayerCollisionShape3D2" type="CollisionShape3D" parent="NPCGroup/NPC"]
 transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 shape = SubResource("CapsuleShape3D_tpc7d")
 
-[node name="NPCMesh" type="MeshInstance3D" parent="NPC Group/NPC"]
+[node name="NPCMesh" type="MeshInstance3D" parent="NPCGroup/NPC"]
 transform = Transform3D(1, -2.68591e-26, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("CapsuleMesh_g0eml")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_v5iy7")
 
-[node name="MoveToLocation" type="Node3D" parent="NPC Group"]
+[node name="MoveToLocation" type="Node3D" parent="NPCGroup"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.70084, 0.5, 0.962891)
 
@@ -232,6 +232,7 @@ metadata/_edit_lock_ = true
 [node name="Left Wall" type="StaticBody3D" parent="Environment/Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0.5, -6)
 metadata/_edit_group_ = true
+metadata/_edit_lock_ = true
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Environment/Environment/Left Wall"]
 mesh = SubResource("BoxMesh_gyp5s")
@@ -243,6 +244,7 @@ shape = SubResource("BoxShape3D_lfaqs")
 [node name="Left Wall2" type="StaticBody3D" parent="Environment/Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.9994, 0.501687, -11.0005)
 metadata/_edit_group_ = true
+metadata/_edit_lock_ = true
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Environment/Environment/Left Wall2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
@@ -255,6 +257,7 @@ shape = SubResource("BoxShape3D_lfaqs")
 [node name="Left Wall3" type="StaticBody3D" parent="Environment/Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -6.90828)
 metadata/_edit_group_ = true
+metadata/_edit_lock_ = true
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Environment/Environment/Left Wall3"]
 mesh = SubResource("BoxMesh_n70lt")
@@ -266,6 +269,7 @@ shape = SubResource("BoxShape3D_jxmqm")
 [node name="Back Wall" type="StaticBody3D" parent="Environment/Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.26633e-05, 0.499742, 10.5)
 metadata/_edit_group_ = true
+metadata/_edit_lock_ = true
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Environment/Environment/Back Wall"]
 mesh = SubResource("BoxMesh_x0tgm")
