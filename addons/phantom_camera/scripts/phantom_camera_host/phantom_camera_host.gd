@@ -184,11 +184,11 @@ func phantom_camera_added_to_scene(phantom_camera: Node) -> void:
 		_find_phantom_camera_with_highest_priority(false)
 
 
-func phantom_camera_removed_from_scene(phantom_camera) -> void:
-	_phantom_camera_list.erase(phantom_camera)
-	if phantom_camera == _active_phantom_camera:
-		_active_cam_missing = true
-		_active_phantom_camera_priority = -1
+func phantom_camera_removed_from_scene(pcam) -> void:
+	pcam.erase(pcam)
+	if pcam == _active_pcam:
+		_active_pcam_missing = true
+		_active_pcam_priority = -1
 		_find_phantom_camera_with_highest_priority()
 
 
