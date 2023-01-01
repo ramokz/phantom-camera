@@ -25,7 +25,6 @@ func _get_property_list() -> Array:
 	property_list.append_array(Properties.add_priority_properties())
 	property_list.append_array(Properties.add_trigger_onload_properties())
 	property_list.append_array(Properties.add_follow_properties())
-
 	property_list.append({
 		"name": _look_at_target_property_name,
 		"type": TYPE_NODE_PATH,
@@ -52,7 +51,8 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
 	Properties.set_trigger_onload_properties(property, value, self)	
 	Properties.set_follow_properties(property, value, self)
-
+	Properties.set_distance_properties(property, value, self)
+	
 	if property == _look_at_target_property_name:
 		_look_at_target_path = value
 		var valueNodePath: NodePath = value as NodePath
@@ -82,7 +82,8 @@ func _get(property: StringName):
 	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path
-	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset
+	if property == Constants.FOLLOW_DISTANCE_PROPERTY_NAME: return Properties.follow_distance
+	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset_3D
 	if property == Constants.FOLLOW_DAMPING_NAME: return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: return Properties.follow_damping_value
 
@@ -98,10 +99,12 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
+	Properties.is_3D = true;
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 	if _look_at_target_path:
 		look_at_target_node = get_node(_look_at_target_path)
+
 
 func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
@@ -110,7 +113,11 @@ func _exit_tree() -> void:
 
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
-		set_position(Properties.follow_target_node.position + Properties.follow_target_offset)
+		set_position(
+			Properties.follow_target_node.position +
+			Properties.follow_target_offset_3D +
+			Vector3(0, 0, Properties.follow_distance)
+		)
 
 	if look_at_target_node:
 		look_at(look_at_target_node.position)

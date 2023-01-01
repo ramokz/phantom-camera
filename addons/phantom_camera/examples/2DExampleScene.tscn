@@ -34,8 +34,8 @@ script = ExtResource("2_mgsut")
 Priority = 0
 "Trigger on Load" = true
 "Follow Target" = NodePath("../CharacterBody2D")
-"Follow Parameters/Follow Target Offset" = Vector2(0, 0)
-"Follow Parameters/Damping" = false
+"Follow Parameters/Distance" = null
+"Follow Parameters/Target Offset" = Vector2(0, 0)
 "Tween Properties/Duration" = 1.0
 "Tween Properties/Transition" = 0
 

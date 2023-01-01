@@ -4,7 +4,7 @@ extends RefCounted
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const PcamGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-var is_2D: bool
+var is_3D: bool
 
 var pcam_host_owner: PhantomCameraHost
 var scene_has_multiple_pcam_hosts: bool
@@ -18,7 +18,9 @@ var follow_target_node: Node
 var follow_target_path: NodePath
 var follow_has_target: bool = false
 
-var follow_target_offset # Type is set by either 2D or 3D PCAM clases
+var follow_distance: float = 1
+var follow_target_offset_2D: Vector2
+var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
@@ -83,22 +85,30 @@ func add_follow_properties() -> Array:
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
+		
 	if follow_has_target:
-		if is_2D:
+		if is_3D:
 			_property_list.append({
-				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-				"type": TYPE_VECTOR2,
+				"name": Constants.FOLLOW_DISTANCE_PROPERTY_NAME,
+				"type": TYPE_FLOAT,
 				"hint": PROPERTY_HINT_NONE,
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
-		else:
+			
 			_property_list.append({
 				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
 				"type": TYPE_VECTOR3,
 				"hint": PROPERTY_HINT_NONE,
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
-			
+		else:
+			_property_list.append({
+				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
+				"type": TYPE_VECTOR2,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+		
 		_property_list.append({
 			"name": Constants.FOLLOW_DAMPING_NAME,
 			"type": TYPE_BOOL,
@@ -108,12 +118,12 @@ func add_follow_properties() -> Array:
 			
 		if follow_has_damping:
 			_property_list.append({
-					"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
-					"type": TYPE_FLOAT,
-					"hint": PROPERTY_HINT_RANGE,
-					"hint_string": "0.01, 100, 0.01,",
-					"usage": PROPERTY_USAGE_DEFAULT,
-				})
+				"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
+				"type": TYPE_FLOAT,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0.01, 100, 0.01,",
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
 
 	return _property_list
 
@@ -187,14 +197,10 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:
-			if value == Vector3.ZERO:
-				printerr("Follow Offset cannot be 0,0,0, resetting to 0,0,1")
-				follow_target_offset = Vector3(0,0,1)
-			else:
-				follow_target_offset = value
-		elif value is Vector2:
-			follow_target_offset = value
-	
+			follow_target_offset_3D = value
+		else:
+			follow_target_offset_2D = value
+
 	if property == Constants.FOLLOW_DAMPING_NAME:
 		follow_has_damping = value
 		pcam.notify_property_list_changed()
@@ -202,6 +208,12 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME:
 		follow_damping_value = value 
 
+func set_distance_properties(property: StringName, value, pcam) -> void:
+	if property == Constants.FOLLOW_DISTANCE_PROPERTY_NAME:
+		if value == 0:
+			follow_distance = 0.001
+		else:
+			follow_distance = value
 
 func set_tween_properties(property: StringName, value, pcam: Node):
 	if property == Constants.TWEEN_DURATION_PROPERTY_NAME:

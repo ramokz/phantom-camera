@@ -30,11 +30,10 @@ func _set(property: StringName, value) -> bool:
 
 func _get(property: StringName):
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
-
 	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path
-	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset
+	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset_2D
 	if property == Constants.FOLLOW_DAMPING_NAME: return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: return Properties.follow_damping_value
 
@@ -46,7 +45,6 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
-	Properties.is_2D = true;
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
@@ -58,7 +56,10 @@ func _exit_tree() -> void:
 
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
-		set_global_position(Properties.follow_target_node.get_global_position() + Properties.follow_target_offset)
+		set_global_position(
+			Properties.follow_target_node.get_global_position() +
+			Properties.follow_target_offset_2D
+		)
 
 
 ##################

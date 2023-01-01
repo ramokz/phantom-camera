@@ -73,7 +73,7 @@ size = Vector3(50, 40, 5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.832051, 0.5547, 0, -0.5547, 0.832051, 0.0451293, 2.5, 6.82771)
+transform = Transform3D(1, 0, 0, 0, 0.894427, 0.447214, 0, -0.447214, 0.894427, 0.0451293, 2.5, 7.82771)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
@@ -81,19 +81,18 @@ script = ExtResource("1_1ouug")
 [node name="PlayerGroup" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(1, 0, 0, 0, 0.832051, 0.5547, 0, -0.5547, 0.832051, 0.0451293, 2.5, 6.82771)
+transform = Transform3D(1, 0, 0, 0, 0.894427, 0.447214, 0, -0.447214, 0.894427, 0.0451293, 2.5, 7.82771)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Trigger on Load" = true
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
-"Follow Parameters/Follow Target Offset" = Vector3(0, 2, 3)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
+"Follow Parameters/Distance" = 4.0
+"Follow Parameters/Target Offset" = Vector3(0, 2, 0)
+"Follow Parameters/Damping" = false
 "Look At Target" = NodePath("../PlayerCharacterBody3D")
 "Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
-"Tween Properties/Duration" = 1.0
-"Tween Properties/Transition" = 2
-"Tween Properties/Ease" = 0
+"Tween Properties/Duration" = 1.2
+"Tween Properties/Transition" = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
@@ -123,9 +122,9 @@ Priority = 0
 "Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
-"Tween Properties/Duration" = 0.9
-"Tween Properties/Transition" = 4
-"Tween Properties/Ease" = 1
+"Tween Properties/Duration" = 1.0
+"Tween Properties/Transition" = 0
+"Tween Properties/Ease" = 0
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(0.573577, -0.814813, -0.0842028, -2.63912e-09, -0.102793, 0.994703, -0.819152, -0.570538, -0.0589594, -3.45688, -0.413709, 0.7329)
@@ -180,8 +179,8 @@ Priority = 0
 "Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
-"Tween Properties/Duration" = 1.2
-"Tween Properties/Transition" = 5
+"Tween Properties/Duration" = 1.0
+"Tween Properties/Transition" = 0
 "Tween Properties/Ease" = 0
 
 [node name="FixedCameraLabel" type="Label3D" parent="FixedCameraTriggerZone"]
@@ -277,3 +276,14 @@ skeleton = NodePath("")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Environment/Back Wall"]
 shape = SubResource("BoxShape3D_t67ef")
+
+[node name="PhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34285, 0, 5.39292)
+script = ExtResource("2_y3dy8")
+Priority = 0
+"Trigger on Load" = true
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 1.0
+"Tween Properties/Transition" = 0
+"Tween Properties/Ease" = 0
