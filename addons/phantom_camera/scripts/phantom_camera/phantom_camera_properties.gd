@@ -64,14 +64,14 @@ func add_priority_properties() -> Array:
 
 func add_trigger_onload_properties() -> Array:
 	var _property_list: Array
-	
+
 	_property_list.append({
 		"name": Constants.TRIGGER_ONLOAD_NAME,
 		"type": TYPE_BOOL,
 		"hint": PROPERTY_HINT_NONE,
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
-	
+
 	return _property_list
 
 func add_follow_properties() -> Array:
@@ -84,7 +84,7 @@ func add_follow_properties() -> Array:
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
-		
+
 	if follow_has_target:
 		if is_3D:
 			_property_list.append({
@@ -100,14 +100,14 @@ func add_follow_properties() -> Array:
 				"hint": PROPERTY_HINT_NONE,
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
-		
+
 		_property_list.append({
 			"name": Constants.FOLLOW_DAMPING_NAME,
 			"type": TYPE_BOOL,
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
-			
+
 		if follow_has_damping:
 			_property_list.append({
 				"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
@@ -196,9 +196,9 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 	if property == Constants.FOLLOW_DAMPING_NAME:
 		follow_has_damping = value
 		pcam.notify_property_list_changed()
-	
+
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME:
-		follow_damping_value = value 
+		follow_damping_value = value
 
 func set_tween_properties(property: StringName, value, pcam: Node):
 	if property == Constants.TWEEN_DURATION_PROPERTY_NAME:
@@ -209,7 +209,6 @@ func set_tween_properties(property: StringName, value, pcam: Node):
 			Tween.TRANS_LINEAR:
 				tween_transition = Tween.TRANS_LINEAR
 				tween_linear = true # Disables Easing property as it has no effect on Linear transitions
-			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
 			Tween.TRANS_SINE: 		tween_transition = Tween.TRANS_SINE
 			Tween.TRANS_QUINT: 		tween_transition = Tween.TRANS_QUINT
 			Tween.TRANS_QUART: 		tween_transition = Tween.TRANS_QUART
@@ -217,6 +216,7 @@ func set_tween_properties(property: StringName, value, pcam: Node):
 			Tween.TRANS_EXPO: 		tween_transition = Tween.TRANS_EXPO
 			Tween.TRANS_ELASTIC: 	tween_transition = Tween.TRANS_ELASTIC
 			Tween.TRANS_CUBIC:		tween_transition = Tween.TRANS_CUBIC
+			Tween.TRANS_CIRC:		tween_transition = Tween.TRANS_CIRC
 			Tween.TRANS_BOUNCE: 	tween_transition = Tween.TRANS_BOUNCE
 			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
 			11:
