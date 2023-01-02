@@ -5,7 +5,6 @@ extends Node
 
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-
 var _damping: float
 
 var _pcam_tween: Tween
@@ -44,7 +43,7 @@ func _enter_tree() -> void:
 			isCamera3D = false
 		else:
 			isCamera3D = true
-		
+
 		add_to_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
 
@@ -100,7 +99,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.Properties.follow_has_damping
-	
+
 
 	if no_previous_pcam:
 		_previous_active_pcam_position = _active_pcam.get_position()
@@ -153,7 +152,7 @@ func _pcam_follow(delta: float) -> void:
 		)
 	else:
 		camera.set_position(_active_pcam.get_global_position())
-	
+
 	camera.set_rotation(_active_pcam.get_global_rotation())
 
 
@@ -179,7 +178,7 @@ func _process(delta: float) -> void:
 ##################
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
-	
+
 	if pcam.Properties.trigger_onload:
 		_find_pcam_with_highest_priority(false)
 

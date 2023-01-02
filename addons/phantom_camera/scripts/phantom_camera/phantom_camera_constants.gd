@@ -13,7 +13,6 @@ const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
 const FOLLOW_PARAMETERS_NAME: StringName = "Follow Parameters/"
 const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping"
 const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping Value"
-const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Distance"
 const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Target Offset"
 
 const TWEEN_CATEGORY_NAME: StringName = "Tween Properties/"

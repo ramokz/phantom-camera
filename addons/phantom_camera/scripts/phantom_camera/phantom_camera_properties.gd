@@ -18,7 +18,6 @@ var follow_target_node: Node
 var follow_target_path: NodePath
 var follow_has_target: bool = false
 
-var follow_distance: float = 1
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
@@ -88,13 +87,6 @@ func add_follow_properties() -> Array:
 		
 	if follow_has_target:
 		if is_3D:
-			_property_list.append({
-				"name": Constants.FOLLOW_DISTANCE_PROPERTY_NAME,
-				"type": TYPE_FLOAT,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT,
-			})
-			
 			_property_list.append({
 				"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
 				"type": TYPE_VECTOR3,
@@ -207,13 +199,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 	
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME:
 		follow_damping_value = value 
-
-func set_distance_properties(property: StringName, value, pcam) -> void:
-	if property == Constants.FOLLOW_DISTANCE_PROPERTY_NAME:
-		if value == 0:
-			follow_distance = 0.001
-		else:
-			follow_distance = value
 
 func set_tween_properties(property: StringName, value, pcam: Node):
 	if property == Constants.TWEEN_DURATION_PROPERTY_NAME:
