@@ -23,31 +23,31 @@ const TWEEN_EASE_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Ease"
 const TWEEN_DURATION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Duration"
 
 enum FollowMode {
-	NONE = 0,
-	SIMPLE_FOLLOW = 1,
-	FRAMED_FOLLOW = 2,
-	GLUED_FOLLOW = 3,
+	NONE 			= 0,
+	GLUED_FOLLOW 	= 1,
+	SIMPLE_FOLLOW 	= 2,
+#	FRAMED_FOLLOW 	= 3,
 #	TODO - Path Track Follow
 }
 
 enum TweenTransitions {
-	LINEAR = 0,
-	SINE = 1,
-	QUINT = 2,
-	QUART = 3,
-	QUAD = 4,
-	EXPO = 5,
+	LINEAR 	= 0,
+	SINE 	= 1,
+	QUINT 	= 2,
+	QUART 	= 3,
+	QUAD 	= 4,
+	EXPO 	= 5,
 	ELASTIC = 6,
-	CUBIC = 7,
-	CIRC = 8,
-	BOUNCE = 9,
-	BACK = 10,
+	CUBIC 	= 7,
+	CIRC 	= 8,
+	BOUNCE 	= 9,
+	BACK 	= 10,
 #	TODO - CUSTOM = 11
 }
 
 enum TweenEases {
-	EASE_IN = 0,
-	EASE_OUT = 1,
+	EASE_IN 	= 0,
+	EASE_OUT 	= 1,
 	EASE_IN_OUT = 2,
 	EASE_OUT_IN = 3,
 }

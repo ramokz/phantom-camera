@@ -32,13 +32,13 @@ func _get_property_list() -> Array:
 	property_list.append_array(Properties.add_follow_target_property())
 	property_list.append_array(Properties.add_follow_mode_property())
 
-	if Properties.follow_mode != Constants.FollowMode.NONE && Properties.follow_mode != Constants.FollowMode.GLUED_FOLLOW:
-		property_list.append({
-			"name": FOLLOW_DISTANCE_PROPERTY_NAME,
-			"type": TYPE_FLOAT,
-			"hint": PROPERTY_HINT_NONE,
-			"usage": PROPERTY_USAGE_DEFAULT,
-		})
+#	if Properties.follow_mode == Constants.FollowMode.FRAMED_FOLLOW:
+#		property_list.append({
+#			"name": FOLLOW_DISTANCE_PROPERTY_NAME,
+#			"type": TYPE_FLOAT,
+#			"hint": PROPERTY_HINT_NONE,
+#			"usage": PROPERTY_USAGE_DEFAULT,
+#		})
 
 	property_list.append_array(Properties.add_follow_properties())
 
@@ -144,17 +144,20 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
 		match Properties.follow_mode:
+
 			Constants.FollowMode.SIMPLE_FOLLOW:
 				set_global_position(
 					Properties.follow_target_node.position +
 					Properties.follow_target_offset_3D
 				)
-			Constants.FollowMode.FRAMED_FOLLOW:
-				set_global_position(
-					Properties.follow_target_node.position +
-					Properties.follow_target_offset_3D +
-					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-				)
+
+#			Constants.FollowMode.FRAMED_FOLLOW:
+#				set_global_position(
+#					Properties.follow_target_node.position +
+#					Properties.follow_target_offset_3D +
+#					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+#				)
+
 			Constants.FollowMode.GLUED_FOLLOW:
 				set_global_position(Properties.follow_target_node.position)
 
