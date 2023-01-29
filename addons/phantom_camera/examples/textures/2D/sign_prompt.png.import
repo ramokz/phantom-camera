@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bloouh2jtndx1"
-path="res://.godot/imported/sign_prompt.png-7d16267322ec1fd99a8c549bc0a7d12e.ctex"
+path="res://.godot/imported/sign_prompt.png-18d451127e1cd1a16367acd23cec47e5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/phantom_camera/examples/Textures/2D/sign_prompt.png"
-dest_files=["res://.godot/imported/sign_prompt.png-7d16267322ec1fd99a8c549bc0a7d12e.ctex"]
+source_file="res://addons/phantom_camera/examples/textures/2D/sign_prompt.png"
+dest_files=["res://.godot/imported/sign_prompt.png-18d451127e1cd1a16367acd23cec47e5.ctex"]
 
 [params]
 

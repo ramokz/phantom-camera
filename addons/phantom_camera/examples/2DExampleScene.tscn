@@ -1,16 +1,16 @@
-[gd_scene load_steps=14 format=3 uid="uid://7mfjsp87f1gr"]
+[gd_scene load_steps=14 format=3 uid="uid://bds64oihh6xh6"]
 
+[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_1utlo"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
-[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/Textures/2D/sheet_9.png" id="5_4fiiw"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/Textures/2D/PhantomCamera2DSprite.png" id="6_2b2bo"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/Fonts/NunitoSans-Black.ttf" id="6_akfb5"]
-[ext_resource type="PackedScene" uid="uid://bk8uwbuf86jb0" path="res://addons/phantom_camera/examples/UI/UISign.tscn" id="6_kqt1v"]
-[ext_resource type="PackedScene" uid="uid://c4lfo2uxwxd5b" path="res://addons/phantom_camera/examples/UI/UIInventory.tscn" id="7_fdx1s"]
+[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_akfb5"]
+[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="6_e46ea"]
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="6_kqt1v"]
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="7_fdx1s"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
-texture = ExtResource("5_4fiiw")
+texture = ExtResource("1_1utlo")
 0:0/0 = 0
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:0/0/physics_layer_0/angular_velocity = 0.0
@@ -691,7 +691,7 @@ vertical_alignment = 1
 [node name="PlayerSprite" type="Sprite2D" parent="CharacterBody2D"]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("6_2b2bo")
+texture = ExtResource("6_e46ea")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 position = Vector2(0, -0.5)

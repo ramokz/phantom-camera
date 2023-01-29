@@ -1,9 +1,9 @@
-[gd_scene load_steps=27 format=3 uid="uid://sbscq77w8x23"]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/Models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
 

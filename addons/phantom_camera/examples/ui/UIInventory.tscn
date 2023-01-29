@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://c4lfo2uxwxd5b"]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" uid="uid://b7cs6me43ufh3" path="res://addons/phantom_camera/examples/Textures/2D/inventory_container.png" id="1_pi2dp"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/Fonts/NunitoSans-Black.ttf" id="2_lj1r6"]
+[ext_resource type="Texture2D" uid="uid://b7cs6me43ufh3" path="res://addons/phantom_camera/examples/textures/2D/inventory_container.png" id="1_pi2dp"]
+[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_lj1r6"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
