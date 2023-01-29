@@ -4,12 +4,12 @@ extends CharacterBody2D
 @onready var player_sprite: Sprite2D = %PlayerSprite
 @onready var interaction_prompt: Panel = %InteractionPrompt
 @onready var ui_sign:Control = %UISign
-
-@onready var item_focus_pcam2D: PhantomCamera2D = %ItemFocusPhantomCamera2D
+@onready var item_pcam2D: PhantomCamera2D = %ItemFocusPhantomCamera2D
+@onready var inventory_pcam2D: PhantomCamera2D = %InventoryPhantomCamera2D
+@onready var dark_overlay: ColorRect = %DarkOverlay
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"
-
 const INPUT_MOVE_LEFT_STRINGNAME: StringName = "move_left"
 const INPUT_MOVE_RIGHT_STRINGNAME: StringName = "move_right"
 
@@ -19,9 +19,18 @@ const JUMP_VELOCITY = -750.0
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: int = 2400
 var _is_interactive: bool
+var _can_open_inventory: bool
 var _movement_disabled: bool
-
 var tween: Tween
+var _interactive_UI: Control
+var _active_pcam: PhantomCamera2D
+
+enum InteractiveType {
+	NONE = 0,
+	ITEM = 1,
+	INVENTORY = 2,
+}
+var _interactive_object: InteractiveType = InteractiveType.NONE
 
 var InputMovementDic: Dictionary = {
 	INPUT_MOVE_LEFT_STRINGNAME: {
@@ -38,8 +47,6 @@ var InputMovementDic: Dictionary = {
 func _ready() -> void:
 	player_area2D.connect("body_shape_entered", _show_prompt)
 	player_area2D.connect("body_shape_exited", _hide_prompt)
-
-
 
 	for input in InputMovementDic:
 		var key_val = InputMovementDic[input].get(KEY_STRINGNAME)
@@ -61,28 +68,40 @@ func _unhandled_input(event: InputEvent) -> void:
 				tween = get_tree().create_tween()
 
 				_movement_disabled = true
-				item_focus_pcam2D.set_priority(10)
-				ui_sign.modulate.a = 0
-				ui_sign.visible = true
-				tween.tween_property(ui_sign, "modulate", Color.WHITE, 1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CIRC)
+				_active_pcam.set_priority(10)
+
+				_show_interactive_node(_interactive_UI)
+				_interactive_node_logic()
+
 			else:
-				_ui_defocus()
-#				_movement_disabled = false
-#				item_focus_pcam2D.set_priority(0)
-#				tween.tween_property(ui_sign, "modulate", Color.TRANSPARENT, 0.2).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CIRC)
-#				tween.tween_callback(ui_sign.set_visible.bind(false))
+				_hide_interactive_node(_interactive_UI)
+				_interactive_node_logic()
+
 
 		if Input.is_physical_key_pressed(KEY_ESCAPE) and _movement_disabled:
-			_ui_defocus()
-			_movement_disabled = false
-			item_focus_pcam2D.set_priority(0)
-			ui_sign.visible = false
+			_hide_interactive_node(_interactive_UI)
+			_interactive_node_logic()
 
 
-func _ui_defocus() -> void:
+func _show_interactive_node(UI: Control) -> void:
+	UI.modulate.a = 0
+	UI.visible = true
+	tween.tween_property(UI, "modulate", Color.WHITE, 1).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CIRC)
+
+
+func _hide_interactive_node(UI: Control) -> void:
 	_movement_disabled = false
-	item_focus_pcam2D.set_priority(0)
-	ui_sign.visible = false
+	_active_pcam.set_priority(0)
+	UI.visible = false
+
+
+func _interactive_node_logic() -> void:
+	match _interactive_object:
+		2:
+			if _movement_disabled:
+				dark_overlay.set_visible(true)
+			else:
+				dark_overlay.set_visible(false)
 
 
 func _physics_process(delta: float) -> void:
@@ -119,12 +138,20 @@ func _show_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 		var cell_data: TileData = tile_map.get_cell_tile_data(1, tile_coords)
 
 		if cell_data:
-			var cell_global_pos: Vector2 = tile_map.to_global(tile_map.map_to_local(tile_coords))
-			interaction_prompt.set_visible(true)
+			var cell_data_type: StringName = cell_data.get_custom_data("Type")
+#			var cell_global_pos: Vector2 = tile_map.to_global(tile_map.map_to_local(tile_coords))
 			_is_interactive = true
+			interaction_prompt.set_visible(true)
 
-#		print(cell_data.get_custom_data("Text"))
-#		print(cell_global_pos)
+			match cell_data_type:
+				"Sign":
+					_interactive_UI = %UISign
+					_active_pcam = item_pcam2D
+					_interactive_object = InteractiveType.ITEM
+				"Inventory":
+					_interactive_UI = %UIInventory
+					_interactive_object = InteractiveType.INVENTORY
+					_active_pcam = inventory_pcam2D
 
 
 func _hide_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shape: int) -> void:
@@ -137,3 +164,7 @@ func _hide_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 		if cell_data:
 			interaction_prompt.set_visible(false)
 			_is_interactive = false
+			_interactive_UI = null
+			_interactive_object = InteractiveType.NONE
+			_active_pcam = null
+

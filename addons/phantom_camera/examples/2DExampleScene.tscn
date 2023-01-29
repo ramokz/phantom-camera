@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://7mfjsp87f1gr"]
+[gd_scene load_steps=14 format=3 uid="uid://7mfjsp87f1gr"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/Textures/2D/PhantomCamera2DSprite.png" id="6_2b2bo"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/Fonts/NunitoSans-Black.ttf" id="6_akfb5"]
 [ext_resource type="PackedScene" uid="uid://bk8uwbuf86jb0" path="res://addons/phantom_camera/examples/UI/UISign.tscn" id="6_kqt1v"]
+[ext_resource type="PackedScene" uid="uid://c4lfo2uxwxd5b" path="res://addons/phantom_camera/examples/UI/UIInventory.tscn" id="7_fdx1s"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("5_4fiiw")
@@ -241,7 +242,7 @@ texture = ExtResource("5_4fiiw")
 14:0/0/physics_layer_1/linear_velocity = Vector2(0, 0)
 14:0/0/physics_layer_1/angular_velocity = 0.0
 14:0/0/physics_layer_1/polygon_0/points = PackedVector2Array(8, -8, 8, 8, -8, 8)
-14:0/0/custom_data_0 = "Stay Awhile and Read"
+14:0/0/custom_data_0 = &"Sign"
 15:0/0 = 0
 15:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 15:0/0/physics_layer_0/angular_velocity = 0.0
@@ -443,6 +444,7 @@ texture = ExtResource("5_4fiiw")
 14:4/0/physics_layer_1/linear_velocity = Vector2(0, 0)
 14:4/0/physics_layer_1/angular_velocity = 0.0
 14:4/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, -8, 8, 8, 8, 8, -8)
+14:4/0/custom_data_0 = &"Inventory"
 15:4/0 = 0
 15:4/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 15:4/0/physics_layer_0/angular_velocity = 0.0
@@ -554,12 +556,8 @@ texture = ExtResource("5_4fiiw")
 physics_layer_0/collision_layer = 1
 physics_layer_1/collision_layer = 2
 physics_layer_1/collision_mask = 2
-custom_data_layer_0/name = "Text"
-custom_data_layer_0/type = 4
-custom_data_layer_1/name = "Signal"
-custom_data_layer_1/type = 26
-custom_data_layer_2/name = ""
-custom_data_layer_2/type = 22
+custom_data_layer_0/name = "Type"
+custom_data_layer_0/type = 21
 sources/0 = SubResource("TileSetAtlasSource_easgx")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hryl"]
@@ -583,7 +581,7 @@ size = Vector2(42, 57)
 [node name="ExampleScene2D" type="Node2D"]
 
 [node name="Background" type="CanvasLayer" parent="."]
-layer = -1
+layer = -3
 
 [node name="ColorRect" type="ColorRect" parent="Background"]
 anchors_preset = 15
@@ -600,6 +598,7 @@ localize_numeral_system = false
 color = Color(0.137255, 0.14902, 0.196078, 1)
 
 [node name="TileMap" type="TileMap" parent="."]
+z_index = -1
 scale = Vector2(3, 3)
 tile_set = SubResource("TileSet_kf7eg")
 format = 2
@@ -637,9 +636,24 @@ Zoom = Vector2(1, 1)
 "Tween Properties/Ease" = 1
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
-z_index = 1
 position = Vector2(243, -28)
 script = ExtResource("4_jnuod")
+
+[node name="DarkOverlay" type="ColorRect" parent="CharacterBody2D"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.615686)
 
 [node name="InteractionPrompt" type="Panel" parent="CharacterBody2D"]
 unique_name_in_owner = true
@@ -694,17 +708,33 @@ shape = SubResource("RectangleShape2D_18i13")
 
 [node name="ItemFocusPhantomCamera2D" type="Node2D" parent="CharacterBody2D"]
 unique_name_in_owner = true
-position = Vector2(-1, -193)
+position = Vector2(0, -122)
 script = ExtResource("2_mgsut")
 Priority = 0
 "Trigger on Load" = false
-Zoom = Vector2(1.5, 1.5)
+Zoom = Vector2(2, 2)
 "Follow Target" = NodePath("")
 "Tween Properties/Duration" = 0.6
 "Tween Properties/Transition" = 8
 "Tween Properties/Ease" = 1
 
+[node name="InventoryPhantomCamera2D" type="Node2D" parent="CharacterBody2D"]
+unique_name_in_owner = true
+position = Vector2(-183, -5)
+script = ExtResource("2_mgsut")
+Priority = 0
+"Trigger on Load" = false
+Zoom = Vector2(2.5, 2.5)
+"Follow Target" = NodePath("")
+"Tween Properties/Duration" = 0.6
+"Tween Properties/Transition" = 5
+"Tween Properties/Ease" = 1
+
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="UIInventory" parent="UI" instance=ExtResource("7_fdx1s")]
+unique_name_in_owner = true
+visible = false
 
 [node name="UISign" parent="UI" instance=ExtResource("6_kqt1v")]
 unique_name_in_owner = true
