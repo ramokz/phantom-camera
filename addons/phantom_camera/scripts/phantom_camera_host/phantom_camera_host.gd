@@ -31,6 +31,8 @@ var pcam_host_group: Array[Node]
 var is_child_of_camera: bool = false
 var isCamera3D: bool
 
+var camera_zoom
+
 ###################
 # Private Functions
 ###################
@@ -100,6 +102,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.Properties.follow_has_damping
 
+	if camera is Camera2D:
+		camera_zoom = camera.get_zoom()
+
 
 	if no_previous_pcam:
 		_previous_active_pcam_position = _active_pcam.get_position()
@@ -127,7 +132,7 @@ func _tween_pcam(delta: float) -> void:
 			tween_duration,
 			_active_pcam.get_tween_duration(),
 			_active_pcam.get_tween_transition(),
-			Tween.EASE_IN_OUT
+			_active_pcam.get_tween_ease(),
 		)
 	)
 	camera.set_rotation(
@@ -137,9 +142,21 @@ func _tween_pcam(delta: float) -> void:
 			tween_duration, \
 			_active_pcam.get_tween_duration(), \
 			_active_pcam.get_tween_transition(),
-			Tween.EASE_IN_OUT
+			_active_pcam.get_tween_ease(),
 		)
 	)
+
+	if camera is Camera2D:
+		camera.set_zoom(
+			Tween.interpolate_value(
+				camera_zoom, \
+				_active_pcam.zoom - camera_zoom,
+				tween_duration, \
+				_active_pcam.get_tween_duration(), \
+				_active_pcam.get_tween_transition(),
+				_active_pcam.get_tween_ease(),
+			)
+		)
 
 
 func _pcam_follow(delta: float) -> void:

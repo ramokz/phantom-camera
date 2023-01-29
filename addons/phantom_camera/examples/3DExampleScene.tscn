@@ -91,8 +91,9 @@ Priority = 3
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
 "Look At Target" = NodePath("")
-"Tween Properties/Duration" = 1.0
-"Tween Properties/Transition" = 0
+"Tween Properties/Duration" = 0.9
+"Tween Properties/Transition" = 5
+"Tween Properties/Ease" = 2
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
@@ -123,7 +124,8 @@ Priority = 0
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
 "Tween Properties/Duration" = 1.0
-"Tween Properties/Transition" = 0
+"Tween Properties/Transition" = 3
+"Tween Properties/Ease" = 2
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(0.573577, -0.814813, -0.0842028, -2.63912e-09, -0.102793, 0.994703, -0.819152, -0.570538, -0.0589594, -3.45688, -0.413709, 0.7329)
@@ -178,8 +180,9 @@ Priority = 0
 "Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
-"Tween Properties/Duration" = 1.0
-"Tween Properties/Transition" = 0
+"Tween Properties/Duration" = 1.2
+"Tween Properties/Transition" = 2
+"Tween Properties/Ease" = 2
 
 [node name="FixedCameraLabel" type="Label3D" parent="FixedCameraTriggerZone"]
 unique_name_in_owner = true
