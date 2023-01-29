@@ -186,3 +186,7 @@ func get_tween_duration() -> float:
 
 func get_tween_transition() -> int:
 	return Properties.tween_transition
+
+
+func get_tween_ease() -> int:
+	return Properties.tween_ease

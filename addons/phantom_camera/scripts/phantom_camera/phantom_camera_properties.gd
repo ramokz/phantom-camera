@@ -25,7 +25,7 @@ var follow_has_damping: bool
 var follow_damping_value: float = 10
 
 var tween_transition: Tween.TransitionType
-var tween_ease: Tween.EaseType
+var tween_ease: Tween.EaseType = Tween.EASE_IN_OUT
 var tween_linear: bool
 var tween_duration: float = 1
 

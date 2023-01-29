@@ -1,0 +1,7 @@
+#####################
+EXAMPLE ASSET CREDITS
+#####################
+
+# level_spritesheet
+https://opengameart.org/content/a-platformer-in-the-forest
+https://opengameart.org/users/buch

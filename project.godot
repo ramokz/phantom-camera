@@ -15,9 +15,10 @@ run/main_scene="res://addons/phantom_camera/examples/3DExampleScene.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
 
-[editor]
+[display]
 
-export/convert_text_resources_to_binary=true
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [editor_plugins]
 
