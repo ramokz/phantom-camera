@@ -1,0 +1,257 @@
+[gd_scene load_steps=13 format=3 uid="uid://drps4cvbhh1sb"]
+
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_lg4c1"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_pxesk"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_s1qas"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_llc0j"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="5_rt11g"]
+[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_rxlac"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_qde4k"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ks21f"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_12ynn"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_j6fha"]
+size = Vector3(5, 0.1, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xg4en"]
+size = Vector3(5, 0.1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2dct5"]
+transparency = 1
+albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
+
+[node name="Root" type="Node3D"]
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="Floor" parent="Environment" instance=ExtResource("1_lg4c1")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.707126, 0.707088, 0, -0.707088, 0.707126, -0.0548701, 2.5, 5.82771)
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+script = ExtResource("4_llc0j")
+
+[node name="------------------" type="Node" parent="."]
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
+script = ExtResource("2_pxesk")
+Priority = 3
+"Trigger on Load" = true
+"Follow Target" = NodePath("../PlayerCharacterBody3D")
+"Follow Parameters/Follow Mode" = 2
+"Follow Parameters/Target Offset" = Vector3(0, 2, 2)
+"Follow Parameters/Damping" = true
+"Follow Parameters/Damping Value" = 10.0
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 0.9
+"Tween Properties/Transition" = 5
+"Tween Properties/Ease" = 2
+
+[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0548701, 0.5, 3.82771)
+script = ExtResource("3_s1qas")
+metadata/_edit_group_ = true
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+mesh = SubResource("CapsuleMesh_qde4k")
+surface_material_override/0 = SubResource("StandardMaterial3D_ks21f")
+
+[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_12ynn")
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
+shape = SubResource("CapsuleShape3D_12ynn")
+
+[node name="-------------------" type="Node" parent="."]
+
+[node name="LookAtExamplePhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(0.999889, 0, 0, 0, 0.63166, 0.775214, 0, -0.775219, 0.631656, -0.0548701, 5.9, 8.22771)
+visible = false
+script = ExtResource("2_pxesk")
+Priority = 0
+"Trigger on Load" = true
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("../PlayerCharacterBody3D")
+"Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
+"Tween Properties/Duration" = 0.9
+"Tween Properties/Transition" = 5
+"Tween Properties/Ease" = 2
+
+[node name="Tweening Example" type="Node3D" parent="."]
+process_mode = 4
+visible = false
+
+[node name="Linear" type="Node3D" parent="Tweening Example"]
+
+[node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Linear" node_paths=PackedStringArray("area_pcam")]
+priority = 5.0
+script = ExtResource("5_rt11g")
+area_pcam = NodePath("../PhantomCamera3D")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tweening Example/Linear/EntryRoomTrigger"]
+shape = SubResource("BoxShape3D_j6fha")
+
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="Tweening Example/Linear/EntryRoomTrigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_xg4en")
+skeleton = NodePath("../../../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_2dct5")
+metadata/_edit_group_ = true
+
+[node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Linear"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
+script = ExtResource("2_pxesk")
+Priority = 0
+"Trigger on Load" = true
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 0.6
+"Tween Properties/Transition" = 0
+"Tween Properties/Ease" = 2
+
+[node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
+transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
+text = "Transition Type:
+Linear
+
+Duration:
+0.6s"
+font = ExtResource("6_rxlac")
+font_size = 48
+
+[node name="Sine" type="Node3D" parent="Tweening Example"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.4)
+
+[node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Sine" node_paths=PackedStringArray("area_pcam")]
+priority = 5.0
+script = ExtResource("5_rt11g")
+area_pcam = NodePath("../PhantomCamera3D")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tweening Example/Sine/EntryRoomTrigger"]
+shape = SubResource("BoxShape3D_j6fha")
+
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="Tweening Example/Sine/EntryRoomTrigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_xg4en")
+skeleton = NodePath("../../../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_2dct5")
+metadata/_edit_group_ = true
+
+[node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Sine"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
+script = ExtResource("2_pxesk")
+Priority = 0
+"Trigger on Load" = true
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 0.6
+"Tween Properties/Transition" = 1
+"Tween Properties/Ease" = 2
+
+[node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
+transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
+text = "Transition Type:
+Sine
+
+Duration:
+0.3s"
+font = ExtResource("6_rxlac")
+font_size = 72
+
+[node name="Circ" type="Node3D" parent="Tweening Example"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14.1)
+
+[node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Circ" node_paths=PackedStringArray("area_pcam")]
+priority = 5.0
+script = ExtResource("5_rt11g")
+area_pcam = NodePath("../PhantomCamera3D")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tweening Example/Circ/EntryRoomTrigger"]
+shape = SubResource("BoxShape3D_j6fha")
+
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="Tweening Example/Circ/EntryRoomTrigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_xg4en")
+skeleton = NodePath("../../../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_2dct5")
+metadata/_edit_group_ = true
+
+[node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Circ"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
+script = ExtResource("2_pxesk")
+Priority = 0
+"Trigger on Load" = true
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 0.3
+"Tween Properties/Transition" = 8
+"Tween Properties/Ease" = 2
+
+[node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
+transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
+text = "Transition Type:
+Circ
+
+Duration:
+0.3s"
+font = ExtResource("6_rxlac")
+font_size = 72
+
+[node name="Back" type="Node3D" parent="Tweening Example"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21)
+
+[node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Back" node_paths=PackedStringArray("area_pcam")]
+priority = 5.0
+script = ExtResource("5_rt11g")
+area_pcam = NodePath("../PhantomCamera3D")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tweening Example/Back/EntryRoomTrigger"]
+shape = SubResource("BoxShape3D_j6fha")
+
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="Tweening Example/Back/EntryRoomTrigger"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_xg4en")
+skeleton = NodePath("../../../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_2dct5")
+metadata/_edit_group_ = true
+
+[node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Back"]
+transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, -0.8, 4.8, 3.3)
+script = ExtResource("2_pxesk")
+Priority = 0
+"Trigger on Load" = true
+"Follow Target" = NodePath("")
+"Look At Target" = NodePath("")
+"Tween Properties/Duration" = 1.2
+"Tween Properties/Transition" = 10
+"Tween Properties/Ease" = 2
+
+[node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
+transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
+text = "Transition Type:
+Back
+
+Duration:
+1.2s"
+font = ExtResource("6_rxlac")
+font_size = 48
