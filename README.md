@@ -3,13 +3,26 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
 
 ## Features
 ### Follow
-Keeps a persistent position relative to a target node.
+Keeps a persistent position relative to a target.
+Camera movement can be dampened to provide more smooth movement.
 
-### Look At (3D scenes only)
-Retains the forward vector at a specified target.
+https://user-images.githubusercontent.com/5159399/216178375-5f28c6cc-ae81-41ab-a43a-8a92c0600559.mp4
+
+
+
+### Look At
+Keeps the camera pointed at a specified target.
+
+https://user-images.githubusercontent.com/5159399/216178303-b629fe99-d485-4700-b341-a10daa76611e.mp4
+
+
 
 ### Tween
 Change how the camera transitions and eases between PhantomCameras.
+
+https://user-images.githubusercontent.com/5159399/216176537-60c8e859-f7d8-4de5-bece-c7446d4d854c.mp4
+
+
 
 ## How to use
 See the [[Phantom Camera - Wiki]].
