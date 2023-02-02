@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 
+[editor]
+
+movie_writer/movie_file="/home/marcus/Godot/phantom-camera/Example_Scene.avi"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
