@@ -6,9 +6,9 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
 Keeps a persistent position relative to a target.
 Camera movement can be dampened to provide more smooth movement.
 
+https://user-images.githubusercontent.com/5159399/216445112-f8e8d1f0-6572-4ef4-b7ec-6f3948da0107.mp4
+
 https://user-images.githubusercontent.com/5159399/216178375-5f28c6cc-ae81-41ab-a43a-8a92c0600559.mp4
-
-
 
 ### Look At
 Keeps the camera pointed at a specified target.
