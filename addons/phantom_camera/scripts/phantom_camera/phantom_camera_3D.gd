@@ -27,7 +27,7 @@ func _get_property_list() -> Array:
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
 
 	property_list.append_array(Properties.add_priority_properties())
-	property_list.append_array(Properties.add_trigger_onload_properties())
+#	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	property_list.append_array(Properties.add_follow_target_property())
 	property_list.append_array(Properties.add_follow_mode_property())
@@ -66,7 +66,7 @@ func _set(property: StringName, value) -> bool:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	Properties.set_phantom_host_property(property, value, self)
 	Properties.set_priority_property(property, value, self)
-	Properties.set_trigger_onload_properties(property, value, self)
+#	Properties.set_trigger_onload_properties(property, value, self)
 	Properties.set_follow_properties(property, value, self)
 
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
@@ -103,7 +103,7 @@ func _get(property: StringName):
 
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
 
-	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
+#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path

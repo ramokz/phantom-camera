@@ -12,7 +12,7 @@ var zoom: Vector2 = Vector2(1, 1)
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
 	property_list.append_array(Properties.add_priority_properties())
-	property_list.append_array(Properties.add_trigger_onload_properties())
+#	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	property_list.append({
 		"name": ZOOM_PROPERTY_NAME,
@@ -32,7 +32,7 @@ func _get_property_list() -> Array:
 
 func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
-	Properties.set_trigger_onload_properties(property, value, self)
+#	Properties.set_trigger_onload_properties(property, value, self)
 
 	if property == ZOOM_PROPERTY_NAME:
 		if value.x == 0:
@@ -53,7 +53,7 @@ func _set(property: StringName, value) -> bool:
 
 func _get(property: StringName):
 	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
-	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
+#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	if property == ZOOM_PROPERTY_NAME: return zoom
 

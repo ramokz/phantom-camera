@@ -12,7 +12,7 @@ var pcam_host_group: Array[Node]
 
 var priority: int = 0
 
-var trigger_onload: bool = true
+#var trigger_onload: bool = true
 
 var follow_target_node: Node
 var follow_target_path: NodePath
@@ -64,17 +64,17 @@ func add_priority_properties() -> Array:
 	return _property_list
 
 
-func add_trigger_onload_properties() -> Array:
-	var _property_list: Array
-
-	_property_list.append({
-		"name": Constants.TRIGGER_ONLOAD_NAME,
-		"type": TYPE_BOOL,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT
-	})
-
-	return _property_list
+#func add_trigger_onload_properties() -> Array:
+#	var _property_list: Array
+#
+#	_property_list.append({
+#		"name": Constants.TRIGGER_ONLOAD_NAME,
+#		"type": TYPE_BOOL,
+#		"hint": PROPERTY_HINT_NONE,
+#		"usage": PROPERTY_USAGE_DEFAULT
+#	})
+#
+#	return _property_list
 
 
 func add_follow_target_property() -> Array:
@@ -194,9 +194,9 @@ func set_priority_property(property: StringName, value, pcam: Node):
 		set_priority(value, pcam)
 
 
-func set_trigger_onload_properties(property: StringName, value, pcam: Node):
-	if property == Constants.TRIGGER_ONLOAD_NAME:
-		trigger_onload = value
+#func set_trigger_onload_properties(property: StringName, value, pcam: Node):
+#	if property == Constants.TRIGGER_ONLOAD_NAME:
+#		trigger_onload = value
 
 
 func set_follow_properties(property: StringName, value, pcam: Node):

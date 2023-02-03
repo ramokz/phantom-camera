@@ -114,7 +114,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	trigger_pcam_tween = true
 
 
-func _find_pcam_with_highest_priority(should_animate: bool = true) -> void:
+func _find_pcam_with_highest_priority() -> void:
 #	if _pcam_list.is_empty(): return
 	for pcam in _pcam_list:
 		if pcam.get_priority() > _active_pcam_priority:
@@ -196,8 +196,7 @@ func _process(delta: float) -> void:
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
 
-	if pcam.Properties.trigger_onload:
-		_find_pcam_with_highest_priority(false)
+	_find_pcam_with_highest_priority()
 
 
 func pcam_removed_from_scene(pcam) -> void:
