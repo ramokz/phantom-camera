@@ -1,6 +1,7 @@
 ![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/215853976-630d5e87-8e88-4586-a548-33ff35d06963.png)
-Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects. 
 
+# 👻🎥 Phantom Camera
+Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects. 
 ## Features
 ### Follow
 Keeps a persistent position relative to a target.
