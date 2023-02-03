@@ -1,4 +1,4 @@
-![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/215853976-630d5e87-8e88-4586-a548-33ff35d06963.png)
+![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/216722122-247caf99-b435-4dd2-a482-37fb6ee2b06b.png)
 
 # Phantom Camera
 Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects. 
@@ -21,7 +21,7 @@ Change how the camera transitions and eases between PhantomCameras.
 
 https://user-images.githubusercontent.com/5159399/216176537-60c8e859-f7d8-4de5-bece-c7446d4d854c.mp4
 
-## 📔 How to use
+## 📔 Deep Dive & How to use
 See the [[Phantom Camera - Wiki]].
 
 ### 🪀 Example Scenes
