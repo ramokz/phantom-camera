@@ -1,3 +1,18 @@
+.tmp
+.DS_Store
+project.godot
+.idea/
+
+/.import
+/.vscode
+/default_env.tres
+/default_bus_layout.tres
+/icon.svg
+/icon.svg.import
+export_presets.cfg
+
+/addons/*
+!/addons/phantom_camera
+
 # Godot 4+ specific ignores
 .godot/
-.idea/
