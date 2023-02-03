@@ -1,7 +1,8 @@
-[gd_scene load_steps=30 format=3 uid="uid://b5pwaevhhdr74"]
+[gd_scene load_steps=31 format=3 uid="uid://b5pwaevhhdr74"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
+[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_ry7oc"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="4_moad5"]
@@ -80,18 +81,24 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707124, 0.707087, 0, -0.707087, 0.707124, -3.35487, 2.5, 6.72771)
+transform = Transform3D(1, 0, 0, 0, 0.707124, 0.707087, 0, -0.707087, 0.707124, -3.35487, 2.5, 9.29149)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
 
 [node name="PlayerGroup" type="Node" parent="."]
 
+[node name="MovementInstructionsLabel" type="Label3D" parent="PlayerGroup"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -3.32396, -0.455369, 8.25177)
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[WASD] to move"
+font = ExtResource("2_ry7oc")
+font_size = 48
+
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -3.35487, 2.5, 6.72771)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -3.35487, 2.5, 9.29149)
 script = ExtResource("2_y3dy8")
 Priority = 3
-"Trigger on Load" = true
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
 "Follow Parameters/Follow Mode" = 2
 "Follow Parameters/Target Offset" = Vector3(0, 2, 2)
@@ -104,7 +111,7 @@ Priority = 3
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35487, 0.5, 4.72771)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35487, 0.5, 7.29149)
 script = ExtResource("5_c85ys")
 metadata/_edit_group_ = true
 
@@ -127,7 +134,6 @@ unique_name_in_owner = true
 transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.98802, 1.50739, 1.19719)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
 "Tween Properties/Duration" = 1.0
@@ -135,15 +141,16 @@ Priority = 0
 "Tween Properties/Ease" = 2
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
-transform = Transform3D(0.996195, -0.079559, 0.035588, 0, 0.40833, 0.912834, -0.0871553, -0.909361, 0.406777, -3.45688, -0.413709, 0.7329)
+transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, -3.04693, 0.367287, 0.953757)
 text = "Input Example"
-font_size = 72
+font = ExtResource("2_ry7oc")
 
 [node name="NPCDialogueExampleLabel" type="Label3D" parent="NPCGroup"]
 unique_name_in_owner = true
 transform = Transform3D(1, 4.54671e-10, 1.65487e-10, 4.25644e-10, 0.939693, 0.34202, 0, -0.34202, 0.939693, -4.46738, 1.58641, -0.253679)
 modulate = Color(1, 0.603922, 0.254902, 1)
 text = "Press [ F ] to change camera"
+font = ExtResource("2_ry7oc")
 
 [node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="NPCGroup"]
 transform = Transform3D(0.819152, 4.83851e-10, -0.573576, -3.92481e-09, 1, -6.3473e-09, 0.573576, 7.45058e-09, 0.819152, -3.46138, -0.4, 0.875321)
@@ -182,16 +189,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.70084, 0.5, 0.962891)
 
 [node name="FixedCameraLabel" type="Label3D" parent="FixedCameraTriggerZone"]
 unique_name_in_owner = true
-transform = Transform3D(0.939693, 0.280167, -0.196175, 1.49012e-08, 0.573577, 0.819152, 0.34202, -0.769751, 0.538986, -0.538716, -7.45058e-09, 3.13456)
+transform = Transform3D(0.939693, 0.280167, -0.196175, 1.49012e-08, 0.573577, 0.819152, 0.34202, -0.769751, 0.538986, -0.538716, -0.247626, 3.13456)
 text = "Fixed Camera
 Example"
-font_size = 72
+font = ExtResource("2_ry7oc")
 
 [node name="NorthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89741, 4.73364, 0.12374)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
 "Tween Properties/Duration" = 0.0
@@ -212,7 +218,6 @@ shape = SubResource("BoxShape3D_wcrbb")
 transform = Transform3D(0.258818, -0.482963, 0.836515, 1.3027e-15, 0.866025, 0.499999, -0.965924, -0.129409, 0.224143, 6.69741, 4.73364, 4.02374)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
 "Tween Properties/Duration" = 0.0
@@ -233,7 +238,6 @@ shape = SubResource("BoxShape3D_ctyr8")
 transform = Transform3D(-0.766043, -0.492403, 0.413175, 0, 0.642787, 0.766043, -0.642786, 0.586825, -0.492403, 6.89741, 4.73364, 5.62374)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Trigger on Load" = true
 "Follow Target" = NodePath("")
 "Look At Target" = NodePath("")
 "Tween Properties/Duration" = 0.0

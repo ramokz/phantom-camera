@@ -618,12 +618,23 @@ position = Vector2(243, -48)
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("1_eayfa")
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="UIInventory" parent="UI" instance=ExtResource("7_fdx1s")]
+unique_name_in_owner = true
+visible = false
+
+[node name="UISign" parent="UI" instance=ExtResource("6_kqt1v")]
+unique_name_in_owner = true
+visible = false
+
+[node name="Player" type="Node" parent="."]
+
+[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
 unique_name_in_owner = true
 position = Vector2(243, -48)
 script = ExtResource("2_mgsut")
 Priority = 5
-"Trigger on Load" = true
 Zoom = Vector2(1, 1)
 "Follow Target" = NodePath("../CharacterBody2D/PlayerSprite")
 "Follow Parameters/Follow Mode" = 2
@@ -634,11 +645,11 @@ Zoom = Vector2(1, 1)
 "Tween Properties/Transition" = 3
 "Tween Properties/Ease" = 1
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+[node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
 script = ExtResource("4_jnuod")
 
-[node name="DarkOverlay" type="ColorRect" parent="CharacterBody2D"]
+[node name="DarkOverlay" type="ColorRect" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 8
@@ -654,7 +665,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.615686)
 
-[node name="InteractionPrompt" type="Panel" parent="CharacterBody2D"]
+[node name="InteractionPrompt" type="Panel" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 7
@@ -671,7 +682,7 @@ grow_vertical = 0
 size_flags_vertical = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_5hryl")
 
-[node name="Label" type="Label" parent="CharacterBody2D/InteractionPrompt"]
+[node name="Label" type="Label" parent="Player/CharacterBody2D/InteractionPrompt"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -687,54 +698,52 @@ text = "F"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PlayerSprite" type="Sprite2D" parent="CharacterBody2D"]
+[node name="PlayerSprite" type="Sprite2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("6_e46ea")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D"]
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_xj4ar")
 
-[node name="PlayerArea2D" type="Area2D" parent="CharacterBody2D"]
+[node name="PlayerArea2D" type="Area2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 collision_layer = 2
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/PlayerArea2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D/PlayerArea2D"]
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_18i13")
 
-[node name="ItemFocusPhantomCamera2D" type="Node2D" parent="CharacterBody2D"]
+[node name="ItemFocusPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("2_mgsut")
 Priority = 0
-"Trigger on Load" = false
 Zoom = Vector2(2, 2)
 "Follow Target" = NodePath("")
 "Tween Properties/Duration" = 0.6
 "Tween Properties/Transition" = 8
 "Tween Properties/Ease" = 1
 
-[node name="InventoryPhantomCamera2D" type="Node2D" parent="CharacterBody2D"]
+[node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("2_mgsut")
 Priority = 0
-"Trigger on Load" = false
 Zoom = Vector2(2.5, 2.5)
 "Follow Target" = NodePath("")
 "Tween Properties/Duration" = 0.6
 "Tween Properties/Transition" = 5
 "Tween Properties/Ease" = 1
 
-[node name="UI" type="CanvasLayer" parent="."]
-
-[node name="UIInventory" parent="UI" instance=ExtResource("7_fdx1s")]
-unique_name_in_owner = true
-visible = false
-
-[node name="UISign" parent="UI" instance=ExtResource("6_kqt1v")]
-unique_name_in_owner = true
-visible = false
+[node name="Label" type="Label" parent="Player"]
+offset_left = 167.0
+offset_top = -106.0
+offset_right = 320.0
+offset_bottom = -80.0
+theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
+theme_override_fonts/font = ExtResource("6_akfb5")
+text = "[WASD] to move
+[Space] to jump"
