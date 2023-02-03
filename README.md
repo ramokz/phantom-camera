@@ -1,9 +1,9 @@
 ![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/215853976-630d5e87-8e88-4586-a548-33ff35d06963.png)
 
-# 👻🎥 Phantom Camera
+# Phantom Camera
 Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects. 
 ## Features
-### Follow
+### 🏃 Follow
 Keeps a persistent position relative to a target.
 Camera movement can be dampened to provide more smooth movement.
 
@@ -11,34 +11,30 @@ https://user-images.githubusercontent.com/5159399/216445112-f8e8d1f0-6572-4ef4-b
 
 https://user-images.githubusercontent.com/5159399/216178375-5f28c6cc-ae81-41ab-a43a-8a92c0600559.mp4
 
-### Look At
+### 👀 Look At
 Keeps the camera pointed at a specified target.
 
 https://user-images.githubusercontent.com/5159399/216178303-b629fe99-d485-4700-b341-a10daa76611e.mp4
 
-
-
-### Tween
+### 🌀 Tween
 Change how the camera transitions and eases between PhantomCameras.
 
 https://user-images.githubusercontent.com/5159399/216176537-60c8e859-f7d8-4de5-bece-c7446d4d854c.mp4
 
-
-
-## How to use
+## 📔 How to use
 See the [[Phantom Camera - Wiki]].
 
-### Demo Scenes
+### 🪀 Example Scenes
 A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples` titled `2DExampleScene` and `3DExampleScene` respectively,
 
-## Installation
+## 💾 Installation
 1. Download the repo and copy `addons/phantom_camera` to your root Godot directory under `res://`.
 2. Enable the plugin inside `Project/Project Setttings/Plugins`
 3. And that's it!
 For more help, see [Godot's official documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html)
 
-## Roadmap
-See the [project page](https://github.com/users/MarcusSkov/projects/3/views/8) for upcoming features.
+## 📖 Roadmap
+See the [project page](https://github.com/users/ramokz/projects/3/views/8) for upcoming features.
 
 ## FAQ
 ### _What is the intent behind the plugin?_
@@ -51,7 +47,7 @@ The end goal is to make it functional enough to become a generalised camera exte
 ### _What is the state of the plugin?_
 Ongoing, but still in early stages. Core features have been implemented, but may change as more get added. Things will likely break or change along the way. It's also worth keeping in mind that lots of key and, likely, frequently used features are yet to be done.
 
-See the [project page](https://github.com/users/MarcusSkov/projects/3/views/8) to see planned features.
+See the [project page](https://github.com/users/ramokz/projects/3/views/8) to see planned features.
 
 ### _Does this work for Godot 3.5 or older?_
 Unfortunately not.
