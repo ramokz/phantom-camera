@@ -29,7 +29,7 @@ Change how the camera transitions and eases between PhantomCameras.
 https://user-images.githubusercontent.com/5159399/216176537-60c8e859-f7d8-4de5-bece-c7446d4d854c.mp4
 
 ## 📔 Deep Dive & How to use
-See the [[Phantom Camera - Wiki]].
+See the [Phantom Camera - Wiki](https://github.com/ramokz/phantom-camera/wiki).
 
 ### 🪀 Example Scenes
 A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples` titled `2DExampleScene` and `3DExampleScene` respectively,
