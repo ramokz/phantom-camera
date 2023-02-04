@@ -1,4 +1,4 @@
-![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/216722122-247caf99-b435-4dd2-a482-37fb6ee2b06b.png)
+![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/216774990-ae0a9d02-cb04-4fd6-8522-00e021c81dfa.png)
 
 # Phantom Camera
 Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects. 
