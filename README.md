@@ -1,38 +1,110 @@
 ![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/216774990-ae0a9d02-cb04-4fd6-8522-00e021c81dfa.png)
 
 # Phantom Camera
-Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects. 
+Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
+
+<table>
+  <tr>
+    <th>Wiki Page</th>
+    <th>Roadmap</th>
+  <tr>
+  <tbody>
+  <tr>
+    <td width="1200" align="center" valign="top">
+      <a href="https://github.com/ramokz/phantom-camera/wiki"><img src="https://user-images.githubusercontent.com/5159399/216828486-f530a354-45e6-4cb4-978a-359e63337443.png"></a>
+    </td>
+     <td width="1200" align="center" valign="top">
+      <a href="https://github.com/ramokz/phantom-camera/milestones"><img src="https://user-images.githubusercontent.com/5159399/216830565-42c6a0c3-2d3e-4fb0-b8a3-b10ed4fc5832.png"></a>
+    </td>
+  </tbody>
+</table>
+
+
 ## Features
-### 🏃 Follow (2D & 3D)
+### 🏃 Follow
 Keeps a persistent position relative to a target.
 Camera movement can be dampened to provide more smooth movement.
 
-https://user-images.githubusercontent.com/5159399/216445112-f8e8d1f0-6572-4ef4-b7ec-6f3948da0107.mp4
+<table>
+  <tr>
+    <th>2D</th>
+    <th>3D</th>
+  </tr>
+  <tr>
+    <td width="1200">
+      <video src="https://user-images.githubusercontent.com/5159399/216445112-f8e8d1f0-6572-4ef4-b7ec-6f3948da0107.mp4"/>
+    </td>
+    <td width="1200">
+      <video src="https://user-images.githubusercontent.com/5159399/216178375-5f28c6cc-ae81-41ab-a43a-8a92c0600559.mp4"/>
+    </td>
+  </tr>
+</table>
 
-https://user-images.githubusercontent.com/5159399/216178375-5f28c6cc-ae81-41ab-a43a-8a92c0600559.mp4
+### 📷 Zoom
+Animate between zoom levels when switching between `PhantomCameras`.
 
-### 📷 Zoom (2D)
-Animate between zoom levels when switching between PhantomCameras.
-
-https://user-images.githubusercontent.com/5159399/216772193-74af1fd7-73cd-4e4d-b1e1-c063609e07c6.mp4
+<table>
+  <tr>
+    <th>2D</th>
+    <th>3D</th>
+  </tr>
+  <tr>
+    <td width="1200">
+      <video src="https://user-images.githubusercontent.com/5159399/216772193-74af1fd7-73cd-4e4d-b1e1-c063609e07c6.mp4"/>
+    </td>
+    <td width="1200" align="center">
+        🪧
+       <br>
+       <b>Not available in 3D scenes</b>
+    </td>
+</table>
 
 
 
 ### 👀 Look At (3D)
 Keeps the camera pointed at a specified target.
 
-https://user-images.githubusercontent.com/5159399/216178303-b629fe99-d485-4700-b341-a10daa76611e.mp4
+<table>
+  <tr>
+    <th>2D</th>
+    <th>3D</th>
+  </tr>
+  <tr>
+    <td width="1200" align="center">
+       🪧
+       <br>
+       <b>Not available in 2D scenes</b>
+    </td>
+    <td width="1200">
+      <video src="https://user-images.githubusercontent.com/5159399/216178303-b629fe99-d485-4700-b341-a10daa76611e.mp4"/>
+    </td>
+</table>
 
 ### 🌀 Tween (2D & 3D)
-Change how the camera transitions and eases between PhantomCameras.
+Change how the camera transitions and eases between `PhantomCameras`.
 
-https://user-images.githubusercontent.com/5159399/216176537-60c8e859-f7d8-4de5-bece-c7446d4d854c.mp4
+<table>
+  <tr>
+    <th>2D</th>
+    <th>3D</th>
+  </tr>
+  <tr>
+    <td width="1200" align="center">
+      🚧
+      <br>
+      <b>Example to be added soon</b>
+    </td>
+    <td width="1200">
+      <video src="https://user-images.githubusercontent.com/5159399/216176537-60c8e859-f7d8-4de5-bece-c7446d4d854c.mp4"/>
+    </td>
+</table>
+
 
 ## 📔 Deep Dive & How to use
 See the [Phantom Camera - Wiki](https://github.com/ramokz/phantom-camera/wiki).
 
 ### 🪀 Example Scenes
-A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples` titled `2DExampleScene` and `3DExampleScene` respectively,
+A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples` titled `2DExampleScene` and `3DExampleScene` respectively.
 
 ## 💾 Installation
 1. Download the repo and copy `addons/phantom_camera` to your root Godot directory under `res://`.
