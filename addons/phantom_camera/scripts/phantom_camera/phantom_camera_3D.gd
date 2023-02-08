@@ -9,29 +9,51 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 
 var follow_distance: float = 1
 
+###################
+# Follow Properties
+###################
+const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
+
+####################
+# Look At Properties
+####################
 const LOOK_AT_TARGET_PROPERTY_NAME: StringName = "Look At Target"
+const LOOK_AT_PARAMETERS_NAME: StringName = "Look At Parameters/"
+const LOOK_AT_MODE_PROPERTY_NAME: StringName = LOOK_AT_PARAMETERS_NAME + "Look At Mode"
+const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
+
+enum LookAtMode {
+	NONE 	= 0,
+	MIMIC 	= 1,
+	SIMPLE 	= 2,
+}
+
 var _look_at_target_node: Node3D
 var _look_at_target_path: NodePath
 var _has_look_at_target: bool = false
 
-const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
+var look_at_mode: LookAtMode = LookAtMode.NONE
 
-const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: StringName = "Look At Parameters/Look At Target Offset"
 var look_at_target_offset: Vector3
 
 
 func _get_property_list() -> Array:
-	var property_list: Array[Dictionary]
+	var _property_list: Array[Dictionary]
 
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
 
-	property_list.append_array(Properties.add_priority_properties())
+	####################
+	# General Properties
+	####################
+	_property_list.append_array(Properties.add_priority_properties())
 #	property_list.append_array(Properties.add_trigger_onload_properties())
 
-	property_list.append_array(Properties.add_follow_target_property())
-	property_list.append_array(Properties.add_follow_mode_property())
-
+	###################
+	# Follow Properties
+	###################
+	_property_list.append_array(Properties.add_follow_target_property())
+	_property_list.append_array(Properties.add_follow_mode_property())
 #	if Properties.follow_mode == Constants.FollowMode.FRAMED_FOLLOW:
 #		property_list.append({
 #			"name": FOLLOW_DISTANCE_PROPERTY_NAME,
@@ -39,42 +61,64 @@ func _get_property_list() -> Array:
 #			"hint": PROPERTY_HINT_NONE,
 #			"usage": PROPERTY_USAGE_DEFAULT,
 #		})
+	_property_list.append_array(Properties.add_follow_properties())
 
-	property_list.append_array(Properties.add_follow_properties())
-
-	property_list.append({
+	####################
+	# Look At Properties
+	####################
+	_property_list.append({
 		"name": LOOK_AT_TARGET_PROPERTY_NAME,
 		"type": TYPE_NODE_PATH,
 		"hint": PROPERTY_HINT_NONE,
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
-
 	if _has_look_at_target:
-		property_list.append({
-			"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
-			"type": TYPE_VECTOR3,
-			"hint": PROPERTY_HINT_NONE,
-			"usage": PROPERTY_USAGE_DEFAULT
+		_property_list.append({
+			"name": LOOK_AT_MODE_PROPERTY_NAME,
+			"type": TYPE_INT,
+			"hint": PROPERTY_HINT_ENUM,
+			"hint_string": ", ".join(PackedStringArray(LookAtMode.keys())).capitalize(),
+			"usage": PROPERTY_USAGE_DEFAULT,
 		})
 
-	property_list.append_array(Properties.add_tween_properties())
+		if look_at_mode == LookAtMode.SIMPLE:
+			_property_list.append({
+				"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
+				"type": TYPE_VECTOR3,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT
+			})
 
-	return property_list
+	##################
+	# Tween Properties
+	##################
+	_property_list.append_array(Properties.add_tween_properties())
+
+	return _property_list
 
 
 func _set(property: StringName, value) -> bool:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	Properties.set_phantom_host_property(property, value, self)
+	#########
+	# General
+	#########
 	Properties.set_priority_property(property, value, self)
 #	Properties.set_trigger_onload_properties(property, value, self)
-	Properties.set_follow_properties(property, value, self)
 
+	###################
+	# Follow Properties
+	###################
+	Properties.set_follow_properties(property, value, self)
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
 		if value == 0:
 			follow_distance = 0.001
 		else:
 			follow_distance = value
 
+	####################
+	# Look At Properties
+	####################
 	if property == LOOK_AT_TARGET_PROPERTY_NAME:
 		_look_at_target_path = value
 		var valueNodePath: NodePath = value as NodePath
@@ -90,10 +134,17 @@ func _set(property: StringName, value) -> bool:
 			_look_at_target_node = null
 
 		notify_property_list_changed()
+	if property == LOOK_AT_MODE_PROPERTY_NAME:
+		look_at_mode = value
+		notify_property_list_changed()
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME:
 		look_at_target_offset = value
 
+	##################
+	# Tween Properties
+	##################
 	Properties.set_tween_properties(property, value, self)
+
 	return false
 
 
@@ -101,23 +152,36 @@ func _get(property: StringName):
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	if property == Constants.PHANTOM_CAMERA_HOST: return Properties.pcam_host_owner.name
 
-	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
+	#########
+	# General
+	#########
+	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
 
 #	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
-	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: return Properties.follow_mode
-	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path
-	if property == FOLLOW_DISTANCE_PROPERTY_NAME: return follow_distance
-	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset_3D
-	if property == Constants.FOLLOW_DAMPING_NAME: return Properties.follow_has_damping
-	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: return Properties.follow_damping_value
+	###################
+	# Follow Properties
+	###################
+	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
+	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
+	if property == FOLLOW_DISTANCE_PROPERTY_NAME:				 	return follow_distance
+	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME	: 	return Properties.follow_target_offset_3D
+	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
-	if property == LOOK_AT_TARGET_PROPERTY_NAME: return _look_at_target_path
-	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: return look_at_target_offset
+	####################
+	# Look At Properties
+	####################
+	if property == LOOK_AT_TARGET_PROPERTY_NAME: 					return _look_at_target_path
+	if property == LOOK_AT_MODE_PROPERTY_NAME: 						return look_at_mode
+	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 			return look_at_target_offset
 
-	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: return Properties.tween_duration
-	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: return Properties.tween_transition
-	if property == Constants.TWEEN_EASE_PROPERTY_NAME: return Properties.tween_ease
+	##################
+	# Tween Properties
+	##################
+	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: 			return Properties.tween_duration
+	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: 		return Properties.tween_transition
+	if property == Constants.TWEEN_EASE_PROPERTY_NAME: 				return Properties.tween_ease
 
 
 ###################
@@ -144,25 +208,26 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
 		match Properties.follow_mode:
-
 			Constants.FollowMode.SIMPLE_FOLLOW:
 				set_global_position(
 					Properties.follow_target_node.position +
 					Properties.follow_target_offset_3D
 				)
-
 #			Constants.FollowMode.FRAMED_FOLLOW:
 #				set_global_position(
 #					Properties.follow_target_node.position +
 #					Properties.follow_target_offset_3D +
 #					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 #				)
-
 			Constants.FollowMode.GLUED_FOLLOW:
 				set_global_position(Properties.follow_target_node.position)
 
 	if _look_at_target_node:
-		look_at(_look_at_target_node.position)
+		match look_at_mode:
+			LookAtMode.MIMIC:
+				set_rotation(_look_at_target_node.get_rotation())
+			LookAtMode.SIMPLE:
+				look_at(_look_at_target_node.get_position() + look_at_target_offset)
 
 
 ##################
