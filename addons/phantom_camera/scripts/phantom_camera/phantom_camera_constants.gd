@@ -24,8 +24,8 @@ const TWEEN_DURATION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Duration
 
 enum FollowMode {
 	NONE 			= 0,
-	GLUED_FOLLOW 	= 1,
-	SIMPLE_FOLLOW 	= 2,
+	GLUED 	= 1,
+	SIMPLE 	= 2,
 #	FRAMED_FOLLOW 	= 3,
 #	TODO - Path Track Follow
 }

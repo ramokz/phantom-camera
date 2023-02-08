@@ -84,12 +84,12 @@ func _exit_tree() -> void:
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
 		match Properties.follow_mode:
-			Constants.FollowMode.SIMPLE_FOLLOW:
+			Constants.FollowMode.SIMPLE:
 				set_global_position(
 					Properties.follow_target_node.get_global_position() +
 					Properties.follow_target_offset_2D
 				)
-			Constants.FollowMode.GLUED_FOLLOW:
+			Constants.FollowMode.GLUED:
 				set_global_position(Properties.follow_target_node.position)
 
 

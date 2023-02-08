@@ -208,7 +208,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
 		match Properties.follow_mode:
-			Constants.FollowMode.SIMPLE_FOLLOW:
+			Constants.FollowMode.SIMPLE:
 				set_global_position(
 					Properties.follow_target_node.position +
 					Properties.follow_target_offset_3D
@@ -219,7 +219,7 @@ func _physics_process(delta: float) -> void:
 #					Properties.follow_target_offset_3D +
 #					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 #				)
-			Constants.FollowMode.GLUED_FOLLOW:
+			Constants.FollowMode.GLUED:
 				set_global_position(Properties.follow_target_node.position)
 
 	if _look_at_target_node:

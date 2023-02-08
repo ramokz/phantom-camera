@@ -96,7 +96,7 @@ font = ExtResource("2_ry7oc")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(0.999859, 0, 0, 0, 0.97011, 0.242524, 0, -0.242527, 0.970098, -2.85487, 2, 9.29149)
+transform = Transform3D(0.999859, 0, 0, 0, 0.97011, 0.242524, 0, -0.242527, 0.970097, -2.85487, 2, 9.29149)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
@@ -105,8 +105,7 @@ Priority = 3
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 15.0
 "Look At Target" = NodePath("../PlayerCharacterBody3D")
-"Look At Parameters/Look At Mode" = 2
-"Look At Parameters/Look At Target Offset" = Vector3(0.5, 1, 0)
+"Look At Parameters/Look At Mode" = 0
 "Tween Properties/Duration" = 0.9
 "Tween Properties/Transition" = 5
 "Tween Properties/Ease" = 2

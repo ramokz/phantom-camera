@@ -110,7 +110,7 @@ func add_follow_properties() -> Array:
 
 	if follow_has_target:
 		if follow_mode != Constants.FollowMode.NONE:
-			if follow_mode != Constants.FollowMode.GLUED_FOLLOW:
+			if follow_mode != Constants.FollowMode.GLUED:
 				if is_3D:
 					_property_list.append({
 						"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
