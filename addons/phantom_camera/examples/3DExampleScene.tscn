@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://b5pwaevhhdr74"]
+[gd_scene load_steps=31 format=3 uid="uid://d3rxwscc2mn6y"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
@@ -81,7 +81,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707124, 0.707087, 0, -0.707087, 0.707124, -3.35487, 2.5, 9.29149)
+transform = Transform3D(1, 0, 0, 0, 0.970143, 0.242524, 0, -0.242524, 0.970143, -2.85487, 2, 9.29149)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
@@ -96,15 +96,17 @@ font = ExtResource("2_ry7oc")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -3.35487, 2.5, 9.29149)
+transform = Transform3D(0.999859, 0, 0, 0, 0.97011, 0.242524, 0, -0.242527, 0.970098, -2.85487, 2, 9.29149)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
 "Follow Parameters/Follow Mode" = 2
-"Follow Parameters/Target Offset" = Vector3(0, 2, 2)
+"Follow Parameters/Target Offset" = Vector3(0.5, 1.5, 2)
 "Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
-"Look At Target" = NodePath("")
+"Follow Parameters/Damping Value" = 15.0
+"Look At Target" = NodePath("../PlayerCharacterBody3D")
+"Look At Parameters/Look At Mode" = 2
+"Look At Parameters/Look At Target Offset" = Vector3(0.5, 1, 0)
 "Tween Properties/Duration" = 0.9
 "Tween Properties/Transition" = 5
 "Tween Properties/Ease" = 2
