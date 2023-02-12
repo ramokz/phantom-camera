@@ -18,24 +18,31 @@ const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NA
 # Look At Properties
 ####################
 const LOOK_AT_TARGET_PROPERTY_NAME: StringName = "Look At Target"
+const LOOK_AT_GROUP_PROPERTY_NAME: StringName = "Look At Group"
 const LOOK_AT_PARAMETERS_NAME: StringName = "Look At Parameters/"
-const LOOK_AT_MODE_PROPERTY_NAME: StringName = LOOK_AT_PARAMETERS_NAME + "Look At Mode"
+const LOOK_AT_MODE_PROPERTY_NAME: StringName = "Look At Mode"
 const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
 
 enum LookAtMode {
 	NONE 	= 0,
 	MIMIC 	= 1,
 	SIMPLE 	= 2,
+	GROUP	= 3,
 }
 
 var _look_at_target_node: Node3D
 var _look_at_target_path: NodePath
-var _has_look_at_target: bool = false
+
+var _look_at_group_nodes: Array[Node3D]
+var _look_at_group_paths: Array[NodePath]
+
+var _should_look_at: bool
+var _has_look_at_target: bool
+var _has_look_at_target_group: bool
 
 var look_at_mode: LookAtMode = LookAtMode.NONE
 
 var look_at_target_offset: Vector3
-
 
 func _get_property_list() -> Array:
 	var _property_list: Array[Dictionary]
@@ -52,8 +59,10 @@ func _get_property_list() -> Array:
 	###################
 	# Follow Properties
 	###################
-	_property_list.append_array(Properties.add_follow_target_property())
 	_property_list.append_array(Properties.add_follow_mode_property())
+	if Properties.follow_mode != Constants.FollowMode.NONE:
+		_property_list.append_array(Properties.add_follow_target_property())
+
 #	if Properties.follow_mode == Constants.FollowMode.FRAMED_FOLLOW:
 #		property_list.append({
 #			"name": FOLLOW_DISTANCE_PROPERTY_NAME,
@@ -61,33 +70,45 @@ func _get_property_list() -> Array:
 #			"hint": PROPERTY_HINT_NONE,
 #			"usage": PROPERTY_USAGE_DEFAULT,
 #		})
-	_property_list.append_array(Properties.add_follow_properties())
+
+	if Properties.follow_has_target:
+		_property_list.append_array(Properties.add_follow_properties())
 
 	####################
 	# Look At Properties
 	####################
 	_property_list.append({
-		"name": LOOK_AT_TARGET_PROPERTY_NAME,
-		"type": TYPE_NODE_PATH,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT
+		"name": LOOK_AT_MODE_PROPERTY_NAME,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": ", ".join(PackedStringArray(LookAtMode.keys())).capitalize(),
+		"usage": PROPERTY_USAGE_DEFAULT,
 	})
-	if _has_look_at_target:
-		_property_list.append({
-			"name": LOOK_AT_MODE_PROPERTY_NAME,
-			"type": TYPE_INT,
-			"hint": PROPERTY_HINT_ENUM,
-			"hint_string": ", ".join(PackedStringArray(LookAtMode.keys())).capitalize(),
-			"usage": PROPERTY_USAGE_DEFAULT,
-		})
 
-		if look_at_mode == LookAtMode.SIMPLE:
+	if look_at_mode != LookAtMode.NONE:
+		if look_at_mode == LookAtMode.GROUP:
 			_property_list.append({
-				"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
-				"type": TYPE_VECTOR3,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT
+				"name": LOOK_AT_GROUP_PROPERTY_NAME,
+				"type": TYPE_ARRAY,
+				"hint": PROPERTY_HINT_TYPE_STRING,
+				"hint_string": TYPE_NODE_PATH,
+				"usage": PROPERTY_USAGE_DEFAULT,
 			})
+		else:
+			_property_list.append({
+				"name": LOOK_AT_TARGET_PROPERTY_NAME,
+				"type": TYPE_NODE_PATH,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+		if _should_look_at:
+			if look_at_mode == LookAtMode.SIMPLE:
+				_property_list.append({
+					"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
+					"type": TYPE_VECTOR3,
+					"hint": PROPERTY_HINT_NONE,
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
 
 	##################
 	# Tween Properties
@@ -100,6 +121,7 @@ func _get_property_list() -> Array:
 func _set(property: StringName, value) -> bool:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	Properties.set_phantom_host_property(property, value, self)
+
 	#########
 	# General
 	#########
@@ -119,26 +141,59 @@ func _set(property: StringName, value) -> bool:
 	####################
 	# Look At Properties
 	####################
+	if property == LOOK_AT_MODE_PROPERTY_NAME:
+		look_at_mode = value
+
+		if look_at_mode == LookAtMode.NONE:
+			_should_look_at = false
+#			Properties.set_process(self, false)
+		else:
+			_should_look_at = true
+#			Properties.set_process(self, true)
+
+		notify_property_list_changed()
+
+	if property == LOOK_AT_GROUP_PROPERTY_NAME:
+		if value.size() > 0:
+			# Clears the Array in case of reshuffling or updated Nodes
+			_look_at_group_nodes.clear()
+
+			_look_at_group_paths = value as Array[NodePath]
+
+			if not _look_at_group_paths.is_empty():
+				for path in _look_at_group_paths:
+					if has_node(path):
+						_should_look_at = true
+						_has_look_at_target_group = true
+						var node: Node = get_node(path)
+						if node is Node3D:
+							# Prevents duplicated nodes from being assigned to array
+							if _look_at_group_nodes.find(node):
+								_look_at_group_nodes.append(node)
+						else:
+							printerr("Assigned non-Node3D to Look At Group")
+
+		notify_property_list_changed()
+
 	if property == LOOK_AT_TARGET_PROPERTY_NAME:
 		_look_at_target_path = value
-		var valueNodePath: NodePath = value as NodePath
-		if not valueNodePath.is_empty():
+		var value_node_path: NodePath = value as NodePath
+		if not value_node_path.is_empty():
+			_should_look_at = true
 			_has_look_at_target = true
 			if has_node(_look_at_target_path):
 				set_rotation(Vector3(0,0,0))
 				_look_at_target_node = get_node(_look_at_target_path)
-				Properties.set_process(self, true)
 		else:
-			Properties.set_process(self, false)
+			_should_look_at = false
 			_has_look_at_target = false
 			_look_at_target_node = null
 
 		notify_property_list_changed()
-	if property == LOOK_AT_MODE_PROPERTY_NAME:
-		look_at_mode = value
-		notify_property_list_changed()
+
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME:
 		look_at_target_offset = value
+
 
 	##################
 	# Tween Properties
@@ -175,6 +230,7 @@ func _get(property: StringName):
 	if property == LOOK_AT_TARGET_PROPERTY_NAME: 					return _look_at_target_path
 	if property == LOOK_AT_MODE_PROPERTY_NAME: 						return look_at_mode
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 			return look_at_target_offset
+	if property == LOOK_AT_GROUP_PROPERTY_NAME:						return _look_at_group_paths
 
 	##################
 	# Tween Properties
@@ -191,8 +247,16 @@ func _enter_tree() -> void:
 	Properties.is_3D = true;
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
+
 	if _look_at_target_path:
 		_look_at_target_node = get_node(_look_at_target_path)
+	elif _look_at_group_paths:
+		_look_at_group_nodes.clear()
+		for path in _look_at_group_paths:
+			if not path.is_empty() and get_node(path):
+				_should_look_at = true
+				_has_look_at_target_group = true
+				_look_at_group_nodes.append(get_node(path))
 
 
 func _exit_tree() -> void:
@@ -201,13 +265,16 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
-	if Properties.follow_target_path.is_empty() and _look_at_target_path.is_empty():
-		Properties.set_process(self, false)
+	pass
+#	if Properties.follow_target_path.is_empty() and _look_at_target_path.is_empty():
+#		Properties.set_process(self, false)
 
 
 func _physics_process(delta: float) -> void:
 	if Properties.follow_target_node:
 		match Properties.follow_mode:
+			Constants.FollowMode.GLUED:
+				set_global_position(Properties.follow_target_node.position)
 			Constants.FollowMode.SIMPLE:
 				set_global_position(
 					Properties.follow_target_node.position +
@@ -219,15 +286,26 @@ func _physics_process(delta: float) -> void:
 #					Properties.follow_target_offset_3D +
 #					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 #				)
-			Constants.FollowMode.GLUED:
-				set_global_position(Properties.follow_target_node.position)
 
-	if _look_at_target_node:
+	if _should_look_at:
 		match look_at_mode:
 			LookAtMode.MIMIC:
-				set_rotation(_look_at_target_node.get_rotation())
+				if _has_look_at_target:
+					set_rotation(_look_at_target_node.get_rotation())
 			LookAtMode.SIMPLE:
-				look_at(_look_at_target_node.get_position() + look_at_target_offset)
+				if _has_look_at_target:
+					look_at(_look_at_target_node.get_position() + look_at_target_offset)
+			LookAtMode.GROUP:
+				if _has_look_at_target_group:
+					if _look_at_group_nodes.size() == 1:
+						look_at(_look_at_group_nodes[0].get_position())
+					else:
+						var vec_sum: Vector3
+
+						for vec in _look_at_group_nodes:
+							vec_sum += vec.get_position()
+
+						look_at(vec_sum / _look_at_group_nodes.size())
 
 
 ##################
