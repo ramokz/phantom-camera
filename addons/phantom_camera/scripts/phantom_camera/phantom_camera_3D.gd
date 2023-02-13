@@ -300,36 +300,43 @@ func _physics_process(delta: float) -> void:
 					if _look_at_group_nodes.size() == 1:
 						look_at(_look_at_group_nodes[0].get_position())
 					else:
-						var vec_sum: Vector3
-
-						for vec in _look_at_group_nodes:
-							vec_sum += vec.get_position()
-
-						look_at(vec_sum / _look_at_group_nodes.size())
+						var aabb: AABB = AABB(_look_at_group_nodes[0].get_position(), Vector3.ZERO)
+						for node in _look_at_group_nodes:
+							aabb = aabb.expand(node.get_position())
+						look_at(aabb.get_center())
 
 
 ##################
 # Public Functions
 ##################
+# PhantomCameraHost Functions
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
 
 
+# Priority Functions
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
-
 
 func get_priority() -> int:
 	return Properties.priority
 
 
+# Tween Functions
 func get_tween_duration() -> float:
 	return Properties.tween_duration
-
 
 func get_tween_transition() -> int:
 	return Properties.tween_transition
 
-
 func get_tween_ease() -> int:
 	return Properties.tween_ease
+
+
+# Look At Group Functions
+func add_node_to_look_at_group(node: Node3D) -> void:
+	if not _look_at_group_nodes.has(node):
+		_look_at_group_nodes.append(node)
+
+func remove_node_from_look_at_group(node: Node3D) -> void:
+	_look_at_group_nodes.erase(node)
