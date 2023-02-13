@@ -93,14 +93,13 @@ func add_follow_target_property() -> Array:
 func add_follow_mode_property() -> Array:
 	var _property_list: Array
 
-	if follow_has_target:
-		_property_list.append({
-			"name": Constants.FOLLOW_MODE_PROPERTY_NAME,
-			"type": TYPE_INT,
-			"hint": PROPERTY_HINT_ENUM,
-			"hint_string": ", ".join(PackedStringArray(Constants.FollowMode.keys())).capitalize(),
-			"usage": PROPERTY_USAGE_DEFAULT,
-		})
+	_property_list.append({
+		"name": Constants.FOLLOW_MODE_PROPERTY_NAME,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": ", ".join(PackedStringArray(Constants.FollowMode.keys())).capitalize(),
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
 
 	return _property_list
 
@@ -108,39 +107,38 @@ func add_follow_mode_property() -> Array:
 func add_follow_properties() -> Array:
 	var _property_list: Array
 
-	if follow_has_target:
-		if follow_mode != Constants.FollowMode.NONE:
-			if follow_mode != Constants.FollowMode.GLUED:
-				if is_3D:
-					_property_list.append({
-						"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-						"type": TYPE_VECTOR3,
-						"hint": PROPERTY_HINT_NONE,
-						"usage": PROPERTY_USAGE_DEFAULT,
-					})
-				else:
-					_property_list.append({
-						"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-						"type": TYPE_VECTOR2,
-						"hint": PROPERTY_HINT_NONE,
-						"usage": PROPERTY_USAGE_DEFAULT,
-					})
-
-			_property_list.append({
-				"name": Constants.FOLLOW_DAMPING_NAME,
-				"type": TYPE_BOOL,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT,
-			})
-
-			if follow_has_damping:
+	if follow_mode != Constants.FollowMode.NONE:
+		if follow_mode != Constants.FollowMode.GLUED:
+			if is_3D:
 				_property_list.append({
-					"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
-					"type": TYPE_FLOAT,
-					"hint": PROPERTY_HINT_RANGE,
-					"hint_string": "0.01, 100, 0.01,",
+					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
+					"type": TYPE_VECTOR3,
+					"hint": PROPERTY_HINT_NONE,
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
+			else:
+				_property_list.append({
+					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
+					"type": TYPE_VECTOR2,
+					"hint": PROPERTY_HINT_NONE,
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
+
+		_property_list.append({
+			"name": Constants.FOLLOW_DAMPING_NAME,
+			"type": TYPE_BOOL,
+			"hint": PROPERTY_HINT_NONE,
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+
+		if follow_has_damping:
+			_property_list.append({
+				"name": Constants.FOLLOW_DAMPING_VALUE_NAME,
+				"type": TYPE_FLOAT,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0.01, 100, 0.01,",
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
 
 	return _property_list
 
@@ -216,11 +214,11 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 		follow_mode = value
 		pcam.notify_property_list_changed()
 
-		match value:
-			Constants.FollowMode.NONE:
-				set_process(pcam, false)
-			_:
-				set_process(pcam, true)
+#		match value:
+#			Constants.FollowMode.NONE:
+#				set_process(pcam, false)
+#			_:
+#				set_process(pcam, true)
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:
@@ -309,9 +307,9 @@ func check_multiple_pcam_host_property(pcam: Node, multiple_host: bool = false) 
 	pcam.notify_property_list_changed()
 #	pcam_host_group.append_array(host_group)
 
-func set_process(pcam: Node, enabled: bool) -> void:
-	pcam.set_process(enabled)
-	pcam.set_physics_process(enabled)
+#func set_process(pcam: Node, should_process: bool) -> void:
+#	pcam.set_process(should_process)
+#	pcam.set_physics_process(should_process)
 
 # NOTE - Throws an error at the minute, need to find a reusable solution
 #func get_properties(property: StringName):

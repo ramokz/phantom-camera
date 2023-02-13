@@ -9,9 +9,12 @@ const PCAM_HOST: StringName = "Phantom Camera Host"
 
 const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
 
+# Follow
+const FOLLOW_MODE_PROPERTY_NAME: StringName = "Follow Mode"
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
 const FOLLOW_PARAMETERS_NAME: StringName = "Follow Parameters/"
-const FOLLOW_MODE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Follow Mode"
+
+# Follow Parameters
 const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Distance"
 const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping"
 const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping Value"
@@ -23,9 +26,10 @@ const TWEEN_EASE_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Ease"
 const TWEEN_DURATION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Duration"
 
 enum FollowMode {
-	NONE 			= 0,
+	NONE 	= 0,
 	GLUED 	= 1,
 	SIMPLE 	= 2,
+	GROUP	= 3,
 #	FRAMED_FOLLOW 	= 3,
 #	TODO - Path Track Follow
 }
@@ -42,7 +46,8 @@ enum TweenTransitions {
 	CIRC 	= 8,
 	BOUNCE 	= 9,
 	BACK 	= 10,
-#	TODO - CUSTOM = 11
+#	CUSTOM 	= 11,
+#	NONE 	= 12,
 }
 
 enum TweenEases {
