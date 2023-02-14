@@ -21,8 +21,10 @@ func _get_property_list() -> Array:
 		"usage": PROPERTY_USAGE_DEFAULT
 	})
 
-	property_list.append_array(Properties.add_follow_target_property())
 	property_list.append_array(Properties.add_follow_mode_property())
+
+	if Properties.follow_mode != Constants.FollowMode.NONE:
+		property_list.append_array(Properties.add_follow_target_property())
 
 	property_list.append_array(Properties.add_follow_properties())
 	property_list.append_array(Properties.add_tween_properties())
@@ -59,6 +61,8 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path
+	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: return Properties.follow_group_paths
+
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset_2D
 	if property == Constants.FOLLOW_DAMPING_NAME: return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: return Properties.follow_damping_value
@@ -82,15 +86,27 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if Properties.follow_target_node:
-		match Properties.follow_mode:
-			Constants.FollowMode.SIMPLE:
+	if not Properties.should_follow: return
+
+	match Properties.follow_mode:
+		Constants.FollowMode.SIMPLE:
+			if Properties.follow_target_node:
 				set_global_position(
 					Properties.follow_target_node.get_global_position() +
 					Properties.follow_target_offset_2D
 				)
-			Constants.FollowMode.GLUED:
+		Constants.FollowMode.GLUED:
+			if Properties.follow_target_node:
 				set_global_position(Properties.follow_target_node.position)
+		Constants.FollowMode.GROUP:
+			if Properties.has_follow_group:
+				if Properties.follow_group_nodes_2D.size() == 1:
+					set_global_position(Properties.follow_group_nodes_2D[0].get_position())
+				else:
+					var bounds: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_position(), Vector2.ZERO)
+					for node in Properties.follow_group_nodes_2D:
+						bounds = bounds.expand(node.get_position())
+					set_global_position(bounds.get_center())
 
 
 ##################

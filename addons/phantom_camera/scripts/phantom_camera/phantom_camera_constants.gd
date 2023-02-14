@@ -12,6 +12,7 @@ const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
 # Follow
 const FOLLOW_MODE_PROPERTY_NAME: StringName = "Follow Mode"
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
+const FOLLOW_GROUP_PROPERTY_NAME: StringName = "Follow Group"
 const FOLLOW_PARAMETERS_NAME: StringName = "Follow Parameters/"
 
 # Follow Parameters
