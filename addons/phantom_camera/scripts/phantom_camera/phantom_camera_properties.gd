@@ -152,7 +152,7 @@ func add_follow_properties() -> Array:
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
 
-	if follow_mode == Constants.FollowMode.GLUED || follow_mode == Constants.FollowMode.SIMPLE:
+	if follow_mode != Constants.FollowMode.NONE:
 		_property_list.append({
 			"name": Constants.FOLLOW_DAMPING_NAME,
 			"type": TYPE_BOOL,
@@ -227,6 +227,20 @@ func set_priority_property(property: StringName, value, pcam: Node):
 
 
 func set_follow_properties(property: StringName, value, pcam: Node):
+	if property == Constants.FOLLOW_MODE_PROPERTY_NAME:
+		follow_mode = value
+
+		if follow_mode != Constants.FollowMode.GROUP:
+			has_follow_group = false
+
+		pcam.notify_property_list_changed()
+
+#		match value:
+#			Constants.FollowMode.NONE:
+#				set_process(pcam, false)
+#			_:
+#				set_process(pcam, true)
+
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME:
 
 		if follow_mode != Constants.FollowMode.NONE:
@@ -245,15 +259,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 			follow_target_node = null
 		pcam.notify_property_list_changed()
 
-	if property == Constants.FOLLOW_MODE_PROPERTY_NAME:
-		follow_mode = value
-		pcam.notify_property_list_changed()
-
-#		match value:
-#			Constants.FollowMode.NONE:
-#				set_process(pcam, false)
-#			_:
-#				set_process(pcam, true)
 
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
 		if value.size() > 0:

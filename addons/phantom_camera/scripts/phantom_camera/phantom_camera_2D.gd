@@ -7,7 +7,16 @@ const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/ph
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 const ZOOM_PROPERTY_NAME: StringName = "Zoom"
-var zoom: Vector2 = Vector2(1, 1)
+var zoom: Vector2 = Vector2.ONE
+
+const FOLLOW_GROUP_ZOOM_CLAMP: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Zoom Clamp"
+const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Zoom"
+const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Zoom"
+const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Zoom Margin"
+var follow_group_zoom_clamp: bool
+var follow_group_zoom_min: float = 1
+var follow_group_zoom_max: float = 5
+var follow_group_zoom_margin: Vector4
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
@@ -26,6 +35,39 @@ func _get_property_list() -> Array:
 	if Properties.follow_mode != Constants.FollowMode.NONE:
 		property_list.append_array(Properties.add_follow_target_property())
 
+	if Properties.follow_mode == Constants.FollowMode.GROUP:
+		property_list.append({
+			"name": FOLLOW_GROUP_ZOOM_CLAMP,
+			"type": TYPE_BOOL,
+			"hint": PROPERTY_HINT_NONE,
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+		if follow_group_zoom_clamp:
+			property_list.append({
+				"name": FOLLOW_GROUP_ZOOM_MIN,
+				"type": TYPE_FLOAT,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0.01, 100, 0.01,",
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+
+			property_list.append({
+				"name": FOLLOW_GROUP_ZOOM_MAX,
+				"type": TYPE_FLOAT,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0.01, 100, 0.01,",
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+
+			property_list.append({
+				"name": FOLLOW_GROUP_ZOOM_MARGIN,
+				"type": TYPE_VECTOR4,
+				"hint": PROPERTY_HINT_RANGE,
+				"hint_string": "0, 100, 0.01,",
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+
+
 	property_list.append_array(Properties.add_follow_properties())
 	property_list.append_array(Properties.add_tween_properties())
 
@@ -36,6 +78,7 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
 #	Properties.set_trigger_onload_properties(property, value, self)
 
+	# ZOOM
 	if property == ZOOM_PROPERTY_NAME:
 		if value.x == 0:
 			zoom.x = 0.001
@@ -47,6 +90,26 @@ func _set(property: StringName, value) -> bool:
 		else:
 			zoom.y = value.y
 
+	# ZOOM CLAMP
+	if property == FOLLOW_GROUP_ZOOM_CLAMP:
+		follow_group_zoom_clamp = value
+		notify_property_list_changed()
+
+	if property == FOLLOW_GROUP_ZOOM_MIN:
+		if value > 0:
+			follow_group_zoom_min = value
+		else:
+			follow_group_zoom_min = 0
+
+	if property == FOLLOW_GROUP_ZOOM_MAX:
+		if value > 0:
+			follow_group_zoom_max = value
+		else:
+			follow_group_zoom_max = 0
+
+	if property == FOLLOW_GROUP_ZOOM_MARGIN:
+		follow_group_zoom_margin = value
+
 	Properties.set_follow_properties(property, value, self)
 	Properties.set_tween_properties(property, value, self)
 
@@ -54,22 +117,26 @@ func _set(property: StringName, value) -> bool:
 
 
 func _get(property: StringName):
-	if property == Constants.PRIORITY_PROPERTY_NAME: return Properties.priority
+	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
 #	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
-	if property == ZOOM_PROPERTY_NAME: return zoom
+	if property == ZOOM_PROPERTY_NAME: 								return zoom
 
-	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: return Properties.follow_mode
-	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: return Properties.follow_target_path
-	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: return Properties.follow_group_paths
+	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
+	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
+	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
+	if property == FOLLOW_GROUP_ZOOM_CLAMP: 						return follow_group_zoom_clamp
+	if property == FOLLOW_GROUP_ZOOM_MIN: 							return follow_group_zoom_min
+	if property == FOLLOW_GROUP_ZOOM_MAX: 							return follow_group_zoom_max
+	if property == FOLLOW_GROUP_ZOOM_MARGIN: 						return follow_group_zoom_margin
 
-	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return Properties.follow_target_offset_2D
-	if property == Constants.FOLLOW_DAMPING_NAME: return Properties.follow_has_damping
-	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: return Properties.follow_damping_value
+	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:	return Properties.follow_target_offset_2D
+	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
-	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: return Properties.tween_duration
-	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: return Properties.tween_transition
-	if property == Constants.TWEEN_EASE_PROPERTY_NAME: return Properties.tween_ease
+	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: 			return Properties.tween_duration
+	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: 		return Properties.tween_transition
+	if property == Constants.TWEEN_EASE_PROPERTY_NAME: 				return Properties.tween_ease
 
 
 ###################
@@ -84,6 +151,7 @@ func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
 
+var rect_debug: Rect2
 
 func _physics_process(delta: float) -> void:
 	if not Properties.should_follow: return
@@ -103,11 +171,22 @@ func _physics_process(delta: float) -> void:
 				if Properties.follow_group_nodes_2D.size() == 1:
 					set_global_position(Properties.follow_group_nodes_2D[0].get_position())
 				else:
-					var bounds: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_position(), Vector2.ZERO)
+					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
+					var screen_size: Vector2 = get_viewport_rect().size
+#					print(Properties.follow_group_nodes_2D[0].get_position())
 					for node in Properties.follow_group_nodes_2D:
-						bounds = bounds.expand(node.get_position())
-					set_global_position(bounds.get_center())
-
+						rect = rect.expand(node.get_global_position())
+						rect = rect.grow_individual(
+							follow_group_zoom_margin.x,
+							follow_group_zoom_margin.y,
+							follow_group_zoom_margin.z,
+							follow_group_zoom_margin.w)
+					if rect.size.x > rect.size.y * screen_size.aspect():
+						zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+					else:
+						zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+#					print(get_viewport_rect().size)
+					set_global_position(rect.get_center())
 
 ##################
 # Public Functions

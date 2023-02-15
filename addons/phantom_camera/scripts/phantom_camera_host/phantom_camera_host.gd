@@ -29,7 +29,7 @@ var multiple_pcam_hosts: bool
 var pcam_host_group: Array[Node]
 
 var is_child_of_camera: bool = false
-var isCamera3D: bool
+var _is_3D: bool
 
 var camera_zoom
 
@@ -42,9 +42,9 @@ func _enter_tree() -> void:
 	if camera is Camera2D or camera is Camera3D:
 		is_child_of_camera = true
 		if camera is Camera2D:
-			isCamera3D = false
+			_is_3D = false
 		else:
-			isCamera3D = true
+			_is_3D = true
 
 		add_to_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
@@ -146,7 +146,7 @@ func _tween_pcam(delta: float) -> void:
 		)
 	)
 
-	if camera is Camera2D:
+	if not _is_3D:
 		camera.set_zoom(
 			Tween.interpolate_value(
 				camera_zoom, \
@@ -170,6 +170,13 @@ func _pcam_follow(delta: float) -> void:
 	else:
 		camera.set_position(_active_pcam.get_global_position())
 
+	if not _is_3D:
+		if _active_pcam.Properties.has_follow_group:
+			if _active_pcam.Properties.follow_has_damping:
+				camera.zoom = camera.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.Properties.follow_damping_value)
+			else:
+				camera.set_zoom(_active_pcam.zoom)
+
 	camera.set_rotation(_active_pcam.get_global_rotation())
 
 
@@ -188,7 +195,6 @@ func _process_pcam(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	_process_pcam(delta)
-
 
 ##################
 # Public Functions
