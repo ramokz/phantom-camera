@@ -13,7 +13,8 @@ var pcam_host_group: Array[Node]
 var priority: int = 0
 
 #var trigger_onload: bool = true
-
+var should_follow: bool
+var has_follow_group: bool
 var follow_target_node: Node
 var follow_target_path: NodePath
 var follow_has_target: bool = false
@@ -23,6 +24,10 @@ var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
+
+var follow_group_nodes_2D: Array[Node2D]
+var follow_group_nodes_3D: Array[Node3D]
+var follow_group_paths: Array[NodePath]
 
 var tween_transition: Tween.TransitionType
 var tween_ease: Tween.EaseType = Tween.EASE_IN_OUT
@@ -34,6 +39,20 @@ func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
 	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
+
+	elif follow_group_paths:
+			if is_3D:
+				follow_group_nodes_3D.clear()
+			else:
+				follow_group_nodes_2D.clear()
+			for path in follow_group_paths:
+				if not path.is_empty() and pcam.get_node(path):
+					should_follow = true
+					has_follow_group = true
+					if is_3D:
+						follow_group_nodes_3D.append(pcam.get_node(path))
+					else:
+						follow_group_nodes_2D.append(pcam.get_node(path))
 
 
 func add_multiple_hosts_properties() -> Array:
@@ -77,19 +96,6 @@ func add_priority_properties() -> Array:
 #	return _property_list
 
 
-func add_follow_target_property() -> Array:
-	var _property_list: Array
-
-	_property_list.append({
-		"name": Constants.FOLLOW_TARGET_PROPERTY_NAME,
-		"type": TYPE_NODE_PATH,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
-
-	return _property_list
-
-
 func add_follow_mode_property() -> Array:
 	var _property_list: Array
 
@@ -104,11 +110,33 @@ func add_follow_mode_property() -> Array:
 	return _property_list
 
 
+func add_follow_target_property() -> Array:
+	var _property_list: Array
+
+	if follow_mode == Constants.FollowMode.GROUP:
+		_property_list.append({
+			"name": Constants.FOLLOW_GROUP_PROPERTY_NAME,
+			"type": TYPE_ARRAY,
+			"hint": PROPERTY_HINT_TYPE_STRING,
+			"hint_string": TYPE_NODE_PATH,
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+	else:
+		_property_list.append({
+			"name": Constants.FOLLOW_TARGET_PROPERTY_NAME,
+			"type": TYPE_NODE_PATH,
+			"hint": PROPERTY_HINT_NONE,
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+
+	return _property_list
+
+
 func add_follow_properties() -> Array:
 	var _property_list: Array
 
-	if follow_mode != Constants.FollowMode.NONE:
-		if follow_mode != Constants.FollowMode.GLUED:
+	if follow_mode != Constants.FollowMode.NONE and Constants.FollowMode.GROUP:
+		if follow_mode == Constants.FollowMode.SIMPLE:
 			if is_3D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
@@ -124,6 +152,7 @@ func add_follow_properties() -> Array:
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
 
+	if follow_mode != Constants.FollowMode.NONE:
 		_property_list.append({
 			"name": Constants.FOLLOW_DAMPING_NAME,
 			"type": TYPE_BOOL,
@@ -198,7 +227,27 @@ func set_priority_property(property: StringName, value, pcam: Node):
 
 
 func set_follow_properties(property: StringName, value, pcam: Node):
+	if property == Constants.FOLLOW_MODE_PROPERTY_NAME:
+		follow_mode = value
+
+		if follow_mode != Constants.FollowMode.GROUP:
+			has_follow_group = false
+
+		pcam.notify_property_list_changed()
+
+#		match value:
+#			Constants.FollowMode.NONE:
+#				set_process(pcam, false)
+#			_:
+#				set_process(pcam, true)
+
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME:
+
+		if follow_mode != Constants.FollowMode.NONE:
+			should_follow = true
+		else:
+			should_follow = false
+
 		follow_target_path = value
 		var valueNodePath: NodePath = value as NodePath
 		if not valueNodePath.is_empty():
@@ -210,15 +259,34 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 			follow_target_node = null
 		pcam.notify_property_list_changed()
 
-	if property == Constants.FOLLOW_MODE_PROPERTY_NAME:
-		follow_mode = value
-		pcam.notify_property_list_changed()
 
-#		match value:
-#			Constants.FollowMode.NONE:
-#				set_process(pcam, false)
-#			_:
-#				set_process(pcam, true)
+	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
+		if value.size() > 0:
+			# Clears the Array in case of reshuffling or updated Nodes
+			if is_3D:
+				follow_group_nodes_3D.clear()
+			else:
+				follow_group_nodes_2D.clear()
+			follow_group_paths = value as Array[NodePath]
+
+			if not follow_group_paths.is_empty():
+				for path in follow_group_paths:
+					if pcam.has_node(path):
+						should_follow = true
+						has_follow_group = true
+						var node: Node = pcam.get_node(path)
+						if node is Node2D or node is Node3D:
+							# Prevents duplicated nodes from being assigned to array
+							if is_3D:
+								if follow_group_nodes_3D.find(node):
+									follow_group_nodes_3D.append(node)
+							else:
+								if follow_group_nodes_2D.find(node):
+									follow_group_nodes_2D.append(node)
+						else:
+							printerr("Assigned non-Node3D to Follow Group")
+
+		pcam.notify_property_list_changed()
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:

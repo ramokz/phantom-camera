@@ -1,16 +1,16 @@
-[gd_scene load_steps=14 format=3 uid="uid://bds64oihh6xh6"]
+[gd_scene load_steps=14 format=3 uid="uid://jwlmfyn3co4a"]
 
-[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_1utlo"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_akfb5"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="6_e46ea"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="6_kqt1v"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="7_fdx1s"]
+[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_5kqbp"]
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_xmntp"]
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_8dojy"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_2efwt"]
+[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="5_0v2cd"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="6_diuy4"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="7_0pk2o"]
+[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="8_xck10"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
-texture = ExtResource("1_1utlo")
+texture = ExtResource("1_5kqbp")
 0:0/0 = 0
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:0/0/physics_layer_0/angular_velocity = 0.0
@@ -614,40 +614,50 @@ layer_1/tile_data = PackedInt32Array(1, 720896, 0, 2, 720896, 0, 3, 720896, 0, 4
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="UIInventory" parent="UI" instance=ExtResource("7_fdx1s")]
+[node name="UIInventory" parent="UI" instance=ExtResource("2_xmntp")]
 unique_name_in_owner = true
 visible = false
 
-[node name="UISign" parent="UI" instance=ExtResource("6_kqt1v")]
+[node name="UISign" parent="UI" instance=ExtResource("3_8dojy")]
 unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(243, -48)
+position = Vector2(208, -78)
+zoom = Vector2(2, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
-script = ExtResource("1_eayfa")
+script = ExtResource("4_2efwt")
+
+[node name="GroupNPCSprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(73, -28)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_0v2cd")
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
+[node name="GroupPhantomCamera2D" type="Node2D" parent="Player"]
 unique_name_in_owner = true
-position = Vector2(243, -48)
-script = ExtResource("2_mgsut")
-Priority = 5
-Zoom = Vector2(1, 1)
-"Follow Mode" = 2
-"Follow Target" = NodePath("../CharacterBody2D")
-"Follow Parameters/Target Offset" = Vector2(0, -20)
+position = Vector2(208, -78)
+script = ExtResource("6_diuy4")
+Priority = 6
+Zoom = Vector2(2, 2)
+"Follow Mode" = 3
+"Follow Group" = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
+"Follow Parameters/Zoom Clamp" = true
+"Follow Parameters/Min Zoom" = 0.8
+"Follow Parameters/Max Zoom" = 2.0
+"Follow Parameters/Zoom Margin" = Vector4(100, 100, 100, 50)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
-"Tween Properties/Duration" = 0.3
+"Tween Properties/Duration" = 0.6
 "Tween Properties/Transition" = 3
 "Tween Properties/Ease" = 1
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
-script = ExtResource("4_jnuod")
+script = ExtResource("7_0pk2o")
 
 [node name="DarkOverlay" type="ColorRect" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -692,7 +702,7 @@ offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("6_akfb5")
+theme_override_fonts/font = ExtResource("8_xck10")
 theme_override_font_sizes/font_size = 26
 text = "F"
 horizontal_alignment = 1
@@ -701,7 +711,7 @@ vertical_alignment = 1
 [node name="PlayerSprite" type="Sprite2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("6_e46ea")
+texture = ExtResource("5_0v2cd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D"]
 position = Vector2(0, -0.5)
@@ -719,7 +729,7 @@ shape = SubResource("RectangleShape2D_18i13")
 [node name="ItemFocusPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(0, -122)
-script = ExtResource("2_mgsut")
+script = ExtResource("6_diuy4")
 Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
@@ -730,12 +740,12 @@ Zoom = Vector2(2, 2)
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
-script = ExtResource("2_mgsut")
+script = ExtResource("6_diuy4")
 Priority = 0
 Zoom = Vector2(2.5, 2.5)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 5
+"Tween Properties/Duration" = 0.3
+"Tween Properties/Transition" = 8
 "Tween Properties/Ease" = 1
 
 [node name="Label" type="Label" parent="Player"]
@@ -744,6 +754,6 @@ offset_top = -106.0
 offset_right = 320.0
 offset_bottom = -80.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("6_akfb5")
+theme_override_fonts/font = ExtResource("8_xck10")
 text = "[WASD] to move
 [Space] to jump"
