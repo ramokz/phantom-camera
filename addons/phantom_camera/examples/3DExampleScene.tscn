@@ -81,7 +81,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.970143, 0.242524, 0, -0.242524, 0.970143, -2.85487, 2, 9.29149)
+transform = Transform3D(0.999999, 0, 0, 0, 0.821167, 0.570682, 0, -0.570682, 0.821167, -2.85487, 2, 9.29149)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
@@ -96,18 +96,18 @@ font = ExtResource("2_ry7oc")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(0.999859, 0, 0, 0, 0.97011, 0.242524, 0, -0.242527, 0.970097, -2.85487, 2, 9.29149)
+transform = Transform3D(0.999857, 0, 0, 0, 0.821119, 0.570684, 0, -0.570693, 0.821107, -2.85487, 2, 9.29149)
 script = ExtResource("2_y3dy8")
 Priority = 3
+"Follow Mode" = 2
 "Follow Target" = NodePath("../PlayerCharacterBody3D")
-"Follow Parameters/Follow Mode" = 2
+"Follow Parameters/Distance" = 1.0
 "Follow Parameters/Target Offset" = Vector3(0.5, 1.5, 2)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 15.0
-"Look At Target" = NodePath("../PlayerCharacterBody3D")
-"Look At Parameters/Look At Mode" = 0
-"Tween Properties/Duration" = 0.9
-"Tween Properties/Transition" = 5
+"Look At Mode" = 0
+"Tween Properties/Duration" = 0.6
+"Tween Properties/Transition" = 4
 "Tween Properties/Ease" = 2
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
@@ -135,10 +135,10 @@ unique_name_in_owner = true
 transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.98802, 1.50739, 1.19719)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Follow Target" = NodePath("")
-"Look At Target" = NodePath("")
-"Tween Properties/Duration" = 1.0
-"Tween Properties/Transition" = 3
+"Follow Mode" = 0
+"Look At Mode" = 0
+"Tween Properties/Duration" = 0.9
+"Tween Properties/Transition" = 4
 "Tween Properties/Ease" = 2
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
@@ -196,11 +196,11 @@ Example"
 font = ExtResource("2_ry7oc")
 
 [node name="NorthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
-transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89741, 4.73364, 0.12374)
+transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89638, 4.73986, 0.115512)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Follow Target" = NodePath("")
-"Look At Target" = NodePath("")
+"Follow Mode" = 0
+"Look At Mode" = 0
 "Tween Properties/Duration" = 0.0
 "Tween Properties/Transition" = 0
 
@@ -219,8 +219,8 @@ shape = SubResource("BoxShape3D_wcrbb")
 transform = Transform3D(0.258818, -0.482963, 0.836515, 1.3027e-15, 0.866025, 0.499999, -0.965924, -0.129409, 0.224143, 6.69741, 4.73364, 4.02374)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Follow Target" = NodePath("")
-"Look At Target" = NodePath("")
+"Follow Mode" = 0
+"Look At Mode" = 0
 "Tween Properties/Duration" = 0.0
 "Tween Properties/Transition" = 0
 
@@ -239,8 +239,8 @@ shape = SubResource("BoxShape3D_ctyr8")
 transform = Transform3D(-0.766043, -0.492403, 0.413175, 0, 0.642787, 0.766043, -0.642786, 0.586825, -0.492403, 6.89741, 4.73364, 5.62374)
 script = ExtResource("2_y3dy8")
 Priority = 0
-"Follow Target" = NodePath("")
-"Look At Target" = NodePath("")
+"Follow Mode" = 0
+"Look At Mode" = 0
 "Tween Properties/Duration" = 0.0
 "Tween Properties/Transition" = 0
 

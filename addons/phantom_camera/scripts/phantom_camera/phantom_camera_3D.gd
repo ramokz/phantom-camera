@@ -12,24 +12,25 @@ var follow_distance: float = 1
 ###################
 # Follow Properties
 ###################
-const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Distance"
+const FOLLOW_DISTANCE_PROPERTY_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance Divisor"
 
-var _follow_group_distance_auto: bool
-var _follow_group_distance_min: float = 1
-var _follow_group_distance_max: float = 5
-var _follow_group_margin: float
+var _follow_group_distance_auto: 			bool
+var _follow_group_distance_auto_min: 		float = 1
+var _follow_group_distance_auto_max: 		float = 5
+var _follow_group_distance_auto_divisor:	float = 10
 
 ####################
 # Look At Properties
 ####################
-const LOOK_AT_TARGET_PROPERTY_NAME: StringName = "Look At Target"
-const LOOK_AT_GROUP_PROPERTY_NAME: StringName = "Look At Group"
-const LOOK_AT_PARAMETERS_NAME: StringName = "Look At Parameters/"
-const LOOK_AT_MODE_PROPERTY_NAME: StringName = "Look At Mode"
-const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
+const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "Look At Target"
+const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "Look At Group"
+const LOOK_AT_PARAMETERS_NAME: 				StringName = "Look At Parameters/"
+const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "Look At Mode"
+const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -44,9 +45,9 @@ var _look_at_target_path: NodePath
 var _look_at_group_nodes: Array[Node3D]
 var _look_at_group_paths: Array[NodePath]
 
-var _should_look_at: bool
-var _has_look_at_target: bool
-var _has_look_at_target_group: bool
+var _should_look_at: 			bool
+var _has_look_at_target: 		bool
+var _has_look_at_target_group: 	bool
 
 var look_at_mode: LookAtMode = LookAtMode.NONE
 
@@ -103,6 +104,14 @@ func _get_property_list() -> Array:
 						"name": FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME,
 						"type": TYPE_FLOAT,
 						"hint": PROPERTY_HINT_NONE,
+						"usage": PROPERTY_USAGE_DEFAULT,
+					})
+
+					property_list.append({
+						"name": FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR,
+						"type": TYPE_FLOAT,
+						"hint": PROPERTY_HINT_RANGE,
+						"hint_string": "0.01, 100, 0.01,",
 						"usage": PROPERTY_USAGE_DEFAULT,
 					})
 
@@ -178,10 +187,13 @@ func _set(property: StringName, value) -> bool:
 		notify_property_list_changed()
 
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:
-		_follow_group_distance_min = value
+		_follow_group_distance_auto_min = value
 
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:
-		_follow_group_distance_max = value
+		_follow_group_distance_auto_max = value
+
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:
+		_follow_group_distance_auto_divisor = value
 
 	####################
 	# Look At Properties
@@ -267,8 +279,9 @@ func _get(property: StringName):
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:				 	return follow_distance
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME	: 	return Properties.follow_target_offset_3D
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_NAME:					return _follow_group_distance_auto
-	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:				return _follow_group_distance_min
-	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:				return _follow_group_distance_max
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:				return _follow_group_distance_auto_min
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:				return _follow_group_distance_auto_max
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:				return _follow_group_distance_auto_divisor
 	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
@@ -306,7 +319,6 @@ func _enter_tree() -> void:
 				_has_look_at_target_group = true
 				_look_at_group_nodes.append(get_node(path))
 
-
 func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
@@ -337,17 +349,25 @@ func _physics_process(delta: float) -> void:
 						for node in Properties.follow_group_nodes_3D:
 							bounds = bounds.expand(node.get_position())
 
+						var distance: float
+						if _follow_group_distance_auto:
+							distance = lerp(_follow_group_distance_auto_min, _follow_group_distance_auto_max, bounds.get_longest_axis_size() / _follow_group_distance_auto_divisor)
+							distance = clamp(distance, _follow_group_distance_auto_min, _follow_group_distance_auto_max)
+						else:
+							distance = follow_distance
+
 						set_global_position(
 							bounds.get_center() +
 							Properties.follow_target_offset_3D +
-							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+							get_transform().basis.z * Vector3(distance, distance, distance)
 						)
-	#			Constants.FollowMode.FRAMED_FOLLOW:
-	#				set_global_position(
-	#					Properties.follow_target_node.position +
-	#					Properties.follow_target_offset_3D +
-	#					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-	#				)
+
+#				Constants.FollowMode.FRAMED_FOLLOW:
+#					set_global_position(
+#						Properties.follow_target_node.position +
+#						Properties.follow_target_offset_3D +
+#						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+#					)
 
 	if _should_look_at:
 		match look_at_mode:
