@@ -134,9 +134,8 @@ func add_follow_target_property() -> Array:
 
 func add_follow_properties() -> Array:
 	var _property_list: Array
-
-	if follow_mode != Constants.FollowMode.NONE and Constants.FollowMode.GROUP:
-		if follow_mode == Constants.FollowMode.SIMPLE:
+	if follow_mode != Constants.FollowMode.NONE:
+		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP:
 			if is_3D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
@@ -261,7 +260,7 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 
 
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
-		if value.size() > 0:
+		if value and value.size() > 0:
 			# Clears the Array in case of reshuffling or updated Nodes
 			if is_3D:
 				follow_group_nodes_3D.clear()

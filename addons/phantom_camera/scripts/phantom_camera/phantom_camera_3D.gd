@@ -12,16 +12,25 @@ var follow_distance: float = 1
 ###################
 # Follow Properties
 ###################
-const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
+const FOLLOW_DISTANCE_PROPERTY_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance Divisor"
+
+var _follow_group_distance_auto: 			bool
+var _follow_group_distance_auto_min: 		float = 1
+var _follow_group_distance_auto_max: 		float = 5
+var _follow_group_distance_auto_divisor:	float = 10
 
 ####################
 # Look At Properties
 ####################
-const LOOK_AT_TARGET_PROPERTY_NAME: StringName = "Look At Target"
-const LOOK_AT_GROUP_PROPERTY_NAME: StringName = "Look At Group"
-const LOOK_AT_PARAMETERS_NAME: StringName = "Look At Parameters/"
-const LOOK_AT_MODE_PROPERTY_NAME: StringName = "Look At Mode"
-const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
+const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "Look At Target"
+const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "Look At Group"
+const LOOK_AT_PARAMETERS_NAME: 				StringName = "Look At Parameters/"
+const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "Look At Mode"
+const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -36,16 +45,17 @@ var _look_at_target_path: NodePath
 var _look_at_group_nodes: Array[Node3D]
 var _look_at_group_paths: Array[NodePath]
 
-var _should_look_at: bool
-var _has_look_at_target: bool
-var _has_look_at_target_group: bool
+var _should_look_at: 			bool
+var _has_look_at_target: 		bool
+var _has_look_at_target_group: 	bool
 
 var look_at_mode: LookAtMode = LookAtMode.NONE
 
 var look_at_target_offset: Vector3
 
+
 func _get_property_list() -> Array:
-	var _property_list: Array[Dictionary]
+	var property_list: Array[Dictionary]
 
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
@@ -53,31 +63,65 @@ func _get_property_list() -> Array:
 	####################
 	# General Properties
 	####################
-	_property_list.append_array(Properties.add_priority_properties())
+	property_list.append_array(Properties.add_priority_properties())
 #	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	###################
 	# Follow Properties
 	###################
-	_property_list.append_array(Properties.add_follow_mode_property())
+	property_list.append_array(Properties.add_follow_mode_property())
+
 	if Properties.follow_mode != Constants.FollowMode.NONE:
-		_property_list.append_array(Properties.add_follow_target_property())
+		property_list.append_array(Properties.add_follow_target_property())
 
-#	if Properties.follow_mode == Constants.FollowMode.FRAMED_FOLLOW:
-#		property_list.append({
-#			"name": FOLLOW_DISTANCE_PROPERTY_NAME,
-#			"type": TYPE_FLOAT,
-#			"hint": PROPERTY_HINT_NONE,
-#			"usage": PROPERTY_USAGE_DEFAULT,
-#		})
 
-	if Properties.follow_has_target:
-		_property_list.append_array(Properties.add_follow_properties())
+		if Properties.follow_mode == Constants.FollowMode.SIMPLE || Properties.follow_mode == Constants.FollowMode.GROUP:
+			if not _follow_group_distance_auto:
+				property_list.append({
+					"name": FOLLOW_DISTANCE_PROPERTY_NAME,
+					"type": TYPE_FLOAT,
+					"hint": PROPERTY_HINT_NONE,
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
+
+			if Properties.follow_mode == Constants.FollowMode.GROUP:
+				property_list.append({
+					"name": FOLLOW_GROUP_DISTANCE_AUTO_NAME,
+					"type": TYPE_BOOL,
+					"hint": PROPERTY_HINT_NONE,
+					"usage": PROPERTY_USAGE_DEFAULT,
+				})
+
+				if _follow_group_distance_auto:
+					property_list.append({
+						"name": FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME,
+						"type": TYPE_FLOAT,
+						"hint": PROPERTY_HINT_NONE,
+						"usage": PROPERTY_USAGE_DEFAULT,
+					})
+
+					property_list.append({
+						"name": FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME,
+						"type": TYPE_FLOAT,
+						"hint": PROPERTY_HINT_NONE,
+						"usage": PROPERTY_USAGE_DEFAULT,
+					})
+
+					property_list.append({
+						"name": FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR,
+						"type": TYPE_FLOAT,
+						"hint": PROPERTY_HINT_RANGE,
+						"hint_string": "0.01, 100, 0.01,",
+						"usage": PROPERTY_USAGE_DEFAULT,
+					})
+
+	if Properties.follow_has_target || Properties.has_follow_group:
+		property_list.append_array(Properties.add_follow_properties())
 
 	####################
 	# Look At Properties
 	####################
-	_property_list.append({
+	property_list.append({
 		"name": LOOK_AT_MODE_PROPERTY_NAME,
 		"type": TYPE_INT,
 		"hint": PROPERTY_HINT_ENUM,
@@ -87,7 +131,7 @@ func _get_property_list() -> Array:
 
 	if look_at_mode != LookAtMode.NONE:
 		if look_at_mode == LookAtMode.GROUP:
-			_property_list.append({
+			property_list.append({
 				"name": LOOK_AT_GROUP_PROPERTY_NAME,
 				"type": TYPE_ARRAY,
 				"hint": PROPERTY_HINT_TYPE_STRING,
@@ -95,7 +139,7 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 		else:
-			_property_list.append({
+			property_list.append({
 				"name": LOOK_AT_TARGET_PROPERTY_NAME,
 				"type": TYPE_NODE_PATH,
 				"hint": PROPERTY_HINT_NONE,
@@ -103,7 +147,7 @@ func _get_property_list() -> Array:
 			})
 		if _should_look_at:
 			if look_at_mode == LookAtMode.SIMPLE:
-				_property_list.append({
+				property_list.append({
 					"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
 					"type": TYPE_VECTOR3,
 					"hint": PROPERTY_HINT_NONE,
@@ -113,9 +157,9 @@ func _get_property_list() -> Array:
 	##################
 	# Tween Properties
 	##################
-	_property_list.append_array(Properties.add_tween_properties())
+	property_list.append_array(Properties.add_tween_properties())
 
-	return _property_list
+	return property_list
 
 
 func _set(property: StringName, value) -> bool:
@@ -138,6 +182,19 @@ func _set(property: StringName, value) -> bool:
 		else:
 			follow_distance = value
 
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_NAME:
+		_follow_group_distance_auto = value
+		notify_property_list_changed()
+
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:
+		_follow_group_distance_auto_min = value
+
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:
+		_follow_group_distance_auto_max = value
+
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:
+		_follow_group_distance_auto_divisor = value
+
 	####################
 	# Look At Properties
 	####################
@@ -155,7 +212,6 @@ func _set(property: StringName, value) -> bool:
 
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:
 		if value.size() > 0:
-			# Clears the Array in case of reshuffling or updated Nodes
 			_look_at_group_nodes.clear()
 
 			_look_at_group_paths = value as Array[NodePath]
@@ -219,8 +275,13 @@ func _get(property: StringName):
 	###################
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
+	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:				 	return follow_distance
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME	: 	return Properties.follow_target_offset_3D
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_NAME:					return _follow_group_distance_auto
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:				return _follow_group_distance_auto_min
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:				return _follow_group_distance_auto_max
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:				return _follow_group_distance_auto_divisor
 	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
@@ -258,34 +319,55 @@ func _enter_tree() -> void:
 				_has_look_at_target_group = true
 				_look_at_group_nodes.append(get_node(path))
 
-
 func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
 
 
-func _ready() -> void:
-	pass
-#	if Properties.follow_target_path.is_empty() and _look_at_target_path.is_empty():
-#		Properties.set_process(self, false)
-
-
 func _physics_process(delta: float) -> void:
-	if Properties.follow_target_node:
+	if Properties.should_follow:
 		match Properties.follow_mode:
 			Constants.FollowMode.GLUED:
-				set_global_position(Properties.follow_target_node.position)
+				if Properties.follow_target_node:
+					set_global_position(Properties.follow_target_node.position)
 			Constants.FollowMode.SIMPLE:
-				set_global_position(
-					Properties.follow_target_node.position +
-					Properties.follow_target_offset_3D
-				)
-#			Constants.FollowMode.FRAMED_FOLLOW:
-#				set_global_position(
-#					Properties.follow_target_node.position +
-#					Properties.follow_target_offset_3D +
-#					get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-#				)
+				if Properties.follow_target_node:
+					set_global_position(
+						Properties.follow_target_node.position +
+						Properties.follow_target_offset_3D
+					)
+			Constants.FollowMode.GROUP:
+				if Properties.has_follow_group:
+					if Properties.follow_group_nodes_3D.size() == 1:
+						set_global_position(
+							Properties.follow_group_nodes_3D[0].get_position() +
+							Properties.follow_target_offset_3D +
+							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+						)
+					else:
+						var bounds: AABB = AABB(Properties.follow_group_nodes_3D[0].get_position(), Vector3.ZERO)
+						for node in Properties.follow_group_nodes_3D:
+							bounds = bounds.expand(node.get_position())
+
+						var distance: float
+						if _follow_group_distance_auto:
+							distance = lerp(_follow_group_distance_auto_min, _follow_group_distance_auto_max, bounds.get_longest_axis_size() / _follow_group_distance_auto_divisor)
+							distance = clamp(distance, _follow_group_distance_auto_min, _follow_group_distance_auto_max)
+						else:
+							distance = follow_distance
+
+						set_global_position(
+							bounds.get_center() +
+							Properties.follow_target_offset_3D +
+							get_transform().basis.z * Vector3(distance, distance, distance)
+						)
+
+#				Constants.FollowMode.FRAMED_FOLLOW:
+#					set_global_position(
+#						Properties.follow_target_node.position +
+#						Properties.follow_target_offset_3D +
+#						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+#					)
 
 	if _should_look_at:
 		match look_at_mode:
@@ -300,10 +382,10 @@ func _physics_process(delta: float) -> void:
 					if _look_at_group_nodes.size() == 1:
 						look_at(_look_at_group_nodes[0].get_position())
 					else:
-						var aabb: AABB = AABB(_look_at_group_nodes[0].get_position(), Vector3.ZERO)
+						var bounds: AABB = AABB(_look_at_group_nodes[0].get_position(), Vector3.ZERO)
 						for node in _look_at_group_nodes:
-							aabb = aabb.expand(node.get_position())
-						look_at(aabb.get_center())
+							bounds = bounds.expand(node.get_position())
+						look_at(bounds.get_center())
 
 
 ##################
