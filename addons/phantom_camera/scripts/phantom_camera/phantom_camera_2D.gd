@@ -151,7 +151,6 @@ func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
 
-var rect_debug: Rect2
 
 func _physics_process(delta: float) -> void:
 	if not Properties.should_follow: return
@@ -173,7 +172,6 @@ func _physics_process(delta: float) -> void:
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					var screen_size: Vector2 = get_viewport_rect().size
-#					print(Properties.follow_group_nodes_2D[0].get_position())
 					for node in Properties.follow_group_nodes_2D:
 						rect = rect.expand(node.get_global_position())
 						rect = rect.grow_individual(
@@ -185,7 +183,6 @@ func _physics_process(delta: float) -> void:
 						zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-#					print(get_viewport_rect().size)
 					set_global_position(rect.get_center())
 
 ##################
