@@ -9,11 +9,11 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 const ZOOM_PROPERTY_NAME: StringName = "Zoom"
 var zoom: Vector2 = Vector2.ONE
 
-const FOLLOW_GROUP_ZOOM_CLAMP: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Zoom Clamp"
+const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Zoom"
 const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Zoom"
 const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Zoom Margin"
-var follow_group_zoom_clamp: bool
+var follow_group_zoom_auto: bool
 var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
@@ -37,12 +37,12 @@ func _get_property_list() -> Array:
 
 	if Properties.follow_mode == Constants.FollowMode.GROUP:
 		property_list.append({
-			"name": FOLLOW_GROUP_ZOOM_CLAMP,
+			"name": FOLLOW_GROUP_ZOOM_AUTO,
 			"type": TYPE_BOOL,
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
-		if follow_group_zoom_clamp:
+		if follow_group_zoom_auto:
 			property_list.append({
 				"name": FOLLOW_GROUP_ZOOM_MIN,
 				"type": TYPE_FLOAT,
@@ -91,8 +91,8 @@ func _set(property: StringName, value) -> bool:
 			zoom.y = value.y
 
 	# ZOOM CLAMP
-	if property == FOLLOW_GROUP_ZOOM_CLAMP:
-		follow_group_zoom_clamp = value
+	if property == FOLLOW_GROUP_ZOOM_AUTO:
+		follow_group_zoom_auto = value
 		notify_property_list_changed()
 
 	if property == FOLLOW_GROUP_ZOOM_MIN:
@@ -125,7 +125,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
-	if property == FOLLOW_GROUP_ZOOM_CLAMP: 						return follow_group_zoom_clamp
+	if property == FOLLOW_GROUP_ZOOM_AUTO:							return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 							return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 							return follow_group_zoom_max
 	if property == FOLLOW_GROUP_ZOOM_MARGIN: 						return follow_group_zoom_margin
