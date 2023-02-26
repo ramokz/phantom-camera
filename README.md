@@ -21,6 +21,132 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
 
 
 ## Features
+<table>
+  <tr>
+    <td width="140" align="center">
+      <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Priority-(2D-&-3D)">
+        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Priority.svg"/>
+      </a>
+    </td>
+    <td width="1200">
+      <h3>
+        <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Priority-(2D-&-3D)">Priority</a>
+      </h3>
+      <p>
+        Determines which <code>PhantomCamera</code> should be active with the <code>Camera2D</code>/<code>Camera3D</code>.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" align="center">
+      <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">
+        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Follow.svg"/>
+      </a>
+    </td>
+    <td width="1200" colspan="3">
+      <h3>
+        <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">Follow Mode</a>
+      </h3>
+      <p>
+        Define how the <code>Camera2D</code>/ <code>Camera3D</code> should follow its target(s).
+      </p>
+      <table>
+        <tr>
+          <td width="140" align="center">
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
+              <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Glued.svg"/>
+            </a>
+          </td>
+          <td>
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
+              <h4>Glued</h4>
+            </a>
+            <p>
+              Sticks to its target.
+            </p>
+            <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Glued.svg"/>
+          </td>
+        </tr>
+        <tr>
+          <td width="140" align="center">
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#simple">
+              <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Simple.svg"/>
+            </a>
+          </td>
+          <td>
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#simple">
+              <h4>Simple</h4>
+            </a>
+            <p>
+              Follows the target with an optional offset.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="140" align="center">
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
+              <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Group.svg"/>
+            </a>
+          </td>
+          <td>
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
+              <h4>Group</h4>
+            </a>
+            <p>
+              Follows the centre of a collection of targets.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </tr>
+  </tr>
+    <tr>
+    <td width="140" align="center">
+      <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">
+        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Zoom.svg"/>
+      </a>
+    </td>
+    <td width="1200">
+      <h3>
+        <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">Zoom (2D)</a>
+      </h3>
+      <p>
+        Define the Zoom level for the <code>Camera2D</code>.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" align="center">
+      <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)">
+        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Look-At.svg"/>
+      </a>
+    </td>
+    <td width="1200">
+      <h3>
+        <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)">Look At (3D)</a>
+      </h3>
+      <p>
+        Defines where the <code>Camera3D</code> should be looking—adjusting its rotational value.
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td width="140" align="center">
+      <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">
+        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Tween.svg"/>
+      </a>
+    </td>
+    <td width="1200">
+      <h3>
+        <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">Tween</a>
+      </h3>
+      <p>
+        Tweak how the <code>Camera2D</code> tweens to this camera once becoming active.
+      </p>
+    </td>
+  </tr>
+</table>
+
 ### 🏃 Follow
 Keeps a persistent position relative to a target.
 Camera movement can be dampened to provide more smooth movement.
