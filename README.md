@@ -97,9 +97,9 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
           </td>
         </tr>
       </table>
-    </tr>
+    </td>
   </tr>
-    <tr>
+  <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">
         <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Zoom.svg"/>
@@ -127,6 +127,53 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
       <p>
         Defines where the <code>Camera3D</code> should be looking—adjusting its rotational value.
       </p>
+      <table>
+        <tr>
+          <td width="140" align="center">
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#mimic">
+              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/Icon-Look-At-Mimic.svg"/>
+            </a>
+          </td>
+          <td>
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#mimic">
+              <h4>Mimic</h4>
+            </a>
+            <p>
+              Copies the rotational value of its target.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="140" align="center">
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#simple">
+              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/Icon-Look-At-Simple.svg"/>
+            </a>
+          </td>
+          <td>
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#simple">
+              <h4>Simple</h4>
+            </a>
+            <p>
+              Looks At the target with an optional offset.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td width="140" align="center">
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#group">
+              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/Icon-Look-At-Group.svg"/>
+            </a>
+          </td>
+          <td>
+            <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#group">
+              <h3>Group</h3>
+            </a>
+            <p>
+              Looks at the centre of a collection of targets.
+            </p>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
   <tr>
@@ -140,7 +187,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">Tween</a>
       </h3>
       <p>
-        Tweak how the <code>Camera2D</code> tweens to this camera once becoming active.
+        Tweak how the <code>Camera2D</code> tweens to a newly active <code>PhantomCamera</code>.
       </p>
     </td>
   </tr>
