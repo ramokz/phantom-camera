@@ -64,7 +64,6 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
             <p>
               Sticks to its target.
             </p>
-            <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Glued.svg"/>
           </td>
         </tr>
         <tr>
