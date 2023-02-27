@@ -1,11 +1,11 @@
-[gd_scene load_steps=31 format=3 uid="uid://d3rxwscc2mn6y"]
+[gd_scene load_steps=31 format=3 uid="uid://c78dkupamejnm"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_ry7oc"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/trigger_area.gd" id="4_moad5"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
@@ -81,7 +81,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999999, 0, 0, 0, 0.821167, 0.570682, 0, -0.570682, 0.821167, -2.85487, 2, 9.29149)
+transform = Transform3D(0.999999, 0, 0, 0, 0.821167, 0.570682, 0, -0.570682, 0.821167, -2.77206, 2, 9.53369)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
@@ -96,7 +96,7 @@ font = ExtResource("2_ry7oc")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(0.999857, 0, 0, 0, 0.821119, 0.570684, 0, -0.570693, 0.821107, -2.85487, 2, 9.29149)
+transform = Transform3D(0.999857, 0, 0, 0, 0.821119, 0.570684, 0, -0.570693, 0.821107, -2.77206, 2, 9.53369)
 script = ExtResource("2_y3dy8")
 Priority = 3
 "Follow Mode" = 2
@@ -112,7 +112,7 @@ Priority = 3
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35487, 0.5, 7.29149)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.27206, 0.499996, 7.53369)
 script = ExtResource("5_c85ys")
 metadata/_edit_group_ = true
 
