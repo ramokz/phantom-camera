@@ -117,7 +117,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)">
-        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Look-At.svg"/>
+        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/icons/Icon-Look-At.svg"/>
       </a>
     </td>
     <td width="1200">
@@ -131,7 +131,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#mimic">
-              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/Icon-Look-At-Mimic.svg"/>
+              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/icons/Icon-Look-At-Mimic.svg"/>
             </a>
           </td>
           <td>
@@ -146,7 +146,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#simple">
-              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/Icon-Look-At-Simple.svg"/>
+              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/icons/Icon-Look-At-Simple.svg"/>
             </a>
           </td>
           <td>
@@ -161,7 +161,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#group">
-              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/Icon-Look-At-Group.svg"/>
+              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/icons/Icon-Look-At-Group.svg"/>
             </a>
           </td>
           <td>
@@ -187,7 +187,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">Tween</a>
       </h3>
       <p>
-        Tweak how the <code>Camera2D</code> tweens to a newly active <code>PhantomCamera</code>.
+        Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly active <code>PhantomCamera</code>.
       </p>
     </td>
   </tr>
