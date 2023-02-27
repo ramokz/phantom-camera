@@ -1,7 +1,9 @@
-![phantom-camera-banner](https://user-images.githubusercontent.com/5159399/216774990-ae0a9d02-cb04-4fd6-8522-00e021c81dfa.png)
+<img src="./.github/assets/banners/phantom-camera-banner.svg">
 
-# Phantom Camera
-Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
+<h1>Phantom Camera</h1>
+<p>
+    Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
+</p>
 
 <table>
   <tr>
@@ -11,21 +13,20 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   <tbody>
   <tr>
     <td width="1200" align="center" valign="top">
-      <a href="https://github.com/ramokz/phantom-camera/wiki"><img src="https://user-images.githubusercontent.com/5159399/216828486-f530a354-45e6-4cb4-978a-359e63337443.png"></a>
+      <a href="https://github.com/ramokz/phantom-camera/wiki"><img src=".github/assets/icons/Readme-Wiki.svg"></a>
     </td>
      <td width="1200" align="center" valign="top">
-      <a href="https://github.com/ramokz/phantom-camera/milestones"><img src="https://user-images.githubusercontent.com/5159399/216830565-42c6a0c3-2d3e-4fb0-b8a3-b10ed4fc5832.png"></a>
+      <a href="https://github.com/ramokz/phantom-camera/milestones"><img src=".github/assets/icons/Readme-Roadmap.svg"></a>
     </td>
   </tbody>
 </table>
 
-
-## Features
+<h1>Features</h1>
 <table>
   <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Priority-(2D-&-3D)">
-        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Priority.svg"/>
+        <img src=".github/assets/icons/Icon-Priority.svg"/>
       </a>
     </td>
     <td width="1200">
@@ -40,7 +41,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">
-        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Follow.svg"/>
+        <img src=".github/assets/icons/Icon-Follow.svg"/>
       </a>
     </td>
     <td width="1200" colspan="3">
@@ -48,13 +49,13 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">Follow Mode</a>
       </h3>
       <p>
-        Define how the <code>Camera2D</code>/ <code>Camera3D</code> should follow its target(s).
+        Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow its target(s).
       </p>
       <table>
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
-              <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Glued.svg"/>
+              <img src=".github/assets/icons/Icon-Follow-Glued.svg"/>
             </a>
           </td>
           <td>
@@ -69,7 +70,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#simple">
-              <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Simple.svg"/>
+              <img src=".github/assets/icons/Icon-Follow-Simple.svg"/>
             </a>
           </td>
           <td>
@@ -84,7 +85,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
-              <img src="https://github.com/ramokz/phantom-camera/blob/6e3c27ff727bbeab29c1c67da1ff35cf44d26957/.github/assets/Icon-Follow-Group.svg"/>
+              <img src=".github/assets/icons/Icon-Follow-Group.svg"/>
             </a>
           </td>
           <td>
@@ -102,7 +103,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">
-        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Zoom.svg"/>
+        <img src=".github/assets/icons/Icon-Zoom.svg"/>
       </a>
     </td>
     <td width="1200">
@@ -117,7 +118,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)">
-        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/icons/Icon-Look-At.svg"/>
+        <img src=".github/assets/icons/Icon-Look-At.svg"/>
       </a>
     </td>
     <td width="1200">
@@ -131,7 +132,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#mimic">
-              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/icons/Icon-Look-At-Mimic.svg"/>
+              <img src=".github/assets/icons/Icon-Look-At-Mimic.svg"/>
             </a>
           </td>
           <td>
@@ -146,7 +147,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#simple">
-              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/icons/Icon-Look-At-Simple.svg"/>
+              <img src=".github/assets/icons/Icon-Look-At-Simple.svg"/>
             </a>
           </td>
           <td>
@@ -161,7 +162,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#group">
-              <img src="https://github.com/ramokz/phantom-camera/blob/c6e29a14702b4fd32d7df59d27fe1ebe9ae15215/.github/assets/icons/Icon-Look-At-Group.svg"/>
+              <img src=".github/assets/icons/Icon-Look-At-Group.svg"/>
             </a>
           </td>
           <td>
@@ -179,7 +180,7 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   <tr>
     <td width="140" align="center">
       <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">
-        <img src="https://github.com/ramokz/phantom-camera/blob/94cd88bac148e4d2f2e53bb0b3f370827d14fc4d/.github/assets/Icon-Tween.svg"/>
+        <img src=".github/assets/icons/Icon-Tween.svg"/>
       </a>
     </td>
     <td width="1200">
@@ -193,9 +194,11 @@ Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
   </tr>
 </table>
 
-### 🏃 Follow
-Keeps a persistent position relative to a target.
-Camera movement can be dampened to provide more smooth movement.
+<h3>🏃 Follow </h3>
+<p>
+    Keeps a persistent position relative to a target.
+    Camera movement can be dampened to provide more smooth movement.
+</p>
 
 <table>
   <tr>
