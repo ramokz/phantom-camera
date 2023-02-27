@@ -623,15 +623,25 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(208, -78)
-zoom = Vector2(2.76809, 2.76809)
+position = Vector2(325, -222)
+zoom = Vector2(1.69558, 1.69558)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_2efwt")
 
+[node name="Label" type="Label" parent="."]
+offset_left = 167.0
+offset_top = -106.0
+offset_right = 320.0
+offset_bottom = -54.0
+theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
+theme_override_fonts/font = ExtResource("8_xck10")
+text = "[WASD] to move
+[Space] to jump"
+
 [node name="GroupNPCSprite" type="Sprite2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(73, -28)
+position = Vector2(107, -316)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("5_0v2cd")
 
@@ -639,19 +649,19 @@ texture = ExtResource("5_0v2cd")
 
 [node name="GroupPhantomCamera2D" type="Node2D" parent="Player"]
 unique_name_in_owner = true
-position = Vector2(208, -78)
+position = Vector2(325, -222)
 script = ExtResource("6_diuy4")
 Priority = 6
-Zoom = Vector2(2.76809, 2.76809)
+Zoom = Vector2(1.69558, 1.69558)
 "Follow Mode" = 3
 "Follow Group" = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
 "Follow Parameters/Auto Zoom" = true
-"Follow Parameters/Min Zoom" = 0.8
+"Follow Parameters/Min Zoom" = 0.7
 "Follow Parameters/Max Zoom" = 3.0
-"Follow Parameters/Zoom Margin" = Vector4(100, 100, 100, 50)
+"Follow Parameters/Zoom Margin" = Vector4(100, 200, 200, 50)
 "Follow Parameters/Target Offset" = Vector2(0, 0)
 "Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
+"Follow Parameters/Damping Value" = 8.0
 "Tween Properties/Duration" = 0.6
 "Tween Properties/Transition" = 3
 "Tween Properties/Ease" = 1
@@ -749,12 +759,11 @@ Zoom = Vector2(2.5, 2.5)
 "Tween Properties/Transition" = 8
 "Tween Properties/Ease" = 1
 
-[node name="Label" type="Label" parent="Player"]
-offset_left = 167.0
-offset_top = -106.0
-offset_right = 320.0
-offset_bottom = -80.0
+[node name="Label2" type="Label" parent="Player"]
+offset_left = 49.0
+offset_top = -379.0
+offset_right = 151.0
+offset_bottom = -353.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
 theme_override_fonts/font = ExtResource("8_xck10")
-text = "[WASD] to move
-[Space] to jump"
+text = "Stays in view"

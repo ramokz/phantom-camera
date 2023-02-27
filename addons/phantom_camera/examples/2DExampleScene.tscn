@@ -623,7 +623,7 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(243, -48)
+position = Vector2(243, -148)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("1_eayfa")
@@ -632,13 +632,13 @@ script = ExtResource("1_eayfa")
 
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
 unique_name_in_owner = true
-position = Vector2(243, -48)
+position = Vector2(243, -148)
 script = ExtResource("2_mgsut")
 Priority = 5
 Zoom = Vector2(1, 1)
 "Follow Mode" = 2
 "Follow Target" = NodePath("../CharacterBody2D")
-"Follow Parameters/Target Offset" = Vector2(0, -20)
+"Follow Parameters/Target Offset" = Vector2(0, -120)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
 "Tween Properties/Duration" = 0.3
