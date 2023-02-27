@@ -55,7 +55,7 @@
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
-              <img src=".github/assets/icons/Icon-Follow-Glued.svg"/>
+              <img src=".github/assets/icons/Follow-Glued.svg"/>
             </a>
           </td>
           <td>
@@ -70,7 +70,7 @@
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#simple">
-              <img src=".github/assets/icons/Icon-Follow-Simple.svg"/>
+              <img src=".github/assets/icons/Follow-Simple.svg"/>
             </a>
           </td>
           <td>
@@ -85,7 +85,7 @@
         <tr>
           <td width="140" align="center">
             <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
-              <img src=".github/assets/icons/Icon-Follow-Group.svg"/>
+              <img src=".github/assets/icons/Follow-Group.svg"/>
             </a>
           </td>
           <td>
