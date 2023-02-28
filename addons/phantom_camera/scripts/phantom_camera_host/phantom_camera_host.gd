@@ -160,6 +160,8 @@ func _tween_pcam(delta: float) -> void:
 
 
 func _pcam_follow(delta: float) -> void:
+	if not _active_pcam: return
+
 	if _active_pcam.Properties.follow_has_damping:
 		camera.set_position(
 			camera.get_position().lerp(
