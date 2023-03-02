@@ -134,9 +134,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
-	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: 			return Properties.tween_duration
-	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: 		return Properties.tween_transition
-	if property == Constants.TWEEN_EASE_PROPERTY_NAME: 				return Properties.tween_ease
+	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
 
 
 ###################
@@ -196,13 +194,21 @@ func get_priority() -> int:
 	return Properties.priority
 
 
+# Tween Functions
 func get_tween_duration() -> float:
-	return Properties.tween_duration
-
+	if Properties.tween_resource:
+		return Properties.tween_resource.duration
+	else:
+		return Properties.tween_resource_default.duration
 
 func get_tween_transition() -> int:
-	return Properties.tween_transition
-
+	if Properties.tween_resource:
+		return Properties.tween_resource.transition
+	else:
+		return Properties.tween_resource_default.transition
 
 func get_tween_ease() -> int:
-	return Properties.tween_ease
+	if Properties.tween_resource:
+		return Properties.tween_resource.ease
+	else:
+		return Properties.tween_resource_default.ease

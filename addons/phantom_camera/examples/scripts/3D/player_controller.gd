@@ -3,6 +3,7 @@ extends CharacterBody3D
 
 @export var SPEED = 5.0
 @export var JUMP_VELOCITY = 4.5
+@export var enable_gravity = true
 
 @onready var _camera: Camera3D = %MainCamera3D
 
@@ -50,7 +51,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	# Add the gravity.
-	if not is_on_floor():
+	if enable_gravity and not is_on_floor():
 		velocity.y -= gravity * delta
 
 	# Get the input direction and handle the movement/deceleration.

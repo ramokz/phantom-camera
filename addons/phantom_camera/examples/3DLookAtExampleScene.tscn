@@ -30,7 +30,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999882, -0.012416, 0.00879777, 0, 0.578153, 0.815928, -0.015217, -0.815834, 0.578086, -11.9975, 8.41762, 7.01051)
+transform = Transform3D(0.999882, -0.0124227, 0.00880248, 0, 0.578153, 0.815928, -0.0152252, -0.815834, 0.578085, -11.9975, 8.41762, 7.01051)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_lldvu")
@@ -42,16 +42,14 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.999838, -0.0124152, 0.00879591, 0, 0.577995, 0.815929, -0.0152163, -0.815784, 0.577963, -11.9975, 8.41762, 7.01051)
+transform = Transform3D(0.999838, -0.0124219, 0.00880062, 0, 0.577995, 0.815929, -0.0152245, -0.815784, 0.577963, -11.9975, 8.41762, 7.01051)
 script = ExtResource("2_8md3q")
 Priority = 5
 "Follow Mode" = 0
 "Look At Mode" = 2
 "Look At Target" = NodePath("../PlayerCharacterBody3D2")
 "Look At Parameters/Look At Target Offset" = Vector3(0, 0, 0)
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 5
-"Tween Properties/Ease" = 2
+"Tween Parameters" = null
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

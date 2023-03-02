@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bds64oihh6xh6"]
+[gd_scene load_steps=17 format=3 uid="uid://bds64oihh6xh6"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_1utlo"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
@@ -6,8 +6,11 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_akfb5"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="6_e46ea"]
+[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gqov5"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="6_kqt1v"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="7_fdx1s"]
+[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="10_0txyn"]
+[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="11_xakux"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_1utlo")
@@ -641,9 +644,7 @@ Zoom = Vector2(1, 1)
 "Follow Parameters/Target Offset" = Vector2(0, -120)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
-"Tween Properties/Duration" = 0.3
-"Tween Properties/Transition" = 3
-"Tween Properties/Ease" = 1
+"Tween Parameters" = ExtResource("6_gqov5")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -723,9 +724,7 @@ script = ExtResource("2_mgsut")
 Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 8
-"Tween Properties/Ease" = 1
+"Tween Parameters" = ExtResource("10_0txyn")
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -734,9 +733,7 @@ script = ExtResource("2_mgsut")
 Priority = 0
 Zoom = Vector2(2.5, 2.5)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 5
-"Tween Properties/Ease" = 1
+"Tween Parameters" = ExtResource("11_xakux")
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0

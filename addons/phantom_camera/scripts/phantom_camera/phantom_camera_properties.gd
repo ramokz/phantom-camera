@@ -29,30 +29,27 @@ var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
 
-var tween_transition: Tween.TransitionType
-var tween_ease: Tween.EaseType = Tween.EASE_IN_OUT
-var tween_linear: bool
-var tween_duration: float = 1
+var tween_resource: PhantomCameraTween
+var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
 	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
-
 	elif follow_group_paths:
-			if is_3D:
-				follow_group_nodes_3D.clear()
-			else:
-				follow_group_nodes_2D.clear()
-			for path in follow_group_paths:
-				if not path.is_empty() and pcam.get_node(path):
-					should_follow = true
-					has_follow_group = true
-					if is_3D:
-						follow_group_nodes_3D.append(pcam.get_node(path))
-					else:
-						follow_group_nodes_2D.append(pcam.get_node(path))
+		if is_3D:
+			follow_group_nodes_3D.clear()
+		else:
+			follow_group_nodes_2D.clear()
+		for path in follow_group_paths:
+			if not path.is_empty() and pcam.get_node(path):
+				should_follow = true
+				has_follow_group = true
+				if is_3D:
+					follow_group_nodes_3D.append(pcam.get_node(path))
+				else:
+					follow_group_nodes_2D.append(pcam.get_node(path))
 
 
 func add_multiple_hosts_properties() -> Array:
@@ -174,36 +171,12 @@ func add_follow_properties() -> Array:
 func add_tween_properties() -> Array:
 	var _property_list: Array
 
-	_property_list.append({
-		"name": Constants.TWEEN_DURATION_PROPERTY_NAME,
-		"type": TYPE_FLOAT,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
-
-	_property_list.append({
-		"name": Constants.TWEEN_TRANSITION_PROPERTY_NAME,
-		"type": TYPE_NIL,
-		"hint_string": "Transition_",
-		"usage": PROPERTY_USAGE_GROUP,
-	})
-
-	_property_list.append({
-		"name": Constants.TWEEN_TRANSITION_PROPERTY_NAME,
-		"type": TYPE_INT,
-		"hint": PROPERTY_HINT_ENUM,
-		"hint_string": ", ".join(PackedStringArray(Constants.TweenTransitions.keys())).capitalize(),
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
-
-	if not tween_linear:
-		_property_list.append({
-			"name": Constants.TWEEN_EASE_PROPERTY_NAME,
-			"type": TYPE_INT,
-			"hint": PROPERTY_HINT_ENUM,
-			"hint_string": ", ".join(PackedStringArray(Constants.TweenEases.keys())).capitalize(),
-			"usage": PROPERTY_USAGE_DEFAULT,
-		})
+	_property_list.append(({
+		"name": Constants.TWEEN_RESOURCE_PROPERTY_NAME,
+		"type": TYPE_OBJECT,
+		"hint": PROPERTY_HINT_RESOURCE_TYPE,
+		"hint_string": "PhantomCameraTween"
+	}))
 
 	return _property_list
 
@@ -302,34 +275,8 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 
 
 func set_tween_properties(property: StringName, value, pcam: Node):
-	if property == Constants.TWEEN_DURATION_PROPERTY_NAME:
-		tween_duration = value
-	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME:
-		tween_linear = false
-		match value:
-			Tween.TRANS_LINEAR:
-				tween_transition = Tween.TRANS_LINEAR
-				tween_linear = true # Disables Easing property as it has no effect on Linear transitions
-			Tween.TRANS_SINE: 		tween_transition = Tween.TRANS_SINE
-			Tween.TRANS_QUINT: 		tween_transition = Tween.TRANS_QUINT
-			Tween.TRANS_QUART: 		tween_transition = Tween.TRANS_QUART
-			Tween.TRANS_QUAD: 		tween_transition = Tween.TRANS_QUAD
-			Tween.TRANS_EXPO: 		tween_transition = Tween.TRANS_EXPO
-			Tween.TRANS_ELASTIC: 	tween_transition = Tween.TRANS_ELASTIC
-			Tween.TRANS_CUBIC:		tween_transition = Tween.TRANS_CUBIC
-			Tween.TRANS_CIRC:		tween_transition = Tween.TRANS_CIRC
-			Tween.TRANS_BOUNCE: 	tween_transition = Tween.TRANS_BOUNCE
-			Tween.TRANS_BACK: 		tween_transition = Tween.TRANS_BACK
-			11:
-				tween_transition = 11
-		pcam.notify_property_list_changed()
-	if property == Constants.TWEEN_EASE_PROPERTY_NAME:
-		match value:
-			Tween.EASE_IN: 			tween_ease = Tween.EASE_IN
-			Tween.EASE_OUT: 		tween_ease = Tween.EASE_OUT
-			Tween.EASE_IN_OUT: 		tween_ease = Tween.EASE_IN_OUT
-			Tween.EASE_OUT_IN: 		tween_ease = Tween.EASE_OUT_IN
-
+	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:
+		tween_resource = value
 
 func set_priority(value: int, pcam: Node) -> void:
 	if value < 0:
@@ -377,17 +324,3 @@ func check_multiple_pcam_host_property(pcam: Node, multiple_host: bool = false) 
 #func set_process(pcam: Node, should_process: bool) -> void:
 #	pcam.set_process(should_process)
 #	pcam.set_physics_process(should_process)
-
-# NOTE - Throws an error at the minute, need to find a reusable solution
-#func get_properties(property: StringName):
-#	# General - Properties
-#	if property == PhantomCameraConstants.PRIORITY_PROPERTY_NAME: return priority
-#
-#	# Follow - Properties
-#	if property == PhantomCameraConstants.FOLLOW_TARGET_PROPERTY_NAME: return follow_target_path
-#	if property == PhantomCameraConstants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: return follow_target_offset
-#
-#	# Tween - Properties
-#	if property == PhantomCameraConstants.TWEEN_DURATION_PROPERTY_NAME: return tween_duration
-#	if property == PhantomCameraConstants.TWEEN_TRANSITION_PROPERTY_NAME: return tween_transition
-#	if property == PhantomCameraConstants.TWEEN_EASE_PROPERTY_NAME: return tween_ease
