@@ -1,11 +1,13 @@
-[gd_scene load_steps=13 format=3 uid="uid://bgmv422o6hlx3"]
+[gd_scene load_steps=19 format=3 uid="uid://bgmv422o6hlx3"]
 
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_ydeog"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_b2yrt"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_m2w30"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_68dqc"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_aj0kl"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="5_h0ouh"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_hw5af"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_wup4d"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_qde4k"]
 
@@ -23,6 +25,30 @@ size = Vector3(5, 0.1, 4)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2dct5"]
 transparency = 1
 albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
+
+[sub_resource type="Resource" id="Resource_hml7x"]
+script = ExtResource("6_wup4d")
+duration = 0.6
+transition = 0
+ease = 2
+
+[sub_resource type="Resource" id="Resource_pjwwe"]
+script = ExtResource("6_wup4d")
+duration = 0.3
+transition = 1
+ease = 2
+
+[sub_resource type="Resource" id="Resource_ex8sv"]
+script = ExtResource("6_wup4d")
+duration = 0.3
+transition = 8
+ease = 2
+
+[sub_resource type="Resource" id="Resource_n4qdq"]
+script = ExtResource("6_wup4d")
+duration = 1.2
+transition = 10
+ease = 2
 
 [node name="Root" type="Node3D"]
 
@@ -56,9 +82,7 @@ Priority = 3
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.9
-"Tween Properties/Transition" = 5
-"Tween Properties/Ease" = 2
+"Tween Parameters" = ExtResource("4_aj0kl")
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -105,8 +129,7 @@ script = ExtResource("3_m2w30")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 0
+"Tween Parameters" = SubResource("Resource_hml7x")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -142,9 +165,7 @@ script = ExtResource("3_m2w30")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 1
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_pjwwe")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -180,9 +201,7 @@ script = ExtResource("3_m2w30")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.3
-"Tween Properties/Transition" = 8
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_ex8sv")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -218,9 +237,7 @@ script = ExtResource("3_m2w30")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 1.2
-"Tween Properties/Transition" = 10
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_n4qdq")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)

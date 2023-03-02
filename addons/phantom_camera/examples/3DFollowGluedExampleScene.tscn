@@ -50,18 +50,16 @@ Priority = 5
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 5.0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 5
-"Tween Properties/Ease" = 2
+"Tween Parameters" = null
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
 transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -11.2101, 6.38964, 6.74731)
 script = ExtResource("4_hehj7")
+enable_gravity = false
 metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 visible = false
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
@@ -80,7 +78,6 @@ transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1
 metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 

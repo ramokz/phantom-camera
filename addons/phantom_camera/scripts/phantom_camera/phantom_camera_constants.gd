@@ -21,10 +21,8 @@ const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping"
 const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping Value"
 const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Target Offset"
 
-const TWEEN_CATEGORY_NAME: StringName = "Tween Properties/"
-const TWEEN_TRANSITION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Transition"
-const TWEEN_EASE_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Ease"
-const TWEEN_DURATION_PROPERTY_NAME: StringName = TWEEN_CATEGORY_NAME + "Duration"
+# Tween Resource
+const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "Tween Parameters"
 
 enum FollowMode {
 	NONE 	= 0,

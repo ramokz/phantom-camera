@@ -1,12 +1,15 @@
-[gd_scene load_steps=31 format=3 uid="uid://c78dkupamejnm"]
+[gd_scene load_steps=35 format=3 uid="uid://cp8hqgpfi477l"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_ry7oc"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_7kvsv"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_d1mkp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
+[ext_resource type="Resource" uid="uid://c1v786g5agaw5" path="res://addons/phantom_camera/examples/resources/tween/FixedCameraTween.tres" id="7_qeha2"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
 
@@ -14,6 +17,12 @@
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
+
+[sub_resource type="Resource" id="Resource_cye0i"]
+script = ExtResource("4_d1mkp")
+duration = 0.9
+transition = 4
+ease = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_7tjw4"]
 size = Vector3(2, 0.5, 4)
@@ -106,9 +115,7 @@ Priority = 3
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 15.0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 4
-"Tween Properties/Ease" = 2
+"Tween Parameters" = ExtResource("4_7kvsv")
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
@@ -137,9 +144,7 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.9
-"Tween Properties/Transition" = 4
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_cye0i")
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, -3.04693, 0.367287, 0.953757)
@@ -201,8 +206,7 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.0
-"Tween Properties/Transition" = 0
+"Tween Parameters" = ExtResource("7_qeha2")
 
 [node name="NorthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, -0.9)
@@ -221,8 +225,7 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.0
-"Tween Properties/Transition" = 0
+"Tween Parameters" = ExtResource("7_qeha2")
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 3)
@@ -241,8 +244,7 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Properties/Duration" = 0.0
-"Tween Properties/Transition" = 0
+"Tween Parameters" = ExtResource("7_qeha2")
 
 [node name="SouthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 6.7)

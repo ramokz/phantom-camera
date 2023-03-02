@@ -1,10 +1,12 @@
-[gd_scene load_steps=18 format=3 uid="uid://rru5m1vfbioq"]
+[gd_scene load_steps=23 format=3 uid="uid://rru5m1vfbioq"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_oo2bo"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_6yi7w"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_bb7en"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_kikl5"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_8u8cj"]
+[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gu0o0"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_oxdpf"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="7_2r7ct"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_ok3b7"]
@@ -582,11 +584,29 @@ size = Vector2(42, 57)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tgk1y"]
 size = Vector2(140, 160)
 
+[sub_resource type="Resource" id="Resource_ujs6q"]
+script = ExtResource("6_8u8cj")
+duration = 0.6
+transition = 1
+ease = 2
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_clm0y"]
 size = Vector2(104, 160)
 
+[sub_resource type="Resource" id="Resource_7xgkv"]
+script = ExtResource("6_8u8cj")
+duration = 0.3
+transition = 8
+ease = 2
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uka0w"]
 size = Vector2(560, 160)
+
+[sub_resource type="Resource" id="Resource_tse25"]
+script = ExtResource("6_8u8cj")
+duration = 1.0
+transition = 10
+ease = 2
 
 [node name="ExampleScene2D" type="Node2D"]
 
@@ -651,9 +671,7 @@ Zoom = Vector2(1, 1)
 "Follow Parameters/Target Offset" = Vector2(0, -120)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 4
-"Tween Properties/Ease" = 1
+"Tween Parameters" = ExtResource("6_gu0o0")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -731,9 +749,7 @@ script = ExtResource("5_kikl5")
 Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 8
-"Tween Properties/Ease" = 1
+"Tween Parameters" = null
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -742,9 +758,7 @@ script = ExtResource("5_kikl5")
 Priority = 0
 Zoom = Vector2(2.5, 2.5)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 5
-"Tween Properties/Ease" = 1
+"Tween Parameters" = null
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0
@@ -789,14 +803,12 @@ Duration:
 horizontal_alignment = 1
 
 [node name="PhantomCamera2D" type="Node2D" parent="WideArea"]
-position = Vector2(150, -17)
+position = Vector2(4, -100)
 script = ExtResource("5_kikl5")
 Priority = 0
 Zoom = Vector2(0.8, 0.8)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.6
-"Tween Properties/Transition" = 1
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_ujs6q")
 
 [node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(649, -135)
@@ -836,9 +848,7 @@ script = ExtResource("5_kikl5")
 Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 0.3
-"Tween Properties/Transition" = 8
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_7xgkv")
 
 [node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(1136, -38)
@@ -878,6 +888,4 @@ script = ExtResource("5_kikl5")
 Priority = 0
 Zoom = Vector2(0.9, 0.9)
 "Follow Mode" = 0
-"Tween Properties/Duration" = 1.2
-"Tween Properties/Transition" = 10
-"Tween Properties/Ease" = 2
+"Tween Parameters" = SubResource("Resource_tse25")

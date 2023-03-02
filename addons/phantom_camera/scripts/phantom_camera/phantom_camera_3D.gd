@@ -296,9 +296,7 @@ func _get(property: StringName):
 	##################
 	# Tween Properties
 	##################
-	if property == Constants.TWEEN_DURATION_PROPERTY_NAME: 			return Properties.tween_duration
-	if property == Constants.TWEEN_TRANSITION_PROPERTY_NAME: 		return Properties.tween_transition
-	if property == Constants.TWEEN_EASE_PROPERTY_NAME: 				return Properties.tween_ease
+	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
 
 
 ###################
@@ -404,17 +402,6 @@ func get_priority() -> int:
 	return Properties.priority
 
 
-# Tween Functions
-func get_tween_duration() -> float:
-	return Properties.tween_duration
-
-func get_tween_transition() -> int:
-	return Properties.tween_transition
-
-func get_tween_ease() -> int:
-	return Properties.tween_ease
-
-
 # Look At Group Functions
 func add_node_to_look_at_group(node: Node3D) -> void:
 	if not _look_at_group_nodes.has(node):
@@ -422,3 +409,24 @@ func add_node_to_look_at_group(node: Node3D) -> void:
 
 func remove_node_from_look_at_group(node: Node3D) -> void:
 	_look_at_group_nodes.erase(node)
+
+
+# Tween Functions
+func get_tween_duration() -> float:
+#	return Properties.tween_duration
+	if Properties.tween_resource:
+		return Properties.tween_resource.duration
+	else:
+		return Properties.tween_resource_default.duration
+
+func get_tween_transition() -> int:
+	if Properties.tween_resource:
+		return Properties.tween_resource.transition
+	else:
+		return Properties.tween_resource_default.transition
+
+func get_tween_ease() -> int:
+	if Properties.tween_resource:
+		return Properties.tween_resource.ease
+	else:
+		return Properties.tween_resource_default.ease
