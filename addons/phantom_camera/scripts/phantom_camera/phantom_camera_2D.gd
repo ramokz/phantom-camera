@@ -67,9 +67,9 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 
-
 	property_list.append_array(Properties.add_follow_properties())
 	property_list.append_array(Properties.add_tween_properties())
+	property_list.append_array(Properties.add_secondary_properties())
 
 	return property_list
 
@@ -112,13 +112,13 @@ func _set(property: StringName, value) -> bool:
 
 	Properties.set_follow_properties(property, value, self)
 	Properties.set_tween_properties(property, value, self)
+	Properties.set_secondary_properties(property, value, self)
 
 	return false
 
 
 func _get(property: StringName):
 	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
-#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 	if property == ZOOM_PROPERTY_NAME: 								return zoom
 
@@ -129,13 +129,14 @@ func _get(property: StringName):
 	if property == FOLLOW_GROUP_ZOOM_MIN: 							return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 							return follow_group_zoom_max
 	if property == FOLLOW_GROUP_ZOOM_MARGIN: 						return follow_group_zoom_margin
-
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:	return Properties.follow_target_offset_2D
 	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
 
+	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
+#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 ###################
 # Private Functions
@@ -194,19 +195,16 @@ func get_priority() -> int:
 	return Properties.priority
 
 
-# Tween Functions
 func get_tween_duration() -> float:
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
 	else:
 		return Properties.tween_resource_default.duration
-
 func get_tween_transition() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
-
 func get_tween_ease() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.ease

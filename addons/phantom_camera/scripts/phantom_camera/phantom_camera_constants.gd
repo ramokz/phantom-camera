@@ -3,6 +3,7 @@ extends RefCounted
 
 const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
+# Primary
 const PRIORITY_PROPERTY_NAME: StringName = "Priority"
 
 const PCAM_HOST: StringName = "Phantom Camera Host"
@@ -23,6 +24,10 @@ const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + 
 
 # Tween Resource
 const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "Tween Parameters"
+
+# Secondary
+const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "Inactive Update Mode"
+
 
 enum FollowMode {
 	NONE 	= 0,
@@ -54,4 +59,10 @@ enum TweenEases {
 	EASE_OUT 	= 1,
 	EASE_IN_OUT = 2,
 	EASE_OUT_IN = 3,
+}
+
+enum InactiveUpdateMode {
+	ALWAYS 			= 0,
+	EXPONENTIALLY 	= 1,
+	NEVER 			= 2,
 }
