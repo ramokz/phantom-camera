@@ -95,7 +95,7 @@
             <p>
               Follows the centre of a collection of targets.
             </p>
-            <video src="https://github.com/ramokz/phantom-camera/blob/db33c4be042d00a4223116054a81ce0e33c7ea23/.github/assets/videos/3D-Follow-Group.mp4" width="400"/>
+            <video src="https://user-images.githubusercontent.com/5159399/226137969-453b7d37-34ff-4848-97c8-aab6ffae29a5.mp4"/>
           </td>
         </tr>
       </table>
