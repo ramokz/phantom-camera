@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://do15i547hw8d"]
 
 [ext_resource type="Texture2D" uid="uid://b7cs6me43ufh3" path="res://addons/phantom_camera/examples/textures/2D/inventory_container.png" id="1_pi2dp"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_lj1r6"]
@@ -16,11 +16,12 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 40.0
-offset_top = -219.0
-offset_right = 920.0
-offset_bottom = 219.0
+offset_left = 136.0
+offset_top = -255.0
+offset_right = 1016.0
+offset_bottom = 183.0
 grow_vertical = 2
+scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_pi2dp")
 
 [node name="Label" type="Label" parent="TextureRect"]

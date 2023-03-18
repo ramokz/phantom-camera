@@ -83,6 +83,7 @@ Priority = 3
 "Follow Parameters/Damping Value" = 10.0
 "Look At Mode" = 0
 "Tween Parameters" = ExtResource("4_aj0kl")
+"Inactive Update Mode" = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -130,6 +131,7 @@ Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
 "Tween Parameters" = SubResource("Resource_hml7x")
+"Inactive Update Mode" = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -166,6 +168,7 @@ Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
 "Tween Parameters" = SubResource("Resource_pjwwe")
+"Inactive Update Mode" = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -202,6 +205,7 @@ Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
 "Tween Parameters" = SubResource("Resource_ex8sv")
+"Inactive Update Mode" = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -238,6 +242,7 @@ Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
 "Tween Parameters" = SubResource("Resource_n4qdq")
+"Inactive Update Mode" = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)

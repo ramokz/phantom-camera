@@ -1,8 +1,8 @@
 [gd_scene load_steps=17 format=3 uid="uid://jwlmfyn3co4a"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_5kqbp"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_xmntp"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_8dojy"]
+[ext_resource type="PackedScene" uid="uid://do15i547hw8d" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_xmntp"]
+[ext_resource type="PackedScene" uid="uid://dg54wigsf5mfw" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_8dojy"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_2efwt"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="5_0v2cd"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="6_diuy4"]
@@ -627,12 +627,13 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(325, -222)
-zoom = Vector2(1.5102, 1.5102)
+zoom = Vector2(1.69558, 1.69558)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_2efwt")
 
 [node name="Label" type="Label" parent="."]
+visible = false
 offset_left = 167.0
 offset_top = -106.0
 offset_right = 320.0
@@ -655,7 +656,7 @@ unique_name_in_owner = true
 position = Vector2(325, -222)
 script = ExtResource("6_diuy4")
 Priority = 6
-Zoom = Vector2(1.5102, 1.5102)
+Zoom = Vector2(1.69558, 1.69558)
 "Follow Mode" = 3
 "Follow Group" = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
 "Follow Parameters/Auto Zoom" = true
@@ -666,6 +667,7 @@ Zoom = Vector2(1.5102, 1.5102)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 8.0
 "Tween Parameters" = ExtResource("8_cx6vg")
+"Inactive Update Mode" = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -746,6 +748,7 @@ Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
 "Tween Parameters" = ExtResource("10_ar2rk")
+"Inactive Update Mode" = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -755,6 +758,7 @@ Priority = 0
 Zoom = Vector2(2.5, 2.5)
 "Follow Mode" = 0
 "Tween Parameters" = ExtResource("11_5hu46")
+"Inactive Update Mode" = 0
 
 [node name="Label2" type="Label" parent="Player"]
 offset_left = 49.0

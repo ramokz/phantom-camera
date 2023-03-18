@@ -1,15 +1,12 @@
-[gd_scene load_steps=35 format=3 uid="uid://cp8hqgpfi477l"]
+[gd_scene load_steps=31 format=3 uid="uid://cp8hqgpfi477l"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_ry7oc"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
-[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_7kvsv"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_d1mkp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
-[ext_resource type="Resource" uid="uid://c1v786g5agaw5" path="res://addons/phantom_camera/examples/resources/tween/FixedCameraTween.tres" id="7_qeha2"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
 
@@ -17,12 +14,6 @@
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
-
-[sub_resource type="Resource" id="Resource_cye0i"]
-script = ExtResource("4_d1mkp")
-duration = 0.9
-transition = 4
-ease = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_7tjw4"]
 size = Vector3(2, 0.5, 4)
@@ -90,7 +81,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999999, 0, 0, 0, 0.821167, 0.570682, 0, -0.570682, 0.821167, -2.77206, 2, 9.53369)
+transform = Transform3D(0.997558, 0.0220123, -0.0662686, 0, 0.949012, 0.315231, 0.069829, -0.314462, 0.946695, -3.79218, 2, 9.01132)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_1ouug")
@@ -98,29 +89,26 @@ script = ExtResource("1_1ouug")
 [node name="PlayerGroup" type="Node" parent="."]
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="PlayerGroup"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -3.32396, -0.455369, 8.25177)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -2.50422, -0.455369, 6.62486)
 modulate = Color(0.294118, 1, 0.631373, 1)
 text = "[WASD] to move"
 font = ExtResource("2_ry7oc")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
-transform = Transform3D(0.999857, 0, 0, 0, 0.821119, 0.570684, 0, -0.570693, 0.821107, -2.77206, 2, 9.53369)
+transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -3.79218, 2, 9.01132)
 script = ExtResource("2_y3dy8")
-Priority = 3
-"Follow Mode" = 2
-"Follow Target" = NodePath("../PlayerCharacterBody3D")
-"Follow Parameters/Distance" = 1.0
-"Follow Parameters/Target Offset" = Vector3(0.5, 1.5, 2)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 15.0
+Priority = 0
+"Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Parameters" = ExtResource("4_7kvsv")
+"Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.27206, 0.499996, 7.53369)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.29218, 0.499996, 7.01132)
 script = ExtResource("5_c85ys")
+SPEED = 3.5
 metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerGroup/PlayerCharacterBody3D"]
@@ -144,7 +132,8 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_cye0i")
+"Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, -3.04693, 0.367287, 0.953757)
@@ -206,7 +195,8 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Parameters" = ExtResource("7_qeha2")
+"Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="NorthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, -0.9)
@@ -225,7 +215,8 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Parameters" = ExtResource("7_qeha2")
+"Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 3)
@@ -244,7 +235,8 @@ script = ExtResource("2_y3dy8")
 Priority = 0
 "Follow Mode" = 0
 "Look At Mode" = 0
-"Tween Parameters" = ExtResource("7_qeha2")
+"Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="SouthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 6.7)

@@ -1,8 +1,8 @@
 [gd_scene load_steps=23 format=3 uid="uid://rru5m1vfbioq"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_oo2bo"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_6yi7w"]
+[ext_resource type="PackedScene" uid="uid://do15i547hw8d" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
+[ext_resource type="PackedScene" uid="uid://dg54wigsf5mfw" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_6yi7w"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_bb7en"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_kikl5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_8u8cj"]
@@ -672,6 +672,7 @@ Zoom = Vector2(1, 1)
 "Follow Parameters/Damping" = true
 "Follow Parameters/Damping Value" = 10.0
 "Tween Parameters" = ExtResource("6_gu0o0")
+"Inactive Update Mode" = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -750,6 +751,7 @@ Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
 "Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -759,8 +761,10 @@ Priority = 0
 Zoom = Vector2(2.5, 2.5)
 "Follow Mode" = 0
 "Tween Parameters" = null
+"Inactive Update Mode" = 0
 
 [node name="Label" type="Label" parent="Player"]
+visible = false
 offset_left = 167.0
 offset_top = -106.0
 offset_right = 320.0
@@ -809,6 +813,7 @@ Priority = 0
 Zoom = Vector2(0.8, 0.8)
 "Follow Mode" = 0
 "Tween Parameters" = SubResource("Resource_ujs6q")
+"Inactive Update Mode" = 0
 
 [node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(649, -135)
@@ -849,6 +854,7 @@ Priority = 0
 Zoom = Vector2(2, 2)
 "Follow Mode" = 0
 "Tween Parameters" = SubResource("Resource_7xgkv")
+"Inactive Update Mode" = 0
 
 [node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(1136, -38)
@@ -889,3 +895,4 @@ Priority = 0
 Zoom = Vector2(0.9, 0.9)
 "Follow Mode" = 0
 "Tween Parameters" = SubResource("Resource_tse25")
+"Inactive Update Mode" = 0

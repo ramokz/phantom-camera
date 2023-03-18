@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_q5tix")
 duration = 0.6
-transition = 4
+transition = 3
 ease = 2

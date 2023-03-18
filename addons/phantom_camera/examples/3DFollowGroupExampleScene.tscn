@@ -1,10 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://bdhrdhbux7sjg"]
+[gd_scene load_steps=13 format=3 uid="uid://dbfiy6svpcqap"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_lldvu"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_8md3q"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_odwso"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_2i811"]
-[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_u5qhp"]
+[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_r00ve"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_pi7mp"]
+[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="3_a5igg"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_wr1tj"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_hehj7"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pda7a"]
 
@@ -22,7 +22,7 @@ albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
 albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
-albedo_texture = ExtResource("5_u5qhp")
+albedo_texture = ExtResource("3_a5igg")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
@@ -30,10 +30,10 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999996, -0.00114948, 0.00117199, 0, 0.713931, 0.700215, -0.0016416, -0.700215, 0.71393, -12.3172, 5.78213, 6.64571)
+transform = Transform3D(0.999998, 0, 0, 0, 0.906321, 0.422588, 0, -0.422588, 0.906321, -12.326, 2.60717, 5.26374)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
-script = ExtResource("1_lldvu")
+script = ExtResource("3_wr1tj")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
@@ -42,16 +42,18 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.999952, -0.00114941, 0.00117183, 0, 0.713788, 0.700216, -0.00164153, -0.700172, 0.713831, -12.3172, 5.78213, 6.64571)
-script = ExtResource("2_8md3q")
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 2.60717, 5.26374)
+script = ExtResource("2_pi7mp")
 Priority = 5
 "Follow Mode" = 3
 "Follow Group" = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
-"Follow Parameters/Distance" = 7.53
-"Follow Parameters/Auto Distance" = false
+"Follow Parameters/Auto Distance" = true
+"Follow Parameters/Min Distance" = 2.0
+"Follow Parameters/Max Distance" = 15.0
+"Follow Parameters/Auto Distance Divisor" = 20.0
 "Follow Parameters/Target Offset" = Vector3(0, 0, 0)
 "Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
+"Follow Parameters/Damping Value" = 5.0
 "Look At Mode" = 0
 "Tween Parameters" = null
 "Inactive Update Mode" = 0
@@ -59,7 +61,7 @@ Priority = 5
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
 transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -12.0829, 0.5, 1.40206)
-script = ExtResource("3_odwso")
+script = ExtResource("4_hehj7")
 metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
@@ -77,20 +79,20 @@ shape = SubResource("CapsuleShape3D_3xplc")
 [node name="NPCs" type="Node" parent="."]
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="NPCs"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.6059, 0.519002, -1.52506)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.6059, 0.519002, 0.128472)
 mesh = SubResource("CapsuleMesh_2h36r")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_w3olp")
 
 [node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="NPCs"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0461, 0.519, 4.06618)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0461, 0.519, 0.249913)
 mesh = SubResource("CapsuleMesh_2h36r")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_cw102")
 
 [node name="Environment" type="Node" parent="."]
 
-[node name="Floor" parent="Environment" instance=ExtResource("4_2i811")]
+[node name="Floor" parent="Environment" instance=ExtResource("1_r00ve")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
@@ -113,20 +115,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.6099, 0.31181, 6.6322)
 use_collision = true
 radius = 1.57419
 height = 3.47475
-sides = 32
-
-[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.75028, 0.201103, 2.71259)
-use_collision = true
-radius = 1.41311
-height = 1.40221
-sides = 32
-
-[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.61885, 0.201101, 11.6804)
-use_collision = true
-radius = 2.21673
-height = 7.88261
 sides = 32
 
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Environment"]
@@ -153,14 +141,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.0848, -0.599204, -2.42244
 use_collision = true
 radius = 2.14606
 rings = 32
-
-[node name="CSGTorus3D" type="CSGTorus3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.2356, -1.90735e-06, 0.346393)
-use_collision = true
-inner_radius = 1.3
-outer_radius = 2.0
-sides = 32
-ring_sides = 18
 
 [node name="CSGTorus3D2" type="CSGTorus3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.90455, -1.90735e-06, 7.89765)
