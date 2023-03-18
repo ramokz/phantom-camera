@@ -283,6 +283,13 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not Properties.is_active:
+		match Properties.inactive_update_mode:
+			Constants.InactiveUpdateMode.NEVER:
+				return
+#			Constants.InactiveUpdateMode.EXPONENTIALLY:
+#				TODO
+
 	if Properties.should_follow:
 		match Properties.follow_mode:
 			Constants.FollowMode.GLUED:

@@ -152,6 +152,13 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if not Properties.is_active:
+		match Properties.inactive_update_mode:
+			Constants.InactiveUpdateMode.NEVER:
+				return
+#			Constants.InactiveUpdateMode.EXPONENTIALLY:
+#				TODO
+
 	if not Properties.should_follow: return
 
 	match Properties.follow_mode:
@@ -183,6 +190,7 @@ func _physics_process(delta: float) -> void:
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 					set_global_position(rect.get_center())
+
 
 ##################
 # Public Functions

@@ -92,15 +92,21 @@ func _check_camera_host_amount():
 func _assign_new_active_pcam(pcam: Node) -> void:
 	var no_previous_pcam: bool
 
+
 	if _active_pcam:
 		_previous_active_pcam_position = camera.get_position()
 		_previous_active_pcam_rotation = camera.get_rotation()
 	else:
 		no_previous_pcam = true
 
+	if _active_pcam:
+		_active_pcam.Properties.is_active = false
+
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.Properties.follow_has_damping
+
+	_active_pcam.Properties.is_active = true
 
 	if camera is Camera2D:
 		camera_zoom = camera.get_zoom()
