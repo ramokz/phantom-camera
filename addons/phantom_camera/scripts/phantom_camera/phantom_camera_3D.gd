@@ -5,32 +5,26 @@ extends Node3D
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
-var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
-
-var follow_distance: float = 1
-
-###################
-# Follow Properties
-###################
 const FOLLOW_DISTANCE_PROPERTY_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
 const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance"
 const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Distance"
 const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Distance"
 const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance Divisor"
 
-var _follow_group_distance_auto: 			bool
-var _follow_group_distance_auto_min: 		float = 1
-var _follow_group_distance_auto_max: 		float = 5
-var _follow_group_distance_auto_divisor:	float = 10
-
-####################
-# Look At Properties
-####################
 const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "Look At Target"
 const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "Look At Group"
 const LOOK_AT_PARAMETERS_NAME: 				StringName = "Look At Parameters/"
 const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "Look At Mode"
 const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
+
+var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
+
+var follow_distance: float = 1
+var _follow_group_distance_auto: 			bool
+var _follow_group_distance_auto_min: 		float = 1
+var _follow_group_distance_auto_max: 		float = 5
+var _follow_group_distance_auto_divisor:	float = 10
+
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -60,20 +54,11 @@ func _get_property_list() -> Array:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
 
-	####################
-	# General Properties
-	####################
 	property_list.append_array(Properties.add_priority_properties())
-#	property_list.append_array(Properties.add_trigger_onload_properties())
-
-	###################
-	# Follow Properties
-	###################
 	property_list.append_array(Properties.add_follow_mode_property())
 
 	if Properties.follow_mode != Constants.FollowMode.NONE:
 		property_list.append_array(Properties.add_follow_target_property())
-
 
 		if Properties.follow_mode == Constants.FollowMode.SIMPLE || Properties.follow_mode == Constants.FollowMode.GROUP:
 			if not _follow_group_distance_auto:
@@ -118,9 +103,6 @@ func _get_property_list() -> Array:
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
 
-	####################
-	# Look At Properties
-	####################
 	property_list.append({
 		"name": LOOK_AT_MODE_PROPERTY_NAME,
 		"type": TYPE_INT,
@@ -128,7 +110,6 @@ func _get_property_list() -> Array:
 		"hint_string": ", ".join(PackedStringArray(LookAtMode.keys())).capitalize(),
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
-
 	if look_at_mode != LookAtMode.NONE:
 		if look_at_mode == LookAtMode.GROUP:
 			property_list.append({
@@ -154,10 +135,9 @@ func _get_property_list() -> Array:
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
 
-	##################
-	# Tween Properties
-	##################
 	property_list.append_array(Properties.add_tween_properties())
+	property_list.append_array(Properties.add_secondary_properties())
+#	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	return property_list
 
@@ -166,15 +146,8 @@ func _set(property: StringName, value) -> bool:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	Properties.set_phantom_host_property(property, value, self)
 
-	#########
-	# General
-	#########
 	Properties.set_priority_property(property, value, self)
-#	Properties.set_trigger_onload_properties(property, value, self)
 
-	###################
-	# Follow Properties
-	###################
 	Properties.set_follow_properties(property, value, self)
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
 		if value == 0:
@@ -195,9 +168,8 @@ func _set(property: StringName, value) -> bool:
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:
 		_follow_group_distance_auto_divisor = value
 
-	####################
+
 	# Look At Properties
-	####################
 	if property == LOOK_AT_MODE_PROPERTY_NAME:
 		look_at_mode = value
 
@@ -250,11 +222,9 @@ func _set(property: StringName, value) -> bool:
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME:
 		look_at_target_offset = value
 
-
-	##################
-	# Tween Properties
-	##################
 	Properties.set_tween_properties(property, value, self)
+	Properties.set_secondary_properties(property, value, self)
+#	Properties.set_trigger_onload_properties(property, value, self)
 
 	return false
 
@@ -263,16 +233,8 @@ func _get(property: StringName):
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	if property == Constants.PHANTOM_CAMERA_HOST: return Properties.pcam_host_owner.name
 
-	#########
-	# General
-	#########
 	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
 
-#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
-
-	###################
-	# Follow Properties
-	###################
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
@@ -285,18 +247,15 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
-	####################
-	# Look At Properties
-	####################
 	if property == LOOK_AT_TARGET_PROPERTY_NAME: 					return _look_at_target_path
 	if property == LOOK_AT_MODE_PROPERTY_NAME: 						return look_at_mode
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 			return look_at_target_offset
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:						return _look_at_group_paths
 
-	##################
-	# Tween Properties
-	##################
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
+
+	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
+#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
 
 
 ###################
@@ -317,12 +276,20 @@ func _enter_tree() -> void:
 				_has_look_at_target_group = true
 				_look_at_group_nodes.append(get_node(path))
 
+
 func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
 
 
 func _physics_process(delta: float) -> void:
+	if not Properties.is_active:
+		match Properties.inactive_update_mode:
+			Constants.InactiveUpdateMode.NEVER:
+				return
+#			Constants.InactiveUpdateMode.EXPONENTIALLY:
+#				TODO
+
 	if Properties.should_follow:
 		match Properties.follow_mode:
 			Constants.FollowMode.GLUED:
@@ -394,37 +361,30 @@ func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
 
 
-# Priority Functions
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
-
 func get_priority() -> int:
 	return Properties.priority
 
 
-# Look At Group Functions
 func add_node_to_look_at_group(node: Node3D) -> void:
 	if not _look_at_group_nodes.has(node):
 		_look_at_group_nodes.append(node)
-
 func remove_node_from_look_at_group(node: Node3D) -> void:
 	_look_at_group_nodes.erase(node)
 
 
-# Tween Functions
 func get_tween_duration() -> float:
 #	return Properties.tween_duration
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
 	else:
 		return Properties.tween_resource_default.duration
-
 func get_tween_transition() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
-
 func get_tween_ease() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.ease

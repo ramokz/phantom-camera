@@ -10,6 +10,8 @@ var pcam_host_owner: PhantomCameraHost
 var scene_has_multiple_pcam_hosts: bool
 var pcam_host_group: Array[Node]
 
+var is_active: bool
+
 var priority: int = 0
 
 #var trigger_onload: bool = true
@@ -32,6 +34,7 @@ var follow_group_paths: Array[NodePath]
 var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
+var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
@@ -171,12 +174,25 @@ func add_follow_properties() -> Array:
 func add_tween_properties() -> Array:
 	var _property_list: Array
 
-	_property_list.append(({
+	_property_list.append({
 		"name": Constants.TWEEN_RESOURCE_PROPERTY_NAME,
 		"type": TYPE_OBJECT,
 		"hint": PROPERTY_HINT_RESOURCE_TYPE,
 		"hint_string": "PhantomCameraTween"
-	}))
+	})
+
+	return _property_list
+
+
+func add_secondary_properties() -> Array:
+	var _property_list: Array
+
+	_property_list.append({
+		"name": Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": ", ".join(PackedStringArray(Constants.InactiveUpdateMode.keys())).capitalize(),
+	})
 
 	return _property_list
 
@@ -277,6 +293,12 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 func set_tween_properties(property: StringName, value, pcam: Node):
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:
 		tween_resource = value
+
+
+func set_secondary_properties(property: StringName, value, pcam: Node):
+	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:
+		inactive_update_mode = value
+
 
 func set_priority(value: int, pcam: Node) -> void:
 	if value < 0:
