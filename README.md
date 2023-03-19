@@ -2,7 +2,7 @@
 
 <h1>Phantom Camera</h1>
 <p>
-    Control and dynamically tween 2D and 3D cameras in Godot 4.0 projects.
+    Control and dynamically tween 2D and 3D cameras between various positional and rotational values in Godot 4.
 </p>
 
 <table>
@@ -32,6 +32,9 @@
 <p>
 Determines which <code>PhantomCamera</code> should be active with the <code>Camera2D</code>/<code>Camera3D</code>.
 </p>
+<p>
+When a new camera recieves a higher priority than currently active <code>PhantomCamera</code> the <code>Camera2D</code>/<code>Camera3D</code> will seamlessly transition to the new one.
+</p>
 
 <hr>
 
@@ -42,8 +45,9 @@ Determines which <code>PhantomCamera</code> should be active with the <code>Came
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">Follow Mode</a>
 </h3>
 <p>
-Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow its target(s).
+Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or reposition based on, its target(s).
 </p>
+
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
   <img src=".github/assets/icons/Follow-Glued.svg"/>
 </a>
@@ -63,18 +67,18 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow its tar
   <h4>Simple</h4>
 </a>
 <p>
-  Follows the target with an optional offset.
+  Follows the target with an optional offset and damping.
 </p>
 
 <table>
     <thead>
         <tr>
-            <th align="center" valign="top">
+            <th align="center" valign="top" width="2000">
               <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
               <br/>
               <b>PhantomCamera2D</b>
             </th>
-            <th align="center" valign="top">
+            <th align="center" valign="top" width="2000">
               <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
               <br/>
               <b>PhantomCamera3D</b>
@@ -105,12 +109,12 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow its tar
 <table>
     <thead>
         <tr>
-            <th align="center" valign="top">
+            <th align="center" valign="top" width="2000">
               <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
               <br/>
               <b>PhantomCamera2D</b>
             </th>
-            <th align="center" valign="top">
+            <th align="center" valign="top" width="2000">
               <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
               <br/>
               <b>PhantomCamera3D</b>
@@ -200,6 +204,31 @@ Copies the rotational value of its target.
 Looks At the target with an optional offset.
 </p>
 
+<table>
+    <thead>
+        <tr>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera2D</b>
+            </th>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera3D</b>
+            </th>
+        </tr>
+    </thead>
+    <tr>
+        <td align="center">      
+            Not available in 2D
+        </td>
+        <td align="center">
+            <video src="https://user-images.githubusercontent.com/5159399/226205072-bb3a7865-fb33-443e-a849-cf7c8305919f.mp4"/>
+        </td>
+    </tr>
+</table>
+
 <br>
 
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#group">
@@ -210,6 +239,31 @@ Looks At the target with an optional offset.
 <p>
  Looks at the centre of a collection of targets.
 </p>
+
+<table>
+    <thead>
+        <tr>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera2D</b>
+            </th>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera3D</b>
+            </th>
+        </tr>
+    </thead>
+    <tr>
+        <td align="center">      
+            Not available in 2D
+        </td>
+        <td align="center">
+            <video src="https://user-images.githubusercontent.com/5159399/226199734-f2657feb-e892-47cd-9255-607d1fa85f6d.mp4"/>
+        </td>
+    </tr>
+</table>
 
 <hr>
 
@@ -273,7 +327,7 @@ See the [project page](https://github.com/users/ramokz/projects/3/views/8) for u
 
 ## FAQ
 
-### _What is the intent behind the plugin?
+### _What is the intent behind the plugin?_
 
 Cameras are an essential part of practically any game for rendering what you see on the screen. But rarely do they
 remain static and immovable, but instead dynamic and changes based on what happens in the game.
