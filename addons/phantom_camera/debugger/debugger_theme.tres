@@ -1,0 +1,19 @@
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://7v6r1y5lbtoa"]
+
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="1_op44n"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_tlgj0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8avbb"]
+draw_center = false
+
+[resource]
+Button/styles/normal = SubResource("StyleBoxFlat_8avbb")
+Button/styles/pressed = null
+DebuggerTextBody/base_type = &"Label"
+DebuggerTextBody/font_sizes/Size = 16
+DebuggerTextBody/fonts/Font = ExtResource("1_op44n")
+DebuggerTextHeader/base_type = &"Label"
+DebuggerTextHeader/font_sizes/font_size = 16
+DebuggerTextHeader/fonts/Font = ExtResource("2_tlgj0")
+Label/colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+Label/font_sizes/font_size = 20

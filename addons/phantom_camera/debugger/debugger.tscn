@@ -1,0 +1,190 @@
+[gd_scene load_steps=14 format=3 uid="uid://14s8wb2oyn4j"]
+
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="1_fq8pt"]
+[ext_resource type="Texture2D" uid="uid://r1je7iad5kby" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon.svg" id="2_qw7vj"]
+[ext_resource type="Theme" uid="uid://7v6r1y5lbtoa" path="res://addons/phantom_camera/debugger/debugger_theme.tres" id="3_cn32n"]
+[ext_resource type="Texture2D" uid="uid://bs431wfbauixi" path="res://addons/phantom_camera/icons/Pin.svg" id="3_jq6qi"]
+[ext_resource type="Texture2D" uid="uid://y4mdbb804sw0" path="res://addons/phantom_camera/icons/Chevron.svg" id="5_i7vx8"]
+[ext_resource type="PackedScene" uid="uid://dkfs51s7yysuv" path="res://addons/phantom_camera/debugger/debugger-list-item.tscn" id="6_5auf5"]
+[ext_resource type="Texture2D" uid="uid://b8sogykt6nr4w" path="res://addons/phantom_camera/icons/features/Follow.svg" id="7_ut0kd"]
+[ext_resource type="Texture2D" uid="uid://c842m6725xuv2" path="res://addons/phantom_camera/icons/features/Look-At.svg" id="8_fpttr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tgmkx"]
+bg_color = Color(0.12549, 0.141176, 0.184314, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.223529, 0.721569, 0.603922, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7bilr"]
+bg_color = Color(0.223529, 0.721569, 0.603922, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8j7o7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xiiw8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8qtic"]
+bg_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[node name="Panel" type="Panel"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -242.0
+offset_right = 476.0
+offset_bottom = -20.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_tgmkx")
+
+[node name="Header" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 42.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7bilr")
+
+[node name="Label" type="Label" parent="Header"]
+layout_mode = 0
+offset_left = 39.0
+offset_top = 9.0
+offset_right = 308.0
+offset_bottom = 41.0
+theme_override_fonts/font = ExtResource("1_fq8pt")
+theme_override_font_sizes/font_size = 20
+text = "Phantom Camera Debugger"
+
+[node name="TextureRect" type="TextureRect" parent="Header"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 34.0
+offset_bottom = 34.0
+texture = ExtResource("2_qw7vj")
+expand_mode = 1
+
+[node name="Button" type="Button" parent="Header"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 2
+theme = ExtResource("3_cn32n")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_8j7o7")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_xiiw8")
+
+[node name="Pin" type="Button" parent="Header"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -66.0
+offset_top = 10.0
+offset_right = -42.0
+offset_bottom = 34.0
+grow_horizontal = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("3_cn32n")
+icon = ExtResource("3_jq6qi")
+expand_icon = true
+
+[node name="Expand" type="Button" parent="Header"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 32.0
+grow_horizontal = 0
+mouse_default_cursor_shape = 2
+theme = ExtResource("3_cn32n")
+icon = ExtResource("5_i7vx8")
+expand_icon = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 4.0
+offset_top = -36.0
+offset_right = 452.0
+offset_bottom = 63.0
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Panel" parent="VBoxContainer" instance=ExtResource("6_5auf5")]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
+
+[node name="Panel2" parent="VBoxContainer" instance=ExtResource("6_5auf5")]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
+
+[node name="Icon" parent="VBoxContainer/Panel2/Panel" index="0"]
+texture = ExtResource("7_ut0kd")
+
+[node name="Panel3" parent="VBoxContainer" instance=ExtResource("6_5auf5")]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
+
+[node name="Icon" parent="VBoxContainer/Panel3/Panel" index="0"]
+texture = ExtResource("8_fpttr")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 4.0
+offset_top = 42.0
+offset_right = -4.0
+offset_bottom = 74.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8qtic")
+
+[node name="ColorRect" type="ColorRect" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12549, 0.141176, 0.184314, 0.4)
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = -11.5
+offset_right = 50.0
+offset_bottom = 11.5
+grow_vertical = 2
+theme = ExtResource("3_cn32n")
+text = "ACTIVE"
+
+[node name="Label2" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 122.0
+offset_top = 3.0
+offset_right = 162.0
+offset_bottom = 26.0
+theme = ExtResource("3_cn32n")
+text = "Eee"
+
+[editable path="VBoxContainer/Panel"]
+[editable path="VBoxContainer/Panel2"]
+[editable path="VBoxContainer/Panel3"]

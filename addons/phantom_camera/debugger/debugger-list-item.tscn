@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3 uid="uid://dkfs51s7yysuv"]
+
+[ext_resource type="Texture2D" uid="uid://cblr1js4af56m" path="res://addons/phantom_camera/icons/features/Priority.svg" id="1_wa1iy"]
+[ext_resource type="Theme" uid="uid://7v6r1y5lbtoa" path="res://addons/phantom_camera/debugger/debugger_theme.tres" id="2_my8qg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vw5im"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tt786"]
+bg_color = Color(0.160784, 0.372549, 0.345098, 1)
+
+[node name="HBoxContainer" type="Panel"]
+offset_right = 210.0
+offset_bottom = 33.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_vw5im")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 118.0
+offset_bottom = 33.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_tt786")
+
+[node name="Icon" type="TextureRect" parent="Panel"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -13.0
+offset_right = 26.0
+offset_bottom = 13.0
+grow_vertical = 2
+texture = ExtResource("1_wa1iy")
+expand_mode = 3
+
+[node name="Section" type="Label" parent="Panel"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 27.0
+offset_top = -13.0
+offset_right = 107.0
+offset_bottom = 13.0
+grow_vertical = 2
+theme = ExtResource("2_my8qg")
+text = "{ Section }"
+
+[node name="Value" type="Label" parent="."]
+layout_mode = 2
+offset_left = 127.0
+offset_top = 3.0
+offset_right = 171.0
+offset_bottom = 29.0
+theme = ExtResource("2_my8qg")
+text = "{ Value }"
