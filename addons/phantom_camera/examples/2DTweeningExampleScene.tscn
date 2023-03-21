@@ -1,16 +1,16 @@
-[gd_scene load_steps=23 format=3 uid="uid://rru5m1vfbioq"]
+[gd_scene load_steps=23 format=3 uid="uid://cpyb3ucwcqj8l"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_oo2bo"]
-[ext_resource type="PackedScene" uid="uid://do15i547hw8d" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
-[ext_resource type="PackedScene" uid="uid://dg54wigsf5mfw" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_6yi7w"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_6yi7w"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_bb7en"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_kikl5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_8u8cj"]
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gu0o0"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_oxdpf"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="7_2r7ct"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_ok3b7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2D_trigger_area.gd" id="9_184pu"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_myq47"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_oo2bo")
@@ -721,7 +721,7 @@ offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("7_2r7ct")
+theme_override_fonts/font = ExtResource("11_myq47")
 theme_override_font_sizes/font_size = 26
 text = "F"
 horizontal_alignment = 1
@@ -764,13 +764,12 @@ Zoom = Vector2(2.5, 2.5)
 "Inactive Update Mode" = 0
 
 [node name="Label" type="Label" parent="Player"]
-visible = false
 offset_left = 167.0
-offset_top = -106.0
-offset_right = 320.0
-offset_bottom = -80.0
+offset_top = -132.0
+offset_right = 332.0
+offset_bottom = -68.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("7_2r7ct")
+theme_override_fonts/font = ExtResource("11_myq47")
 text = "[WASD] to move
 [Space] to jump"
 
@@ -798,7 +797,7 @@ offset_top = -250.0
 offset_right = 76.0
 offset_bottom = -120.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("7_2r7ct")
+theme_override_fonts/font = ExtResource("11_myq47")
 text = "Transition Type:
 Sine
 
@@ -839,7 +838,7 @@ offset_top = -251.0
 offset_right = 79.0
 offset_bottom = -121.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("7_2r7ct")
+theme_override_fonts/font = ExtResource("11_myq47")
 text = "Transition Type:
 Circ
 
@@ -880,7 +879,7 @@ offset_top = -252.0
 offset_right = 77.0
 offset_bottom = -122.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("7_2r7ct")
+theme_override_fonts/font = ExtResource("11_myq47")
 text = "Transition Type:
 Back
 

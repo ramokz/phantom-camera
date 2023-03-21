@@ -1,16 +1,16 @@
-[gd_scene load_steps=17 format=3 uid="uid://bds64oihh6xh6"]
+[gd_scene load_steps=17 format=3 uid="uid://drvexsp2t0nfy"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_1utlo"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_akfb5"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="6_e46ea"]
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gqov5"]
-[ext_resource type="PackedScene" uid="uid://dg54wigsf5mfw" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="6_kqt1v"]
-[ext_resource type="PackedScene" uid="uid://do15i547hw8d" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="7_fdx1s"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="6_kqt1v"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="7_fdx1s"]
 [ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="10_0txyn"]
 [ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="11_xakux"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="12_k4p0h"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_1utlo")
@@ -694,7 +694,7 @@ offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("6_akfb5")
+theme_override_fonts/font = ExtResource("12_k4p0h")
 theme_override_font_sizes/font_size = 26
 text = "F"
 horizontal_alignment = 1
@@ -739,12 +739,11 @@ Zoom = Vector2(2.5, 2.5)
 "Inactive Update Mode" = 0
 
 [node name="Label" type="Label" parent="Player"]
-visible = false
 offset_left = 167.0
-offset_top = -106.0
-offset_right = 320.0
-offset_bottom = -80.0
+offset_top = -145.0
+offset_right = 332.0
+offset_bottom = -81.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("6_akfb5")
+theme_override_fonts/font = ExtResource("12_k4p0h")
 text = "[WASD] to move
 [Space] to jump"

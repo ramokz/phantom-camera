@@ -1,8 +1,8 @@
-[gd_scene load_steps=35 format=3 uid="uid://cp8hqgpfi477l"]
+[gd_scene load_steps=35 format=3 uid="uid://ci12ytew5vwty"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_1ouug"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_ry7oc"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_e7gxt"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_a27nb"]
@@ -101,7 +101,7 @@ script = ExtResource("1_1ouug")
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -2.50422, -0.455369, 6.62486)
 modulate = Color(0.294118, 1, 0.631373, 1)
 text = "[WASD] to move"
-font = ExtResource("2_ry7oc")
+font = ExtResource("2_e7gxt")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
@@ -152,14 +152,14 @@ Priority = 0
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, -3.04693, 0.367287, 0.953757)
 text = "Input Example"
-font = ExtResource("2_ry7oc")
+font = ExtResource("2_e7gxt")
 
 [node name="NPCDialogueExampleLabel" type="Label3D" parent="NPCGroup"]
 unique_name_in_owner = true
 transform = Transform3D(1, 4.54671e-10, 1.65487e-10, 4.25644e-10, 0.939693, 0.34202, 0, -0.34202, 0.939693, -4.46738, 1.58641, -0.253679)
 modulate = Color(1, 0.603922, 0.254902, 1)
 text = "Press [ F ] to change camera"
-font = ExtResource("2_ry7oc")
+font = ExtResource("2_e7gxt")
 
 [node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="NPCGroup"]
 transform = Transform3D(0.819152, 4.83851e-10, -0.573576, -3.92481e-09, 1, -6.3473e-09, 0.573576, 7.45058e-09, 0.819152, -3.46138, -0.4, 0.875321)
@@ -201,7 +201,7 @@ unique_name_in_owner = true
 transform = Transform3D(0.939693, 0.280167, -0.196175, 1.49012e-08, 0.573577, 0.819152, 0.34202, -0.769751, 0.538986, -0.538716, -0.247626, 3.13456)
 text = "Fixed Camera
 Example"
-font = ExtResource("2_ry7oc")
+font = ExtResource("2_e7gxt")
 
 [node name="NorthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89638, 4.73986, 0.115512)

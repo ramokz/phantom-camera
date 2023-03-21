@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bgmv422o6hlx3"]
+[gd_scene load_steps=19 format=3 uid="uid://5xtssqdfilal"]
 
 [ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_ydeog"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_b2yrt"]
@@ -6,8 +6,8 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_68dqc"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_aj0kl"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="5_h0ouh"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="6_hw5af"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_wup4d"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_60rny"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_qde4k"]
 
@@ -140,7 +140,7 @@ Linear
 
 Duration:
 0.6s"
-font = ExtResource("6_hw5af")
+font = ExtResource("8_60rny")
 font_size = 48
 
 [node name="Sine" type="Node3D" parent="Tweening Example"]
@@ -177,7 +177,7 @@ Sine
 
 Duration:
 0.3s"
-font = ExtResource("6_hw5af")
+font = ExtResource("8_60rny")
 font_size = 72
 
 [node name="Circ" type="Node3D" parent="Tweening Example"]
@@ -214,7 +214,7 @@ Circ
 
 Duration:
 0.3s"
-font = ExtResource("6_hw5af")
+font = ExtResource("8_60rny")
 font_size = 72
 
 [node name="Back" type="Node3D" parent="Tweening Example"]
@@ -251,5 +251,5 @@ Back
 
 Duration:
 1.2s"
-font = ExtResource("6_hw5af")
+font = ExtResource("8_60rny")
 font_size = 48

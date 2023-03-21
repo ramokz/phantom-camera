@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dg54wigsf5mfw"]
+[gd_scene load_steps=4 format=3 uid="uid://iq5xd1ob1res"]
 
 [ext_resource type="Texture2D" uid="uid://bloouh2jtndx1" path="res://addons/phantom_camera/examples/textures/2D/sign_prompt.png" id="1_tftrk"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="2_0gqka"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_y5454"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r4h3u"]
 bg_color = Color(0.470588, 0.6, 0.45098, 1)
@@ -44,7 +44,7 @@ offset_bottom = -88.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.207843, 0.0470588, 0.0666667, 1)
-theme_override_fonts/font = ExtResource("2_0gqka")
+theme_override_fonts/font = ExtResource("2_y5454")
 theme_override_font_sizes/font_size = 62
 text = "Stay Awhile
 and read"

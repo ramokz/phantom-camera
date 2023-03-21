@@ -1,16 +1,16 @@
-[gd_scene load_steps=17 format=3 uid="uid://jwlmfyn3co4a"]
+[gd_scene load_steps=17 format=3 uid="uid://brrncnp26lrco"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_5kqbp"]
-[ext_resource type="PackedScene" uid="uid://do15i547hw8d" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_xmntp"]
-[ext_resource type="PackedScene" uid="uid://dg54wigsf5mfw" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_8dojy"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_xmntp"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_8dojy"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_2efwt"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="5_0v2cd"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="6_diuy4"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="7_0pk2o"]
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="8_cx6vg"]
-[ext_resource type="FontFile" uid="uid://ca54suba27fmn" path="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf" id="8_xck10"]
 [ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="10_ar2rk"]
 [ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="11_5hu46"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="12_uvcwb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_5kqbp")
@@ -627,19 +627,18 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(325, -222)
-zoom = Vector2(1.69558, 1.69558)
+zoom = Vector2(1.43868, 1.43868)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_2efwt")
 
 [node name="Label" type="Label" parent="."]
-visible = false
 offset_left = 167.0
-offset_top = -106.0
-offset_right = 320.0
-offset_bottom = -54.0
+offset_top = -133.0
+offset_right = 332.0
+offset_bottom = -69.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("8_xck10")
+theme_override_fonts/font = ExtResource("12_uvcwb")
 text = "[WASD] to move
 [Space] to jump"
 
@@ -656,7 +655,7 @@ unique_name_in_owner = true
 position = Vector2(325, -222)
 script = ExtResource("6_diuy4")
 Priority = 6
-Zoom = Vector2(1.69558, 1.69558)
+Zoom = Vector2(1.43868, 1.43868)
 "Follow Mode" = 3
 "Follow Group" = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
 "Follow Parameters/Auto Zoom" = true
@@ -716,7 +715,7 @@ offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("8_xck10")
+theme_override_fonts/font = ExtResource("12_uvcwb")
 theme_override_font_sizes/font_size = 26
 text = "F"
 horizontal_alignment = 1
@@ -760,11 +759,11 @@ Zoom = Vector2(2.5, 2.5)
 "Tween Parameters" = ExtResource("11_5hu46")
 "Inactive Update Mode" = 0
 
-[node name="Label2" type="Label" parent="Player"]
+[node name="StaysInViewLabel" type="Label" parent="Player"]
 offset_left = 49.0
 offset_top = -379.0
 offset_right = 151.0
 offset_bottom = -353.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("8_xck10")
+theme_override_fonts/font = ExtResource("12_uvcwb")
 text = "Stays in view"

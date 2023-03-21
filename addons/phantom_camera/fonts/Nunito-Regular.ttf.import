@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://ca54suba27fmn"
-path="res://.godot/imported/NunitoSans-Black.ttf-6f23406df22ed14a008fe13121239f05.fontdata"
+uid="uid://dve7mgsjik4dg"
+path="res://.godot/imported/Nunito-Regular.ttf-b6054d499efa1a10921004862b1e217a.fontdata"
 
 [deps]
 
-source_file="res://addons/phantom_camera/examples/fonts/NunitoSans-Black.ttf"
-dest_files=["res://.godot/imported/NunitoSans-Black.ttf-6f23406df22ed14a008fe13121239f05.fontdata"]
+source_file="res://addons/phantom_camera/fonts/Nunito-Regular.ttf"
+dest_files=["res://.godot/imported/Nunito-Regular.ttf-b6054d499efa1a10921004862b1e217a.fontdata"]
 
 [params]
 
