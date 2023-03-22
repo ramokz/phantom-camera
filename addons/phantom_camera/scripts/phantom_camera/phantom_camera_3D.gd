@@ -110,6 +110,7 @@ func _get_property_list() -> Array:
 		"hint_string": ", ".join(PackedStringArray(LookAtMode.keys())).capitalize(),
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
+
 	if look_at_mode != LookAtMode.NONE:
 		if look_at_mode == LookAtMode.GROUP:
 			property_list.append({
@@ -238,6 +239,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
+	if property == Constants.FOLLOW_PATH_PROPERTY_NAME: 			return Properties.follow_path_path
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:				 	return follow_distance
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME	: 	return Properties.follow_target_offset_3D
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_NAME:					return _follow_group_distance_auto
@@ -294,11 +296,11 @@ func _physics_process(delta: float) -> void:
 		match Properties.follow_mode:
 			Constants.FollowMode.GLUED:
 				if Properties.follow_target_node:
-					set_global_position(Properties.follow_target_node.position)
+					set_global_position(Properties.follow_target_node.get_global_position())
 			Constants.FollowMode.SIMPLE:
 				if Properties.follow_target_node:
 					set_global_position(
-						Properties.follow_target_node.position +
+						Properties.follow_target_node.global_position +
 						Properties.follow_target_offset_3D
 					)
 			Constants.FollowMode.GROUP:
@@ -326,6 +328,12 @@ func _physics_process(delta: float) -> void:
 							Properties.follow_target_offset_3D +
 							get_transform().basis.z * Vector3(distance, distance, distance)
 						)
+			Constants.FollowMode.PATH:
+				if Properties.follow_target_node and Properties.follow_path_node:
+					var closest_point: Vector3 = Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position())
+					set_global_position(
+						closest_point + Properties.follow_path_node.get_position()
+					)
 
 #				Constants.FollowMode.FRAMED_FOLLOW:
 #					set_global_position(
@@ -356,7 +364,6 @@ func _physics_process(delta: float) -> void:
 ##################
 # Public Functions
 ##################
-# PhantomCameraHost Functions
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
 

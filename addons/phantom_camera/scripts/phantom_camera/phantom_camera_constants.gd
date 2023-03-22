@@ -14,6 +14,7 @@ const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
 const FOLLOW_MODE_PROPERTY_NAME: StringName = "Follow Mode"
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
 const FOLLOW_GROUP_PROPERTY_NAME: StringName = "Follow Group"
+const FOLLOW_PATH_PROPERTY_NAME: StringName = "Follow Path"
 const FOLLOW_PARAMETERS_NAME: StringName = "Follow Parameters/"
 
 # Follow Parameters
@@ -34,6 +35,7 @@ enum FollowMode {
 	GLUED 	= 1,
 	SIMPLE 	= 2,
 	GROUP	= 3,
+	PATH	= 4,
 #	FRAMED_FOLLOW 	= 3,
 #	TODO - Path Track Follow
 }
