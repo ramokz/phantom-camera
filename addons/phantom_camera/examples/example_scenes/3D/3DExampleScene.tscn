@@ -233,7 +233,7 @@ Priority = 0
 "Inactive Update Mode" = 0
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.00003, -0.454982, 3.00572)
 priority = 5.0
 script = ExtResource("4_moad5")
 area_pcam = NodePath("../EntryRoomPhantomCamera3D")
