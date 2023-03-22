@@ -193,9 +193,10 @@ func _physics_process(delta: float) -> void:
 					set_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
-					var closest_point: Vector2 = Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position())
+					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
 					set_global_position(
-						closest_point + Properties.follow_path_node.get_position()
+						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
+						path_position
 					)
 
 

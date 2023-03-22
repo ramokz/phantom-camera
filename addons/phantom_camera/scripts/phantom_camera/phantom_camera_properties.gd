@@ -252,7 +252,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 		if not valueNodePath.is_empty():
 			follow_has_target = true
 			if pcam.has_node(follow_target_path):
-				print("Following")
 				follow_target_node = pcam.get_node(follow_target_path)
 		else:
 			follow_has_target = false
