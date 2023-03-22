@@ -64,7 +64,7 @@ enum TweenEases {
 }
 
 enum InactiveUpdateMode {
-	ALWAYS 			= 0,
-#	EXPONENTIALLY 	= 1,
-	NEVER 			= 2,
+	ALWAYS,
+	NEVER,
+#	EXPONENTIALLY,
 }
