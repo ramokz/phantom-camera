@@ -19,7 +19,10 @@ var should_follow: bool
 var has_follow_group: bool
 var follow_target_node: Node
 var follow_target_path: NodePath
-var follow_has_target: bool = false
+var follow_has_target: bool
+var follow_has_path_target: bool
+var follow_path_node: Node
+var follow_path_path: NodePath
 
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
@@ -54,6 +57,8 @@ func camera_enter_tree(pcam: Node):
 				else:
 					follow_group_nodes_2D.append(pcam.get_node(path))
 
+	if pcam.Properties.follow_path_path:
+		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
 func add_multiple_hosts_properties() -> Array:
 	var _property_list: Array
@@ -128,6 +133,13 @@ func add_follow_target_property() -> Array:
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
+		if follow_mode == Constants.FollowMode.PATH:
+			_property_list.append({
+				"name": Constants.FOLLOW_PATH_PROPERTY_NAME,
+				"type": TYPE_NODE_PATH,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
 
 	return _property_list
 
@@ -230,7 +242,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 #				set_process(pcam, true)
 
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME:
-
 		if follow_mode != Constants.FollowMode.NONE:
 			should_follow = true
 		else:
@@ -245,6 +256,20 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 		else:
 			follow_has_target = false
 			follow_target_node = null
+
+		pcam.notify_property_list_changed()
+
+	if property == Constants.FOLLOW_PATH_PROPERTY_NAME:
+		follow_path_path = value
+
+		var valueNodePath: NodePath = value as NodePath
+		if not valueNodePath.is_empty():
+			follow_has_path_target = true
+			if pcam.has_node(follow_path_path):
+				follow_path_node = pcam.get_node(follow_path_path)
+		else:
+			follow_has_path_target = false
+			follow_path_node = null
 		pcam.notify_property_list_changed()
 
 

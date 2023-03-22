@@ -125,6 +125,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
+	if property == Constants.FOLLOW_PATH_PROPERTY_NAME: 			return Properties.follow_path_path
 	if property == FOLLOW_GROUP_ZOOM_AUTO:							return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 							return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 							return follow_group_zoom_max
@@ -190,6 +191,13 @@ func _physics_process(delta: float) -> void:
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 					set_global_position(rect.get_center())
+		Constants.FollowMode.PATH:
+				if Properties.follow_target_node and Properties.follow_path_node:
+					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
+					set_global_position(
+						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
+						path_position
+					)
 
 
 ##################
