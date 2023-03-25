@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=4 format=3 uid="uid://cixlwqycoox8h"]
 
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="1_836jx"]
 
