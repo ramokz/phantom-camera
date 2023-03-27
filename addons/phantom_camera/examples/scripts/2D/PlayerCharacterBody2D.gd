@@ -13,7 +13,7 @@ const ACTION_STRINGNAME: StringName = "Action"
 const INPUT_MOVE_LEFT_STRINGNAME: StringName = "move_left"
 const INPUT_MOVE_RIGHT_STRINGNAME: StringName = "move_right"
 
-const SPEED = 400.0
+const SPEED = 350.0
 const JUMP_VELOCITY = -750.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
