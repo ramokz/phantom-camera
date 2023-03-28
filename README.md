@@ -134,7 +134,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
-  <img src=".github/assets/icons/Icon-Follow-Path.svg"/>
+  <img src=".github/assets/icons/Follow-Path.svg"/>
 </a>
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
   <h4>Path</h4>
