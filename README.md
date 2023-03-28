@@ -131,6 +131,42 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </tr>
 </table>
 
+<br>
+
+<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
+  <img src=".github/assets/icons/Icon-Follow-Path.svg"/>
+</a>
+<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
+  <h4>Path</h4>
+</a>
+<p>
+  Follows a target while being positionally confined to a Path node.
+</p>
+<table>
+    <thead>
+        <tr>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera2D</b>
+            </th>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera3D</b>
+            </th>
+        </tr>
+    </thead>
+    <tr>
+        <td align="center">
+            <video src="https://user-images.githubusercontent.com/5159399/226145332-9766cbe0-8807-4a65-ad07-8d2e6186bc97.mp4"/>
+        </td>
+        <td align="center">
+            <video src="https://user-images.githubusercontent.com/5159399/226146299-e0522e2f-b0e5-4d56-a58a-e3ef5b24f383.mp4"/>
+        </td>
+    </tr>
+</table>
+
 <hr>
 
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">
