@@ -1,6 +1,5 @@
-[gd_scene load_steps=4 format=3 uid="uid://drp7df147dbbh"]
+[gd_scene load_steps=3 format=3 uid="uid://drp7df147dbbh"]
 
-[ext_resource type="Theme" uid="uid://blxd0u3vrdgbl" path="res://addons/phantom_camera/editor/editor_theme.tres" id="1_grwau"]
 [ext_resource type="Texture2D" uid="uid://csu27nh68pavh" path="res://addons/phantom_camera/editor/icons/LocateNode.svg" id="2_68b3j"]
 [ext_resource type="Script" path="res://addons/phantom_camera/editor/scripts/editor_locate_button.gd" id="2_nneh0"]
 
@@ -18,23 +17,17 @@ grow_vertical = 2
 layout_mode = 0
 offset_right = 182.0
 offset_bottom = 27.0
-theme = ExtResource("1_grwau")
 theme_type_variation = &"CellHBox"
 
 [node name="LocateButton" type="Button" parent="ListTarget"]
 clip_contents = true
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-offset_right = 24.0
-offset_bottom = 27.0
 icon = ExtResource("2_68b3j")
 expand_icon = true
 script = ExtResource("2_nneh0")
 
 [node name="ItemLabel" type="Label" parent="ListTarget"]
 layout_mode = 2
-offset_left = 28.0
-offset_right = 172.0
-offset_bottom = 27.0
 text = "Phantom_Camera_1"
 vertical_alignment = 1

@@ -2,9 +2,9 @@
 extends Node
 
 var editor_interface: EditorInterface
-var phantom_camera_list_item := preload("res://addons/phantom_camera/editor/phantom_camera_list_item.tscn")
-
-var camera_list: VBoxContainer = $VBoxContainer/ScrollContainer/PhantomCameraList
+#var phantom_camera_list_item := preload("res://addons/phantom_camera/editor/phantom_camera_list_item.tscn")
+#
+#var camera_list: VBoxContainer = $VBoxContainer/ScrollContainer/PhantomCameraList
 
 var pcam_group: Array[Node]
 
