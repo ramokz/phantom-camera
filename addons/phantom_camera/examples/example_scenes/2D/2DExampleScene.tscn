@@ -643,7 +643,7 @@ Zoom = Vector2(1, 1)
 "Follow Target" = NodePath("../CharacterBody2D")
 "Follow Parameters/Target Offset" = Vector2(0, -120)
 "Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
+"Follow Parameters/Damping Value" = 5.0
 "Tween Parameters" = ExtResource("6_gqov5")
 "Inactive Update Mode" = 0
 

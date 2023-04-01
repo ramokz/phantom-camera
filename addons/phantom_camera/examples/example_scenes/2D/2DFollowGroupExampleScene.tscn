@@ -627,7 +627,7 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(325, -222)
-zoom = Vector2(1.43868, 1.43868)
+zoom = Vector2(1.69558, 1.69558)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_2efwt")
@@ -655,7 +655,7 @@ unique_name_in_owner = true
 position = Vector2(325, -222)
 script = ExtResource("6_diuy4")
 Priority = 6
-Zoom = Vector2(1.43868, 1.43868)
+Zoom = Vector2(1.69558, 1.69558)
 "Follow Mode" = 3
 "Follow Group" = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
 "Follow Parameters/Auto Zoom" = true

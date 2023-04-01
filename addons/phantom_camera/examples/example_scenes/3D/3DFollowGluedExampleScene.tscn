@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_pmeux"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_q1ygp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_tk586"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_8qqha"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_8qqha"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_wr3bq"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pda7a"]
@@ -30,7 +30,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999998, 0, 0, 0, 0.638833, 0.769345, 0, -0.769345, 0.638833, -11.2101, 6.38964, 6.74731)
+transform = Transform3D(0.999998, 0, 0, 0, 0.638808, 0.769366, 0, -0.769366, 0.638808, -11.2101, 6.38964, 6.74731)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_pmeux")
