@@ -1,9 +1,9 @@
 <img src="./.github/assets/banners/phantom-camera-banner.svg">
 
-<h1>Phantom Camera</h1>
-<p>
-    Control and dynamically tween 2D and 3D cameras between various positional and rotational values in Godot 4.
-</p>
+# What is it?
+Phantom Camera is a Godot 4 plugin designed to provide and simplify common behaviors for the built-in `Camera2D` and `Camera3D` nodes - heavily inspired by a Unity package called Cinemachine.
+
+It allows for simple behaviours such as following and looking at specific nodes, with an optional smooth/dampened movement, to more advance logic such as reframing itself to keep multiple nodes in view and dynamically animate between specific camera positions, i.e. other `PhantomCamera` nodes, on demand.
 
 <table>
   <tr>
