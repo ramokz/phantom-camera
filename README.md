@@ -134,7 +134,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
-  <img src=".github/assets/icons/Icon-Follow-Path.svg"/>
+  <img src=".github/assets/icons/Follow-Path.svg"/>
 </a>
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
   <h4>Path</h4>
@@ -159,10 +159,10 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </thead>
     <tr>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226145332-9766cbe0-8807-4a65-ad07-8d2e6186bc97.mp4"/>
+            <video src="https://user-images.githubusercontent.com/5159399/228355571-16ad5324-27b0-4952-a8c2-eff5b011494a.mp4"/>
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226146299-e0522e2f-b0e5-4d56-a58a-e3ef5b24f383.mp4"/>
+            <video src="https://user-images.githubusercontent.com/5159399/228356217-7c7f239e-2d3a-46e2-becd-cb7230d1e3e7.mp4"/>
         </td>
     </tr>
 </table>
