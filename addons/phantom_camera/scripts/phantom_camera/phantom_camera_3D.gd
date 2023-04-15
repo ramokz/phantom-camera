@@ -60,7 +60,7 @@ func _get_property_list() -> Array:
 	if Properties.follow_mode != Constants.FollowMode.NONE:
 		property_list.append_array(Properties.add_follow_target_property())
 
-		if Properties.follow_mode == Constants.FollowMode.SIMPLE || Properties.follow_mode == Constants.FollowMode.GROUP:
+		if Properties.follow_mode == Constants.FollowMode.GROUP:
 			if not _follow_group_distance_auto:
 				property_list.append({
 					"name": FOLLOW_DISTANCE_PROPERTY_NAME,
