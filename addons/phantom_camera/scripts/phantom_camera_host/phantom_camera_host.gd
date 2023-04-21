@@ -68,7 +68,7 @@ func _enter_tree() -> void:
 #			else:
 #				pcam.Properties.check_multiple_pcam_host_property(pcam, pca,_host_group, true)
 	else:
-		printerr("PhantomCameraHost is not a child of a Camera")
+		printerr(name, " is not a child of a Camera2D or Camera3D")
 
 
 func _exit_tree() -> void:
