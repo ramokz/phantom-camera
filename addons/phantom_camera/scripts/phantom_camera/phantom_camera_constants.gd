@@ -4,30 +4,34 @@ extends RefCounted
 const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
 # Primary
-const PRIORITY_PROPERTY_NAME: StringName = "Priority"
+const PRIORITY_PROPERTY_NAME: StringName = "priority"
 
-const PCAM_HOST: StringName = "Phantom Camera Host"
+const PCAM_HOST: StringName = "phantom_camera_host"
 
-const TRIGGER_ONLOAD_NAME: StringName = "Trigger on Load"
+const TRIGGER_ONLOAD_NAME: StringName = "trigger_on_load"
 
 # Follow
-const FOLLOW_MODE_PROPERTY_NAME: StringName = "Follow Mode"
-const FOLLOW_TARGET_PROPERTY_NAME: StringName = "Follow Target"
-const FOLLOW_GROUP_PROPERTY_NAME: StringName = "Follow Group"
-const FOLLOW_PATH_PROPERTY_NAME: StringName = "Follow Path"
-const FOLLOW_PARAMETERS_NAME: StringName = "Follow Parameters/"
+const FOLLOW_MODE_PROPERTY_NAME: StringName = "follow_mode"
+const FOLLOW_TARGET_PROPERTY_NAME: StringName = "follow_target"
+const FOLLOW_GROUP_PROPERTY_NAME: StringName = "follow_group"
+const FOLLOW_PATH_PROPERTY_NAME: StringName = "follow_path"
+const FOLLOW_PARAMETERS_NAME: StringName = "follow_parameters/"
 
 # Follow Parameters
-const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Distance"
-const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping"
-const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Damping Value"
-const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "Target Offset"
+const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "distance"
+const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping"
+const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping_value"
+const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "target_offset"
+
+#Zoom
+const ZOOM_PROPERTY_NAME: StringName = "zoom"
+
 
 # Tween Resource
-const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "Tween Parameters"
+const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "tween_parameters"
 
 # Secondary
-const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "Inactive Update Mode"
+const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "inactive_update_mode"
 
 
 enum FollowMode {

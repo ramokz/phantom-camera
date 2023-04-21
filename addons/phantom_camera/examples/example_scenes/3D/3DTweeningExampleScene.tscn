@@ -1,6 +1,6 @@
 [gd_scene load_steps=19 format=3 uid="uid://5xtssqdfilal"]
 
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_ydeog"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_ydeog"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_b2yrt"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_m2w30"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_68dqc"]
@@ -74,16 +74,15 @@ script = ExtResource("2_b2yrt")
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
 script = ExtResource("3_m2w30")
-Priority = 3
-"Follow Mode" = 2
-"Follow Target" = NodePath("../PlayerCharacterBody3D")
-"Follow Parameters/Distance" = 1.0
-"Follow Parameters/Target Offset" = Vector3(0, 2, 2)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
-"Look At Mode" = 0
-"Tween Parameters" = ExtResource("4_aj0kl")
-"Inactive Update Mode" = 0
+priority = 3
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D")
+follow_parameters/target_offset = Vector3(0, 2, 2)
+follow_parameters/damping = true
+follow_parameters/damping_value = 10.0
+look_at_mode = 0
+tween_parameters = ExtResource("4_aj0kl")
+inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -127,11 +126,11 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
-Priority = 0
-"Follow Mode" = 0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_hml7x")
-"Inactive Update Mode" = 0
+priority = 0
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_hml7x")
+inactive_update_mode = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -164,11 +163,11 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
-Priority = 0
-"Follow Mode" = 0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_pjwwe")
-"Inactive Update Mode" = 0
+priority = 0
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_pjwwe")
+inactive_update_mode = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -201,11 +200,11 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
-Priority = 0
-"Follow Mode" = 0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_ex8sv")
-"Inactive Update Mode" = 0
+priority = 0
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_ex8sv")
+inactive_update_mode = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -238,11 +237,11 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, -0.8, 4.8, 3.3)
 script = ExtResource("3_m2w30")
-Priority = 0
-"Follow Mode" = 0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_n4qdq")
-"Inactive Update Mode" = 0
+priority = 0
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_n4qdq")
+inactive_update_mode = 0
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)

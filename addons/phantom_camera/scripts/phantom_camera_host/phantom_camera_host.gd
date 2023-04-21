@@ -156,7 +156,7 @@ func _tween_pcam(delta: float) -> void:
 		camera.set_zoom(
 			Tween.interpolate_value(
 				camera_zoom, \
-				_active_pcam.zoom - camera_zoom,
+				_active_pcam.Properties.zoom - camera_zoom,
 				tween_duration, \
 				_active_pcam.get_tween_duration(), \
 				_active_pcam.get_tween_transition(),
@@ -181,9 +181,11 @@ func _pcam_follow(delta: float) -> void:
 	if not _is_3D:
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
-				camera.zoom = camera.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.Properties.follow_damping_value)
+				camera.zoom = camera.zoom.lerp(_active_pcam.Properties.zoom, delta * _active_pcam.Properties.follow_damping_value)
 			else:
 				camera.set_zoom(_active_pcam.zoom)
+		else:
+			camera.set_zoom(_active_pcam.Properties.zoom)
 
 	camera.set_rotation(_active_pcam.get_global_rotation())
 

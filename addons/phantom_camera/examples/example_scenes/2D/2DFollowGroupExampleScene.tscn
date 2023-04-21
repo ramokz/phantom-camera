@@ -654,19 +654,19 @@ texture = ExtResource("5_0v2cd")
 unique_name_in_owner = true
 position = Vector2(325, -222)
 script = ExtResource("6_diuy4")
-Priority = 6
-Zoom = Vector2(1.69558, 1.69558)
-"Follow Mode" = 3
-"Follow Group" = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
-"Follow Parameters/Auto Zoom" = true
-"Follow Parameters/Min Zoom" = 0.7
-"Follow Parameters/Max Zoom" = 3.0
-"Follow Parameters/Zoom Margin" = Vector4(100, 200, 200, 50)
-"Follow Parameters/Target Offset" = Vector2(0, 0)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 8.0
-"Tween Parameters" = ExtResource("8_cx6vg")
-"Inactive Update Mode" = 0
+priority = 6
+zoom = Vector2(1.69558, 1.69558)
+follow_mode = 3
+follow_group = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
+follow_parameters/auto_zoom = true
+follow_parameters/min_zoom = 0.7
+follow_parameters/max_zoom = 3.0
+follow_parameters/zoom_margin = Vector4(100, 200, 200, 50)
+follow_parameters/target_offset = Vector2(0, 0)
+follow_parameters/damping = true
+follow_parameters/damping_value = 8.0
+tween_parameters = ExtResource("8_cx6vg")
+inactive_update_mode = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -743,21 +743,21 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("6_diuy4")
-Priority = 0
-Zoom = Vector2(2, 2)
-"Follow Mode" = 0
-"Tween Parameters" = ExtResource("10_ar2rk")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2, 2)
+follow_mode = 0
+tween_parameters = ExtResource("10_ar2rk")
+inactive_update_mode = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("6_diuy4")
-Priority = 0
-Zoom = Vector2(2.5, 2.5)
-"Follow Mode" = 0
-"Tween Parameters" = ExtResource("11_5hu46")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2.5, 2.5)
+follow_mode = 0
+tween_parameters = ExtResource("11_5hu46")
+inactive_update_mode = 0
 
 [node name="StaysInViewLabel" type="Label" parent="Player"]
 offset_left = 49.0

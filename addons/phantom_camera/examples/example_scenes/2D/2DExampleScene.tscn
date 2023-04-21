@@ -637,15 +637,15 @@ script = ExtResource("1_eayfa")
 unique_name_in_owner = true
 position = Vector2(243, -148)
 script = ExtResource("2_mgsut")
-Priority = 5
-Zoom = Vector2(1, 1)
-"Follow Mode" = 2
-"Follow Target" = NodePath("../CharacterBody2D")
-"Follow Parameters/Target Offset" = Vector2(0, -120)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 5.0
-"Tween Parameters" = ExtResource("6_gqov5")
-"Inactive Update Mode" = 0
+priority = 5
+zoom = Vector2(1, 1)
+follow_mode = 2
+follow_target = NodePath("../CharacterBody2D")
+follow_parameters/target_offset = Vector2(0, -120)
+follow_parameters/damping = true
+follow_parameters/damping_value = 5.0
+tween_parameters = ExtResource("6_gqov5")
+inactive_update_mode = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -722,21 +722,21 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("2_mgsut")
-Priority = 0
-Zoom = Vector2(2, 2)
-"Follow Mode" = 0
-"Tween Parameters" = ExtResource("10_0txyn")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2, 2)
+follow_mode = 0
+tween_parameters = ExtResource("10_0txyn")
+inactive_update_mode = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("2_mgsut")
-Priority = 0
-Zoom = Vector2(2.5, 2.5)
-"Follow Mode" = 0
-"Tween Parameters" = ExtResource("11_xakux")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2.5, 2.5)
+follow_mode = 0
+tween_parameters = ExtResource("11_xakux")
+inactive_update_mode = 0
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0

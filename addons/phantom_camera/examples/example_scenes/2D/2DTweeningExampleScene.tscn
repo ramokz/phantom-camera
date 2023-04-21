@@ -664,15 +664,15 @@ script = ExtResource("4_bb7en")
 unique_name_in_owner = true
 position = Vector2(243, -148)
 script = ExtResource("5_kikl5")
-Priority = 5
-Zoom = Vector2(1, 1)
-"Follow Mode" = 2
-"Follow Target" = NodePath("../CharacterBody2D")
-"Follow Parameters/Target Offset" = Vector2(0, -120)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
-"Tween Parameters" = ExtResource("6_gu0o0")
-"Inactive Update Mode" = 0
+priority = 5
+zoom = Vector2(1, 1)
+follow_mode = 2
+follow_target = NodePath("../CharacterBody2D")
+follow_parameters/target_offset = Vector2(0, -120)
+follow_parameters/damping = true
+follow_parameters/damping_value = 10.0
+tween_parameters = ExtResource("6_gu0o0")
+inactive_update_mode = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -747,21 +747,21 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("5_kikl5")
-Priority = 0
-Zoom = Vector2(2, 2)
-"Follow Mode" = 0
-"Tween Parameters" = null
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(1, 1)
+follow_mode = 0
+tween_parameters = null
+inactive_update_mode = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("5_kikl5")
-Priority = 0
-Zoom = Vector2(2.5, 2.5)
-"Follow Mode" = 0
-"Tween Parameters" = null
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(1, 1)
+follow_mode = 0
+tween_parameters = null
+inactive_update_mode = 0
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0
@@ -808,11 +808,11 @@ horizontal_alignment = 1
 [node name="PhantomCamera2D" type="Node2D" parent="WideArea"]
 position = Vector2(4, -100)
 script = ExtResource("5_kikl5")
-Priority = 0
-Zoom = Vector2(0.8, 0.8)
-"Follow Mode" = 0
-"Tween Parameters" = SubResource("Resource_ujs6q")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(0.8, 0.8)
+follow_mode = 0
+tween_parameters = SubResource("Resource_ujs6q")
+inactive_update_mode = 0
 
 [node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(649, -135)
@@ -849,11 +849,11 @@ horizontal_alignment = 1
 [node name="PhantomCamera2D" type="Node2D" parent="UpperZoomArea"]
 position = Vector2(2, -83)
 script = ExtResource("5_kikl5")
-Priority = 0
-Zoom = Vector2(2, 2)
-"Follow Mode" = 0
-"Tween Parameters" = SubResource("Resource_7xgkv")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2, 2)
+follow_mode = 0
+tween_parameters = SubResource("Resource_7xgkv")
+inactive_update_mode = 0
 
 [node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(1136, -38)
@@ -890,8 +890,8 @@ horizontal_alignment = 1
 [node name="PhantomCamera2D" type="Node2D" parent="ForwardArea"]
 position = Vector2(344, -46)
 script = ExtResource("5_kikl5")
-Priority = 0
-Zoom = Vector2(0.9, 0.9)
-"Follow Mode" = 0
-"Tween Parameters" = SubResource("Resource_tse25")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(0.9, 0.9)
+follow_mode = 0
+tween_parameters = SubResource("Resource_tse25")
+inactive_update_mode = 0

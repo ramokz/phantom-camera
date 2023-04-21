@@ -638,6 +638,16 @@ zoom = Vector2(1.5, 1.5)
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_yddet")
 
+[node name="Label" type="Label" parent="."]
+offset_left = 167.0
+offset_top = -133.0
+offset_right = 332.0
+offset_bottom = -69.0
+theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
+theme_override_fonts/font = ExtResource("8_6pcaf")
+text = "[WASD] to move
+[Space] to jump"
+
 [node name="Player" type="Node" parent="."]
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
@@ -716,21 +726,21 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("5_x25dj")
-Priority = 0
-Zoom = Vector2(2, 2)
-"Follow Mode" = 0
-"Tween Parameters" = ExtResource("10_mh1yw")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2, 2)
+follow_mode = 0
+tween_parameters = ExtResource("10_mh1yw")
+inactive_update_mode = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("5_x25dj")
-Priority = 0
-Zoom = Vector2(2.5, 2.5)
-"Follow Mode" = 0
-"Tween Parameters" = ExtResource("11_apay3")
-"Inactive Update Mode" = 0
+priority = 0
+zoom = Vector2(2.5, 2.5)
+follow_mode = 0
+tween_parameters = ExtResource("11_apay3")
+inactive_update_mode = 0
 
 [node name="Label" type="Label" parent="Player"]
 visible = false
@@ -747,15 +757,15 @@ text = "[WASD] to move
 unique_name_in_owner = true
 position = Vector2(374, -216)
 script = ExtResource("5_x25dj")
-Priority = 5
-Zoom = Vector2(1.5, 1.5)
-"Follow Mode" = 4
-"Follow Target" = NodePath("../Player/CharacterBody2D")
-"Follow Path" = NodePath("../Path2D")
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 5.0
-"Tween Parameters" = ExtResource("6_4vtmp")
-"Inactive Update Mode" = 0
+priority = 5
+zoom = Vector2(1.5, 1.5)
+follow_mode = 4
+follow_target = NodePath("../Player/CharacterBody2D")
+follow_path = NodePath("../Path2D")
+follow_parameters/damping = true
+follow_parameters/damping_value = 5.0
+tween_parameters = ExtResource("6_4vtmp")
+inactive_update_mode = 0
 
 [node name="Path2D" type="Path2D" parent="."]
 position = Vector2(152, -216)

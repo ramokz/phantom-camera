@@ -88,16 +88,15 @@ metadata/_edit_lock_ = true
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 4.00185, 2.99999, -1.51096)
 script = ExtResource("3_bd7x3")
-Priority = 3
-"Follow Mode" = 2
-"Follow Target" = NodePath("../PlayerCharacterBody3D")
-"Follow Parameters/Distance" = 1.0
-"Follow Parameters/Target Offset" = Vector3(0, 2.5, 2)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 10.0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_m07s2")
-"Inactive Update Mode" = 0
+priority = 3
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D")
+follow_parameters/target_offset = Vector3(0, 2.5, 2)
+follow_parameters/damping = true
+follow_parameters/damping_value = 10.0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_m07s2")
+inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -133,15 +132,15 @@ progress = 1.49148
 [node name="PathPhantomCamera3D" type="Node3D" parent="Paths"]
 transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, 3.73176, 7.9199, -4.8731)
 script = ExtResource("3_bd7x3")
-Priority = 2
-"Follow Mode" = 4
-"Follow Target" = NodePath("../../PlayerCharacterBody3D")
-"Follow Path" = NodePath("../StraightFollowPath")
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 3.0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_rw4bl")
-"Inactive Update Mode" = 0
+priority = 2
+follow_mode = 4
+follow_target = NodePath("../../PlayerCharacterBody3D")
+follow_path = NodePath("../StraightFollowPath")
+follow_parameters/damping = true
+follow_parameters/damping_value = 3.0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_rw4bl")
+inactive_update_mode = 0
 
 [node name="StraightFollowPath" type="Path3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.73176, 7.9199, -4.8731)
@@ -170,15 +169,15 @@ metadata/_edit_group_ = true
 [node name="PathPhantomCamera3D2" type="Node3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 4.00185, 7.9199, -16.7205)
 script = ExtResource("3_bd7x3")
-Priority = 2
-"Follow Mode" = 4
-"Follow Target" = NodePath("../../PlayerCharacterBody3D")
-"Follow Path" = NodePath("../StraightFollowPath2")
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 3.0
-"Look At Mode" = 0
-"Tween Parameters" = SubResource("Resource_rw4bl")
-"Inactive Update Mode" = 0
+priority = 2
+follow_mode = 4
+follow_target = NodePath("../../PlayerCharacterBody3D")
+follow_path = NodePath("../StraightFollowPath2")
+follow_parameters/damping = true
+follow_parameters/damping_value = 3.0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_rw4bl")
+inactive_update_mode = 0
 
 [node name="StraightPathFollowTrigger2" type="Area3D" parent="Paths" node_paths=PackedStringArray("path_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -17)

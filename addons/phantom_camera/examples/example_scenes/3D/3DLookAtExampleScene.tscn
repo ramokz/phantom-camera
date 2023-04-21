@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_lldvu"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_8md3q"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_odwso"]
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_2i811"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_2i811"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_u5qhp"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pda7a"]
@@ -30,7 +30,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999998, -0.00114643, 0.00116889, 0, 0.713931, 0.700216, -0.00163726, -0.700215, 0.71393, -12.3172, 5.78213, 6.64571)
+transform = Transform3D(0.999998, -0.00114643, 0.00116889, 0, 0.713931, 0.700216, -0.00163725, -0.700215, 0.71393, -12.3172, 5.78213, 6.64571)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_lldvu")
@@ -44,12 +44,12 @@ metadata/_edit_lock_ = true
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
 transform = Transform3D(0.999952, -0.00114636, 0.00116873, 0, 0.713788, 0.700216, -0.00163718, -0.700172, 0.713831, -12.3172, 5.78213, 6.64571)
 script = ExtResource("2_8md3q")
-Priority = 5
-"Follow Mode" = 0
-"Look At Mode" = 3
-"Look At Group" = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
-"Tween Parameters" = null
-"Inactive Update Mode" = 0
+priority = 5
+follow_mode = 0
+look_at_mode = 3
+look_at_group = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
+tween_parameters = null
+inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

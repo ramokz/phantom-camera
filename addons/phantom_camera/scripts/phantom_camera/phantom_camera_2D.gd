@@ -6,13 +6,10 @@ extends Node2D
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
-const ZOOM_PROPERTY_NAME: StringName = "Zoom"
-var zoom: Vector2 = Vector2.ONE
-
-const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Zoom"
-const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Zoom"
-const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Zoom"
-const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "Zoom Margin"
+const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
+const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
+const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_zoom"
+const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "zoom_margin"
 var follow_group_zoom_auto: bool
 var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
@@ -24,7 +21,7 @@ func _get_property_list() -> Array:
 #	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	property_list.append({
-		"name": ZOOM_PROPERTY_NAME,
+		"name": Constants.ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
 		"hint": PROPERTY_HINT_NONE,
 		"usage": PROPERTY_USAGE_DEFAULT
@@ -79,16 +76,16 @@ func _set(property: StringName, value) -> bool:
 #	Properties.set_trigger_onload_properties(property, value, self)
 
 	# ZOOM
-	if property == ZOOM_PROPERTY_NAME:
+	if property == Constants.ZOOM_PROPERTY_NAME:
 		if value.x == 0:
-			zoom.x = 0.001
+			Properties.zoom.x = 0.001
 		else:
-			zoom.x = value.x
+			Properties.zoom.x = value.x
 
 		if value.y == 0:
-			zoom.y = 0.001
+			Properties.zoom.y = 0.001
 		else:
-			zoom.y = value.y
+			Properties.zoom.y = value.y
 
 	# ZOOM CLAMP
 	if property == FOLLOW_GROUP_ZOOM_AUTO:
@@ -120,7 +117,7 @@ func _set(property: StringName, value) -> bool:
 func _get(property: StringName):
 	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
 
-	if property == ZOOM_PROPERTY_NAME: 								return zoom
+	if property == Constants.ZOOM_PROPERTY_NAME: 					return Properties.zoom
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
@@ -138,6 +135,7 @@ func _get(property: StringName):
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
 #	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
+
 
 ###################
 # Private Functions
@@ -187,9 +185,9 @@ func _physics_process(delta: float) -> void:
 							follow_group_zoom_margin.z,
 							follow_group_zoom_margin.w)
 					if rect.size.x > rect.size.y * screen_size.aspect():
-						zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+						Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 					else:
-						zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+						Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 					set_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
@@ -205,8 +203,6 @@ func _physics_process(delta: float) -> void:
 ##################
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
-
-
 func get_priority() -> int:
 	return Properties.priority
 

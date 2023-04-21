@@ -1,6 +1,6 @@
 [gd_scene load_steps=13 format=3 uid="uid://dbfiy6svpcqap"]
 
-[ext_resource type="PackedScene" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_r00ve"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_r00ve"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_pi7mp"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="3_a5igg"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_wr1tj"]
@@ -44,19 +44,19 @@ metadata/_edit_lock_ = true
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
 transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 2.60717, 5.26374)
 script = ExtResource("2_pi7mp")
-Priority = 5
-"Follow Mode" = 3
-"Follow Group" = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
-"Follow Parameters/Auto Distance" = true
-"Follow Parameters/Min Distance" = 2.0
-"Follow Parameters/Max Distance" = 15.0
-"Follow Parameters/Auto Distance Divisor" = 20.0
-"Follow Parameters/Target Offset" = Vector3(0, 0, 0)
-"Follow Parameters/Damping" = true
-"Follow Parameters/Damping Value" = 5.0
-"Look At Mode" = 0
-"Tween Parameters" = null
-"Inactive Update Mode" = 0
+priority = 5
+follow_mode = 3
+follow_group = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
+follow_parameters/auto_distance = true
+follow_parameters/min_distance = 2.0
+follow_parameters/max_distance = 15.0
+follow_parameters/auto_distance_divisor = 20.0
+follow_parameters/target_offset = Vector3(0, 0, 0)
+follow_parameters/damping = true
+follow_parameters/damping_value = 5.0
+look_at_mode = 0
+tween_parameters = null
+inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

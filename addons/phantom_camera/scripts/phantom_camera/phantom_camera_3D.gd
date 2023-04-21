@@ -5,17 +5,17 @@ extends Node3D
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
-const FOLLOW_DISTANCE_PROPERTY_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Min Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Max Distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "Auto Distance Divisor"
+const FOLLOW_DISTANCE_PROPERTY_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance_divisor"
 
-const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "Look At Target"
-const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "Look At Group"
-const LOOK_AT_PARAMETERS_NAME: 				StringName = "Look At Parameters/"
-const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "Look At Mode"
-const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "Look At Target Offset"
+const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "look_at_target"
+const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "look_at_group"
+const LOOK_AT_PARAMETERS_NAME: 				StringName = "look_at_parameters/"
+const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "look_at_mode"
+const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "look_at_target_offset"
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
