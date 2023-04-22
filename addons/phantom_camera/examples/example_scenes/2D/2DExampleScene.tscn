@@ -627,6 +627,7 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(243, -148)
+zoom = Vector2(1.5, 1.5)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("1_eayfa")
@@ -638,7 +639,7 @@ unique_name_in_owner = true
 position = Vector2(243, -148)
 script = ExtResource("2_mgsut")
 priority = 5
-zoom = Vector2(1, 1)
+zoom = Vector2(1.5, 1.5)
 follow_mode = 2
 follow_target = NodePath("../CharacterBody2D")
 follow_parameters/target_offset = Vector2(0, -120)
