@@ -18,7 +18,6 @@ var follow_group_zoom_margin: Vector4
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
 	property_list.append_array(Properties.add_priority_properties())
-#	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	property_list.append({
 		"name": Constants.ZOOM_PROPERTY_NAME,
@@ -73,7 +72,6 @@ func _get_property_list() -> Array:
 
 func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
-#	Properties.set_trigger_onload_properties(property, value, self)
 
 	# ZOOM
 	if property == Constants.ZOOM_PROPERTY_NAME:
@@ -134,7 +132,7 @@ func _get(property: StringName):
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
-#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
+	if property == Constants.TWEEN_ONLOAD_NAME: 					return Properties.tween_onload
 
 
 ###################

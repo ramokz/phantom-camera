@@ -14,7 +14,8 @@ var is_active: bool
 
 var priority: int = 0
 
-#var trigger_onload: bool = true
+var tween_onload: bool = true
+var has_tweened_onload: bool = true
 var should_follow: bool
 var has_follow_group: bool
 var follow_target_node: Node
@@ -88,19 +89,6 @@ func add_priority_properties() -> Array:
 	})
 
 	return _property_list
-
-
-#func add_trigger_onload_properties() -> Array:
-#	var _property_list: Array
-#
-#	_property_list.append({
-#		"name": Constants.TRIGGER_ONLOAD_NAME,
-#		"type": TYPE_BOOL,
-#		"hint": PROPERTY_HINT_NONE,
-#		"usage": PROPERTY_USAGE_DEFAULT
-#	})
-#
-#	return _property_list
 
 
 func add_follow_mode_property() -> Array:
@@ -200,6 +188,13 @@ func add_tween_properties() -> Array:
 
 func add_secondary_properties() -> Array:
 	var _property_list: Array
+	
+	_property_list.append({
+		"name": Constants.TWEEN_ONLOAD_NAME,
+		"type": TYPE_BOOL,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT
+	})
 
 	_property_list.append({
 		"name": Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME,
@@ -221,11 +216,6 @@ func set_phantom_host_property(property: StringName, value, pcam: Node):
 func set_priority_property(property: StringName, value, pcam: Node):
 	if property == Constants.PRIORITY_PROPERTY_NAME:
 		set_priority(value, pcam)
-
-
-#func set_trigger_onload_properties(property: StringName, value, pcam: Node):
-#	if property == Constants.TRIGGER_ONLOAD_NAME:
-#		trigger_onload = value
 
 
 func set_follow_properties(property: StringName, value, pcam: Node):
@@ -323,6 +313,13 @@ func set_tween_properties(property: StringName, value, pcam: Node):
 
 
 func set_secondary_properties(property: StringName, value, pcam: Node):
+	if property == Constants.TWEEN_ONLOAD_NAME:
+		tween_onload = value
+		if value == false:
+			has_tweened_onload = false
+		else:
+			has_tweened_onload = true
+	
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:
 		inactive_update_mode = value
 

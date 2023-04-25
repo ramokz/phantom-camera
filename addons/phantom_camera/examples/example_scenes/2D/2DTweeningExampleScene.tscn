@@ -672,6 +672,7 @@ follow_parameters/target_offset = Vector2(0, -120)
 follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
 tween_parameters = ExtResource("6_gu0o0")
+tween_on_load = false
 inactive_update_mode = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
@@ -751,6 +752,7 @@ priority = 0
 zoom = Vector2(1, 1)
 follow_mode = 0
 tween_parameters = null
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
@@ -761,6 +763,7 @@ priority = 0
 zoom = Vector2(1, 1)
 follow_mode = 0
 tween_parameters = null
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="Label" type="Label" parent="Player"]
@@ -812,6 +815,7 @@ priority = 0
 zoom = Vector2(0.8, 0.8)
 follow_mode = 0
 tween_parameters = SubResource("Resource_ujs6q")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
@@ -853,6 +857,7 @@ priority = 0
 zoom = Vector2(2, 2)
 follow_mode = 0
 tween_parameters = SubResource("Resource_7xgkv")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
@@ -894,4 +899,5 @@ priority = 0
 zoom = Vector2(0.9, 0.9)
 follow_mode = 0
 tween_parameters = SubResource("Resource_tse25")
+tween_on_load = true
 inactive_update_mode = 0

@@ -50,6 +50,7 @@ look_at_mode = 3
 look_at_group = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
 tween_parameters = null
 inactive_update_mode = 0
+tween_on_load = false
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

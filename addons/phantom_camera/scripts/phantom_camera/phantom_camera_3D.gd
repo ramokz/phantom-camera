@@ -138,7 +138,6 @@ func _get_property_list() -> Array:
 
 	property_list.append_array(Properties.add_tween_properties())
 	property_list.append_array(Properties.add_secondary_properties())
-#	property_list.append_array(Properties.add_trigger_onload_properties())
 
 	return property_list
 
@@ -225,7 +224,6 @@ func _set(property: StringName, value) -> bool:
 
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
-#	Properties.set_trigger_onload_properties(property, value, self)
 
 	return false
 
@@ -256,8 +254,8 @@ func _get(property: StringName):
 
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
 
-	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
-#	if property == Constants.TRIGGER_ONLOAD_NAME: return Properties.trigger_onload
+	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
+	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
 
 
 ###################

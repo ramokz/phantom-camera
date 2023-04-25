@@ -113,6 +113,7 @@ follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
 look_at_mode = 0
 tween_parameters = ExtResource("4_a27nb")
+tween_on_load = false
 inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
@@ -144,6 +145,7 @@ priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_su0l1")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
@@ -207,6 +209,7 @@ priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = ExtResource("8_c0sgt")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="NorthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
@@ -227,6 +230,7 @@ priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = ExtResource("8_c0sgt")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
@@ -247,6 +251,7 @@ priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = ExtResource("8_c0sgt")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="SouthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]

@@ -130,6 +130,11 @@ func _find_pcam_with_highest_priority() -> void:
 
 
 func _tween_pcam(delta: float) -> void:
+	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
+		trigger_pcam_tween = false
+		_active_pcam.Properties.has_tweened_onload = true
+		return
+	
 	tween_duration += delta
 	camera.set_position(
 		Tween.interpolate_value(

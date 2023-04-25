@@ -83,6 +83,7 @@ follow_parameters/damping_value = 10.0
 look_at_mode = 0
 tween_parameters = ExtResource("4_aj0kl")
 inactive_update_mode = 0
+tween_on_load = false
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -131,6 +132,7 @@ follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_hml7x")
 inactive_update_mode = 0
+tween_on_load = true
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -168,6 +170,7 @@ follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_pjwwe")
 inactive_update_mode = 0
+tween_on_load = true
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -205,6 +208,7 @@ follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_ex8sv")
 inactive_update_mode = 0
+tween_on_load = true
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -242,6 +246,7 @@ follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_n4qdq")
 inactive_update_mode = 0
+tween_on_load = true
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)

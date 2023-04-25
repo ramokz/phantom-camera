@@ -8,7 +8,7 @@ const PRIORITY_PROPERTY_NAME: StringName = "priority"
 
 const PCAM_HOST: StringName = "phantom_camera_host"
 
-const TRIGGER_ONLOAD_NAME: StringName = "trigger_on_load"
+const TWEEN_ONLOAD_NAME: StringName = "tween_on_load"
 
 # Follow
 const FOLLOW_MODE_PROPERTY_NAME: StringName = "follow_mode"

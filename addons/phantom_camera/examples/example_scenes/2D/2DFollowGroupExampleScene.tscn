@@ -666,6 +666,7 @@ follow_parameters/target_offset = Vector2(0, 0)
 follow_parameters/damping = true
 follow_parameters/damping_value = 8.0
 tween_parameters = ExtResource("8_cx6vg")
+tween_on_load = false
 inactive_update_mode = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
@@ -747,6 +748,7 @@ priority = 0
 zoom = Vector2(2, 2)
 follow_mode = 0
 tween_parameters = ExtResource("10_ar2rk")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
@@ -757,6 +759,7 @@ priority = 0
 zoom = Vector2(2.5, 2.5)
 follow_mode = 0
 tween_parameters = ExtResource("11_5hu46")
+tween_on_load = true
 inactive_update_mode = 0
 
 [node name="StaysInViewLabel" type="Label" parent="Player"]
