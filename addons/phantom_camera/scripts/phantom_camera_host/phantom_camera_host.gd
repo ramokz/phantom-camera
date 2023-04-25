@@ -239,3 +239,7 @@ func pcam_priority_updated(pcam: Node) -> void:
 			_find_pcam_with_highest_priority()
 		else:
 			_active_pcam_priority = current_pcam_priority
+
+
+func get_active_pcam() -> Node:
+	return _active_pcam
