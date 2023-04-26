@@ -63,6 +63,11 @@ func camera_enter_tree(pcam: Node):
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
+
+func pcam_exit_tree(pcam: Node):
+	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
+
+
 func add_multiple_hosts_properties() -> Array:
 	var _property_list: Array
 

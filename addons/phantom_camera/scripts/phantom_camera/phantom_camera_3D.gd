@@ -280,6 +280,8 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
+	
+	Properties.pcam_exit_tree(self)
 
 
 func _physics_process(delta: float) -> void:

@@ -8,8 +8,6 @@ const PRIORITY_PROPERTY_NAME: StringName = "priority"
 
 const PCAM_HOST: StringName = "phantom_camera_host"
 
-const TWEEN_ONLOAD_NAME: StringName = "tween_on_load"
-
 # Follow
 const FOLLOW_MODE_PROPERTY_NAME: StringName = "follow_mode"
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "follow_target"
@@ -31,6 +29,7 @@ const ZOOM_PROPERTY_NAME: StringName = "zoom"
 const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "tween_parameters"
 
 # Secondary
+const TWEEN_ONLOAD_NAME: StringName = "tween_on_load"
 const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "inactive_update_mode"
 
 

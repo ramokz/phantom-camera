@@ -26,7 +26,6 @@ var trigger_pcam_tween: bool
 var tween_duration: float
 
 var multiple_pcam_hosts: bool
-var pcam_host_group: Array[Node]
 
 var is_child_of_camera: bool = false
 var _is_3D: bool
@@ -59,8 +58,7 @@ func _enter_tree() -> void:
 			)
 			queue_free()
 
-		var pcam_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
-		for pcam in pcam_group_nodes:
+		for pcam in _get_pcam_node_group():
 			if not multiple_pcam_hosts:
 
 				pcam_added_to_scene(pcam)
@@ -75,15 +73,13 @@ func _exit_tree() -> void:
 	remove_from_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 	_check_camera_host_amount()
 
-	var pcam_group_nodes: Array[Node] = get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
-	for pcam in pcam_group_nodes:
+	for pcam in _get_pcam_node_group():
 		if not multiple_pcam_hosts:
 			pcam.Properties.check_multiple_pcam_host_property(pcam)
 
 
 func _check_camera_host_amount():
-	pcam_host_group = get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
-	if pcam_host_group.size() > 1:
+	if _get_pcam_host_group().size() > 1:
 		multiple_pcam_hosts = true
 	else:
 		multiple_pcam_hosts = false
@@ -121,7 +117,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 
 func _find_pcam_with_highest_priority() -> void:
-#	if _pcam_list.is_empty(): return
 	for pcam in _pcam_list:
 		if pcam.get_priority() > _active_pcam_priority:
 			_assign_new_active_pcam(pcam)
@@ -132,8 +127,10 @@ func _find_pcam_with_highest_priority() -> void:
 func _tween_pcam(delta: float) -> void:
 	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
 		trigger_pcam_tween = false
-		_active_pcam.Properties.has_tweened_onload = true
+		_reset_tween_on_load()
 		return
+	else:
+		_reset_tween_on_load()
 	
 	tween_duration += delta
 	camera.set_position(
@@ -168,6 +165,11 @@ func _tween_pcam(delta: float) -> void:
 				_active_pcam.get_tween_ease(),
 			)
 		)
+
+
+func _reset_tween_on_load() -> void:
+	for pcam in _get_pcam_node_group():
+			pcam.Properties.has_tweened_onload  = true
 
 
 func _pcam_follow(delta: float) -> void:
@@ -206,6 +208,14 @@ func _process_pcam(delta: float) -> void:
 		else:
 			tween_duration = 0
 			trigger_pcam_tween = false
+
+
+func _get_pcam_node_group() -> Array[Node]:
+	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
+	
+	
+func _get_pcam_host_group() -> Array[Node]:
+	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
 
 func _process(delta: float) -> void:
