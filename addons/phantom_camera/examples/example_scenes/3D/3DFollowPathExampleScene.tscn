@@ -96,8 +96,8 @@ follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_m07s2")
-inactive_update_mode = 0
 tween_on_load = false
+inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -141,8 +141,8 @@ follow_parameters/damping = true
 follow_parameters/damping_value = 3.0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_rw4bl")
-inactive_update_mode = 0
 tween_on_load = true
+inactive_update_mode = 0
 
 [node name="StraightFollowPath" type="Path3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.73176, 7.9199, -4.8731)
@@ -179,8 +179,8 @@ follow_parameters/damping = true
 follow_parameters/damping_value = 3.0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_rw4bl")
-inactive_update_mode = 0
 tween_on_load = true
+inactive_update_mode = 0
 
 [node name="StraightPathFollowTrigger2" type="Area3D" parent="Paths" node_paths=PackedStringArray("path_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -17)
