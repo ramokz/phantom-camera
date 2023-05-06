@@ -60,7 +60,7 @@ func _get_property_list() -> Array:
 	if Properties.follow_mode != Constants.FollowMode.NONE:
 		property_list.append_array(Properties.add_follow_target_property())
 
-		if Properties.follow_mode == Constants.FollowMode.GROUP:
+		if Properties.follow_mode == Constants.FollowMode.GROUP or Properties.follow_mode == Constants.FollowMode.FRAMED:
 			if not _follow_group_distance_auto:
 				property_list.append({
 					"name": FOLLOW_DISTANCE_PROPERTY_NAME,
@@ -102,6 +102,8 @@ func _get_property_list() -> Array:
 
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
+		property_list.append_array(Properties.add_follow_framed())
+		
 
 	property_list.append({
 		"name": LOOK_AT_MODE_PROPERTY_NAME,
@@ -232,27 +234,32 @@ func _get(property: StringName):
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	if property == Constants.PHANTOM_CAMERA_HOST: return Properties.pcam_host_owner.name
 
-	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
+	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
-	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
-	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
-	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
-	if property == Constants.FOLLOW_PATH_PROPERTY_NAME: 			return Properties.follow_path_path
-	if property == FOLLOW_DISTANCE_PROPERTY_NAME:				 	return follow_distance
-	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME	: 	return Properties.follow_target_offset_3D
-	if property == FOLLOW_GROUP_DISTANCE_AUTO_NAME:					return _follow_group_distance_auto
-	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:				return _follow_group_distance_auto_min
-	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:				return _follow_group_distance_auto_max
-	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:				return _follow_group_distance_auto_divisor
-	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
-	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
+	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 				return Properties.follow_mode
+	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 				return Properties.follow_target_path
+	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 				return Properties.follow_group_paths
+	if property == Constants.FOLLOW_PATH_PROPERTY_NAME: 				return Properties.follow_path_path
+	if property == FOLLOW_DISTANCE_PROPERTY_NAME:				 		return follow_distance
+	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME	: 		return Properties.follow_target_offset_3D
 
-	if property == LOOK_AT_TARGET_PROPERTY_NAME: 					return _look_at_target_path
-	if property == LOOK_AT_MODE_PROPERTY_NAME: 						return look_at_mode
-	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 			return look_at_target_offset
-	if property == LOOK_AT_GROUP_PROPERTY_NAME:						return _look_at_group_paths
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_NAME:						return _follow_group_distance_auto
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:					return _follow_group_distance_auto_min
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:					return _follow_group_distance_auto_max
+	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:					return _follow_group_distance_auto_divisor
+	
+	if property == Constants.FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
+	if property == Constants.FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
+	
+	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
+	if property == LOOK_AT_TARGET_PROPERTY_NAME: 						return _look_at_target_path
+	if property == LOOK_AT_MODE_PROPERTY_NAME: 							return look_at_mode
+	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 				return look_at_target_offset
+	if property == LOOK_AT_GROUP_PROPERTY_NAME:							return _look_at_group_paths
+
+	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 				return Properties.tween_resource
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
@@ -335,13 +342,13 @@ func _physics_process(delta: float) -> void:
 						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
 						path_position
 					)
-
-#				Constants.FollowMode.FRAMED_FOLLOW:
-#					set_global_position(
-#						Properties.follow_target_node.position +
-#						Properties.follow_target_offset_3D +
-#						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-#					)
+			Constants.FollowMode.FRAMED:
+				if Properties.follow_target_node:
+					set_global_position(
+						Properties.follow_target_node.position +
+						Properties.follow_target_offset_3D +
+						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+					)
 
 	if _should_look_at:
 		match look_at_mode:

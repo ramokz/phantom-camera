@@ -1,0 +1,154 @@
+[gd_scene load_steps=6 format=3 uid="uid://dbkr3d716wtx0"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_l4cnn"]
+[ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1em7s"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmo1t"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.745098, 0.858824, 0.380392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q7vs4"]
+bg_color = Color(0.929412, 0.87451, 0.619608, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_l4cnn")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+unique_name_in_owner = true
+handle_input_locally = false
+gui_disable_input = true
+size = Vector2i(1920, 1080)
+render_target_update_mode = 4
+
+[node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="DeadZoneLeftHBoxContainer" type="VBoxContainer" parent="DeadZoneHBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="DeadZoneLeftTopPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneLeftCenterPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneLeftBottomPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneCenterHBoxContainer" type="VBoxContainer" parent="DeadZoneHBoxContainer"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 0
+
+[node name="DeadZoneCenterTopPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneCenterCenterPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxEmpty_1em7s")
+
+[node name="DeadZoneCenterBottomPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneRightHBoxContainer" type="VBoxContainer" parent="DeadZoneHBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="DeadZoneRightTopPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneRightCenterPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneRightBottomPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 1
+
+[node name="CameraViewportPanel" type="Panel" parent="AspectRatioContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_xmo1t")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_q7vs4")

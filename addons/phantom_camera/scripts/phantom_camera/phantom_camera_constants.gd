@@ -5,7 +5,6 @@ const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/p
 
 # Primary
 const PRIORITY_PROPERTY_NAME: StringName = "priority"
-
 const PCAM_HOST: StringName = "phantom_camera_host"
 
 # Follow
@@ -20,10 +19,11 @@ const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "dist
 const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping"
 const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping_value"
 const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "target_offset"
+const FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "deadzone_horizontal"
+const FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "deadzone_vertical"
 
 #Zoom
 const ZOOM_PROPERTY_NAME: StringName = "zoom"
-
 
 # Tween Resource
 const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "tween_parameters"
@@ -39,8 +39,7 @@ enum FollowMode {
 	SIMPLE 	= 2,
 	GROUP	= 3,
 	PATH	= 4,
-#	FRAMED_FOLLOW 	= 3,
-#	TODO - Path Track Follow
+	FRAMED = 5,
 }
 
 enum TweenTransitions {

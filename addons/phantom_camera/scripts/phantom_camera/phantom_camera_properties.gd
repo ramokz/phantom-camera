@@ -25,6 +25,7 @@ var follow_has_path_target: bool
 var follow_path_node: Node
 var follow_path_path: NodePath
 
+
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
@@ -35,6 +36,11 @@ var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
 
+# Framed Follow
+signal dead_zone_changed
+var follow_framed_dead_zone_width: float
+var follow_framed_dead_zone_height: float
+
 var zoom: Vector2 = Vector2.ONE
 
 var tween_resource: PhantomCameraTween
@@ -42,8 +48,10 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
 var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
+
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
+	
 	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 	elif follow_group_paths:
@@ -62,6 +70,7 @@ func camera_enter_tree(pcam: Node):
 
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
+		
 
 
 func pcam_exit_tree(pcam: Node):
@@ -142,7 +151,7 @@ func add_follow_target_property() -> Array:
 func add_follow_properties() -> Array:
 	var _property_list: Array
 	if follow_mode != Constants.FollowMode.NONE:
-		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP:
+		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP or follow_mode == Constants.FollowMode.FRAMED:
 			if is_3D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
@@ -175,6 +184,28 @@ func add_follow_properties() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 
+	return _property_list
+
+
+func add_follow_framed() -> Array:
+	var _property_list: Array
+	
+	if follow_mode == Constants.FollowMode.FRAMED:
+		_property_list.append({
+			"name": Constants.FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME,
+			"type": TYPE_FLOAT,
+			"hint": PROPERTY_HINT_RANGE,
+			"hint_string": "0, 1, 0.01,",
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+		_property_list.append({
+			"name": Constants.FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME,
+			"type": TYPE_FLOAT,
+			"hint": PROPERTY_HINT_RANGE,
+			"hint_string": "0, 1, 0.01,",
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+		
 	return _property_list
 
 
@@ -269,7 +300,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 			follow_path_node = null
 		pcam.notify_property_list_changed()
 
-
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
 		if value and value.size() > 0:
 			# Clears the Array in case of reshuffling or updated Nodes
@@ -297,6 +327,14 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 							printerr("Assigned non-Node3D to Follow Group")
 
 		pcam.notify_property_list_changed()
+
+	# Framed Follow
+	if property == Constants.FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME:
+		follow_framed_dead_zone_width = value
+		dead_zone_changed.emit()
+	if property == Constants.FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME:
+		follow_framed_dead_zone_height = value
+		dead_zone_changed.emit()
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:
@@ -371,7 +409,3 @@ func check_multiple_pcam_host_property(pcam: Node, multiple_host: bool = false) 
 
 	pcam.notify_property_list_changed()
 #	pcam_host_group.append_array(host_group)
-
-#func set_process(pcam: Node, should_process: bool) -> void:
-#	pcam.set_process(should_process)
-#	pcam.set_physics_process(should_process)
