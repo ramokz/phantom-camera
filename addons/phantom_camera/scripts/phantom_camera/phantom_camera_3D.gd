@@ -339,11 +339,39 @@ func _physics_process(delta: float) -> void:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector3 = Properties.follow_path_node.get_global_position()
 					set_global_position(
-						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
-						path_position
+						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position
 					)
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
+					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+					var unprojected_position: Vector2 = get_viewport().get_camera_3d().unproject_position(%CSGMesh3D.get_global_position())
+					
+					if Engine.is_editor_hint():
+						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+						var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+						
+						unprojected_position = unprojected_position - visible_rect_size / 2
+						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+#							print("Landscape View")
+							var aspect_ratio_scale: float = viewport_width / viewport_height
+							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+							unprojected_position.y = (unprojected_position.y + 1) / 2
+						else:
+#							print("Portrait View")
+							var aspect_ratio_scale: float = viewport_height / viewport_width
+							unprojected_position.x = (unprojected_position.x + 1) / 2
+							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+						
+#						print(unprojected_position)
+					else:
+#						#############################################
+#						Returns correct normalized value when running
+#						#############################################
+						pass
+#						print(unprojected_position.x / visible_rect_size.x)
+#						print(unprojected_position.y / visible_rect_size.y)
+					
 					set_global_position(
 						Properties.follow_target_node.position +
 						Properties.follow_target_offset_3D +

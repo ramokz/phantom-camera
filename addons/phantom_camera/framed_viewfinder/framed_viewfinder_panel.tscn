@@ -138,7 +138,8 @@ stretch_mode = 1
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xmo1t")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="TargetPoint" type="Panel" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

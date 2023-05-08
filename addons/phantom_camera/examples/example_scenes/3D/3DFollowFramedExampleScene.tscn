@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c4llb3gsbfv1a"]
+[gd_scene load_steps=13 format=3 uid="uid://c4llb3gsbfv1a"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_hyn5x"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_g1bv4"]
@@ -25,11 +25,15 @@ albedo_texture = ExtResource("5_c0upu")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
+[sub_resource type="SphereMesh" id="SphereMesh_yyxer"]
+radius = 0.05
+height = 0.1
+
 [node name="Node3D" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.906322, 0.422588, 0, -0.422588, 0.906322, -13.1946, 1.61191, 11.1273)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.727, 0.596078, 11.4088)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_hyn5x")
@@ -41,38 +45,39 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -13.1946, 1.61191, 11.1273)
+transform = Transform3D(0.999954, 0, 0, 0, 0.999868, 0, 0, 0, 0.999929, -13.727, 0.596078, 11.4088)
 script = ExtResource("2_g1bv4")
 priority = 10
 follow_mode = 5
-follow_target = NodePath("../PlayerCharacterBody3D2")
+follow_target = NodePath("../PlayerCharacterBody3D")
 follow_parameters/distance = 3.0
 follow_parameters/target_offset = Vector3(0, 0, 0)
 follow_parameters/damping = true
 follow_parameters/damping_value = 5.0
-follow_parameters/deadzone_horizontal = 0.806
-follow_parameters/deadzone_vertical = 0.314
+follow_parameters/deadzone_horizontal = 0.255
+follow_parameters/deadzone_vertical = 0.19
 look_at_mode = 0
 tween_parameters = SubResource("Resource_vlysu")
 tween_on_load = false
 inactive_update_mode = 0
 
-[node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
+[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -13.1946, 0.344147, 8.40857)
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -13.727, 0.596078, 8.409)
 script = ExtResource("3_6xt4f")
+enable_gravity = false
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 
-[node name="PlayerArea3D" type="Area3D" parent="Player/PlayerCharacterBody3D2"]
+[node name="PlayerArea3D" type="Area3D" parent="Player/PlayerCharacterBody3D"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D2/PlayerArea3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D/PlayerArea3D"]
 shape = SubResource("CapsuleShape3D_3xplc")
 
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D2"]
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_3xplc")
 
 [node name="NPCs" type="Node" parent="."]
@@ -164,7 +169,7 @@ use_collision = true
 size = Vector3(4.03502, 1.27695, 5.2198)
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.04727, 0.0440434, 8.36617)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.90576, 0.0440434, 8.36617)
 use_collision = true
 size = Vector3(4.57784, 1.08809, 3.11285)
 
@@ -177,3 +182,8 @@ look_at_mode = 0
 tween_parameters = null
 tween_on_load = true
 inactive_update_mode = 0
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.99818, 0.0602739, -0.0017538, -0.0602994, 0.997758, -0.0290319, 0, 0.0290848, 0.999577, -13.549, 0.092, 10.733)
+mesh = SubResource("SphereMesh_yyxer")

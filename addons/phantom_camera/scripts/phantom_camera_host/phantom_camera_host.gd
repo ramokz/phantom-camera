@@ -60,7 +60,6 @@ func _enter_tree() -> void:
 
 		for pcam in _get_pcam_node_group():
 			if not multiple_pcam_hosts:
-
 				pcam_added_to_scene(pcam)
 				pcam.assign_pcam_host()
 #			else:
@@ -88,7 +87,6 @@ func _check_camera_host_amount():
 func _assign_new_active_pcam(pcam: Node) -> void:
 	var no_previous_pcam: bool
 
-
 	if _active_pcam:
 		_previous_active_pcam_position = camera.get_position()
 		_previous_active_pcam_rotation = camera.get_rotation()
@@ -106,7 +104,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if camera is Camera2D:
 		camera_zoom = camera.get_zoom()
-
 
 	if no_previous_pcam:
 		_previous_active_pcam_position = _active_pcam.get_position()
@@ -174,7 +171,7 @@ func _reset_tween_on_load() -> void:
 
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
-
+	
 	if _active_pcam.Properties.follow_has_damping:
 		camera.set_position(
 			camera.get_position().lerp(
@@ -184,7 +181,7 @@ func _pcam_follow(delta: float) -> void:
 		)
 	else:
 		camera.set_position(_active_pcam.get_global_position())
-
+		
 	if not _is_3D:
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
@@ -221,12 +218,12 @@ func _get_pcam_host_group() -> Array[Node]:
 func _process(delta: float) -> void:
 	_process_pcam(delta)
 
+
 ##################
 # Public Functions
 ##################
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
-
 	_find_pcam_with_highest_priority()
 
 
