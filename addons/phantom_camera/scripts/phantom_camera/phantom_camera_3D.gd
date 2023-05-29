@@ -25,7 +25,6 @@ var _follow_group_distance_auto_min: 		float = 1
 var _follow_group_distance_auto_max: 		float = 5
 var _follow_group_distance_auto_divisor:	float = 10
 
-
 enum LookAtMode {
 	NONE 	= 0,
 	MIMIC 	= 1,
@@ -290,8 +289,9 @@ func _exit_tree() -> void:
 	
 	Properties.pcam_exit_tree(self)
 
+var camera_offset: Vector3
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
@@ -343,40 +343,33 @@ func _physics_process(delta: float) -> void:
 					)
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
-					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-					var unprojected_position: Vector2 = get_viewport().get_camera_3d().unproject_position(%CSGMesh3D.get_global_position())
-					
+					var unprojected_position: Vector2
 					if Engine.is_editor_hint():
-						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-						var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
-						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-						
-						unprojected_position = unprojected_position - visible_rect_size / 2
-						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#							print("Landscape View")
-							var aspect_ratio_scale: float = viewport_width / viewport_height
-							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-							unprojected_position.y = (unprojected_position.y + 1) / 2
-						else:
-#							print("Portrait View")
-							var aspect_ratio_scale: float = viewport_height / viewport_width
-							unprojected_position.x = (unprojected_position.x + 1) / 2
-							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-						
-#						print(unprojected_position)
+						unprojected_position = get_unprojected_position()
 					else:
 #						#############################################
 #						Returns correct normalized value when running
 #						#############################################
-						pass
-#						print(unprojected_position.x / visible_rect_size.x)
-#						print(unprojected_position.y / visible_rect_size.y)
+						unprojected_position = get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
+						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+						unprojected_position = unprojected_position / visible_rect_size
 					
-					set_global_position(
-						Properties.follow_target_node.position +
-						Properties.follow_target_offset_3D +
-						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-					)
+					var view_side: bool = _get_framed_side_offset(unprojected_position)
+					if view_side:
+						var follow_target_position = Properties.follow_target_node.global_position
+						
+						var target: Vector3 = follow_target_position + camera_offset
+						global_position += target - global_position
+
+					else:
+						camera_offset = global_position - Properties.follow_target_node.global_position
+						## TODO - Make camera unmoveable
+						# global_position =
+							# Properties.follow_target_node.global_position + /
+							# Properties.follow_target_node.global_position + 
+							# get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+						pass
+
 
 	if _should_look_at:
 		match look_at_mode:
@@ -396,6 +389,26 @@ func _physics_process(delta: float) -> void:
 							bounds = bounds.expand(node.get_position())
 						look_at(bounds.get_center())
 
+
+func _get_raw_unprojected_position() -> Vector2:
+	return get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
+
+
+func _get_framed_side_offset(unprojected_position: Vector2) -> bool:
+	if unprojected_position.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
+		# Is outside left edge
+		return true
+	elif unprojected_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
+		# Is outside top edge
+		return true
+	elif unprojected_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
+		# Is outside right edge
+		return true
+	elif unprojected_position.y > 0.5 + Properties.follow_framed_dead_zone_height / 2:
+		# Is outside bottom edge
+		return true
+	else:
+		return false
 
 ##################
 # Public Functions
@@ -433,3 +446,25 @@ func get_tween_ease() -> int:
 		return Properties.tween_resource.ease
 	else:
 		return Properties.tween_resource_default.ease
+
+
+func get_unprojected_position() -> Vector2:
+	var unprojected_position: Vector2 = _get_raw_unprojected_position()
+	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+	var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+	
+	unprojected_position = unprojected_position - visible_rect_size / 2
+	if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+#	print("Landscape View")
+		var aspect_ratio_scale: float = viewport_width / viewport_height
+		unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+		unprojected_position.y = (unprojected_position.y + 1) / 2
+	else:
+#	print("Portrait View")
+		var aspect_ratio_scale: float = viewport_height / viewport_width
+		unprojected_position.x = (unprojected_position.x + 1) / 2
+		unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+		
+	return unprojected_position

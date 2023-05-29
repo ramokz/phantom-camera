@@ -10,7 +10,7 @@ var dead_zone_center_hbox: VBoxContainer
 var dead_zone_center_center_panel: Panel
 var dead_zone_left_center_panel: Panel
 var dead_zone_right_center_panel: Panel
-var target_position: Panel
+var target_point: Panel
 
 var viewport_width: float
 var viewport_height: float
@@ -30,13 +30,11 @@ var is_scene: bool
 func _ready():
 #	connect("visibility_changed", _visible_check)
 	connect("visibility_changed", _visibility_check)
+	set_physics_process(false)
 #	get_viewport().set_clear_mode(SubViewport.CLEAR_MODE_ALWAYS)
 
 #	await get_tree().physics_frame
 #	editor_interface.get_edited_scene_root()5
-
-	
-
 
 func _visibility_check():
 	var root: Node = editor_interface.get_edited_scene_root()
@@ -53,7 +51,7 @@ func _visibility_check():
 	dead_zone_center_center_panel = %DeadZoneCenterCenterPanel
 	dead_zone_left_center_panel = %DeadZoneLeftCenterPanel
 	dead_zone_right_center_panel = %DeadZoneRightCenterPanel
-	target_position = %TargetPoint
+	target_point = %TargetPoint
 	
 	# Renders
 	sub_viewport = %SubViewport
@@ -65,15 +63,15 @@ func _visibility_check():
 	aspect_ratio_container.set_ratio(viewport_width / viewport_height)
 	
 	if root is Node3D:
-#			print("Is a 3D scene")
+#		print("Is a 3D scene")
 		is_3D = true
 		is_scene = true
 	elif root is Node2D:
-#			print("Is a 2D scene")
+#		print("Is a 2D scene")
 		is_3D = false
 		is_scene = true
 	else:
-#			print("Is not a 2D or 3D scene")
+#		print("Is not a 2D or 3D scene")
 		is_scene = false
 	
 	if pcam_host_group.size() != 0 and is_scene:
@@ -98,6 +96,10 @@ func _visibility_check():
 				RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
 				_active_pcam_camera = _selected_camera.get_child(0).get_active_pcam() as PhantomCamera2D
 				
+			_on_dead_zone_changed()
+			
+			set_physics_process(true)
+			
 			if not _active_pcam_camera.Properties.is_connected("dead_zone_changed", _on_dead_zone_changed):
 				_active_pcam_camera.Properties.connect("dead_zone_changed", _on_dead_zone_changed)
 			
@@ -110,9 +112,13 @@ func _visibility_check():
 		
 #		print(editor_interface.get_viewport())
 
+
 func _process(delta):
-#	print("Ratio is: ", aspect_ratio_container.get_ratio())
-	pass
+#	var unprojected_position: Vector2 = _selected_camera.unproject_position(_active_pcam_camera.Properties.follow_target_node.position)
+	var unprojected_position = _active_pcam_camera.get_unprojected_position()
+	target_point.position.x = camera_viewport_panel.size.x * unprojected_position.x - target_point.size.x / 2 
+	target_point.position.y = camera_viewport_panel.size.y * unprojected_position.y - target_point.size.y / 2
+
 
 func _on_dead_zone_changed() -> void:
 #	print("Deadzone Width : ", _active_pcam_camera.Properties.follow_framed_dead_zone_width)
@@ -128,8 +134,3 @@ func _on_dead_zone_changed() -> void:
 	dead_zone_center_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_left_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_right_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
-	
-	var unprojected_position: Vector2 = _selected_camera.unproject_position(_active_pcam_camera.Properties.follow_target_node.position)
-	
-	target_position.position.y = unprojected_position.y
-	target_position.position.x = unprojected_position.x

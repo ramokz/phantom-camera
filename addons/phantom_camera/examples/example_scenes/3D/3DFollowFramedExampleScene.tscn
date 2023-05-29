@@ -1,22 +1,19 @@
-[gd_scene load_steps=13 format=3 uid="uid://c4llb3gsbfv1a"]
+[gd_scene load_steps=11 format=3 uid="uid://c4llb3gsbfv1a"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_hyn5x"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_g1bv4"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_6ok5j"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_6xt4f"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_t4fso"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_c0upu"]
-
-[sub_resource type="Resource" id="Resource_vlysu"]
-script = ExtResource("3_6ok5j")
-duration = 1.0
-transition = 0
-ease = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pda7a"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u74j7"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_xgjm7"]
+radius = 0.05
+height = 0.1
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3xplc"]
 
@@ -25,15 +22,11 @@ albedo_texture = ExtResource("5_c0upu")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[sub_resource type="SphereMesh" id="SphereMesh_yyxer"]
-radius = 0.05
-height = 0.1
-
 [node name="Node3D" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.727, 0.596078, 11.4088)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5207, 0.724, 14.947)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_hyn5x")
@@ -45,31 +38,35 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.999954, 0, 0, 0, 0.999868, 0, 0, 0, 0.999929, -13.727, 0.596078, 11.4088)
+transform = Transform3D(0.999954, 0, 0, 0, 0.999868, 0, 0, 0, 0.999929, -12.5207, 0.724, 14.947)
 script = ExtResource("2_g1bv4")
-priority = 10
+priority = 5
 follow_mode = 5
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/distance = 3.0
+follow_parameters/distance = 4.0
 follow_parameters/target_offset = Vector3(0, 0, 0)
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-follow_parameters/deadzone_horizontal = 0.255
-follow_parameters/deadzone_vertical = 0.19
+follow_parameters/damping = false
+follow_parameters/deadzone_horizontal = 0.167
+follow_parameters/deadzone_vertical = 0.217
 look_at_mode = 0
-tween_parameters = SubResource("Resource_vlysu")
+tween_parameters = null
 tween_on_load = false
 inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -13.727, 0.596078, 8.409)
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -12.458, 0.507079, 10.957)
 script = ExtResource("3_6xt4f")
-enable_gravity = false
+SPEED = 30.0
 metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
 mesh = SubResource("CapsuleMesh_pda7a")
+surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
+
+[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
+visible = false
+mesh = SubResource("CapsuleMesh_xgjm7")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 
 [node name="PlayerArea3D" type="Area3D" parent="Player/PlayerCharacterBody3D"]
@@ -176,14 +173,9 @@ size = Vector3(4.57784, 1.08809, 3.11285)
 [node name="PhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.3403, 3.08129, 8.56793)
 script = ExtResource("2_g1bv4")
-priority = 3
+priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = null
 tween_on_load = true
 inactive_update_mode = 0
-
-[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(0.99818, 0.0602739, -0.0017538, -0.0602994, 0.997758, -0.0290319, 0, 0.0290848, 0.999577, -13.549, 0.092, 10.733)
-mesh = SubResource("SphereMesh_yyxer")
