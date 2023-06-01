@@ -24,6 +24,7 @@ var _follow_group_distance_auto: 			bool
 var _follow_group_distance_auto_min: 		float = 1
 var _follow_group_distance_auto_max: 		float = 5
 var _follow_group_distance_auto_divisor:	float = 10
+var _camera_offset: Vector3
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -289,7 +290,6 @@ func _exit_tree() -> void:
 	
 	Properties.pcam_exit_tree(self)
 
-var camera_offset: Vector3
 
 func _process(delta: float) -> void:
 	if not Properties.is_active:
@@ -347,28 +347,116 @@ func _process(delta: float) -> void:
 					if Engine.is_editor_hint():
 						unprojected_position = get_unprojected_position()
 					else:
-#						#############################################
-#						Returns correct normalized value when running
-#						#############################################
+						#########################################################
+						# Returns correct normalized value when running in Editor
+						#########################################################
 						unprojected_position = get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						unprojected_position = unprojected_position / visible_rect_size
 					
-					var view_side: bool = _get_framed_side_offset(unprojected_position)
-					if view_side:
-						var follow_target_position = Properties.follow_target_node.global_position
-						
-						var target: Vector3 = follow_target_position + camera_offset
-						global_position += target - global_position
+					var view_side: Vector2 = _get_framed_side_offset(unprojected_position)
+					var follow_target_position = Properties.follow_target_node.global_position
+					# TODO - Calculate for when either Deadzone are 0
 
+					if view_side != Vector2.ZERO:
+						# print("View side is: ", view_side)
+						var target: Vector3 = follow_target_position + _camera_offset
+						var deadzone_width: float = Properties.follow_framed_dead_zone_width
+						var deadzone_height: float = Properties.follow_framed_dead_zone_height
+						
+						if deadzone_width == 0 || deadzone_height == 0:
+							if deadzone_width == 0 && deadzone_height != 0:
+								global_position = _get_framed_view_global_position(follow_target_position)
+								global_position.z += target.z - global_position.z
+							elif deadzone_width != 0 && deadzone_height == 0:
+								global_position = _get_framed_view_global_position(follow_target_position)
+								global_position.x += target.x - global_position.x
+							else:
+								global_position = _get_framed_view_global_position(follow_target_position)
+						else:
+							print("Something went throw")
 					else:
-						camera_offset = global_position - Properties.follow_target_node.global_position
-						## TODO - Make camera unmoveable
-						# global_position =
-							# Properties.follow_target_node.global_position + /
-							# Properties.follow_target_node.global_position + 
-							# get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-						pass
+						_camera_offset = global_position - follow_target_position
+
+
+
+					# if view_side != Vector2.ZERO:
+					# 	# global_position += delta * 10 * Vector3(view_side.x, view_side.y, 0)
+						
+					# 	var target: Vector3 = follow_target_position + _camera_offset
+					# 	# var new_position = target - global_position
+						
+					# 	# print("Target: ", target)
+					# 	# print("Global: ", global_position)
+					# 	# print("Sum: ", target - global_position)
+					# 	var deadzone_width: float = Properties.follow_framed_dead_zone_width
+					# 	var deadzone_height: float = Properties.follow_framed_dead_zone_height
+						
+					# 	if deadzone_width == 0 || deadzone_height == 0:
+					# 		if deadzone_width == 0 && deadzone_height != 0:
+					# 			print("Deadzone Width is 0")
+					# 			## Deadzone Width is 0
+					# 			global_position = _get_framed_view_global_position(follow_target_position)
+								
+					# 			print("Camera offset: ", _camera_offset)
+					# 			print("Taget Z: ", target.z)
+					# 			print("Global Postion Z: ", global_position.z)
+
+					# 			global_position.z += target.z - global_position.z
+					# 		elif deadzone_width != 0 && deadzone_height == 0:
+					# 			# print("Deadzone Height is 0")
+					# 			## Deadzone Height is 0
+								
+					# 			if view_side.x == 0:
+					# 				# print("Inside bounds")
+					# 				var x_pos:Vector3 = Vector3(global_position.x, 0, 0)
+
+					# 				global_position = \
+					# 					Vector3(global_position.x, 0, 0) + \
+					# 					Vector3(0, follow_target_position.y, follow_target_position.z) + \
+					# 					Properties.follow_target_offset_3D + \
+					# 					_get_distance()
+									
+					# 			else:
+					# 				print("Outside bounds")
+					# 				print(target.x)
+					# 				print(global_position.x)
+					# 				print(target.x - global_position.x)
+					# 				global_position.x += global_position.x - target.x
+								
+
+					# 			# global_position.x += target.x - global_position.x
+					# 			# TODO - Ensure X remains flexible
+					# 			# X Positioning
+					# 			# print(target.x)
+					# 			# print(global_position.x)
+					# 			# print("Camera offset: ", _camera_offset)
+					# 			# print("Taget Z: ", target.z)
+					# 			# print("Global Postion Z: ", global_position.z)
+					# 		else:
+					# 			print("Both deadzones are 0")
+					# 			global_position = _get_framed_view_global_position(follow_target_position)
+					# 	else:
+					# 		print("Else statement")
+					# 		global_position += target - global_position
+							
+					# 		# TODO - Apply Offset + Distance
+					# 		# global_position = global_position + Properties.follow_target_offset_3D + \
+					# 		# get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+					# else:
+					# 	print("No deadzone")
+					# 	_camera_offset = global_position - follow_target_position
+					# 	# print("DEFAULT")
+					# 	# print("Camera offset: ", _camera_offset)
+					# 	# print("Taget Z: ", follow_target_position.z + _camera_offset.z)
+					# 	# print("Global Postion Z: ", global_position.z)
+					# 	## TODO (MAYBE) - Make camera unmoveable
+					# 	# global_position =
+					# 		# Properties.follow_target_node.global_position + /
+					# 		# Properties.follow_target_node.global_position + 
+					# 		# get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+					# 	pass
+
 
 
 	if _should_look_at:
@@ -393,22 +481,36 @@ func _process(delta: float) -> void:
 func _get_raw_unprojected_position() -> Vector2:
 	return get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
 
-
-func _get_framed_side_offset(unprojected_position: Vector2) -> bool:
+func _get_framed_side_offset(unprojected_position: Vector2) -> Vector2:
+	var frame_out_bounds: Vector2
+	
 	if unprojected_position.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
 		# Is outside left edge
-		return true
-	elif unprojected_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
+		frame_out_bounds.x = -1
+	
+	if unprojected_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
 		# Is outside top edge
-		return true
-	elif unprojected_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
+		frame_out_bounds.y = 1
+	
+	if unprojected_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
 		# Is outside right edge
-		return true
-	elif unprojected_position.y > 0.5 + Properties.follow_framed_dead_zone_height / 2:
+		frame_out_bounds.x = 1
+		
+	if unprojected_position.y > 0.501 + Properties.follow_framed_dead_zone_height / 2:
 		# Is outside bottom edge
-		return true
-	else:
-		return false
+		frame_out_bounds.y = -1
+	
+
+	return frame_out_bounds
+
+func _get_distance() -> Vector3:
+	return get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+
+func _get_framed_view_global_position(follow_target_position: Vector3) -> Vector3:
+	return follow_target_position + \
+	Properties.follow_target_offset_3D + \
+	_get_distance()
+
 
 ##################
 # Public Functions
