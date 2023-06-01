@@ -40,6 +40,7 @@ var follow_group_paths: Array[NodePath]
 signal dead_zone_changed
 var follow_framed_dead_zone_width: float
 var follow_framed_dead_zone_height: float
+var show_viewfinder_in_play: bool
 
 var zoom: Vector2 = Vector2.ONE
 
@@ -70,7 +71,7 @@ func camera_enter_tree(pcam: Node):
 
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
-		
+
 
 
 func pcam_exit_tree(pcam: Node):
@@ -192,18 +193,25 @@ func add_follow_framed() -> Array:
 	
 	if follow_mode == Constants.FollowMode.FRAMED:
 		_property_list.append({
-			"name": Constants.FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME,
+			"name": Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME,
 			"type": TYPE_FLOAT,
 			"hint": PROPERTY_HINT_RANGE,
 			"hint_string": "0, 1, 0.01,",
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
 		_property_list.append({
-			"name": Constants.FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME,
+			"name": Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME,
 			"type": TYPE_FLOAT,
 			"hint": PROPERTY_HINT_RANGE,
 			"hint_string": "0, 1, 0.01,",
 			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+
+		_property_list.append({
+			"name": Constants.FOLLOW_VIEWFINDER_NAME,
+			"type": TYPE_BOOL,
+			"hint": PROPERTY_HINT_NONE,
+			"usage": PROPERTY_USAGE_DEFAULT
 		})
 		
 	return _property_list
@@ -329,12 +337,14 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 		pcam.notify_property_list_changed()
 
 	# Framed Follow
-	if property == Constants.FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME:
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:
 		follow_framed_dead_zone_width = value
 		dead_zone_changed.emit()
-	if property == Constants.FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME:
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:
 		follow_framed_dead_zone_height = value
 		dead_zone_changed.emit()
+	if property == Constants.FOLLOW_VIEWFINDER_NAME:
+		show_viewfinder_in_play = value
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:

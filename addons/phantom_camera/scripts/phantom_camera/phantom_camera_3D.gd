@@ -248,8 +248,9 @@ func _get(property: StringName):
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:					return _follow_group_distance_auto_max
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:					return _follow_group_distance_auto_divisor
 	
-	if property == Constants.FOLLOW_FRAMED_DEADZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
-	if property == Constants.FOLLOW_FRAMED_DEADZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
+	if property == Constants.FOLLOW_VIEWFINDER_NAME:									return Properties.show_viewfinder_in_play
 	
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
@@ -356,19 +357,19 @@ func _process(delta: float) -> void:
 					
 					var view_side: Vector2 = _get_framed_side_offset(unprojected_position)
 					var follow_target_position = Properties.follow_target_node.global_position
-					# TODO - Calculate for when either Deadzone are 0
+					# TODO - Calculate for when either Dead Zone are 0
 
 					if view_side != Vector2.ZERO:
 						# print("View side is: ", view_side)
 						var target: Vector3 = follow_target_position + _camera_offset
-						var deadzone_width: float = Properties.follow_framed_dead_zone_width
-						var deadzone_height: float = Properties.follow_framed_dead_zone_height
+						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
+						var dead_zone_height: float = Properties.follow_framed_dead_zone_height
 						
-						if deadzone_width == 0 || deadzone_height == 0:
-							if deadzone_width == 0 && deadzone_height != 0:
+						if dead_zone_width == 0 || dead_zone_height == 0:
+							if dead_zone_width == 0 && dead_zone_height != 0:
 								global_position = _get_framed_view_global_position(follow_target_position)
 								global_position.z += target.z - global_position.z
-							elif deadzone_width != 0 && deadzone_height == 0:
+							elif dead_zone_width != 0 && dead_zone_height == 0:
 								global_position = _get_framed_view_global_position(follow_target_position)
 								global_position.x += target.x - global_position.x
 							else:
@@ -389,13 +390,13 @@ func _process(delta: float) -> void:
 					# 	# print("Target: ", target)
 					# 	# print("Global: ", global_position)
 					# 	# print("Sum: ", target - global_position)
-					# 	var deadzone_width: float = Properties.follow_framed_dead_zone_width
-					# 	var deadzone_height: float = Properties.follow_framed_dead_zone_height
+					# 	var dead_zone_width: float = Properties.follow_framed_dead_zone_width
+					# 	var dead_zone_height: float = Properties.follow_framed_dead_zone_height
 						
-					# 	if deadzone_width == 0 || deadzone_height == 0:
-					# 		if deadzone_width == 0 && deadzone_height != 0:
-					# 			print("Deadzone Width is 0")
-					# 			## Deadzone Width is 0
+					# 	if dead_zone_width == 0 || dead_zone_height == 0:
+					# 		if dead_zone_width == 0 && dead_zone_height != 0:
+					# 			print("Dead zone Width is 0")
+					# 			## Dead Zone Width is 0
 					# 			global_position = _get_framed_view_global_position(follow_target_position)
 								
 					# 			print("Camera offset: ", _camera_offset)
@@ -403,9 +404,9 @@ func _process(delta: float) -> void:
 					# 			print("Global Postion Z: ", global_position.z)
 
 					# 			global_position.z += target.z - global_position.z
-					# 		elif deadzone_width != 0 && deadzone_height == 0:
-					# 			# print("Deadzone Height is 0")
-					# 			## Deadzone Height is 0
+					# 		elif dead_zone_width != 0 && dead_zone_height == 0:
+					# 			# print("Dead zone Height is 0")
+					# 			## Dead zone Height is 0
 								
 					# 			if view_side.x == 0:
 					# 				# print("Inside bounds")
@@ -434,7 +435,7 @@ func _process(delta: float) -> void:
 					# 			# print("Taget Z: ", target.z)
 					# 			# print("Global Postion Z: ", global_position.z)
 					# 		else:
-					# 			print("Both deadzones are 0")
+					# 			print("Both dead zones are 0")
 					# 			global_position = _get_framed_view_global_position(follow_target_position)
 					# 	else:
 					# 		print("Else statement")
@@ -444,7 +445,7 @@ func _process(delta: float) -> void:
 					# 		# global_position = global_position + Properties.follow_target_offset_3D + \
 					# 		# get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 					# else:
-					# 	print("No deadzone")
+					# 	print("No dead zone")
 					# 	_camera_offset = global_position - follow_target_position
 					# 	# print("DEFAULT")
 					# 	# print("Camera offset: ", _camera_offset)
