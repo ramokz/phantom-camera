@@ -497,7 +497,7 @@ func _get_framed_side_offset(unprojected_position: Vector2) -> Vector2:
 		# Is outside right edge
 		frame_out_bounds.x = 1
 		
-	if unprojected_position.y > 0.501 + Properties.follow_framed_dead_zone_height / 2:
+	if unprojected_position.y > 0.501 + Properties.follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0  
 		# Is outside bottom edge
 		frame_out_bounds.y = -1
 	
