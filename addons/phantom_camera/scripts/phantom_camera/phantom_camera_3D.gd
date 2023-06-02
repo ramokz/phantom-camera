@@ -375,7 +375,7 @@ func _process(delta: float) -> void:
 							else:
 								global_position = _get_framed_view_global_position(follow_target_position)
 						else:
-							print("Something went throw")
+							global_position += target - global_position
 					else:
 						_camera_offset = global_position - follow_target_position
 
