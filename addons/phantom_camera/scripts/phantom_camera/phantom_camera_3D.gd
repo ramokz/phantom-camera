@@ -357,7 +357,13 @@ func _process(delta: float) -> void:
 					
 					var view_side: Vector2 = _get_framed_side_offset(unprojected_position)
 					var follow_target_position = Properties.follow_target_node.global_position
-					# TODO - Calculate for when either Dead Zone are 0
+					
+					
+
+					# Resets the position of the PCAM when switching from another mode
+					if Properties.follow_framed_initial_set:
+						global_position = _get_framed_view_global_position(follow_target_position)
+						Properties.follow_framed_initial_set = false
 
 					if view_side != Vector2.ZERO:
 						# print("View side is: ", view_side)
@@ -378,8 +384,7 @@ func _process(delta: float) -> void:
 							global_position += target - global_position
 					else:
 						_camera_offset = global_position - follow_target_position
-
-
+						
 
 					# if view_side != Vector2.ZERO:
 					# 	# global_position += delta * 10 * Vector3(view_side.x, view_side.y, 0)
@@ -458,8 +463,6 @@ func _process(delta: float) -> void:
 					# 		# get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 					# 	pass
 
-
-
 	if _should_look_at:
 		match look_at_mode:
 			LookAtMode.MIMIC:
@@ -504,13 +507,13 @@ func _get_framed_side_offset(unprojected_position: Vector2) -> Vector2:
 
 	return frame_out_bounds
 
-func _get_distance() -> Vector3:
-	return get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+# func _get_distance() -> Vector3:
+# 	return get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
 func _get_framed_view_global_position(follow_target_position: Vector3) -> Vector3:
 	return follow_target_position + \
 	Properties.follow_target_offset_3D + \
-	_get_distance()
+	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
 
 ##################

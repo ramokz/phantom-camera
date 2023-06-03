@@ -40,6 +40,7 @@ var follow_group_paths: Array[NodePath]
 signal dead_zone_changed
 var follow_framed_dead_zone_width: float
 var follow_framed_dead_zone_height: float
+var follow_framed_initial_set: bool
 var show_viewfinder_in_play: bool
 
 var zoom: Vector2 = Vector2.ONE
@@ -77,7 +78,9 @@ func camera_enter_tree(pcam: Node):
 func pcam_exit_tree(pcam: Node):
 	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
 
-
+#########################
+# Add Properties
+#########################
 func add_multiple_hosts_properties() -> Array:
 	var _property_list: Array
 
@@ -213,6 +216,9 @@ func add_follow_framed() -> Array:
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
+
+		# To reset the positioning of the PCAM
+		follow_framed_initial_set = true
 		
 	return _property_list
 
@@ -250,6 +256,9 @@ func add_secondary_properties() -> Array:
 	return _property_list
 
 
+#########################
+# Set Properties
+#########################
 func set_phantom_host_property(property: StringName, value, pcam: Node):
 	if property == Constants.PCAM_HOST:
 		if value != null && value is int:
@@ -392,6 +401,9 @@ func set_priority(value: int, pcam: Node) -> void:
 #		pass
 
 
+#########################
+# Other Functions
+#########################
 func assign_pcam_host(pcam: Node) -> void:
 	pcam_host_group = pcam.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
