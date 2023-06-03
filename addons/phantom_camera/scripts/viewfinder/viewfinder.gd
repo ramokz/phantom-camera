@@ -30,7 +30,8 @@ var is_scene: bool
 func _ready():
 #	connect("visibility_changed", _visible_check)
 	connect("visibility_changed", _visibility_check)
-	set_physics_process(false)
+	set_process(false)
+	
 #	get_viewport().set_clear_mode(SubViewport.CLEAR_MODE_ALWAYS)
 
 #	await get_tree().physics_frame
@@ -121,8 +122,8 @@ func _process(delta):
 
 
 func _on_dead_zone_changed() -> void:
-#	print("Deadzone Width : ", _active_pcam_camera.Properties.follow_framed_dead_zone_width)
-#	print("Deadzone Height: ", _active_pcam_camera.Properties.follow_framed_dead_zone_height)
+#	print("Dead Zone Width : ", _active_pcam_camera.Properties.follow_framed_dead_zone_width)
+#	print("Dead Zone Height: ", _active_pcam_camera.Properties.follow_framed_dead_zone_height)
 	
 	var dead_zone_width: float = _active_pcam_camera.Properties.follow_framed_dead_zone_width * camera_viewport_panel.size.x
 	var dead_zone_height: float = _active_pcam_camera.Properties.follow_framed_dead_zone_height * camera_viewport_panel.size.y
