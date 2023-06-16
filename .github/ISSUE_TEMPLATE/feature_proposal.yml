@@ -9,7 +9,7 @@ body:
         - Write a descriptive issue title above.
         - Search [open](https://github.com/ramokz/phantom-camera/issues) and [closed](https://github.com/ramokz/phantom-camera/issues?q=is%3Aissue+is%3Aclosed) issues to ensure it has not already been suggested. If you don't find a relevant match or if you're unsure, don't hesitate to **open a new issue**.
         - Credit to [Godot](https://github.com/godotengine/godot/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml) for the template.
-  
+
   - type: dropdown
     id: project-type
     attributes:
@@ -23,7 +23,7 @@ body:
         - 3D
     validations:
       required: true
-  
+
   - type: textarea
     attributes:
       label: Feature Description
@@ -32,7 +32,7 @@ body:
         You can include example images, videos or links to where a similar/identical feature can be found.
     validations:
       required: true
-  
+
   - type: textarea
     attributes:
       label: Use Case Scenario
@@ -41,8 +41,8 @@ body:
         You can include example images, videos or links to where a similar/identical feature can be found.
     validations:
       required: true
-  
-   - type: dropdown
+
+  - type: dropdown
       id: importance
       attributes:
         label: Importance
@@ -53,7 +53,7 @@ body:
           - Low, there are workarounds where the proposed feature would just simplify things
       validations:
         required: true
-  
+
   - type: dropdown
     id: version
     attributes:
@@ -66,7 +66,7 @@ body:
         - Only me, this is highly specific to just my project
     validations:
       required: true
-  
+
   - type: textarea
     attributes:
       label: (Optional) Proposed Solution
