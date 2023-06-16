@@ -12,17 +12,17 @@ body:
 
 - type: dropdown
   id: project-type
-    attributes:
-      label: Project Type
-      description: |
-        What type of project can this be used for this for?
-        Select both if applicable.
-      multiple: true
-      options:
-        - 2D
-        - 3D
-    validations:
-      required: true
+  attributes:
+    label: Project Type
+    description: |
+      What type of project can this be used for this for?
+      Select both if applicable.
+    multiple: true
+    options:
+      - 2D
+      - 3D
+  validations:
+    required: true
 
 - type: textarea
   attributes:
@@ -44,28 +44,28 @@ body:
 
  - type: dropdown
     id: importance
-      attributes:
-        label: Importance
-        description: How important is this feature? Does a lack of it block important functionality?
-        options:
-          - High, there are critical things I can't do without this feature
-          - Medium, the feature would unlock new possibilities, but it's not a showstopper
-          - Low, there are workarounds where the proposed feature would just simplify things
-      validations:
-        required: true
+    attributes:
+      label: Importance
+      description: How important is this feature? Does a lack of it block important functionality?
+      options:
+        - High, there are critical things I can't do without this feature
+        - Medium, the feature would unlock new possibilities, but it's not a showstopper
+        - Low, there are workarounds where the proposed feature would just simplify things
+    validations:
+      required: true
 
 - type: dropdown
   id: version
-    attributes:
-      label: Version
-      description: How often do you think people will use this feature? Think in terms of genre, style, intensity etc.
-      options:
-        - All the time - the feature can be very useful for a varity of different projects 
-        - Often - a significant amount of projects can find this useful
-        - Rarely - just a handful of projects can likely benefit from this 
-        - Only me, this is highly specific to just my project
-    validations:
-      required: true
+  attributes:
+    label: Version
+    description: How often do you think people will use this feature? Think in terms of genre, style, intensity etc.
+    options:
+      - All the time - the feature can be very useful for a varity of different projects 
+      - Often - a significant amount of projects can find this useful
+      - Rarely - just a handful of projects can likely benefit from this 
+      - Only me, this is highly specific to just my project
+  validations:
+    required: true
 
 - type: textarea
   attributes:
