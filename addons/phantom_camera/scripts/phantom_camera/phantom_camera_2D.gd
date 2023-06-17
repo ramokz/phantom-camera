@@ -124,12 +124,12 @@ func _get(property: StringName):
 	if property == FOLLOW_GROUP_ZOOM_AUTO:							return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 							return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 							return follow_group_zoom_max
-	if property == FOLLOW_GROUP_ZOOM_MARGIN: 						return follow_group_zoom_margin
+	if property == FOLLOW_GROUP_ZOOM_MARGIN:						return follow_group_zoom_margin
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:	return Properties.follow_target_offset_2D
 	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
 
-	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME: 			return Properties.tween_resource
+	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:			return Properties.tween_resource
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 					return Properties.tween_onload
@@ -175,18 +175,22 @@ func _physics_process(delta: float) -> void:
 					set_global_position(Properties.follow_group_nodes_2D[0].get_position())
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
-					var screen_size: Vector2 = get_viewport_rect().size
 					for node in Properties.follow_group_nodes_2D:
 						rect = rect.expand(node.get_global_position())
-						rect = rect.grow_individual(
-							follow_group_zoom_margin.x,
-							follow_group_zoom_margin.y,
-							follow_group_zoom_margin.z,
-							follow_group_zoom_margin.w)
-					if rect.size.x > rect.size.y * screen_size.aspect():
-						Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-					else:
-						Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+						if follow_group_zoom_auto:
+							rect = rect.grow_individual(
+								follow_group_zoom_margin.x,
+								follow_group_zoom_margin.y,
+								follow_group_zoom_margin.z,
+								follow_group_zoom_margin.w)
+
+					if follow_group_zoom_auto:
+						var screen_size: Vector2 = get_viewport_rect().size
+						if rect.size.x > rect.size.y * screen_size.aspect():
+							Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+						else:
+							Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+
 					set_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
@@ -200,24 +204,144 @@ func _physics_process(delta: float) -> void:
 ##################
 # Public Functions
 ##################
+func get_pcam_host_owner() -> PhantomCameraHost:
+	return Properties.pcam_host_owner
+
+
+func set_zoom(value: Vector2) -> void:
+	Properties.zoom = value
+func get_zoom() -> Vector2:
+	return Properties.zoom
+
+
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
 func get_priority() -> int:
 	return Properties.priority
 
 
+func set_tween_duration(value: float) -> void:
+	if Properties.tween_resource:
+		Properties.tween_resource_default.duration = value
+		Properties.tween_resource_default.transition = Properties.tween_resource.transition
+		Properties.tween_resource_default.ease = Properties.tween_resource.ease
+		Properties.tween_resource = null # Clears resource from PCam instance
+	else:
+		Properties.tween_resource_default.duration = value
 func get_tween_duration() -> float:
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
 	else:
 		return Properties.tween_resource_default.duration
+
+func set_tween_transition(value: Constants.TweenTransitions) -> void:
+	if Properties.tween_resource:
+		Properties.tween_resource_default.duration = Properties.tween_resource.duration
+		Properties.tween_resource_default.transition = value
+		Properties.tween_resource_default.ease = Properties.tween_resource.ease
+		Properties.tween_resource = null # Clears resource from PCam instance
+	else:
+		Properties.tween_resource_default.transition = value
 func get_tween_transition() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
+
+func set_tween_ease(value: Constants.TweenEases) -> void:
+	if Properties.tween_resource:
+		Properties.tween_resource_default.duration = Properties.tween_resource.duration
+		Properties.tween_resource_default.transition = Properties.tween_resource.ease
+		Properties.tween_resource_default.ease = value
+		Properties.tween_resource = null # Clears resource from PCam instance
+	else:
+		Properties.tween_resource_default.ease = value
 func get_tween_ease() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.ease
 	else:
 		return Properties.tween_resource_default.ease
+
+
+func is_active() -> bool:
+	return Properties.is_active
+
+
+func set_tween_on_load(value: bool) -> void:
+	Properties.tween_onload = value
+func is_tween_on_load() -> bool:
+	return Properties.tween_onload
+
+
+func set_follow_target_node(value: Node2D) -> void:
+	Properties.follow_target_node = value
+func get_follow_target_node():
+	if Properties.follow_target_node:
+		return Properties.follow_target_node
+	else:
+		printerr("No Follow Target Node assigned")
+
+
+func set_follow_path(value: Path2D) -> void:
+	Properties.follow_path_node = value
+func get_follow_path():
+	if Properties.follow_path_node:
+		return Properties.follow_path_node
+	else:
+		printerr("No Follow Path assigned")
+
+
+func get_follow_mode() -> String:
+	return Constants.FollowMode.keys()[Properties.follow_mode].capitalize()
+# Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+
+
+func set_follow_target_offset(value: Vector2) -> void:
+	Properties.follow_target_offset_2D = value
+func get_follow_target_offset() -> Vector2:
+	return Properties.follow_target_offset_2D
+
+
+func set_follow_has_damping(value: bool) -> void:
+	Properties.follow_has_damping = value
+func get_follow_has_damping() -> bool:
+	return Properties.follow_has_damping
+	
+func set_follow_damping_value(value: float) -> void:
+	Properties.follow_damping_value = value
+func get_follow_damping_value() -> float:
+	return Properties.follow_damping_value
+
+
+func get_follow_group_nodes_2D() -> Array[Node2D]:
+	return Properties.follow_group_nodes_2D
+func append_follow_group_nodes_2D(value: Node2D) -> void:
+	Properties.follow_group_nodes_2D.append(value)
+func append_array_follow_group_nodes_2D(value: Array[Node2D]) -> void:
+	Properties.follow_group_nodes_2D.append_array(value)
+func erase_follow_group_nodes_2D(value: Node2D) -> void:
+	Properties.follow_group_nodes_2D.erase(value)
+
+func set_auto_zoom(value: bool) -> void:
+	follow_group_zoom_auto = value
+func get_auto_zoom() -> bool:
+	return follow_group_zoom_auto
+
+func set_min_zoom(value: float) -> void:
+	follow_group_zoom_min = value
+func get_min_zoom() -> float:
+	return follow_group_zoom_min
+
+func set_max_zoom(value: float) -> void:
+	follow_group_zoom_max = value
+func get_max_zoom() -> float:
+	return follow_group_zoom_max
+
+func set_zoom_margin(value: Vector4) -> void:
+	follow_group_zoom_margin = value
+func get_zoom_margin() -> Vector4:
+	return follow_group_zoom_margin
+
+
+func get_inactive_update_mode() -> bool:
+	return Properties.inactive_update_mode
