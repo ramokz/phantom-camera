@@ -313,13 +313,13 @@ func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
 
 
-func get_follow_group_nodes_2D() -> Array[Node2D]:
+func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D
-func append_follow_group_nodes_2D(value: Node2D) -> void:
+func append_follow_group_nodes(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.append(value)
-func append_array_follow_group_nodes_2D(value: Array[Node2D]) -> void:
+func append_array_follow_group_nodes(value: Array[Node2D]) -> void:
 	Properties.follow_group_nodes_2D.append_array(value)
-func erase_follow_group_nodes_2D(value: Node2D) -> void:
+func erase_follow_group_nodes(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.erase(value)
 
 func set_auto_zoom(value: bool) -> void:
