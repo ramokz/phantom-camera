@@ -49,9 +49,9 @@ body:
       label: Importance
       description: How important is this feature? Does a lack of it block important functionality?
       options:
-        - High, there are critical things I can't do without this feature
-        - Medium, the feature would unlock new possibilities, but it's not a showstopper
-        - Low, there are workarounds where the proposed feature would just simplify things
+        - High - there are critical things I can't do without this feature
+        - Medium - the feature would unlock new possibilities, but it's not a showstopper
+        - Low - there are workarounds where the proposed feature would just simplify things
     validations:
       required: true
 
