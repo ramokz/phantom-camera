@@ -1,5 +1,6 @@
 name: Feature Proposal
 description: Suggest a PhantomCamera feature to enhance the plugin
+labels: feature-proposal,needs-triage
 body:
 
   - type: markdown
@@ -35,9 +36,9 @@ body:
 
   - type: textarea
     attributes:
-      label: Use Case Scenario
+      label: Use Cases
       description: |
-        Describe an example where this feature will solve a given problem.
+        Describe one or more examples where this feature will solve a given problem.
         You can include example images, videos or links to where a similar/identical feature can be found.
     validations:
       required: true
@@ -55,15 +56,15 @@ body:
       required: true
 
   - type: dropdown
-    id: version
+    id: usage
     attributes:
-      label: Version
+      label: Usage
       description: How often do you think people will use this feature? Think in terms of genre, style, intensity etc.
       options:
         - All the time - the feature can be very useful for a varity of different projects 
         - Often - a significant amount of projects can find this useful
         - Rarely - just a handful of projects can likely benefit from this 
-        - Only me, this is highly specific to just my project
+        - Only me - this is highly specific to just my project
     validations:
       required: true
 
