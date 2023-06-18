@@ -369,32 +369,183 @@ func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
 
 
+func get_pcam_host_owner() -> PhantomCameraHost:
+	return Properties.pcam_host_owner
+
+
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
 func get_priority() -> int:
 	return Properties.priority
 
 
-func add_node_to_look_at_group(node: Node3D) -> void:
-	if not _look_at_group_nodes.has(node):
-		_look_at_group_nodes.append(node)
-func remove_node_from_look_at_group(node: Node3D) -> void:
-	_look_at_group_nodes.erase(node)
-
-
+func set_tween_duration(value: float) -> void:
+	if Properties.tween_resource:
+		Properties.tween_resource_default.duration = value
+		Properties.tween_resource_default.transition = Properties.tween_resource.transition
+		Properties.tween_resource_default.ease = Properties.tween_resource.ease
+		Properties.tween_resource = null # Clears resource from PCam instance
+	else:
+		Properties.tween_resource_default.duration = value
 func get_tween_duration() -> float:
-#	return Properties.tween_duration
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
 	else:
 		return Properties.tween_resource_default.duration
+
+func set_tween_transition(value: Constants.TweenTransitions) -> void:
+	if Properties.tween_resource:
+		Properties.tween_resource_default.duration = Properties.tween_resource.duration
+		Properties.tween_resource_default.transition = value
+		Properties.tween_resource_default.ease = Properties.tween_resource.ease
+		Properties.tween_resource = null # Clears resource from PCam instance
+	else:
+		Properties.tween_resource_default.transition = value
 func get_tween_transition() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
+
+func set_tween_ease(value: Constants.TweenEases) -> void:
+	if Properties.tween_resource:
+		Properties.tween_resource_default.duration = Properties.tween_resource.duration
+		Properties.tween_resource_default.transition = Properties.tween_resource.ease
+		Properties.tween_resource_default.ease = value
+		Properties.tween_resource = null # Clears resource from PCam instance
+	else:
+		Properties.tween_resource_default.ease = value
 func get_tween_ease() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.ease
 	else:
 		return Properties.tween_resource_default.ease
+
+
+func is_active() -> bool:
+	return Properties.is_active
+
+
+func set_tween_on_load(value: bool) -> void:
+	Properties.tween_onload = value
+func is_tween_on_load() -> bool:
+	return Properties.tween_onload
+
+
+func set_follow_target_node(value: Node3D) -> void:
+	Properties.follow_target_node = value
+func get_follow_target_node():
+	if Properties.follow_target_node:
+		return Properties.follow_target_node
+	else:
+		printerr("No Follow Target Node assigned")
+
+
+func set_follow_path(value: Path3D) -> void:
+	Properties.follow_path_node = value
+func get_follow_path():
+	if Properties.follow_path_node:
+		return Properties.follow_path_node
+	else:
+		printerr("No Follow Path assigned")
+
+
+func get_follow_mode() -> String:
+	return Constants.FollowMode.keys()[Properties.follow_mode].capitalize()
+# Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+
+func set_follow_target_offset(value: Vector3) -> void:
+	Properties.follow_target_offset_3D = value
+func get_follow_target_offset() -> Vector3:
+	return Properties.follow_target_offset_3D
+
+func set_follow_has_damping(value: bool) -> void:
+	Properties.follow_has_damping = value
+func get_follow_has_damping() -> bool:
+	return Properties.follow_has_damping
+	
+func set_follow_damping_value(value: float) -> void:
+	Properties.follow_damping_value = value
+func get_follow_damping_value() -> float:
+	return Properties.follow_damping_value
+
+func set_follow_distance(value: float) -> void:
+	follow_distance = value
+func get_follow_distance() -> float:
+	return follow_distance
+
+func set_auto_follow_distance(value: bool) -> void:
+	_follow_group_distance_auto = value
+func get_auto_follow_distance() -> bool:
+	return _follow_group_distance_auto 
+
+func set_min_auto_follow_distance(value: float) -> void:
+	_follow_group_distance_auto_min = value
+func get_min_auto_follow_distance() -> float:
+	return _follow_group_distance_auto_min
+
+func set_max_auto_follow_distance(value: float) -> void:
+	_follow_group_distance_auto_max = value
+func get_max_auto_follow_distance() -> float:
+	return _follow_group_distance_auto_max
+	
+func set_auto_follow_distance_divisor(value: float) -> void:
+	_follow_group_distance_auto_divisor = value
+func get_auto_follow_distance_divisor() -> float:
+	return _follow_group_distance_auto_divisor
+
+func get_follow_group_nodes() -> Array[Node3D]:
+	return Properties.follow_group_nodes_3D
+func append_follow_group_nodes(value: Node3D) -> void:
+	if not Properties.follow_group_nodes_3D.has(value):
+		Properties.follow_group_nodes_3D.append(value)
+	else:
+		printerr(value, "is already part of Follow Group")
+func append_array_follow_group_nodes(value: Array[Node3D]) -> void:
+	for val in value:
+		if not Properties.follow_group_nodes_3D.has(val):
+			Properties.follow_group_nodes_3D.append(val)
+		else:
+			printerr(value, "is already part of Follow Group")
+func erase_follow_group_nodes(value: Node3D) -> void:
+	Properties.follow_group_nodes_3D.erase(value)
+
+
+func get_look_at_mode() -> String:
+	return LookAtMode.keys()[look_at_mode].capitalize()
+# Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+
+func set_look_at_target(value: Node3D) -> void:
+	_look_at_target_node = value
+	_should_look_at = true
+	_has_look_at_target = true
+func get_look_at_target():
+	if _look_at_target_node:
+		return _look_at_target_node
+	else:
+		printerr("No Look At target node assigned")
+
+func set_look_at_target_offset(value: Vector3) -> void:
+	look_at_target_offset = value
+func get_look_at_target_offset() -> Vector3:
+	return look_at_target_offset
+
+func get_look_at_group_nodes() -> Array[Node3D]:
+	return _look_at_group_nodes
+func append_look_at_group_node(value: Node3D) -> void:
+	if not _look_at_group_nodes.has(value):
+		_look_at_group_nodes.append(value)
+	else:
+		printerr(value, " is already part of Look At Group")
+func append_array_look_at_group_nodes(value: Array[Node3D]) -> void:
+	for val in value:
+		if not _look_at_group_nodes.has(val):
+			_look_at_group_nodes.append(val)
+		else:
+			printerr(val, " is already part of Look At Group")
+func erase_look_at_group_node(value: Node3D) -> void:
+	_look_at_group_nodes.erase(value)
+
+
+func get_inactive_update_mode() -> String:
+	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
