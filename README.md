@@ -345,9 +345,7 @@ Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly acti
 See the [Phantom Camera - Wiki](https://github.com/ramokz/phantom-camera/wiki).
 
 ### 🪀 Example Scenes
-
-A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples` titled `2DExampleScene`
-and `3DExampleScene` respectively.
+A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples`.
 
 ## 💾 Installation
 ### Asset Library (Recommended - Stable)
@@ -356,12 +354,12 @@ and `3DExampleScene` respectively.
 3. Download then install the plugin (be sure to only select the `phantom_camera` directory).
 4. Enable the plugin inside `Project/Project Setttings/Plugins`.
 
-### Github Releases - (Recommended - Stable)
+### Github Releases (Recommended - Stable)
 1. Download a [release build](https://github.com/ramokz/phantom-camera/releases/).
 2. Extract the zip file and move the `addons/phantom_camera` directory into the project root location.
 3. Enable the plugin inside `Project/Project Setttings/Plugins`.
 
-### Github Main - (Latest - Unstable)
+### Github Main (Latest - Unstable)
 1. Download the latest [`main branch`](https://github.com/ramokz/phantom-camera/archive/refs/heads/main.zip).
 2. Extract the zip file and move the `addons/phantom_camera` directory into project's root location.
 3. Enable the plugin inside `Project/Project Setttings/Plugins`.
