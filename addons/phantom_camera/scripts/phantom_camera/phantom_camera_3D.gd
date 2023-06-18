@@ -474,6 +474,23 @@ func set_follow_distance(value: float) -> void:
 func get_follow_distance() -> float:
 	return follow_distance
 
+
+func append_follow_group_node(value: Node3D) -> void:
+	if not Properties.follow_group_nodes_3D.has(value):
+		Properties.follow_group_nodes_3D.append(value)
+	else:
+		printerr(value, " is already part of Follow Group")
+func append_array_follow_group_nodes(value: Array[Node3D]) -> void:
+	for val in value:
+		if not Properties.follow_group_nodes_3D.has(val):
+			Properties.follow_group_nodes_3D.append(val)
+		else:
+			printerr(value, " is already part of Follow Group")
+func erase_follow_group_node(value: Node3D) -> void:
+	Properties.follow_group_nodes_3D.erase(value)
+func get_follow_group_nodes() -> Array[Node3D]:
+	return Properties.follow_group_nodes_3D
+
 func set_auto_follow_distance(value: bool) -> void:
 	_follow_group_distance_auto = value
 func get_auto_follow_distance() -> bool:
@@ -493,22 +510,6 @@ func set_auto_follow_distance_divisor(value: float) -> void:
 	_follow_group_distance_auto_divisor = value
 func get_auto_follow_distance_divisor() -> float:
 	return _follow_group_distance_auto_divisor
-
-func get_follow_group_nodes() -> Array[Node3D]:
-	return Properties.follow_group_nodes_3D
-func append_follow_group_nodes(value: Node3D) -> void:
-	if not Properties.follow_group_nodes_3D.has(value):
-		Properties.follow_group_nodes_3D.append(value)
-	else:
-		printerr(value, "is already part of Follow Group")
-func append_array_follow_group_nodes(value: Array[Node3D]) -> void:
-	for val in value:
-		if not Properties.follow_group_nodes_3D.has(val):
-			Properties.follow_group_nodes_3D.append(val)
-		else:
-			printerr(value, "is already part of Follow Group")
-func erase_follow_group_nodes(value: Node3D) -> void:
-	Properties.follow_group_nodes_3D.erase(value)
 
 
 func get_look_at_mode() -> String:

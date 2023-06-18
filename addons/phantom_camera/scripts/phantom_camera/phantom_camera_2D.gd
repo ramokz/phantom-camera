@@ -150,6 +150,7 @@ func _exit_tree() -> void:
 	Properties.pcam_exit_tree(self)
 
 func _physics_process(delta: float) -> void:
+#	print(follow_group_zoom_margin)
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
@@ -178,19 +179,21 @@ func _physics_process(delta: float) -> void:
 					for node in Properties.follow_group_nodes_2D:
 						rect = rect.expand(node.get_global_position())
 						if follow_group_zoom_auto:
+#							print(follow_group_zoom_margin.x)
 							rect = rect.grow_individual(
 								follow_group_zoom_margin.x,
 								follow_group_zoom_margin.y,
 								follow_group_zoom_margin.z,
 								follow_group_zoom_margin.w)
-
+#						else:
+#							rect = rect.grow_individual(-80, 0, 0, 0)
 					if follow_group_zoom_auto:
 						var screen_size: Vector2 = get_viewport_rect().size
 						if rect.size.x > rect.size.y * screen_size.aspect():
 							Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
 							Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-
+#					print(Properties.zoom)
 					set_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
@@ -281,7 +284,6 @@ func get_follow_target_node():
 	else:
 		printerr("No Follow Target Node assigned")
 
-
 func set_follow_path(value: Path2D) -> void:
 	Properties.follow_path_node = value
 func get_follow_path():
@@ -290,17 +292,14 @@ func get_follow_path():
 	else:
 		printerr("No Follow Path assigned")
 
-
 func get_follow_mode() -> String:
 	return Constants.FollowMode.keys()[Properties.follow_mode].capitalize()
 # Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
-
 
 func set_follow_target_offset(value: Vector2) -> void:
 	Properties.follow_target_offset_2D = value
 func get_follow_target_offset() -> Vector2:
 	return Properties.follow_target_offset_2D
-
 
 func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
@@ -313,14 +312,21 @@ func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
 
 
+func append_follow_group_node(value: Node2D) -> void:
+	if not Properties.follow_group_nodes_2D.has(value):
+		Properties.follow_group_nodes_2D.append(value)
+	else:
+		printerr(value, " is already part of Follow Group")
+func append_array_follow_group_nodes(value: Array[Node2D]) -> void:
+	for val in value:
+		if not Properties.follow_group_nodes_2D.has(val):
+			Properties.follow_group_nodes_2D.append(val)
+		else:
+			printerr(val, " is already part of Follow Group")
+func erase_follow_group_node(value: Node2D) -> void:
+	Properties.follow_group_nodes_2D.erase(value)
 func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D
-func append_follow_group_nodes(value: Node2D) -> void:
-	Properties.follow_group_nodes_2D.append(value)
-func append_array_follow_group_nodes(value: Array[Node2D]) -> void:
-	Properties.follow_group_nodes_2D.append_array(value)
-func erase_follow_group_nodes(value: Node2D) -> void:
-	Properties.follow_group_nodes_2D.erase(value)
 
 func set_auto_zoom(value: bool) -> void:
 	follow_group_zoom_auto = value
@@ -343,5 +349,5 @@ func get_zoom_margin() -> Vector4:
 	return follow_group_zoom_margin
 
 
-func get_inactive_update_mode() -> bool:
-	return Properties.inactive_update_mode
+func get_inactive_update_mode() -> String:
+	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
