@@ -350,12 +350,24 @@ A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/exam
 and `3DExampleScene` respectively.
 
 ## 💾 Installation
+### Asset Library (Recommended - Stable)
+1. In Godot, open the `AssetLib` tab.
+2. Search for and select "Phantom Camera".
+3. Download then install the plugin (be sure to only select the `phantom_camera` directory).
+4. Enable the plugin inside `Project/Project Setttings/Plugins`.
 
-1. Download the repo and copy `addons/phantom_camera` to your root Godot directory under `res://`.
-2. Enable the plugin inside `Project/Project Setttings/Plugins`
-3. And that's it!
-   For more help,
-   see [Godot's official documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html)
+### Github Releases - (Recommended - Stable)
+1. Download a [release build](https://github.com/ramokz/phantom-camera/releases/).
+2. Extract the zip file and move the `addons/phantom_camera` directory into the project root location.
+3. Enable the plugin inside `Project/Project Setttings/Plugins`.
+
+### Github Main - (Latest - Unstable)
+1. Download the latest [`main branch`](https://github.com/ramokz/phantom-camera/archive/refs/heads/main.zip).
+2. Extract the zip file and move the `addons/phantom_camera` directory into project's root location.
+3. Enable the plugin inside `Project/Project Setttings/Plugins`.
+
+For more help,
+see [Godot's official documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html)
 
 ## 📖 Roadmap
 
