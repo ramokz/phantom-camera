@@ -344,21 +344,36 @@ func _process(delta: float) -> void:
 					)
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
-					var unprojected_position: Vector2
 					if Engine.is_editor_hint():
-						unprojected_position = get_unprojected_position()
+						var unprojected_position: Vector2 = _get_raw_unprojected_position()
+						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+						var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+						
+						unprojected_position = unprojected_position - visible_rect_size / 2
+						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+					#	print("Landscape View")
+							var aspect_ratio_scale: float = viewport_width / viewport_height
+							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+							unprojected_position.y = (unprojected_position.y + 1) / 2
+						else:
+					#	print("Portrait View")
+							var aspect_ratio_scale: float = viewport_height / viewport_width
+							unprojected_position.x = (unprojected_position.x + 1) / 2
+							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+						Properties.unprojected_position = unprojected_position
 					else:
 						#########################################################
 						# Returns correct normalized value when running in Editor
 						#########################################################
-						unprojected_position = get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
+						Properties.unprojected_position = get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-						unprojected_position = unprojected_position / visible_rect_size
+						Properties.unprojected_position = Properties.unprojected_position / visible_rect_size
 					
-					var view_side: Vector2 = _get_framed_side_offset(unprojected_position)
+					var view_side: Vector2 = _get_framed_side_offset()
 					var follow_target_position = Properties.follow_target_node.global_position
-					
-					
 
 					# Resets the position of the PCAM when switching from another mode
 					if Properties.follow_framed_initial_set:
@@ -483,27 +498,27 @@ func _process(delta: float) -> void:
 
 
 func _get_raw_unprojected_position() -> Vector2:
-	return get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
+	return get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D)
 
-func _get_framed_side_offset(unprojected_position: Vector2) -> Vector2:
+
+func _get_framed_side_offset() -> Vector2:
 	var frame_out_bounds: Vector2
 	
-	if unprojected_position.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
+	if Properties.unprojected_position.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
 		# Is outside left edge
 		frame_out_bounds.x = -1
 	
-	if unprojected_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
+	if Properties.unprojected_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
 		# Is outside top edge
 		frame_out_bounds.y = 1
 	
-	if unprojected_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
+	if Properties.unprojected_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
 		# Is outside right edge
 		frame_out_bounds.x = 1
 		
-	if unprojected_position.y > 0.501 + Properties.follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0  
+	if Properties.unprojected_position.y > 0.501 + Properties.follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0  
 		# Is outside bottom edge
 		frame_out_bounds.y = -1
-	
 
 	return frame_out_bounds
 
@@ -572,5 +587,5 @@ func get_unprojected_position() -> Vector2:
 		var aspect_ratio_scale: float = viewport_height / viewport_width
 		unprojected_position.x = (unprojected_position.x + 1) / 2
 		unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-		
+	
 	return unprojected_position

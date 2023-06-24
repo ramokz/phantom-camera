@@ -30,6 +30,10 @@ var multiple_pcam_hosts: bool
 var is_child_of_camera: bool = false
 var _is_3D: bool
 
+var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
+var framed_viewfinder_node: Control
+var viewfinder_needed_check: bool = true
+
 var camera_zoom
 
 ###################
@@ -112,6 +116,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	tween_duration = 0
 	trigger_pcam_tween = true
 
+	if _active_pcam.follow_mode == _active_pcam.Constants.FollowMode.FRAMED:
+		print("Is framed camera")
 
 func _find_pcam_with_highest_priority() -> void:
 	for pcam in _pcam_list:
@@ -193,18 +199,36 @@ func _pcam_follow(delta: float) -> void:
 
 	camera.set_rotation(_active_pcam.get_global_rotation())
 
-
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
 	if not trigger_pcam_tween:
+		# Camera follows the PhantomCamera
 		_pcam_follow(delta)
+		
+		if viewfinder_needed_check:
+			show_viewfinder_in_play()
+			viewfinder_needed_check = false
+
 	else:
+		# Camera transitions to another PhantomCamera
 		if tween_duration < _active_pcam.get_tween_duration():
 			_tween_pcam(delta)
 		else:
 			tween_duration = 0
 			trigger_pcam_tween = false
+			show_viewfinder_in_play()
+
+
+func show_viewfinder_in_play() -> void:
+	print("Showing in viewfinder")
+	if _active_pcam.Properties.show_viewfinder_in_play:
+		framed_viewfinder_node = framed_viewfinder_scene.instantiate()
+		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
+			get_tree().get_root().get_child(0).add_child(framed_viewfinder_node)
+	else:
+		if framed_viewfinder_node:
+			framed_viewfinder_node.queue_free()
 
 
 func _get_pcam_node_group() -> Array[Node]:

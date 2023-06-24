@@ -42,6 +42,7 @@ var follow_framed_dead_zone_width: float
 var follow_framed_dead_zone_height: float
 var follow_framed_initial_set: bool
 var show_viewfinder_in_play: bool
+var unprojected_position: Vector2
 
 var zoom: Vector2 = Vector2.ONE
 

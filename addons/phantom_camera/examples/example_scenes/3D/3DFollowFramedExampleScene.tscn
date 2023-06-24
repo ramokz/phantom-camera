@@ -26,7 +26,8 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707161, 0.707052, 0, -0.707052, 0.707161, -12.575, 3.33521, 10.9192)
+transform = Transform3D(1, 0, 0, 0, 0.707161, 0.707052, 0, -0.707052, 0.707161, -13.541, 2.62816, 10.2122)
+fov = 60.0
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_hyn5x")
@@ -38,27 +39,26 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.999954, 0, 0, 0, 0.707013, 0.707052, 0, -0.707013, 0.707052, -12.575, 3.33521, 10.9192)
+transform = Transform3D(0.999954, 0, 0, 0, 0.707013, 0.707052, 0, -0.707013, 0.707052, -13.541, 2.62816, 10.2122)
 script = ExtResource("2_g1bv4")
-priority = 0
+priority = 5
 follow_mode = 5
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/distance = 4.0
+follow_parameters/distance = 3.0
 follow_parameters/target_offset = Vector3(0, 0, 0)
 follow_parameters/damping = false
-follow_parameters/deadzone_horizontal = 0.56
-follow_parameters/deadzone_vertical = 0.0
-follow_parameters/show_viewfinder_in_play = null
+follow_parameters/dead_zone_horizontal = 0.323
+follow_parameters/dead_zone_vertical = 0.313
+follow_parameters/show_viewfinder_in_playtest = true
 look_at_mode = 0
 tween_parameters = null
-tween_on_load = true
+tween_on_load = false
 inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -12.575, 0.507, 8.091)
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -13.541, 0.507, 8.091)
 script = ExtResource("3_6xt4f")
-SPEED = 10.0
 metadata/_edit_group_ = true
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
@@ -174,7 +174,7 @@ size = Vector3(4.57784, 1.08809, 3.11285)
 [node name="PhantomCamera3D" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.3403, 3.08129, 8.56793)
 script = ExtResource("2_g1bv4")
-priority = 0
+priority = 3
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = null
