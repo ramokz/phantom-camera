@@ -16,7 +16,7 @@ var _pcam_list: Array[Node]
 
 var _active_pcam: Node
 var _active_pcam_priority: int = -1
-var _active_pcam_missing: bool
+var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool
 
 var _previous_active_pcam_position
