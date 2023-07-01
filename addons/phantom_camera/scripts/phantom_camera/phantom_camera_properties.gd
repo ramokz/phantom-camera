@@ -54,7 +54,7 @@ var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdat
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
-	
+
 	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 	elif follow_group_paths:
@@ -194,7 +194,7 @@ func add_follow_properties() -> Array:
 
 func add_follow_framed() -> Array:
 	var _property_list: Array
-	
+
 	if follow_mode == Constants.FollowMode.FRAMED:
 		_property_list.append({
 			"name": Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME,
@@ -220,7 +220,7 @@ func add_follow_framed() -> Array:
 
 		# To reset the positioning of the PCAM
 		follow_framed_initial_set = true
-		
+
 	return _property_list
 
 
@@ -239,7 +239,7 @@ func add_tween_properties() -> Array:
 
 func add_secondary_properties() -> Array:
 	var _property_list: Array
-	
+
 	_property_list.append({
 		"name": Constants.TWEEN_ONLOAD_NAME,
 		"type": TYPE_BOOL,
@@ -382,7 +382,7 @@ func set_secondary_properties(property: StringName, value, pcam: Node):
 			has_tweened_onload = false
 		else:
 			has_tweened_onload = true
-	
+
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:
 		inactive_update_mode = value
 

@@ -23,7 +23,7 @@ var editor_interface: EditorInterface
 
 @onready var sub_viewport: SubViewport = %SubViewport
 
-# Options to enable or disable 
+# Options to enable or disable
 
 var is_3D: bool
 var is_scene: bool
@@ -38,18 +38,18 @@ var max_vertical: float
 func _ready():
 	connect("visibility_changed", _visibility_check)
 	set_process(false)
-	
+
 #	viewport_width = ProjectSettings.get_setting("display/window/size/viewport_width")
 #	viewport_height = ProjectSettings.get_setting("display/window/size/viewport_height")
 	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
 
-	var root_node = get_tree().get_root().get_child(0) 
-	
+	var root_node = get_tree().get_root().get_child(0)
+
 	if root_node is Node3D:
 		is_3D = true
 	elif root_node is Node2D:
 		is_3D = false
-	
+
 	if root_node is Node3D || root_node is Node2D:
 		$SubViewportContainer.set_visible(false)
 		_set_viewfinder(root_node, false)
@@ -62,16 +62,16 @@ func _ready():
 
 func _visibility_check():
 	var root: Node = editor_interface.get_edited_scene_root()
-	
+
 	if visible == false and not root:
 		print("No host in scene")
 		return
-	
+
 #	_set_viewfinder_nodes()
 #	viewport_width = ProjectSettings.get_setting("display/window/size/viewport_width")
 #	viewport_height = ProjectSettings.get_setting("display/window/size/viewport_height")
 #	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
-	
+
 	if root is Node3D:
 #		print("Is a 3D scene")
 		is_3D = true
@@ -83,7 +83,7 @@ func _visibility_check():
 	else:
 #		print("Is not a 2D or 3D scene")
 		is_scene = false
-	
+
 	_set_viewfinder(root, true)
 	_on_dead_zone_changed()
 
@@ -95,7 +95,7 @@ func _set_viewfinder_nodes():
 #	dead_zone_left_center_panel = %DeadZoneLeftCenterPanel
 #	dead_zone_right_center_panel = %DeadZoneRightCenterPanel
 #	target_point = %TargetPoint
-	
+
 	# Renders
 #	sub_viewport = %SubViewport
 #	aspect_ratio_container = %AspectRatioContainer
@@ -117,7 +117,7 @@ func _set_viewfinder(root: Node, editor: bool):
 				if editor:
 					var camera_3D_rid: RID = _selected_camera.get_camera_rid()
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3D_rid)
-				
+
 				if _selected_camera.keep_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
 					aspect_ratio_containers.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
 				else:
@@ -128,15 +128,15 @@ func _set_viewfinder(root: Node, editor: bool):
 				if editor:
 					var camera_2D_rid: RID = _selected_camera.get_camera_rid()
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
-				
-					
+
+
 			_on_dead_zone_changed()
 			set_process(true)
 
-			
+
 			if not _active_pcam_camera.Properties.is_connected("dead_zone_changed", _on_dead_zone_changed):
 				_active_pcam_camera.Properties.connect("dead_zone_changed", _on_dead_zone_changed)
-				
+
 				#			aspect_ratio_container
 				#			TODO - Might not be needed
 				#			_active_pcam_camera.Properties.disconnect(_on_dead_zone_changed)
@@ -153,6 +153,7 @@ func _process(_delta: float):
 		)
 		
 		target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
+
 		if not has_camera_viewport_panel_size:
 			_on_dead_zone_changed()
 
@@ -163,14 +164,14 @@ func _on_dead_zone_changed() -> void:
 		return
 	else:
 		has_camera_viewport_panel_size = true
-	
+
 	var dead_zone_width: float = _active_pcam_camera.Properties.follow_framed_dead_zone_width * camera_viewport_panel.size.x
 	var dead_zone_height: float = _active_pcam_camera.Properties.follow_framed_dead_zone_height * camera_viewport_panel.size.y
 	dead_zone_center_hbox.set_custom_minimum_size(Vector2(dead_zone_width, 0))
 	dead_zone_center_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_left_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_right_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
-	
+
 	min_horizontal = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
 	max_horizontal = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
 	min_vertical = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
