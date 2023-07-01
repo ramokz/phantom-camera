@@ -3,7 +3,19 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_l4cnn"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1em7s"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
+bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_detail = 1
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmo1t"]
 draw_center = false
@@ -72,6 +84,7 @@ theme_override_styles/panel = ExtResource("2_cvat1")
 
 [node name="DeadZoneLeftCenterPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("2_cvat1")
 
@@ -83,6 +96,7 @@ theme_override_styles/panel = ExtResource("2_cvat1")
 [node name="DeadZoneCenterHBoxContainer" type="VBoxContainer" parent="DeadZoneHBoxContainer"]
 unique_name_in_owner = true
 clip_contents = true
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 0
@@ -94,9 +108,10 @@ theme_override_styles/panel = ExtResource("2_cvat1")
 
 [node name="DeadZoneCenterCenterPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleBoxEmpty_1em7s")
+theme_override_styles/panel = SubResource("StyleBoxFlat_fle8t")
 
 [node name="DeadZoneCenterBottomPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 layout_mode = 2
@@ -116,6 +131,7 @@ theme_override_styles/panel = ExtResource("2_cvat1")
 
 [node name="DeadZoneRightCenterPanel" type="Panel" parent="DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("2_cvat1")
 
