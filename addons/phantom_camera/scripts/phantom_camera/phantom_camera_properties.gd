@@ -218,9 +218,6 @@ func add_follow_framed() -> Array:
 			"usage": PROPERTY_USAGE_DEFAULT
 		})
 
-		# To reset the positioning of the PCAM
-		follow_framed_initial_set = true
-
 	return _property_list
 
 
@@ -278,6 +275,9 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 
 		if follow_mode != Constants.FollowMode.GROUP:
 			has_follow_group = false
+			
+			if follow_mode == Constants.FollowMode.FRAMED:
+				follow_framed_initial_set = true
 
 		pcam.notify_property_list_changed()
 
