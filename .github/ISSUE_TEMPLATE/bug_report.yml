@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a PhantomCamera bug
+body:
+
+- type: markdown
+  attributes:
+    value: |
+      - When reporting bugs, you'll make things easier (and the fix will come sooner) if you follow the guidelines in this template.
+      - Write a descriptive issue title above.
+      - The golden rule is to **always open *one* issue for *one* bug**. If you notice several bugs and want to report them, make sure to create one new issue for each of them.
+      - Search [open](https://github.com/ramokz/phantom-camera/issues) and [closed](https://github.com/ramokz/phantom-camera/issues?q=is%3Aissue+is%3Aclosed) issues to ensure it has not already been reported. If you don't find a relevant match or if you're unsure, don't hesitate to **open a new issue**. The bugsquad will handle it from there if it's a duplicate.
+      - Verify that you are using Godot 4.0 or obove.
+      - Credit to [Godot](https://github.com/godotengine/godot/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml) for the template.
+
+- type: textarea
+  attributes:
+    label: Issue description
+    description: |
+      Describe your issue briefly. What doesn't work, and how do you expect it to work instead?
+      You can include images or videos with drag and drop, and format code blocks or logs with <code>```</code> tags.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: |
+      List of steps or sample code that reproduces the issue. Having reproducible issues is a prerequisite for contributors to be able to solve them.
+      If you include a minimal reproduction project below, you can detail how to use it here.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: (Optional) Minimal reproduction project
+    description: |
+      - A small Godot project which reproduces the issue, with no unnecessary files included. Be sure to not include the `.godot` folder in the archive (but keep `project.godot`).
+      - Drag and drop a ZIP archive to upload it. **Do not select another field until the project is done uploading.**
+      - **Note for C# users:** If your issue is *not* Mono-specific, please upload a minimal reproduction project written in GDScript or VisualScript. This will make it easier for contributors to reproduce the issue locally as not everyone has a Mono setup available.
+  validations:
+    required: false

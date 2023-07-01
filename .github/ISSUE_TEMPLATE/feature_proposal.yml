@@ -1,0 +1,79 @@
+name: Feature Proposal
+description: Suggest a PhantomCamera feature to enhance the plugin
+labels: feature-proposal,needs-triage
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        - When making a new proposal, you'll make things easier if you follow the guidelines in this template.
+        - Write a descriptive issue title above.
+        - Search [open](https://github.com/ramokz/phantom-camera/issues) and [closed](https://github.com/ramokz/phantom-camera/issues?q=is%3Aissue+is%3Aclosed) issues to ensure it has not already been suggested. If you don't find a relevant match or if you're unsure, don't hesitate to **open a new issue**.
+        - Credit to [Godot](https://github.com/godotengine/godot/blob/master/.github/ISSUE_TEMPLATE/bug_report.yml) for the template.
+
+  - type: dropdown
+    id: project-type
+    attributes:
+      label: Project Type
+      description: |
+        What type of project can this be used for this for?
+        Select both if applicable.
+      multiple: true
+      options:
+        - 2D
+        - 3D
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Feature Description
+      description: |
+        Describe the feature briefly.
+        You can include example images, videos or links to where a similar/identical feature can be found.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Use Cases
+      description: |
+        Describe one or more examples where this feature will solve a given problem.
+        You can include example images, videos or links to where a similar/identical feature can be found.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: importance
+    attributes:
+      label: Importance
+      description: How important is this feature? Does a lack of it block important functionality?
+      options:
+        - High - there are critical things I can't do without this feature
+        - Medium - the feature would unlock new possibilities, but it's not a showstopper
+        - Low - there are workarounds where the proposed feature would just simplify things
+    validations:
+      required: true
+
+  - type: dropdown
+    id: usage
+    attributes:
+      label: Usage
+      description: How often do you think people will use this feature? Think in terms of genre, style, intensity etc.
+      options:
+        - All the time - the feature can be very useful for a varity of different projects 
+        - Often - a significant amount of projects can find this useful
+        - Rarely - just a handful of projects can likely benefit from this 
+        - Only me - this is highly specific to just my project
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: (Optional) Proposed Solution
+      description: |
+        How do you see this feature being integrated into the plugin?
+        Please write down as many details as possible.
+        *Note:* An implementation of this feature may or may not follow the proposed solution.
+    validations:
+      required: false
