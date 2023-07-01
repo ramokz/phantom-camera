@@ -150,13 +150,17 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
 
 	Properties.set_follow_properties(property, value, self)
-	
-	if Properties.follow_mode == Constants.FollowMode.FRAMED && Properties.follow_framed_initial_set:
-		print("Setting framed follow")
-		global_position = _get_framed_view_global_position(_target_position_with_offset())
-		set_rotation_degrees(Vector3.ZERO)
-		look_at(Properties.follow_target_node.get_global_position())
-		Properties.follow_framed_initial_set = false
+
+	if Properties.follow_mode == Constants.FollowMode.FRAMED:
+#		print("Follow Framed")
+#		print(Properties.follow_framed_initial_set)
+		if Properties.follow_framed_initial_set:
+#			print("Setting framed follow")
+#			Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
+#			print(_target_position_with_offset())
+#			set_global_position(_get_framed_view_global_position(_target_position_with_offset()))
+#			set_rotation_degrees(Vector3.ZERO)
+			Properties.follow_framed_initial_set = false
 	
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
 		if value == 0:
@@ -298,6 +302,7 @@ func _exit_tree() -> void:
 
 	Properties.pcam_exit_tree(self)
 
+var theta: float = PI / 4
 
 func _process(delta: float) -> void:
 	if not Properties.is_active:
@@ -352,6 +357,19 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if Engine.is_editor_hint():
+
+#						print(_get_framed_view_global_position())
+						set_global_position( _get_framed_view_global_position() )
+						
+#						global_transform.origin = 
+						
+#						global_position = Vector3 (			
+#							sin(theta) * follow_distance,
+#							position.y,
+#							cos(theta) * follow_distance,
+#						) + Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
+						
+						
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
 						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
 						var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
@@ -371,11 +389,12 @@ func _process(delta: float) -> void:
 							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 						Properties.unprojected_position = unprojected_position
+						
 					else:
 						#########################################################
 						# Returns correct normalized value when running in Editor
 						#########################################################
-						Properties.unprojected_position = get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position())
+						Properties.unprojected_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.unprojected_position = Properties.unprojected_position / visible_rect_size
 
@@ -386,6 +405,7 @@ func _process(delta: float) -> void:
 					var max_horizontal = 0.5 + Properties.follow_framed_dead_zone_width / 2
 					var min_vertical = 0.5 - Properties.follow_framed_dead_zone_height / 2
 					var max_vertical = 0.5 + Properties.follow_framed_dead_zone_height / 2
+					
 
 #					var unprojected_position_clamped: Vector2 = Vector2(
 #						clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal),
@@ -421,49 +441,30 @@ func _process(delta: float) -> void:
 #					unprojected_position_clamped_x >= max_horizontal or \
 #					unprojected_position_clamped_y >= max_vertical or \
 #					unprojected_position_clamped_y <= min_vertical:
+
+
 					if view_side != Vector2.ZERO:
 						# print("View side is: ", view_side)
-						var target: Vector3 = follow_target_position + _camera_offset
+						var target: Vector3 = _target_position_with_offset() + _camera_offset
 						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
 						var dead_zone_height: float = Properties.follow_framed_dead_zone_height
 #						global_position += Vector3(view_side.x, 0, -view_side.y) * delta * 5
-						
-
-#						print(unprojected_position_clamped.y)
-#						print(min_vertical)
-						
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								global_position = _get_framed_view_global_position(follow_target_position)
+								global_position = _get_framed_view_global_position()
 								global_position.z += target.z - global_position.z
 							elif dead_zone_width != 0 && dead_zone_height == 0:
-								global_position = _get_framed_view_global_position(follow_target_position)
+								global_position = _get_framed_view_global_position()
 								global_position.x += target.x - global_position.x
 							else:
-								global_position = _get_framed_view_global_position(follow_target_position)
+								global_position = _target_position_with_offset()
 						else:
 #							print("Previous offset: %s" % _camera_offset)
 #							print("New offset %s" % (global_position - follow_target_position))
 							global_position += target - global_position
 					else:
-						_camera_offset = global_position - follow_target_position
-
-#					print(follow_target_position.distance_to(global_position))
-#					print()
-#					global_position = (global_position - follow_target_position) * follow_distance + follow_target_position
-#					print((global_position - follow_target_position) * follow_distance)
-#						 get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-#						global_position = \
-#							follow_target_position + \
-#							Properties.follow_target_offset_3D + \
-#							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-
-#						if not Engine.is_editor_hint():
-#							print(_camera_offset)
-#					global_position = Properties.follow_target_node.global_position + Properties.follow_target_node.get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-#					print(get_transform().basis.z)
-#					print(Vector3(follow_distance, follow_distance, follow_distance))
+						_camera_offset = global_position - _target_position_with_offset()
 
 	if _should_look_at:
 		match look_at_mode:
@@ -516,8 +517,8 @@ func _get_framed_side_offset() -> Vector2:
 # func _get_distance() -> Vector3:
 # 	return get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
-func _get_framed_view_global_position(follow_target_position: Vector3) -> Vector3:
-	return follow_target_position + \
+func _get_framed_view_global_position() -> Vector3:
+	return Properties.follow_target_node.get_global_position() + \
 	Properties.follow_target_offset_3D + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
