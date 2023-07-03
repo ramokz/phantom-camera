@@ -33,6 +33,7 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="ViewFinderControl" type="Control"]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

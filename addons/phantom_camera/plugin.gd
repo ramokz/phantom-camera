@@ -24,7 +24,7 @@ func _enter_tree() -> void:
 	# Phantom Viewfinder
 	framed_viewfinder_panel_instance = FramedViewPanel.instantiate()
 	framed_viewfinder_panel_instance.editor_interface = get_editor_interface()
-	get_editor_interface().get_editor_main_screen().add_child(framed_viewfinder_panel_instance)
+	add_control_to_bottom_panel(framed_viewfinder_panel_instance, "Phantom Camera")
 	_make_visible(false)
 
 
@@ -45,11 +45,3 @@ func _has_main_screen():
 func _make_visible(visible):
 	if framed_viewfinder_panel_instance:
 		framed_viewfinder_panel_instance.set_visible(visible)
-
-
-func _get_plugin_name():
-	return "Phantom Viewfinder"
-
-
-func _get_plugin_icon():
-	return get_editor_interface().get_base_control().get_theme_icon("Node", "EditorIcons")

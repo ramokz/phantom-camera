@@ -5,6 +5,7 @@ const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.
 
 var _selected_camera
 var _active_pcam_camera
+var pcam_host_group: Array[Node]
 
 @onready var dead_zone_center_hbox: VBoxContainer = %DeadZoneCenterHBoxContainer
 @onready var dead_zone_center_center_panel: Panel = %DeadZoneCenterCenterPanel
@@ -62,15 +63,9 @@ func _ready():
 
 func _visibility_check():
 	var root: Node = editor_interface.get_edited_scene_root()
-
+	
 	if visible == false and not root:
-		print("No host in scene")
 		return
-
-#	_set_viewfinder_nodes()
-#	viewport_width = ProjectSettings.get_setting("display/window/size/viewport_width")
-#	viewport_height = ProjectSettings.get_setting("display/window/size/viewport_height")
-#	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
 
 	if root is Node3D:
 #		print("Is a 3D scene")
@@ -86,28 +81,14 @@ func _visibility_check():
 
 	_set_viewfinder(root, true)
 	_on_dead_zone_changed()
+	
+	# Auto-selects the currently active PhantomCamera when opening panel
+	editor_interface.get_selection().clear()
+	editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
 
-
-func _set_viewfinder_nodes():
-	# Dead Zone
-#	dead_zone_center_hbox = %DeadZoneCenterHBoxContainer
-#	dead_zone_center_center_panel = %DeadZoneCenterCenterPanel
-#	dead_zone_left_center_panel = %DeadZoneLeftCenterPanel
-#	dead_zone_right_center_panel = %DeadZoneRightCenterPanel
-#	target_point = %TargetPoint
-
-	# Renders
-#	sub_viewport = %SubViewport
-#	aspect_ratio_container = %AspectRatioContainer
-#	camera_viewport_panel = aspect_ratio_containers.get_child(0)
-
-#	viewport_width = ProjectSettings.get_setting("display/window/size/viewport_width")
-#	viewport_height = ProjectSettings.get_setting("display/window/size/viewport_height")
-#	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
-	pass
 
 func _set_viewfinder(root: Node, editor: bool):
-	var pcam_host_group: Array[Node] = root.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
+	pcam_host_group = root.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
@@ -133,6 +114,8 @@ func _set_viewfinder(root: Node, editor: bool):
 			_on_dead_zone_changed()
 			set_process(true)
 
+			if not aspect_ratio_containers.is_connected("resized", _resized):
+				aspect_ratio_containers.connect("resized", _resized)
 
 			if not _active_pcam_camera.Properties.is_connected("dead_zone_changed", _on_dead_zone_changed):
 				_active_pcam_camera.Properties.connect("dead_zone_changed", _on_dead_zone_changed)
@@ -144,6 +127,8 @@ func _set_viewfinder(root: Node, editor: bool):
 			for pcam_host in pcam_host_group:
 				print(pcam_host, " is in a scene")
 
+func _resized() -> void:
+	_on_dead_zone_changed()
 
 func _process(_delta: float):
 	if visible:
@@ -176,5 +161,3 @@ func _on_dead_zone_changed() -> void:
 	max_horizontal = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
 	min_vertical = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
 	max_vertical = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
-
-	# print(_active_pcam_camera.Properties.follow_framed_dead_zone_width * 1.5)
