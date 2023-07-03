@@ -116,8 +116,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	tween_duration = 0
 	trigger_pcam_tween = true
 
-	if _active_pcam.follow_mode == _active_pcam.Constants.FollowMode.FRAMED:
-		print("Is framed camera")
+#	if _active_pcam.follow_mode == _active_pcam.Constants.FollowMode.FRAMED:
+#		print("Is framed camera")
 
 func _find_pcam_with_highest_priority() -> void:
 	for pcam in _pcam_list:
@@ -134,7 +134,7 @@ func _tween_pcam(delta: float) -> void:
 		return
 	else:
 		_reset_tween_on_load()
-	
+
 	tween_duration += delta
 	camera.set_position(
 		Tween.interpolate_value(
@@ -177,7 +177,7 @@ func _reset_tween_on_load() -> void:
 
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
-	
+
 	if _active_pcam.Properties.follow_has_damping:
 		camera.set_position(
 			camera.get_position().lerp(
@@ -187,7 +187,7 @@ func _pcam_follow(delta: float) -> void:
 		)
 	else:
 		camera.set_position(_active_pcam.get_global_position())
-		
+
 	if not _is_3D:
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
@@ -205,7 +205,7 @@ func _process_pcam(delta: float) -> void:
 	if not trigger_pcam_tween:
 		# Camera follows the PhantomCamera
 		_pcam_follow(delta)
-		
+
 		if viewfinder_needed_check:
 			show_viewfinder_in_play()
 			viewfinder_needed_check = false
@@ -221,7 +221,6 @@ func _process_pcam(delta: float) -> void:
 
 
 func show_viewfinder_in_play() -> void:
-	print("Showing in viewfinder")
 	if _active_pcam.Properties.show_viewfinder_in_play:
 		framed_viewfinder_node = framed_viewfinder_scene.instantiate()
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
@@ -233,8 +232,8 @@ func show_viewfinder_in_play() -> void:
 
 func _get_pcam_node_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
-	
-	
+
+
 func _get_pcam_host_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
