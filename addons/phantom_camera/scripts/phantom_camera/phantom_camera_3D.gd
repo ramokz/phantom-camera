@@ -152,15 +152,12 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_follow_properties(property, value, self)
 
 	if Properties.follow_mode == Constants.FollowMode.FRAMED:
-#		print("Follow Framed")
-#		print(Properties.follow_framed_initial_set)
-		if Properties.follow_framed_initial_set:
-#			print("Setting framed follow")
-#			Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
-#			print(_target_position_with_offset())
-#			set_global_position(_get_framed_view_global_position(_target_position_with_offset()))
-#			set_rotation_degrees(Vector3.ZERO)
+		if Properties.follow_framed_initial_set and Properties.follow_target_node:
 			Properties.follow_framed_initial_set = false
+			Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+	else:
+		if Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
+			Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 	
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
 		if value == 0:
@@ -261,7 +258,7 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
-	if property == Constants.FOLLOW_VIEWFINDER_NAME:									return Properties.show_viewfinder_in_play
+	if property == Constants.FOLLOW_VIEWFINDER_NAME:					return Properties.show_viewfinder_in_play
 
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
@@ -357,18 +354,17 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if Engine.is_editor_hint():
-
-#						print(_get_framed_view_global_position())
 						set_global_position( _get_framed_view_global_position() )
 						
-#						global_transform.origin = 
-						
-#						global_position = Vector3 (			
-#							sin(theta) * follow_distance,
-#							position.y,
-#							cos(theta) * follow_distance,
-#						) + Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
-						
+#						TODO:	Replaces the above set_global_position above
+#								needs to account for rotation and effectively pivot around its follow target
+#						set_global_position(
+#							Vector3 (			
+#								sin(theta) * follow_distance,
+#								position.y,
+#								cos(theta) * follow_distance,
+#							) + Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
+#						)
 						
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
 						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
@@ -378,12 +374,12 @@ func _process(delta: float) -> void:
 
 						unprojected_position = unprojected_position - visible_rect_size / 2
 						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-					#	print("Landscape View")
+#							print("Landscape View")
 							var aspect_ratio_scale: float = viewport_width / viewport_height
 							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
 							unprojected_position.y = (unprojected_position.y + 1) / 2
 						else:
-					#	print("Portrait View")
+#							print("Portrait View")
 							var aspect_ratio_scale: float = viewport_height / viewport_width
 							unprojected_position.x = (unprojected_position.x + 1) / 2
 							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
@@ -399,7 +395,6 @@ func _process(delta: float) -> void:
 						Properties.unprojected_position = Properties.unprojected_position / visible_rect_size
 
 					var view_side: Vector2 = _get_framed_side_offset()
-					var follow_target_position = Properties.follow_target_node.global_position
 
 					var min_horizontal = 0.5 - Properties.follow_framed_dead_zone_width / 2
 					var max_horizontal = 0.5 + Properties.follow_framed_dead_zone_width / 2
@@ -445,7 +440,7 @@ func _process(delta: float) -> void:
 
 					if view_side != Vector2.ZERO:
 						# print("View side is: ", view_side)
-						var target: Vector3 = _target_position_with_offset() + _camera_offset
+						var target_position: Vector3 = _target_position_with_offset() + _camera_offset
 						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
 						var dead_zone_height: float = Properties.follow_framed_dead_zone_height
 #						global_position += Vector3(view_side.x, 0, -view_side.y) * delta * 5
@@ -453,16 +448,15 @@ func _process(delta: float) -> void:
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
 								global_position = _get_framed_view_global_position()
-								global_position.z += target.z - global_position.z
+								global_position.z += target_position.z - global_position.z
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								global_position = _get_framed_view_global_position()
-								global_position.x += target.x - global_position.x
+								global_position.x += target_position.x - global_position.x
 							else:
 								global_position = _target_position_with_offset()
 						else:
 #							print("Previous offset: %s" % _camera_offset)
-#							print("New offset %s" % (global_position - follow_target_position))
-							global_position += target - global_position
+							global_position += target_position - global_position
 					else:
 						_camera_offset = global_position - _target_position_with_offset()
 
@@ -487,6 +481,11 @@ func _process(delta: float) -> void:
 
 func _target_position_with_offset() -> Vector3:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
+	
+	
+func _get_framed_view_global_position() -> Vector3:
+	return _target_position_with_offset() + \
+	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
 
 func _get_raw_unprojected_position() -> Vector2:
@@ -517,14 +516,34 @@ func _get_framed_side_offset() -> Vector2:
 # func _get_distance() -> Vector3:
 # 	return get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
-func _get_framed_view_global_position() -> Vector3:
-	return Properties.follow_target_node.get_global_position() + \
-	Properties.follow_target_offset_3D + \
-	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+func _on_dead_zone_changed() -> void:
+	set_global_position( _get_framed_view_global_position() )
+
+
+func get_unprojected_position() -> Vector2:
+	var unprojected_position: Vector2 = _get_raw_unprojected_position()
+	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+	var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+
+	unprojected_position = unprojected_position - visible_rect_size / 2
+	if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+#	print("Landscape View")
+		var aspect_ratio_scale: float = viewport_width / viewport_height
+		unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+		unprojected_position.y = (unprojected_position.y + 1) / 2
+	else:
+#	print("Portrait View")
+		var aspect_ratio_scale: float = viewport_height / viewport_width
+		unprojected_position.x = (unprojected_position.x + 1) / 2
+		unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+	return unprojected_position
 
 
 ##################
-# Public Functions
+# Setters & Getters Functions
 ##################
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
@@ -587,27 +606,6 @@ func get_tween_ease() -> int:
 		return Properties.tween_resource.ease
 	else:
 		return Properties.tween_resource_default.ease
-
-func get_unprojected_position() -> Vector2:
-	var unprojected_position: Vector2 = _get_raw_unprojected_position()
-	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-	var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
-	var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-	var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-
-	unprojected_position = unprojected_position - visible_rect_size / 2
-	if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#	print("Landscape View")
-		var aspect_ratio_scale: float = viewport_width / viewport_height
-		unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-		unprojected_position.y = (unprojected_position.y + 1) / 2
-	else:
-#	print("Portrait View")
-		var aspect_ratio_scale: float = viewport_height / viewport_width
-		unprojected_position.x = (unprojected_position.x + 1) / 2
-		unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-
-	return unprojected_position
 
 func is_active() -> bool:
 	return Properties.is_active

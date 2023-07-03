@@ -117,8 +117,8 @@ func _set_viewfinder(root: Node, editor: bool):
 			if not aspect_ratio_containers.is_connected("resized", _resized):
 				aspect_ratio_containers.connect("resized", _resized)
 
-			if not _active_pcam_camera.Properties.is_connected("dead_zone_changed", _on_dead_zone_changed):
-				_active_pcam_camera.Properties.connect("dead_zone_changed", _on_dead_zone_changed)
+			if not _active_pcam_camera.Properties.is_connected(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
+				_active_pcam_camera.Properties.connect(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 
 				#			aspect_ratio_container
 				#			TODO - Might not be needed
