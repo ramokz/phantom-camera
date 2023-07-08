@@ -64,7 +64,7 @@ func _ready():
 func _visibility_check():
 	var root: Node = editor_interface.get_edited_scene_root()
 	
-	if visible == false and not root:
+	if not visible and not root:
 		return
 
 	if root is Node3D:
@@ -82,9 +82,10 @@ func _visibility_check():
 	_set_viewfinder(root, true)
 	_on_dead_zone_changed()
 	
-	# Auto-selects the currently active PhantomCamera when opening panel
-	editor_interface.get_selection().clear()
-	editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
+	if visible:
+		# Auto-selects the currently active PhantomCamera when opening panel
+		editor_interface.get_selection().clear()
+		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
 
 
 func _set_viewfinder(root: Node, editor: bool):
