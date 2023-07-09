@@ -24,7 +24,38 @@ var editor_interface: EditorInterface
 
 @onready var sub_viewport: SubViewport = %SubViewport
 
-# Options to enable or disable
+########################
+# Viewfinder Empty State
+########################
+@onready var _empty_state_control: Control = %EmptyStateControl
+@onready var _empty_state_icon: Control = %EmptyStateIcon
+@onready var _empty_state_text: RichTextLabel = %EmptyStateText
+@onready var _overlay_color_rect: ColorRect = %OverlayColorRect
+@onready var _add_node_button: Button = %AddNodeButton
+var _overlay_color_alpha: float = 0.3
+
+var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
+var _no_open_scene_string: String = "No [b]2D[/b] or [b]3D[/b] scene open"
+var _no_open_scene_color: Color = Color("3AB99A", 1)
+
+var _no_camera_2d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera2DIcon.svg")
+var _no_camera_2D_string: String = "No [b]Camera2D[/b] in scene"
+var _no_2D_color: Color = Color("8DA5F3", _overlay_color_alpha)
+
+var _no_camera_3d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg")
+var _no_camera_3D_string: String = "No [b]Camera3D[/b] in scene"
+var _no_3D_color: Color = Color("FC7F7F", _overlay_color_alpha)
+
+var _no_pcam_host_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
+var _no_pcam_host_string: String = "No [b]PhantomCameraHost[/b] in scene"
+var _no_pcam_host_color: Color = Color("E0E0E0", _overlay_color_alpha)
+var _no_pcam_2D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg")
+var _no_pcam_2D_string: String = "No [b]PhantomCamera2D[/b] in scene"
+
+var _no_pcam_3D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon3D.svg")
+var _no_pcam_3D_string: String = "No [b]PhantomCamera3D[/b] in scene"
+
+
 
 var is_3D: bool
 var is_scene: bool
@@ -52,40 +83,227 @@ func _ready():
 		is_3D = false
 
 	if root_node is Node3D || root_node is Node2D:
-		$SubViewportContainer.set_visible(false)
+		%SubViewportContainer.set_visible(false)
 		_set_viewfinder(root_node, false)
-
+	
+	if Engine.is_editor_hint():
+		get_tree().connect("node_added", _node_added)
+	
 #	get_viewport().set_clear_mode(SubViewport.CLEAR_MODE_ALWAYS)
 
 #	await get_tree().physics_frame
 #	editor_interface.get_edited_scene_root()
 
 
+func _node_added(node: Node) -> void:
+#	print("Editor interface is: ", editor_interface)
+#	print("Node added is: ", node)
+#	pass
+	if editor_interface == null: return
+	var root: Node = editor_interface.get_edited_scene_root()
+	if root == null: return
+	_visibility_check()
+
+
 func _visibility_check():
+	if not editor_interface: return
+	
 	var root: Node = editor_interface.get_edited_scene_root()
 	
 	if not visible and not root:
 		return
 
-	if root is Node3D:
-#		print("Is a 3D scene")
-		is_3D = true
-		is_scene = true
-	elif root is Node2D:
+	if root is Node2D:
 #		print("Is a 2D scene")
 		is_3D = false
+		is_scene = true
+	elif root is Node3D:
+#		print("Is a 3D scene")
+		is_3D = true
 		is_scene = true
 	else:
 #		print("Is not a 2D or 3D scene")
 		is_scene = false
+	
+	if not is_scene:
+#		Is not a 2D or 3D scene
+#		print("Is not a scene")
+		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon, _no_open_scene_color)
+	elif not is_3D:
+		print("Is 2D scene")
+		print(root.get_viewport())
+		var camera_2D: Camera2D = root.get_viewport().get_camera_2d()
+		print(camera_2D)
+		if camera_2D:
+			_check_camera(root, camera_2D, _no_pcam_2D_string, _no_pcam_2D_icon, _no_2D_color)
+		else:
+#			Has Camera2D
+			_set_empty_viewfinder_state(_no_camera_2D_string, _no_camera_2d_icon, _no_2D_color)
+#		if camera_2D:
+##			Has Camera3D
+##			print("Has Camera3D")
+#			var pcam_host: PhantomCameraHost
+#			if camera_2D.get_children().size() > 0:
+#				for cam_child in camera_2D.get_children():
+#					if cam_child is PhantomCameraHost:
+#						pcam_host = cam_child
+#
+#					if pcam_host:
+##						print("Has pcam host")
+#						if get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME):
+##							Pcam exists in tree
+##							print("PCam in scene exists")
+#							_set_viewfinder_state()
+#							_set_viewfinder(root, true)
+##							if pcam_host.get_active_pcam().get_get_follow_mode():
+##								_on_dead_zone_changed()
+#						else:
+#	#						No PCam3D in scene
+#							_set_empty_viewfinder_state(_no_pcam_3D_string, _no_pcam_3D_icon, _no_3D_color)
+#					else:
+##						No PCamHost in scene
+#						_set_empty_viewfinder_state(_no_pcam_host_string, _no_pcam_host_icon, _no_pcam_host_color)
+#			else:
+##				No PCamHost in scene
+#				_set_empty_viewfinder_state(_no_pcam_host_string, _no_pcam_host_icon, _no_pcam_host_color)
+#
+#		else:
+##			Has Camera2D
+##			print("No Camera2D")
+#			_set_empty_viewfinder_state(_no_camera_2D_string, _no_camera_2d_icon, _no_2D_color)
+	else:
+#		Is 3D scene
+#		print("Is 3D scene")
+		var camera_3D: Camera3D = root.get_viewport().get_camera_3d()
+		if camera_3D:
+#			Has Camera3D
+#			print("Has Camera3D")
+			var pcam_host: PhantomCameraHost
+			if camera_3D.get_children().size() > 0:
+				for cam_child in camera_3D.get_children():
+					if cam_child is PhantomCameraHost:
+						pcam_host = cam_child
+					
+					if pcam_host:
+#						print("Has pcam host")
+						if get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME):
+#							Pcam exists in tree
+#							print("PCam in scene exists")
+							_set_viewfinder_state()
+							_set_viewfinder(root, true)
+#							if pcam_host.get_active_pcam().get_get_follow_mode():
+#								_on_dead_zone_changed()
+						else:
+	#						No PCam3D in scene
+							_set_empty_viewfinder_state(_no_pcam_3D_string, _no_pcam_3D_icon, _no_3D_color)
+					else:
+#						No PCamHost in scene
+						_set_empty_viewfinder_state(_no_pcam_host_string, _no_pcam_host_icon, _no_pcam_host_color)
+			else:
+#				No PCamHost in scene
+				_set_empty_viewfinder_state(_no_pcam_host_string, _no_pcam_host_icon, _no_pcam_host_color)
+			
+		else:
+#			No Camera3D
+#			print("No Camera3D")
+			_set_empty_viewfinder_state(_no_camera_3D_string, _no_camera_3d_icon, _no_3D_color)
+	
+#	_set_viewfinder(root, true)
+#	_on_dead_zone_changed()
+	
+#	if visible:
+#		# Auto-selects the currently active PhantomCamera when opening panel
+#		editor_interface.get_selection().clear()
+#		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
 
-	_set_viewfinder(root, true)
-	_on_dead_zone_changed()
+func _check_camera(root: Node, camera: Node, no_pcam_string: String, no_pcam_icon: CompressedTexture2D, no_pcam_color: Color) -> void:
+#	Has Camera3D
+	var pcam_host: PhantomCameraHost
+	if camera.get_children().size() > 0:
+		for cam_child in camera.get_children():
+			if cam_child is PhantomCameraHost:
+				pcam_host = cam_child
+			
+			if pcam_host:
+				if get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME):
+#					Pcam exists in tree
+					_set_viewfinder_state()
+					_set_viewfinder(root, true)
+				else:
+#					No PCam3D in scene
+					_set_empty_viewfinder_state(no_pcam_string, no_pcam_icon, no_pcam_color)
+			else:
+#				No PCamHost in scene
+				_set_empty_viewfinder_state(_no_pcam_host_string, _no_pcam_host_icon, _no_pcam_host_color)
+	else:
+#		No PCamHost in scene
+		_set_empty_viewfinder_state(_no_pcam_host_string, _no_pcam_host_icon, _no_pcam_host_color)
+
+func _set_viewfinder_state() -> void:
+	_empty_state_control.set_visible(false)
 	
 	if visible:
 		# Auto-selects the currently active PhantomCamera when opening panel
 		editor_interface.get_selection().clear()
 		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
+
+
+func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D, color: Color) -> void:
+	_empty_state_control.set_visible(true)
+	
+	_empty_state_icon.texture = icon
+	_empty_state_text.text = "[center]" + text + "[/center]"
+	
+	_overlay_color_rect.color = color
+	
+	if _add_node_button.is_connected("pressed", _add_node):
+		_add_node_button.disconnect("pressed", _add_node)
+	
+	_add_node_button.connect("pressed", Callable(_add_node).bind(text))
+
+
+func _add_node(node_type: String) -> void:
+	if not editor_interface: return
+	
+#	print("Adding node ", node_type)
+	var root: Node = editor_interface.get_edited_scene_root()
+#	print(get_tree())
+	
+	match node_type:
+		_no_open_scene_string:
+			print("Not a scene")
+		_no_camera_2D_string:
+			var cam_2D := Camera2D.new()
+			_instantiate_node(root, cam_2D, "Camera2D")
+		_no_camera_3D_string:
+			print("No Cam 3D")
+			var cam_3D := Camera3D.new()
+			_instantiate_node(root, cam_3D, "Camera3D")
+#			cam_3D.set_name("Camera3D")
+#			root.add_child(cam_3D)
+#			cam_3D.set_owner(root)
+		_no_pcam_host_string:
+			var pcam_host := PhantomCameraHost.new()
+			pcam_host.set_name("PhantomCameraHost")
+			if not is_3D:
+				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
+				pcam_host.set_owner(get_tree().get_edited_scene_root())
+			else:
+#				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
+				get_tree().get_edited_scene_root().get_viewport().get_camera_3d().add_child(pcam_host)
+				pcam_host.set_owner(get_tree().get_edited_scene_root())
+		_no_pcam_2D_string:
+			var pcam_2D := PhantomCamera2D.new()
+			_instantiate_node(root, pcam_2D, "PhantomCameraHost")
+		_no_pcam_3D_string:
+			var pcam_3D := PhantomCamera3D.new()
+			_instantiate_node(root, pcam_3D, "PhantomCameraHost")
+
+
+func _instantiate_node(root: Node, node: Node, name: String) -> void:
+	node.set_name(name)
+	root.add_child(node)
+	node.set_owner(get_tree().get_edited_scene_root())
 
 
 func _set_viewfinder(root: Node, editor: bool):
@@ -128,8 +346,10 @@ func _set_viewfinder(root: Node, editor: bool):
 			for pcam_host in pcam_host_group:
 				print(pcam_host, " is in a scene")
 
+
 func _resized() -> void:
 	_on_dead_zone_changed()
+
 
 func _process(_delta: float):
 	if visible:
