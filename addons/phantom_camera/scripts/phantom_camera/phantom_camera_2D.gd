@@ -305,7 +305,7 @@ func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
-	
+
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
 func get_follow_damping_value() -> float:

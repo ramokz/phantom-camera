@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://dbkr3d716wtx0"]
+[gd_scene load_steps=17 format=3 uid="uid://dbkr3d716wtx0"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_l4cnn"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="3_6wxxp"]
 [ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="3_rn5hf"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="4_dj3lt"]
-[ext_resource type="Texture2D" uid="uid://c88qnl38ej6nr" path="res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg" id="6_w17s5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
 bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
@@ -36,6 +35,59 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_obaj6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_iho1a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fsxik"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.129412, 0.407843, 0.337255, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yh38y"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.129412, 0.407843, 0.337255, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.988235, 0.498039, 0.498039, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gci88"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.180392, 0.576471, 0.482353, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4b76l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g5wua"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x4bx8"]
+
 [node name="ViewFinderControl" type="Control"]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 3
@@ -50,6 +102,7 @@ mouse_filter = 2
 script = ExtResource("1_l4cnn")
 
 [node name="FramedViewfinder" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -193,6 +246,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="BGColorRect" type="ColorRect" parent="EmptyStateControl"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -204,6 +258,7 @@ metadata/_edit_lock_ = true
 
 [node name="OverlayColorRect" type="ColorRect" parent="EmptyStateControl"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -219,10 +274,11 @@ anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_top = -68.5
-offset_bottom = 68.5
+offset_top = -80.0
+offset_bottom = 80.0
 grow_horizontal = 2
 grow_vertical = 2
+alignment = 1
 
 [node name="EmptyStateIcon" type="TextureRect" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true
@@ -233,20 +289,49 @@ stretch_mode = 3
 [node name="EmptyStateText" type="RichTextLabel" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_fonts/normal_font = ExtResource("3_6wxxp")
 theme_override_fonts/bold_font = ExtResource("4_dj3lt")
 theme_override_font_sizes/normal_font_size = 24
 theme_override_font_sizes/bold_font_size = 24
+theme_override_styles/focus = SubResource("StyleBoxEmpty_obaj6")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
 bbcode_enabled = true
 text = "[center][b]NodeType[/b] Description [/center]"
 fit_content = true
 
 [node name="AddNodeButton" type="Button" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
+custom_minimum_size = Vector2(400, 54)
 layout_mode = 2
 size_flags_horizontal = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("4_dj3lt")
 theme_override_font_sizes/font_size = 24
-text = "Add {Node}"
-icon = ExtResource("6_w17s5")
+theme_override_styles/normal = SubResource("StyleBoxFlat_fsxik")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yh38y")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_gci88")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_4b76l")
+
+[node name="AddNodeTypeText" type="RichTextLabel" parent="EmptyStateControl/VBoxContainer/AddNodeButton"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_fonts/normal_font = ExtResource("3_6wxxp")
+theme_override_fonts/bold_font = ExtResource("4_dj3lt")
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_styles/focus = SubResource("StyleBoxEmpty_g5wua")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_x4bx8")
+bbcode_enabled = true
+text = "[center]Add [img=32]res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg[/img] [b]{NodeType}[/b][/center]"
+scroll_active = false

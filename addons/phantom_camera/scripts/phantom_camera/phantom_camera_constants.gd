@@ -22,7 +22,7 @@ const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + 
 const FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "dead_zone_horizontal"
 const FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "dead_zone_vertical"
 const FOLLOW_VIEWFINDER_NAME: StringName = FOLLOW_PARAMETERS_NAME + "show_viewfinder_in_playtest"
-const DEAD_ZONE_CHANGED_SIGNAL: StringName = "dead_zone_changed" 
+const DEAD_ZONE_CHANGED_SIGNAL: StringName = "dead_zone_changed"
 
 #Zoom
 const ZOOM_PROPERTY_NAME: StringName = "zoom"

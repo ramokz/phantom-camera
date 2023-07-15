@@ -34,12 +34,13 @@ func _exit_tree() -> void:
 
 	remove_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
 
-	if framed_viewfinder_panel_instance:
-		framed_viewfinder_panel_instance.queue_free()
+	remove_control_from_bottom_panel(framed_viewfinder_panel_instance)
+	framed_viewfinder_panel_instance.queue_free()
+#	if framed_viewfinder_panel_instance:
 
 
-func _has_main_screen():
-	return true;
+#func _has_main_screen():
+#	return true;
 
 
 func _make_visible(visible):

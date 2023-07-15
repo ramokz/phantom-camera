@@ -154,11 +154,13 @@ func _set(property: StringName, value) -> bool:
 	if Properties.follow_mode == Constants.FollowMode.FRAMED:
 		if Properties.follow_framed_initial_set and Properties.follow_target_node:
 			Properties.follow_framed_initial_set = false
+#			print(_get_framed_view_global_position())
+#			global_position = _get_framed_view_global_position()
 			Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 	else:
 		if Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
 			Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
-	
+
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
 		if value == 0:
 			follow_distance = 0.001
@@ -355,17 +357,17 @@ func _process(delta: float) -> void:
 				if Properties.follow_target_node:
 					if Engine.is_editor_hint():
 						set_global_position( _get_framed_view_global_position() )
-						
+
 #						TODO:	Replaces the above set_global_position above
 #								needs to account for rotation and effectively pivot around its follow target
 #						set_global_position(
-#							Vector3 (			
+#							Vector3 (
 #								sin(theta) * follow_distance,
 #								position.y,
 #								cos(theta) * follow_distance,
 #							) + Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
 #						)
-						
+
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
 						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
 						var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
@@ -385,7 +387,7 @@ func _process(delta: float) -> void:
 							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 						Properties.unprojected_position = unprojected_position
-						
+
 					else:
 						#########################################################
 						# Returns correct normalized value when running in Editor
@@ -400,7 +402,7 @@ func _process(delta: float) -> void:
 					var max_horizontal = 0.5 + Properties.follow_framed_dead_zone_width / 2
 					var min_vertical = 0.5 - Properties.follow_framed_dead_zone_height / 2
 					var max_vertical = 0.5 + Properties.follow_framed_dead_zone_height / 2
-					
+
 
 #					var unprojected_position_clamped: Vector2 = Vector2(
 #						clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal),
@@ -411,27 +413,27 @@ func _process(delta: float) -> void:
 #						float("%.4f" % clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal)),
 #						float("%.4f" % clamp(Properties.unprojected_position.y, min_vertical, max_vertical))
 #					)
-					
+
 #					var unprojected_position_clamped_x: float = float("%.4f" % clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal))
 #					var unprojected_position_clamped_y: float = float("%.4f" % clamp(Properties.unprojected_position.y, min_vertical, max_vertical))
-					
+
 #					var float("%.4f" % unprojected_position_clamped.y)
 #					print(unprojected_position_clamped_x)
-					
+
 #					if not Engine.is_editor_hint():
 #						print(unprojected_position_clamped.x)
 #						print("Unprojected Pos: ", unprojected_position_clamped)
 #						print("Camera Offset: ", _camera_offset)
-					
+
 #					print(unprojected_position_clamped_y >= max_vertical)
-					
+
 #					if unprojected_position_clamped_x <= min_horizontal or \
 #						unprojected_position_clamped_x >= max_horizontal or \
 #						unprojected_position_clamped_y >= max_vertical or \
 #						unprojected_position_clamped_y <= min_vertical:
 #						print("Outside bounds")
-						
-						
+
+
 #					if unprojected_position_clamped_x <= min_horizontal or \
 #					unprojected_position_clamped_x >= max_horizontal or \
 #					unprojected_position_clamped_y >= max_vertical or \
@@ -481,8 +483,8 @@ func _process(delta: float) -> void:
 
 func _target_position_with_offset() -> Vector3:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
-	
-	
+
+
 func _get_framed_view_global_position() -> Vector3:
 	return _target_position_with_offset() + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
@@ -648,7 +650,7 @@ func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
-	
+
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
 func get_follow_damping_value() -> float:
@@ -679,7 +681,7 @@ func get_follow_group_nodes() -> Array[Node3D]:
 func set_auto_follow_distance(value: bool) -> void:
 	_follow_group_distance_auto = value
 func get_auto_follow_distance() -> bool:
-	return _follow_group_distance_auto 
+	return _follow_group_distance_auto
 
 func set_min_auto_follow_distance(value: float) -> void:
 	_follow_group_distance_auto_min = value
@@ -690,7 +692,7 @@ func set_max_auto_follow_distance(value: float) -> void:
 	_follow_group_distance_auto_max = value
 func get_max_auto_follow_distance() -> float:
 	return _follow_group_distance_auto_max
-	
+
 func set_auto_follow_distance_divisor(value: float) -> void:
 	_follow_group_distance_auto_divisor = value
 func get_auto_follow_distance_divisor() -> float:

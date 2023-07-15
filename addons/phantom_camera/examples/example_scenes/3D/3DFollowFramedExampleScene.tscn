@@ -22,11 +22,11 @@ albedo_texture = ExtResource("5_c0upu")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[node name="Node3D" type="Node3D"]
+[node name="Root" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707115, 0.707097, 0, -0.707097, 0.707115, -15.293, 2.62829, 6.04829)
+transform = Transform3D(1, 0, 0, 0, 0.707118, 0.707096, 0, -0.707096, 0.707118, -15.293, 2.62829, 6.04829)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_hyn5x")
@@ -38,7 +38,7 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.999994, 0, 0, 0, 0.707098, 0.707098, 0, -0.707098, 0.707098, -15.293, 2.62829, 6.04829)
+transform = Transform3D(0.999994, 0, 0, 0, 0.707096, 0.707096, 0, -0.707096, 0.707096, -15.293, 2.62829, 6.04829)
 script = ExtResource("2_g1bv4")
 priority = 0
 follow_mode = 5
@@ -46,8 +46,8 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 follow_parameters/distance = 3.0
 follow_parameters/target_offset = Vector3(0, 0, 0)
 follow_parameters/damping = false
-follow_parameters/dead_zone_horizontal = 0.239
-follow_parameters/dead_zone_vertical = 0.258
+follow_parameters/dead_zone_horizontal = 0.198
+follow_parameters/dead_zone_vertical = 0.216
 follow_parameters/show_viewfinder_in_playtest = true
 look_at_mode = 0
 tween_parameters = null
@@ -76,8 +76,6 @@ shape = SubResource("CapsuleShape3D_3xplc")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_3xplc")
-
-[node name="NPCs" type="Node" parent="."]
 
 [node name="Environment" type="Node" parent="."]
 
