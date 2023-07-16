@@ -2,6 +2,7 @@
 extends Control
 
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 var _selected_camera
 var _active_pcam_camera
@@ -36,16 +37,6 @@ var editor_interface: EditorInterface
 @onready var _add_node_button_text: RichTextLabel = %AddNodeTypeText
 
 # TODO - Should be in a central location
-const _camera_3D: StringName = "Camera3D"
-const _camera_2D: StringName = "Camera2D"
-const _pcam_host: StringName = "PhantomCameraHost"
-const _pcam_2D: StringName = "PhantomCamera2D"
-const _pcam_3D: StringName = "PhantomCamera3D"
-const _2D_color: Color = Color("8DA5F3")
-const _3D_color: Color = Color("FC7F7F")
-const _open_scene_color: Color = Color("3AB99A")
-const _pcam_host_color: Color = Color("E0E0E0")
-const _pcam_host_color_alpha: Color = Color(_pcam_host_color, _overlay_color_alpha)
 const _camera_2d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera2DIcon.svg")
 const _camera_3d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg")
 const _pcam_host_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
@@ -56,11 +47,6 @@ const _overlay_color_alpha: float = 0.3
 
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
 var _no_open_scene_string: String = "[b]2D[/b] or [b]3D[/b] scene open"
-
-var _2D_color_alpha: Color = Color(_2D_color, _overlay_color_alpha)
-var _3D_color_alpha: Color = Color(_3D_color, _overlay_color_alpha)
-
-
 
 var is_2D: bool
 var is_scene: bool
@@ -128,7 +114,7 @@ func _visibility_check():
 #		print(get_viewport().get_camera_2d())
 #		print(root.get_children())
 #		print(camera)
-		_check_camera(root, camera, false)
+		_check_camera(root, camera, true)
 
 #		editor_interface.get_selection().clear()
 #		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
@@ -139,7 +125,7 @@ func _visibility_check():
 
 		_add_node_button.set_visible(true)
 		var camera: Camera3D = root.get_viewport().get_camera_3d()
-		_check_camera(root, camera, true)
+		_check_camera(root, camera, false)
 
 #		editor_interface.get_selection().clear()
 #		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
@@ -149,32 +135,31 @@ func _visibility_check():
 	else:
 		is_scene = false
 #		Is not a 2D or 3D scene
-		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon, _open_scene_color)
+		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.set_visible(false)
 
-func _check_camera(root: Node, camera: Node, is_3D: bool) -> void:
+
+func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 	var camera_string: String
-	var pcam_host_string: String = _pcam_host
+	var pcam_host_string: String = Constants.PCAM_HOST_NODE_NAME
 	var pcam_string: String
 	var color: Color
 	var color_alpha: Color
 	var camera_icon: CompressedTexture2D
 	var pcam_icon: CompressedTexture2D
 
-	if is_3D:
-		camera_string = _camera_3D
-		pcam_string = _pcam_3D
-		color = _3D_color
-		color_alpha = _3D_color_alpha
-		camera_icon = _camera_3d_icon
-		pcam_icon = _pcam_3D_icon
-	else:
-		camera_string = _camera_2D
-		pcam_string = _pcam_2D
-		color = _2D_color
-		color_alpha = _2D_color_alpha
+	if is_2D:
+		camera_string = Constants.CAMERA_2D_NODE_NAME
+		pcam_string = Constants.PCAM_3D_NODE_NAME
+		color = Constants.COLOR_2D
 		camera_icon = _camera_2d_icon
 		pcam_icon = _pcam_2D_icon
+	else:
+		camera_string = Constants.CAMERA_3D_NODE_NAME
+		pcam_string = Constants.PCAM_3D_NODE_NAME
+		color = Constants.COLOR_3D
+		camera_icon = _camera_3d_icon
+		pcam_icon = _pcam_3D_icon
 
 	if camera:
 #		Has Camera
@@ -194,19 +179,19 @@ func _check_camera(root: Node, camera: Node, is_3D: bool) -> void:
 					else:
 #						No PCam in scene
 						_update_button(pcam_string, _pcam_3D_icon, color)
-						_set_empty_viewfinder_state(pcam_string, pcam_icon, color_alpha)
+						_set_empty_viewfinder_state(pcam_string, pcam_icon)
 				else:
 #					No PCamHost in scene
-					_update_button(pcam_host_string, _pcam_host_icon, _pcam_host_color)
-					_set_empty_viewfinder_state(_pcam_host, _pcam_host_icon, _pcam_host_color_alpha)
+					_update_button(pcam_host_string, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
+					_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 		else:
 #			No PCamHost in scene
-			_update_button(pcam_host_string, _pcam_host_icon, color)
-			_set_empty_viewfinder_state(_pcam_host, _pcam_host_icon, _pcam_host_color_alpha)
+			_update_button(pcam_host_string, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
+			_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 	else:
 #		No Camera
 		_update_button(camera_string, camera_icon, color)
-		_set_empty_viewfinder_state(camera_string, camera_icon, color_alpha)
+		_set_empty_viewfinder_state(camera_string, camera_icon)
 
 
 func _update_button(text: String, icon: CompressedTexture2D, color: Color) -> void:
@@ -228,7 +213,8 @@ func _set_viewfinder_state() -> void:
 #		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
 
 
-func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D, color: Color) -> void:
+
+func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> void:
 	_framed_viewfinder.set_visible(false)
 
 	_empty_state_control.set_visible(true)
@@ -251,20 +237,20 @@ func _add_node(node_type: String) -> void:
 	match node_type:
 		_no_open_scene_string:
 			pass
-		_camera_2D:
+		Constants.CAMERA_2D_NODE_NAME:
 			var camera: Camera2D = Camera2D.new()
 			camera.make_current()
 			get_viewport().get_camera_2d()
-			_instantiate_node(root, camera, _camera_2D)
-		_camera_3D:
+			_instantiate_node(root, camera, Constants.CAMERA_2D_NODE_NAME)
+		Constants.CAMERA_3D_NODE_NAME:
 			var cam_3D: Camera3D = Camera3D.new()
-			_instantiate_node(root, cam_3D, _camera_3D)
+			_instantiate_node(root, cam_3D, Constants.CAMERA_3D_NODE_NAME)
 #			cam_3D.set_name("Camera3D")
 #			root.add_child(cam_3D)
 #			cam_3D.set_owner(root)
-		_pcam_host:
+		Constants.PCAM_HOST_NODE_NAME:
 			var pcam_host := PhantomCameraHost.new()
-			pcam_host.set_name(_pcam_host)
+			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
 			if is_2D:
 				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
@@ -272,10 +258,10 @@ func _add_node(node_type: String) -> void:
 #				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
 				get_tree().get_edited_scene_root().get_viewport().get_camera_3d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
-		_pcam_2D:
+		Constants.PCAM_2D_NODE_NAME:
 			var pcam_2D := PhantomCamera2D.new()
 			_instantiate_node(root, pcam_2D, "PhantomCameraHost")
-		_pcam_3D:
+		Constants.PCAM_3D_NODE_NAME:
 			var pcam_3D := PhantomCamera3D.new()
 			_instantiate_node(root, pcam_3D, "PhantomCameraHost")
 
