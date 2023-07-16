@@ -27,6 +27,7 @@ func _enter_tree() -> void:
 	add_control_to_bottom_panel(framed_viewfinder_panel_instance, "Phantom Camera")
 	_make_visible(false)
 
+	connect("scene_changed", _scene_changed)
 
 func _exit_tree() -> void:
 	remove_custom_type(PCAM_2D)
@@ -37,6 +38,7 @@ func _exit_tree() -> void:
 	remove_control_from_bottom_panel(framed_viewfinder_panel_instance)
 	framed_viewfinder_panel_instance.queue_free()
 #	if framed_viewfinder_panel_instance:
+	disconnect("scene_changed", _scene_changed)
 
 
 #func _has_main_screen():
@@ -46,3 +48,7 @@ func _exit_tree() -> void:
 func _make_visible(visible):
 	if framed_viewfinder_panel_instance:
 		framed_viewfinder_panel_instance.set_visible(visible)
+
+func _scene_changed(scene_root: Node) -> void:
+#	print(scene_root)
+	framed_viewfinder_panel_instance.scene_changed(scene_root)

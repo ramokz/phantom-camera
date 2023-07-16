@@ -93,17 +93,46 @@ func _ready():
 
 func _node_added(node: Node) -> void:
 	if editor_interface == null: return
-	var root: Node = editor_interface.get_edited_scene_root()
-	if root == null: return
+
 	_visibility_check()
+
+
+func scene_changed(scene_root: Node) -> void:
+	if scene_root is Node2D:
+#		print("Is 2D node")
+		is_2D = true
+		is_scene = true
+
+		_add_node_button.set_visible(true)
+		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
+		_check_camera(scene_root, camera, true)
+	elif scene_root is Node3D:
+#		print("Is 3D node")
+#		Is 3D scene
+		is_2D = false
+		is_scene = true
+
+		_add_node_button.set_visible(true)
+		var camera: Camera3D = scene_root.get_viewport().get_camera_3d()
+		_check_camera(scene_root, camera, false)
+	else:
+#		print("Not a 2D or 3D scene")
+		is_scene = false
+#		Is not a 2D or 3D scene
+		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
+		_add_node_button.set_visible(false)
 
 
 func _visibility_check():
 	if not editor_interface or not visible: return
 
+	if not is_instance_valid(editor_interface):
+		is_scene = false
+#		Is not a 2D or 3D scene
+		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
+		_add_node_button.set_visible(false)
+		return
 	var root: Node = editor_interface.get_edited_scene_root()
-	if  not root: return
-
 	if root is Node2D:
 #		print("Is a 2D scene")
 		is_2D = true
@@ -174,10 +203,10 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 				if pcam_host:
 					if get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME):
 #						Pcam exists in tree
-						_set_viewfinder_state()
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
 #								_on_dead_zone_changed()
+						_set_viewfinder_state()
 					else:
 #						No PCam in scene
 						_update_button(pcam_string, _pcam_3D_icon, color)
@@ -192,6 +221,8 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 			_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 	else:
 #		No Camera
+#		print("No camera")
+#		print(editor_interface.get_edited_scene_root())
 		_update_button(camera_string, camera_icon, color)
 		_set_empty_viewfinder_state(camera_string, camera_icon)
 
@@ -204,10 +235,10 @@ func _update_button(text: String, icon: CompressedTexture2D, color: Color) -> vo
 
 
 func _set_viewfinder_state() -> void:
-	print("Setting viewfinder")
 	_empty_state_control.set_visible(false)
 
 	_framed_viewfinder.set_visible(true)
+	target_point.set_visible(true)
 
 	if is_instance_valid(_active_pcam_camera):
 		if _active_pcam_camera.get_follow_mode() == Constants.FollowMode.FRAMED:
@@ -218,6 +249,7 @@ func _set_viewfinder_state() -> void:
 
 func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> void:
 	_framed_viewfinder.set_visible(false)
+	target_point.set_visible(false)
 
 	_empty_state_control.set_visible(true)
 	_empty_state_icon.set_texture(icon)
@@ -320,7 +352,8 @@ func _resized() -> void:
 
 
 func _process(_delta: float):
-	if not visible and not is_instance_valid(_active_pcam_camera): return
+	if not visible or not is_instance_valid(_active_pcam_camera): return
+
 	var unprojected_position_clamped: Vector2 = Vector2(
 		clamp(_active_pcam_camera.Properties.unprojected_position.x, min_horizontal, max_horizontal),
 		clamp(_active_pcam_camera.Properties.unprojected_position.y, min_vertical, max_vertical)
@@ -333,6 +366,8 @@ func _process(_delta: float):
 
 
 func _on_dead_zone_changed() -> void:
+	if is_instance_valid(_active_pcam_camera): return
+
 	if camera_viewport_panel.size == Vector2.ZERO:
 		has_camera_viewport_panel_size = false
 		return

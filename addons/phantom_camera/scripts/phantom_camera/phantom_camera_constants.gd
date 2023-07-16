@@ -11,9 +11,8 @@ const PCAM_2D_NODE_NAME: StringName = "PhantomCamera2D"
 const PCAM_3D_NODE_NAME: StringName = "PhantomCamera3D"
 const COLOR_2D: Color = Color("8DA5F3")
 const COLOR_3D: Color = Color("FC7F7F")
-const OPEN_SCENE_COLOR: Color = Color("3AB99A")
+const COLOR_PCAM: Color = Color("3AB99A")
 const PCAM_HOST_COLOR: Color = Color("E0E0E0")
-const _pcam_host_color_alpha: Color = Color(PCAM_HOST_COLOR, 0.3)
 
 # Primary
 const PRIORITY_PROPERTY_NAME: StringName = "priority"
