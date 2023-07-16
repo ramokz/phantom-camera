@@ -21,6 +21,7 @@ var aspect_ratio_container: AspectRatioContainer
 @onready var aspect_ratio_containers: AspectRatioContainer = %AspectRatioContainer
 @onready var camera_viewport_panel: Panel = aspect_ratio_containers.get_child(0)
 @onready var _framed_viewfinder: Control = %FramedViewfinder
+@onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
 
 var editor_interface: EditorInterface
 
@@ -32,7 +33,6 @@ var editor_interface: EditorInterface
 @onready var _empty_state_control: Control = %EmptyStateControl
 @onready var _empty_state_icon: Control = %EmptyStateIcon
 @onready var _empty_state_text: RichTextLabel = %EmptyStateText
-@onready var _overlay_color_rect: ColorRect = %OverlayColorRect
 @onready var _add_node_button: Button = %AddNodeButton
 @onready var _add_node_button_text: RichTextLabel = %AddNodeTypeText
 
@@ -198,10 +198,9 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 
 func _update_button(text: String, icon: CompressedTexture2D, color: Color) -> void:
 	_add_node_button_text.set_text("[center]Add [img=32]" + icon.resource_path + "[/img] [b]"+ text + "[/b][/center]");
-
-	var button_theme_normal: StyleBoxFlat = _add_node_button.get_theme_stylebox("hover")
-	button_theme_normal.border_color = _3D_color
-	_add_node_button.add_theme_stylebox_override("hover", button_theme_normal)
+	var button_theme_hover: StyleBoxFlat = _add_node_button.get_theme_stylebox("hover")
+	button_theme_hover.border_color = color
+	_add_node_button.add_theme_stylebox_override("hover", button_theme_hover)
 
 
 func _set_viewfinder_state() -> void:
@@ -222,9 +221,10 @@ func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> voi
 
 	_empty_state_control.set_visible(true)
 	_empty_state_icon.set_texture(icon)
-	_empty_state_text.set_text("[center]No [b]" + text + "[/b] in scene[/center]")
-
-	_overlay_color_rect.set_color(color)
+	if icon == _no_open_scene_icon:
+		_empty_state_text.set_text("[center]No " + text + "[/center]")
+	else:
+		_empty_state_text.set_text("[center]No [b]" + text + "[/b] in scene[/center]")
 
 	if _add_node_button.is_connected("pressed", _add_node):
 		_add_node_button.disconnect("pressed", _add_node)
