@@ -637,8 +637,8 @@ func get_follow_path():
 		printerr("No Follow Path assigned")
 
 
-func get_follow_mode() -> String:
-	return Constants.FollowMode.keys()[Properties.follow_mode].capitalize()
+func get_follow_mode() -> int:
+	return Properties.follow_mode
 # Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 
 func set_follow_target_offset(value: Vector3) -> void:

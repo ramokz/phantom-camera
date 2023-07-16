@@ -207,11 +207,12 @@ func _set_viewfinder_state() -> void:
 	_empty_state_control.set_visible(false)
 
 	_framed_viewfinder.set_visible(true)
-#	if visible:
-		# Auto-selects the currently active PhantomCamera when opening panel
-#		editor_interface.get_selection().clear()
-#		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
 
+	if is_instance_valid(_active_pcam_camera):
+		if _active_pcam_camera.get_follow_mode() == Constants.FollowMode.FRAMED:
+			_dead_zone_h_box_container.set_visible(true)
+		else:
+			_dead_zone_h_box_container.set_visible(false)
 
 
 func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> void:
