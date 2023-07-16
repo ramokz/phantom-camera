@@ -78,6 +78,8 @@ func _ready():
 	if Engine.is_editor_hint():
 		get_tree().connect("node_added", _node_added)
 		get_tree().connect("node_removed", _node_added)
+	else:
+		_empty_state_control.set_visible(false)
 
 #	get_viewport().set_clear_mode(SubViewport.CLEAR_MODE_ALWAYS)
 
