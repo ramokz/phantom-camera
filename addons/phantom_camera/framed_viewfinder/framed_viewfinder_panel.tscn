@@ -30,6 +30,11 @@ border_color = Color(0.745098, 0.858824, 0.380392, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q7vs4"]
 bg_color = Color(0.929412, 0.87451, 0.619608, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
