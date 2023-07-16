@@ -129,6 +129,7 @@ size = Vector2i(1920, 1080)
 render_target_update_mode = 4
 
 [node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="FramedViewfinder"]
+unique_name_in_owner = true
 clip_contents = true
 layout_mode = 1
 anchors_preset = 15
@@ -237,7 +238,6 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_q7vs4")
 
 [node name="EmptyStateControl" type="Control" parent="."]
 unique_name_in_owner = true
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -254,18 +254,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
-metadata/_edit_lock_ = true
-
-[node name="OverlayColorRect" type="ColorRect" parent="EmptyStateControl"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(1, 1, 1, 0.258824)
 metadata/_edit_lock_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="EmptyStateControl"]
