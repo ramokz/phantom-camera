@@ -301,10 +301,10 @@ func _add_node(node_type: String) -> void:
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
 		Constants.PCAM_2D_NODE_NAME:
 			var pcam_2D := PhantomCamera2D.new()
-			_instantiate_node(root, pcam_2D, "PhantomCameraHost")
+			_instantiate_node(root, pcam_2D, Constants.PCAM_2D_NODE_NAME)
 		Constants.PCAM_3D_NODE_NAME:
 			var pcam_3D := PhantomCamera3D.new()
-			_instantiate_node(root, pcam_3D, "PhantomCameraHost")
+			_instantiate_node(root, pcam_3D, Constants.PCAM_3D_NODE_NAME)
 
 
 func _instantiate_node(root: Node, node: Node, name: String) -> void:
