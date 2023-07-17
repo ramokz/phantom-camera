@@ -81,15 +81,21 @@ func _ready():
 	else:
 		_empty_state_control.set_visible(false)
 
-#	get_viewport().set_clear_mode(SubViewport.CLEAR_MODE_ALWAYS)
 
-#	await get_tree().physics_frame
-#	editor_interface.get_edited_scene_root()
+func _exit_tree() -> void:
+	if Engine.is_editor_hint():
+		get_tree().disconnect("node_added", _node_added)
+		get_tree().disconnect("node_removed", _node_added)
 
-#func _exit_tree() -> void:
-#	if Engine.is_editor_hint():
-#		get_tree().disconnect("node_added", _node_added)
-#		get_tree().disconnect("node_removed", _node_added)
+	if aspect_ratio_containers.is_connected("resized", _resized):
+		aspect_ratio_containers.disconnect("resized", _resized)
+
+	if _add_node_button.is_connected("pressed", _add_node):
+		_add_node_button.disconnect("pressed", _add_node)
+
+	if _active_pcam_camera.Properties.is_connected(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
+		_active_pcam_camera.Properties.disconnect(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+
 
 func _node_added(node: Node) -> void:
 	if editor_interface == null: return
