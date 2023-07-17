@@ -366,7 +366,7 @@ func _process(_delta: float):
 
 
 func _on_dead_zone_changed() -> void:
-	if is_instance_valid(_active_pcam_camera): return
+	if not is_instance_valid(_active_pcam_camera): return
 
 	if camera_viewport_panel.size == Vector2.ZERO:
 		has_camera_viewport_panel_size = false
