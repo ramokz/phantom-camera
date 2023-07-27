@@ -432,3 +432,25 @@ func check_multiple_pcam_host_property(pcam: Node, multiple_host: bool = false) 
 
 	pcam.notify_property_list_changed()
 #	pcam_host_group.append_array(host_group)
+
+
+func get_framed_side_offset() -> Vector2:
+	var frame_out_bounds: Vector2
+
+	if viewport_position.x < 0.5 - follow_framed_dead_zone_width / 2:
+		# Is outside left edge
+		frame_out_bounds.x = -1
+
+	if viewport_position.y < 0.5 - follow_framed_dead_zone_height / 2:
+		# Is outside top edge
+		frame_out_bounds.y = 1
+
+	if viewport_position.x > 0.5 + follow_framed_dead_zone_width / 2:
+		# Is outside right edge
+		frame_out_bounds.x = 1
+
+	if viewport_position.y > 0.5001 + follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
+		# Is outside bottom edge
+		frame_out_bounds.y = -1
+
+	return frame_out_bounds

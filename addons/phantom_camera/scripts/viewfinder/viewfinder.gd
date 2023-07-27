@@ -384,7 +384,6 @@ func _process(_delta: float):
 		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
 	)
 
-	print("target")
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
 #	print(target_point.position)
 	if not has_camera_viewport_panel_size:

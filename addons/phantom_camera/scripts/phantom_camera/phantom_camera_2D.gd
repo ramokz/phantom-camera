@@ -15,6 +15,8 @@ var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
+var _camera_offset: Vector2
+
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
 	property_list.append_array(Properties.add_priority_properties())
@@ -214,43 +216,38 @@ func _physics_process(delta: float) -> void:
 						path_position
 					)
 		Constants.FollowMode.FRAMED:
-			
-#			Properties.viewport_position = get_global_transform_with_canvas()
-#			print(get_global_transform_with_canvas())
-			if not Engine.is_editor_hint():
-#				print(get_follow_target_node().get_global_transform_with_canvas().get_origin())
-				var target_pos_normalized: Vector2 = get_follow_target_node().get_global_transform_with_canvas().get_origin() / get_viewport_rect().size
-#				print(0.5 + Properties.follow_framed_dead_zone_height / 2)
-				if target_pos_normalized.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
-					print("Outside right")
-				elif target_pos_normalized.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
-					print("Outside left")
-			
-#			set_global_position(_get_framed_view_global_position())
-#			if Engine.is_editor_hint():
-##				set_global_position( _get_framed_view_global_position() )
-#
-#				var unprojected_position: Vector2 = _get_raw_unprojected_position()
-#				var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-#				var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
-#				var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-#				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-#
-#				unprojected_position = unprojected_position - visible_rect_size / 2
-#
-#				Properties.viewport_position = unprojected_position
-#
-#			else:
-#				#########################################################
-#				# Returns correct normalized value when running in Editor
-#				#########################################################
-#				Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
-#				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-#				Properties.viewport_position = Properties.viewport_position / visible_rect_size
+			if Properties.follow_target_node:
+				if not Engine.is_editor_hint():
+					Properties.viewport_position = get_follow_target_node().get_global_transform_with_canvas().get_origin() / get_viewport_rect().size
+		#				print(get_follow_target_node().get_global_transform_with_canvas().get_origin())
+		#				print(Properties.viewport_position)
+				
+					if Properties.get_framed_side_offset() != Vector2.ZERO:
+
+						var target_position: Vector2 = _target_position_with_offset() + _camera_offset
+						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
+						var dead_zone_height: float = Properties.follow_framed_dead_zone_height
+		#						global_position += Vector3(view_side.x, 0, -view_side.y) * delta * 5
+
+						if dead_zone_width == 0 || dead_zone_height == 0:
+							if dead_zone_width == 0 && dead_zone_height != 0:
+								global_position = _target_position_with_offset()
+		#						global_position.z += target_position.z - global_position.z
+							elif dead_zone_width != 0 && dead_zone_height == 0:
+								global_position = _target_position_with_offset()
+								global_position.x += target_position.x - global_position.x
+							else:
+								global_position = _target_position_with_offset()
+						else:
+							global_position += target_position - global_position
+					else:
+						_camera_offset = global_position - _target_position_with_offset()
+				else:
+					set_global_position(Properties.follow_target_node.position)
 
 
-			pass
-
+func _target_position_with_offset() -> Vector2:
+	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
 ##################
 # Public Functions
