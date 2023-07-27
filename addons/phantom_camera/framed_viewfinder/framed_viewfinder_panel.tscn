@@ -1,6 +1,6 @@
 [gd_scene load_steps=17 format=3 uid="uid://dbkr3d716wtx0"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_l4cnn"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_lgg6a"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="3_6wxxp"]
 [ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="3_rn5hf"]
@@ -70,7 +70,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.988235, 0.498039, 0.498039, 1)
+border_color = Color(0.552941, 0.647059, 0.952941, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -93,7 +93,8 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x4bx8"]
 
-[node name="ViewFinderControl" type="Control"]
+[node name="ViewfinderControl" type="Control"]
+clip_contents = true
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 3
 anchors_preset = 15
@@ -104,7 +105,7 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
-script = ExtResource("1_l4cnn")
+script = ExtResource("1_lgg6a")
 
 [node name="FramedViewfinder" type="Control" parent="."]
 unique_name_in_owner = true
