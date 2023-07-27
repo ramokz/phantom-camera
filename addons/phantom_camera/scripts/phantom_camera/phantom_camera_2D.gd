@@ -63,8 +63,12 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 
-	property_list.append_array(Properties.add_follow_properties())
+	if Properties.follow_has_target || Properties.has_follow_group:
+		property_list.append_array(Properties.add_follow_properties())
+		property_list.append_array(Properties.add_follow_framed())
+
 	property_list.append_array(Properties.add_tween_properties())
+
 	property_list.append_array(Properties.add_secondary_properties())
 
 	return property_list
@@ -113,26 +117,33 @@ func _set(property: StringName, value) -> bool:
 
 
 func _get(property: StringName):
-	if property == Constants.PRIORITY_PROPERTY_NAME: 				return Properties.priority
+	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
-	if property == Constants.ZOOM_PROPERTY_NAME: 					return Properties.zoom
+	if property == Constants.ZOOM_PROPERTY_NAME: 						return Properties.zoom
 
-	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 			return Properties.follow_mode
-	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 			return Properties.follow_target_path
-	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 			return Properties.follow_group_paths
-	if property == Constants.FOLLOW_PATH_PROPERTY_NAME: 			return Properties.follow_path_path
-	if property == FOLLOW_GROUP_ZOOM_AUTO:							return follow_group_zoom_auto
-	if property == FOLLOW_GROUP_ZOOM_MIN: 							return follow_group_zoom_min
-	if property == FOLLOW_GROUP_ZOOM_MAX: 							return follow_group_zoom_max
-	if property == FOLLOW_GROUP_ZOOM_MARGIN:						return follow_group_zoom_margin
-	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:	return Properties.follow_target_offset_2D
-	if property == Constants.FOLLOW_DAMPING_NAME: 					return Properties.follow_has_damping
-	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 			return Properties.follow_damping_value
+	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 				return Properties.follow_mode
+	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:		return Properties.follow_target_offset_2D
+	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME: 				return Properties.follow_target_path
+	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME: 				return Properties.follow_group_paths
 
-	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:			return Properties.tween_resource
+	if property == Constants.FOLLOW_PATH_PROPERTY_NAME: 				return Properties.follow_path_path
 
-	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:	return Properties.inactive_update_mode
-	if property == Constants.TWEEN_ONLOAD_NAME: 					return Properties.tween_onload
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
+	if property == Constants.FOLLOW_VIEWFINDER_NAME:					return Properties.show_viewfinder_in_play
+
+	if property == FOLLOW_GROUP_ZOOM_AUTO:								return follow_group_zoom_auto
+	if property == FOLLOW_GROUP_ZOOM_MIN: 								return follow_group_zoom_min
+	if property == FOLLOW_GROUP_ZOOM_MAX: 								return follow_group_zoom_max
+	if property == FOLLOW_GROUP_ZOOM_MARGIN:							return follow_group_zoom_margin
+
+	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
+	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
+
+	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
+
+	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
+	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
 
 
 ###################
@@ -202,6 +213,43 @@ func _physics_process(delta: float) -> void:
 						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
 						path_position
 					)
+		Constants.FollowMode.FRAMED:
+			
+#			Properties.unprojected_position = get_global_transform_with_canvas()
+#			print(get_global_transform_with_canvas())
+			if not Engine.is_editor_hint():
+#				print(get_follow_target_node().get_global_transform_with_canvas().get_origin())
+				var target_pos_normalized: Vector2 = get_follow_target_node().get_global_transform_with_canvas().get_origin() / get_viewport_rect().size
+#				print(0.5 + Properties.follow_framed_dead_zone_height / 2)
+				if target_pos_normalized.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
+					print("Outside right")
+				elif target_pos_normalized.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
+					print("Outside left")
+			
+#			set_global_position(_get_framed_view_global_position())
+#			if Engine.is_editor_hint():
+##				set_global_position( _get_framed_view_global_position() )
+#
+#				var unprojected_position: Vector2 = _get_raw_unprojected_position()
+#				var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+#				var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+#				var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+#				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+#
+#				unprojected_position = unprojected_position - visible_rect_size / 2
+#
+#				Properties.unprojected_position = unprojected_position
+#
+#			else:
+#				#########################################################
+#				# Returns correct normalized value when running in Editor
+#				#########################################################
+#				Properties.unprojected_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
+#				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+#				Properties.unprojected_position = Properties.unprojected_position / visible_rect_size
+
+
+			pass
 
 
 ##################
@@ -292,8 +340,8 @@ func get_follow_path():
 	else:
 		printerr("No Follow Path assigned")
 
-func get_follow_mode() -> String:
-	return Constants.FollowMode.keys()[Properties.follow_mode].capitalize()
+func get_follow_mode() -> int:
+	return Properties.follow_mode
 # Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 
 func set_follow_target_offset(value: Vector2) -> void:

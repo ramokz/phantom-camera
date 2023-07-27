@@ -61,20 +61,27 @@ var max_vertical: float
 func _ready():
 	connect("visibility_changed", _visibility_check)
 	set_process(false)
+	
+#	print(size)
+#	print(size_flags_horizontal)
+	
+#	position = Vector2.ZERO
+#	size.x = viewport_width
 
 	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
 
+#	TODO - Don't think this is needed / does anything?
 	var root_node = get_tree().get_root().get_child(0)
-
 	if root_node is Node3D || root_node is Node2D:
 		%SubViewportContainer.set_visible(false)
-		_set_viewfinder(root_node, false)
-
+	
 		if root_node is Node2D:
 			is_2D = true
 		else:
 			is_2D = false
-
+			
+		_set_viewfinder(root_node, false)
+	
 	if Engine.is_editor_hint():
 		get_tree().connect("node_added", _node_added)
 		get_tree().connect("node_removed", _node_added)
@@ -84,8 +91,9 @@ func _ready():
 
 func _exit_tree() -> void:
 	if Engine.is_editor_hint():
-		get_tree().disconnect("node_added", _node_added)
-		get_tree().disconnect("node_removed", _node_added)
+		if get_tree().is_connected("node_added", _node_added):
+			get_tree().disconnect("node_added", _node_added)
+			get_tree().disconnect("node_removed", _node_added)
 
 	if aspect_ratio_containers.is_connected("resized", _resized):
 		aspect_ratio_containers.disconnect("resized", _resized)
@@ -93,13 +101,13 @@ func _exit_tree() -> void:
 	if _add_node_button.is_connected("pressed", _add_node):
 		_add_node_button.disconnect("pressed", _add_node)
 
-	if _active_pcam_camera.Properties.is_connected(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-		_active_pcam_camera.Properties.disconnect(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+	if is_instance_valid(_active_pcam_camera):
+		if _active_pcam_camera.Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
+			_active_pcam_camera.Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 
 
 func _node_added(node: Node) -> void:
 	if editor_interface == null: return
-
 	_visibility_check()
 
 
@@ -110,7 +118,9 @@ func scene_changed(scene_root: Node) -> void:
 		is_scene = true
 
 		_add_node_button.set_visible(true)
-		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
+#		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
+		var camera: Camera2D = _get_camera_2D()
+
 		_check_camera(scene_root, camera, true)
 	elif scene_root is Node3D:
 #		print("Is 3D node")
@@ -145,16 +155,11 @@ func _visibility_check():
 		is_scene = true
 
 		_add_node_button.set_visible(true)
-		var camera: Camera2D = root.get_viewport().get_camera_2d()
-#		print(camera)
-#		print(root.get_viewport())
-#		print(get_viewport().get_camera_2d())
-#		print(root.get_children())
-#		print(camera)
-		_check_camera(root, camera, true)
+#		TODO: Figure out why the line below doesn't work...
+#		var camera: Camera2D = root.get_viewport().get_camera_2d()
 
-#		editor_interface.get_selection().clear()
-#		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
+		var camera: Camera2D = _get_camera_2D()
+		_check_camera(root, camera, true)
 	elif root is Node3D:
 #		Is 3D scene
 		is_2D = false
@@ -163,17 +168,24 @@ func _visibility_check():
 		_add_node_button.set_visible(true)
 		var camera: Camera3D = root.get_viewport().get_camera_3d()
 		_check_camera(root, camera, false)
-
 #		editor_interface.get_selection().clear()
 #		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
-#		print(root.get_viewport())
-#		print(get_viewport().get_camera_3d())
-#		print(camera)
 	else:
 		is_scene = false
 #		Is not a 2D or 3D scene
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.set_visible(false)
+
+
+func _get_camera_2D() -> Camera2D:
+	var camerasGroupName = "__cameras_%d" % editor_interface.get_edited_scene_root().get_viewport().get_viewport_rid().get_id()
+	var cameras = get_tree().get_nodes_in_group(camerasGroupName)
+
+	for camera in cameras:
+		if camera is Camera2D and camera.is_current:
+			return camera
+
+	return null
 
 
 func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
@@ -187,7 +199,7 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 
 	if is_2D:
 		camera_string = Constants.CAMERA_2D_NODE_NAME
-		pcam_string = Constants.PCAM_3D_NODE_NAME
+		pcam_string = Constants.PCAM_2D_NODE_NAME
 		color = Constants.COLOR_2D
 		camera_icon = _camera_2d_icon
 		pcam_icon = _pcam_2D_icon
@@ -215,7 +227,7 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 						_set_viewfinder_state()
 					else:
 #						No PCam in scene
-						_update_button(pcam_string, _pcam_3D_icon, color)
+						_update_button(pcam_string, pcam_icon, color)
 						_set_empty_viewfinder_state(pcam_string, pcam_icon)
 				else:
 #					No PCamHost in scene
@@ -280,30 +292,26 @@ func _add_node(node_type: String) -> void:
 			pass
 		Constants.CAMERA_2D_NODE_NAME:
 			var camera: Camera2D = Camera2D.new()
-			camera.make_current()
-			get_viewport().get_camera_2d()
 			_instantiate_node(root, camera, Constants.CAMERA_2D_NODE_NAME)
 		Constants.CAMERA_3D_NODE_NAME:
-			var cam_3D: Camera3D = Camera3D.new()
-			_instantiate_node(root, cam_3D, Constants.CAMERA_3D_NODE_NAME)
-#			cam_3D.set_name("Camera3D")
-#			root.add_child(cam_3D)
-#			cam_3D.set_owner(root)
+			var camera: Camera3D = Camera3D.new()
+			_instantiate_node(root, camera, Constants.CAMERA_3D_NODE_NAME)
 		Constants.PCAM_HOST_NODE_NAME:
-			var pcam_host := PhantomCameraHost.new()
+			var pcam_host: PhantomCameraHost = PhantomCameraHost.new()
 			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
 			if is_2D:
-				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
+#				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
+				_get_camera_2D().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
 			else:
 #				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
 				get_tree().get_edited_scene_root().get_viewport().get_camera_3d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
 		Constants.PCAM_2D_NODE_NAME:
-			var pcam_2D := PhantomCamera2D.new()
+			var pcam_2D: PhantomCamera2D = PhantomCamera2D.new()
 			_instantiate_node(root, pcam_2D, Constants.PCAM_2D_NODE_NAME)
 		Constants.PCAM_3D_NODE_NAME:
-			var pcam_3D := PhantomCamera3D.new()
+			var pcam_3D: PhantomCamera3D = PhantomCamera3D.new()
 			_instantiate_node(root, pcam_3D, Constants.PCAM_3D_NODE_NAME)
 
 
@@ -322,8 +330,19 @@ func _set_viewfinder(root: Node, editor: bool):
 				_selected_camera = pcam_host.camera as Camera2D
 				_active_pcam_camera = _selected_camera.get_child(0).get_active_pcam() as PhantomCamera2D
 				if editor:
-					var camera_2D_rid: RID = _selected_camera.get_camera_rid()
+					var camera_2D_rid: RID = _selected_camera.get_canvas_item()
+#					print(_selected_camera)
+#					print(editor_interface.get_edited_scene_root())
+#					print(editor_interface.get_edited_scene_root().get_canvas())
+#					print(_selected_camera.get_canvas_item())
+#					print(_selected_camera.get_canvas())
+#					print(sub_viewport)
+#					print(camera_2D_rid)
+#					RenderingServer.viewport_attach_canvas(sub_viewport.get_viewport_rid(), editor_interface.get_edited_scene_root().get_canvas_item())
+#					RenderingServer.viewport_attach_canvas(sub_viewport.get_viewport_rid(), editor_interface.get_edited_scene_root().get_canvas_item())
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
+#					TODO - Should return something
+#					print(sub_viewport.get_camera_2d())
 			else:
 				_selected_camera = pcam_host.camera as Camera3D
 				_active_pcam_camera = _selected_camera.get_child(0).get_active_pcam() as PhantomCamera3D
@@ -365,10 +384,12 @@ func _process(_delta: float):
 		clamp(_active_pcam_camera.Properties.unprojected_position.y, min_vertical, max_vertical)
 	)
 
+	print("target")
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
-
+#	print(target_point.position)
 	if not has_camera_viewport_panel_size:
 		_on_dead_zone_changed()
+		
 
 
 func _on_dead_zone_changed() -> void:
