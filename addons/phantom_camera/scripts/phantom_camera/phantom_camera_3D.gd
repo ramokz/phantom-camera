@@ -356,7 +356,7 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if Engine.is_editor_hint():
-						set_global_position( _get_framed_view_global_position() )
+						set_global_position(_get_framed_view_global_position())
 
 #						TODO:	Replaces the above set_global_position above
 #								needs to account for rotation and effectively pivot around its follow target
@@ -386,15 +386,15 @@ func _process(delta: float) -> void:
 							unprojected_position.x = (unprojected_position.x + 1) / 2
 							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
-						Properties.unprojected_position = unprojected_position
+						Properties.viewport_position = unprojected_position
 
 					else:
 						#########################################################
 						# Returns correct normalized value when running in Editor
 						#########################################################
-						Properties.unprojected_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
+						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-						Properties.unprojected_position = Properties.unprojected_position / visible_rect_size
+						Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
 					var view_side: Vector2 = _get_framed_side_offset()
 
@@ -405,17 +405,17 @@ func _process(delta: float) -> void:
 
 
 #					var unprojected_position_clamped: Vector2 = Vector2(
-#						clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal),
-#						clamp(Properties.unprojected_position.y, min_vertical, max_vertical)
+#						clamp(Properties.viewport_position.x, min_horizontal, max_horizontal),
+#						clamp(Properties.viewport_position.y, min_vertical, max_vertical)
 #					)
 
 #					var unprojected_position_clamped: Vector2 = Vector2(
-#						float("%.4f" % clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal)),
-#						float("%.4f" % clamp(Properties.unprojected_position.y, min_vertical, max_vertical))
+#						float("%.4f" % clamp(Properties.viewport_position.x, min_horizontal, max_horizontal)),
+#						float("%.4f" % clamp(Properties.viewport_position.y, min_vertical, max_vertical))
 #					)
 
-#					var unprojected_position_clamped_x: float = float("%.4f" % clamp(Properties.unprojected_position.x, min_horizontal, max_horizontal))
-#					var unprojected_position_clamped_y: float = float("%.4f" % clamp(Properties.unprojected_position.y, min_vertical, max_vertical))
+#					var unprojected_position_clamped_x: float = float("%.4f" % clamp(Properties.viewport_position.x, min_horizontal, max_horizontal))
+#					var unprojected_position_clamped_y: float = float("%.4f" % clamp(Properties.viewport_position.y, min_vertical, max_vertical))
 
 #					var float("%.4f" % unprojected_position_clamped.y)
 #					print(unprojected_position_clamped_x)
@@ -497,19 +497,19 @@ func _get_raw_unprojected_position() -> Vector2:
 func _get_framed_side_offset() -> Vector2:
 	var frame_out_bounds: Vector2
 
-	if Properties.unprojected_position.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
+	if Properties.viewport_position.x < 0.5 - Properties.follow_framed_dead_zone_width / 2:
 		# Is outside left edge
 		frame_out_bounds.x = -1
 
-	if Properties.unprojected_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
+	if Properties.viewport_position.y < 0.5 - Properties.follow_framed_dead_zone_height / 2:
 		# Is outside top edge
 		frame_out_bounds.y = 1
 
-	if Properties.unprojected_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
+	if Properties.viewport_position.x > 0.5 + Properties.follow_framed_dead_zone_width / 2:
 		# Is outside right edge
 		frame_out_bounds.x = 1
 
-	if Properties.unprojected_position.y > 0.5001 + Properties.follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
+	if Properties.viewport_position.y > 0.5001 + Properties.follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
 		# Is outside bottom edge
 		frame_out_bounds.y = -1
 

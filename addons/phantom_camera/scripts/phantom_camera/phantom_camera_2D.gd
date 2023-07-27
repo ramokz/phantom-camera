@@ -215,7 +215,7 @@ func _physics_process(delta: float) -> void:
 					)
 		Constants.FollowMode.FRAMED:
 			
-#			Properties.unprojected_position = get_global_transform_with_canvas()
+#			Properties.viewport_position = get_global_transform_with_canvas()
 #			print(get_global_transform_with_canvas())
 			if not Engine.is_editor_hint():
 #				print(get_follow_target_node().get_global_transform_with_canvas().get_origin())
@@ -238,15 +238,15 @@ func _physics_process(delta: float) -> void:
 #
 #				unprojected_position = unprojected_position - visible_rect_size / 2
 #
-#				Properties.unprojected_position = unprojected_position
+#				Properties.viewport_position = unprojected_position
 #
 #			else:
 #				#########################################################
 #				# Returns correct normalized value when running in Editor
 #				#########################################################
-#				Properties.unprojected_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
+#				Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
 #				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-#				Properties.unprojected_position = Properties.unprojected_position / visible_rect_size
+#				Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
 
 			pass

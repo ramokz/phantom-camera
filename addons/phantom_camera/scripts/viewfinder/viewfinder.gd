@@ -380,8 +380,8 @@ func _process(_delta: float):
 	if not visible or not is_instance_valid(_active_pcam_camera): return
 
 	var unprojected_position_clamped: Vector2 = Vector2(
-		clamp(_active_pcam_camera.Properties.unprojected_position.x, min_horizontal, max_horizontal),
-		clamp(_active_pcam_camera.Properties.unprojected_position.y, min_vertical, max_vertical)
+		clamp(_active_pcam_camera.Properties.viewport_position.x, min_horizontal, max_horizontal),
+		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
 	)
 
 	print("target")
