@@ -356,7 +356,11 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if Engine.is_editor_hint():
+						
 						set_global_position(_get_framed_view_global_position())
+#						var opposite: float = sqrt(follow_distance - global_position.y)
+#						global_position.y = _target_position_with_offset().y + -opposite
+#						global_position.z = sqrt(pow(follow_distance, follow_distance) - pow(opposite, opposite)) 
 
 #						TODO:	Replaces the above set_global_position above
 #								needs to account for rotation and effectively pivot around its follow target
@@ -389,14 +393,16 @@ func _process(delta: float) -> void:
 						Properties.viewport_position = unprojected_position
 
 					else:
-						#########################################################
-						# Returns correct normalized value when running in Editor
-						#########################################################
+						########################
+						# When playing the game
+						########################
 						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
 					var view_side: Vector2 = Properties.get_framed_side_offset()
+					
+					
 
 #					var min_horizontal = 0.5 - Properties.follow_framed_dead_zone_width / 2
 #					var max_horizontal = 0.5 + Properties.follow_framed_dead_zone_width / 2
@@ -457,8 +463,10 @@ func _process(delta: float) -> void:
 							else:
 								global_position = _target_position_with_offset()
 						else:
-#							print("Previous offset: %s" % _camera_offset)
-							global_position += target_position - global_position
+#							global_position += target_position - global_position # + Vector3(0,-sin(rotation.x) * follow_distance - target_position.y, 0)
+							var opposite: float = sqrt(follow_distance - global_position.y)
+							global_position.y = _target_position_with_offset().y + -opposite
+							global_position.z = sqrt(pow(follow_distance, follow_distance) - pow(opposite, opposite))
 					else:
 						_camera_offset = global_position - _target_position_with_offset()
 
@@ -488,6 +496,17 @@ func _target_position_with_offset() -> Vector3:
 func _get_framed_view_global_position() -> Vector3:
 	return _target_position_with_offset() + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+	
+#	var opposite: float = sqrt(follow_distance - global_position.y)
+#	print(get_transform().basis.z)
+	
+#	return Vector3(
+#		_target_position_with_offset().x,
+##		_target_position_with_offset().x + get_transform().basis.z. * follow_distance,
+#		_target_position_with_offset().y + -opposite,
+#		sqrt(pow(follow_distance, follow_distance) - pow(opposite, opposite)) 
+#
+#	)
 
 
 func _get_raw_unprojected_position() -> Vector2:
