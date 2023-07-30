@@ -62,12 +62,6 @@ func _ready():
 	connect("visibility_changed", _visibility_check)
 	set_process(false)
 	
-#	print(size)
-#	print(size_flags_horizontal)
-	
-#	position = Vector2.ZERO
-#	size.x = viewport_width
-
 	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
 
 #	TODO - Don't think this is needed / does anything?
@@ -239,8 +233,6 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 			_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 	else:
 #		No Camera
-#		print("No camera")
-#		print(editor_interface.get_edited_scene_root())
 		_update_button(camera_string, camera_icon, color)
 		_set_empty_viewfinder_state(camera_string, camera_icon)
 
@@ -383,17 +375,14 @@ func _process(_delta: float):
 		clamp(_active_pcam_camera.Properties.viewport_position.x, min_horizontal, max_horizontal),
 		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
 	)
-
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
-#	print(target_point.position)
 	if not has_camera_viewport_panel_size:
 		_on_dead_zone_changed()
-		
 
 
 func _on_dead_zone_changed() -> void:
 	if not is_instance_valid(_active_pcam_camera): return
-
+	
 	if camera_viewport_panel.size == Vector2.ZERO:
 		has_camera_viewport_panel_size = false
 		return

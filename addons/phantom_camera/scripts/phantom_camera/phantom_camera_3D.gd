@@ -25,6 +25,7 @@ var _follow_group_distance_auto_min: 		float = 1
 var _follow_group_distance_auto_max: 		float = 5
 var _follow_group_distance_auto_divisor:	float = 10
 var _camera_offset: Vector3
+var _current_rotation: Vector3
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -356,21 +357,8 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if Engine.is_editor_hint():
-						
+#						MIGHT BE NEEDED
 						set_global_position(_get_framed_view_global_position())
-#						var opposite: float = sqrt(follow_distance - global_position.y)
-#						global_position.y = _target_position_with_offset().y + -opposite
-#						global_position.z = sqrt(pow(follow_distance, follow_distance) - pow(opposite, opposite)) 
-
-#						TODO:	Replaces the above set_global_position above
-#								needs to account for rotation and effectively pivot around its follow target
-#						set_global_position(
-#							Vector3 (
-#								sin(theta) * follow_distance,
-#								position.y,
-#								cos(theta) * follow_distance,
-#							) + Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
-#						)
 
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
 						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
@@ -401,8 +389,6 @@ func _process(delta: float) -> void:
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
 					var view_side: Vector2 = Properties.get_framed_side_offset()
-					
-					
 
 #					var min_horizontal = 0.5 - Properties.follow_framed_dead_zone_width / 2
 #					var max_horizontal = 0.5 + Properties.follow_framed_dead_zone_width / 2
@@ -444,14 +430,25 @@ func _process(delta: float) -> void:
 #					unprojected_position_clamped_x >= max_horizontal or \
 #					unprojected_position_clamped_y >= max_vertical or \
 #					unprojected_position_clamped_y <= min_vertical:
+#					var adjacent: float = sqrt(pow(follow_distance, 2) - pow(opposite_l, 2))
+#					print(pow(4.9, 4.9))
+#					print(adjacent + _target_position_with_offset().z)
+					
+					
+#					print(sqrt(follow_distance - global_position.y))
 
+					if _current_rotation != get_rotation():
+#						print("rotation has changed")
+						set_global_position(_get_framed_view_global_position())
+#						var opposite: float = sin(-get_rotation().x) * follow_distance + _target_position_with_offset().y
+#						global_position.y = _target_position_with_offset().y + opposite
+#						global_position.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _target_position_with_offset().z
+#						_current_rotation = get_rotation()
 
 					if view_side != Vector2.ZERO:
-						# print("View side is: ", view_side)
 						var target_position: Vector3 = _target_position_with_offset() + _camera_offset
 						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
 						var dead_zone_height: float = Properties.follow_framed_dead_zone_height
-#						global_position += Vector3(view_side.x, 0, -view_side.y) * delta * 5
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
@@ -463,12 +460,16 @@ func _process(delta: float) -> void:
 							else:
 								global_position = _target_position_with_offset()
 						else:
-#							global_position += target_position - global_position # + Vector3(0,-sin(rotation.x) * follow_distance - target_position.y, 0)
-							var opposite: float = sqrt(follow_distance - global_position.y)
-							global_position.y = _target_position_with_offset().y + -opposite
-							global_position.z = sqrt(pow(follow_distance, follow_distance) - pow(opposite, opposite))
+							if _current_rotation != get_rotation():
+								var opposite: float = sin(-get_rotation().x) * follow_distance + _target_position_with_offset().y
+								global_position.y = _target_position_with_offset().y + opposite
+								global_position.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _target_position_with_offset().z
+								_current_rotation = get_rotation()
+							else:
+								global_position += target_position - global_position
 					else:
 						_camera_offset = global_position - _target_position_with_offset()
+						_current_rotation = get_rotation()
 
 	if _should_look_at:
 		match look_at_mode:
@@ -496,17 +497,6 @@ func _target_position_with_offset() -> Vector3:
 func _get_framed_view_global_position() -> Vector3:
 	return _target_position_with_offset() + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-	
-#	var opposite: float = sqrt(follow_distance - global_position.y)
-#	print(get_transform().basis.z)
-	
-#	return Vector3(
-#		_target_position_with_offset().x,
-##		_target_position_with_offset().x + get_transform().basis.z. * follow_distance,
-#		_target_position_with_offset().y + -opposite,
-#		sqrt(pow(follow_distance, follow_distance) - pow(opposite, opposite)) 
-#
-#	)
 
 
 func _get_raw_unprojected_position() -> Vector2:
