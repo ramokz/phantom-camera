@@ -14,9 +14,6 @@ var pcam_host_group: Array[Node]
 @onready var dead_zone_right_center_panel: Panel = %DeadZoneRightCenterPanel
 @onready var target_point: Panel = %TargetPoint
 
-var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
-
 var aspect_ratio_container: AspectRatioContainer
 @onready var aspect_ratio_containers: AspectRatioContainer = %AspectRatioContainer
 @onready var camera_viewport_panel: Panel = aspect_ratio_containers.get_child(0)
@@ -62,7 +59,7 @@ func _ready():
 	connect("visibility_changed", _visibility_check)
 	set_process(false)
 	
-	aspect_ratio_containers.set_ratio(viewport_width / viewport_height)
+	aspect_ratio_containers.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
 
 #	TODO - Don't think this is needed / does anything?
 	var root_node = get_tree().get_root().get_child(0)
