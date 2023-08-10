@@ -533,28 +533,26 @@ func get_unprojected_position() -> Vector2:
 
 
 ##################
-# Setters & Getters Functions
+# Public Functions
 ##################
+## Assigns the PhantomCamera3D to a new PhantomCameraHost.
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
-
-
+## Gets the current PhantomCameraHost this PhantomCamera3D is assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return Properties.pcam_host_owner
 
 
+## Assigns new Priority value.
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
+## Gets current Priority value.
 func get_priority() -> int:
 	return Properties.priority
 
 
-func add_node_to_look_at_group(node: Node3D) -> void:
-	if not _look_at_group_nodes.has(node):
-		_look_at_group_nodes.append(node)
-func remove_node_from_look_at_group(node: Node3D) -> void:
-	_look_at_group_nodes.erase(node)
-
+## Assigns a new Tween Duration value.
+## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_duration(value: float) -> void:
 	if Properties.tween_resource:
 		Properties.tween_resource_default.duration = value
@@ -563,12 +561,15 @@ func set_tween_duration(value: float) -> void:
 		Properties.tween_resource = null # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.duration = value
+## Gets the current Tween Duration value
 func get_tween_duration() -> float:
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
 	else:
 		return Properties.tween_resource_default.duration
 
+## Assigns a new Tween Transition value.
+## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_transition(value: Constants.TweenTransitions) -> void:
 	if Properties.tween_resource:
 		Properties.tween_resource_default.duration = Properties.tween_resource.duration
@@ -577,12 +578,15 @@ func set_tween_transition(value: Constants.TweenTransitions) -> void:
 		Properties.tween_resource = null # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.transition = value
+## Gets the current Tween Transition value.
 func get_tween_transition() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
 
+## Assigns a new Tween Ease value.
+## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_ease(value: Constants.TweenEases) -> void:
 	if Properties.tween_resource:
 		Properties.tween_resource_default.duration = Properties.tween_resource.duration
@@ -591,24 +595,32 @@ func set_tween_ease(value: Constants.TweenEases) -> void:
 		Properties.tween_resource = null # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.ease = value
+## Gets the Current Tween Ease value.
 func get_tween_ease() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.ease
 	else:
 		return Properties.tween_resource_default.ease
 
+
+## Gets current active state of the PhantomCamera3D.
+## If it returns true, it means the PhantomCamera3D is what the Camera2D is currently following. 
 func is_active() -> bool:
 	return Properties.is_active
 
 
+## Enables or disables the Tween on Load property. 
 func set_tween_on_load(value: bool) -> void:
 	Properties.tween_onload = value
+## Gets the current Tween On Load value.
 func is_tween_on_load() -> bool:
 	return Properties.tween_onload
 
 
+## Assigns a new Node3D as the Follow Target.
 func set_follow_target_node(value: Node3D) -> void:
 	Properties.follow_target_node = value
+## Gets the current Node3D target.
 func get_follow_target_node():
 	if Properties.follow_target_node:
 		return Properties.follow_target_node
@@ -616,8 +628,10 @@ func get_follow_target_node():
 		printerr("No Follow Target Node assigned")
 
 
+## Assigns a new Path3D to the Follow Path property.
 func set_follow_path(value: Path3D) -> void:
 	Properties.follow_path_node = value
+## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:
 		return Properties.follow_path_node
@@ -625,103 +639,149 @@ func get_follow_path():
 		printerr("No Follow Path assigned")
 
 
+## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
 func get_follow_mode() -> int:
 	return Properties.follow_mode
 # Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 
+
+## Assigns a new Vector3 for the Follow Target Offset property.
 func set_follow_target_offset(value: Vector3) -> void:
 	Properties.follow_target_offset_3D = value
+## Gets the current Vector3 for the Follow Target Offset property.
 func get_follow_target_offset() -> Vector3:
 	return Properties.follow_target_offset_3D
 
+
+## Enables or disables Follow Damping.
 func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
+## Gets the currents Follow Damping property.
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
 
+
+## Assigns new Damping value.
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
+## Gets the currents Follow Damping value.
 func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
 
+
+## Assigns a new Follow Distance value.
 func set_follow_distance(value: float) -> void:
 	follow_distance = value
+## Gets Follow Distance value.
 func get_follow_distance() -> float:
 	return follow_distance
 
 
+## Adds a single Node3D to Follow Group array.
 func append_follow_group_node(value: Node3D) -> void:
 	if not Properties.follow_group_nodes_3D.has(value):
 		Properties.follow_group_nodes_3D.append(value)
 	else:
 		printerr(value, " is already part of Follow Group")
+## Adds an Array of type Node3D to Follow Group array.
 func append_array_follow_group_nodes(value: Array[Node3D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_3D.has(val):
 			Properties.follow_group_nodes_3D.append(val)
 		else:
 			printerr(value, " is already part of Follow Group")
+
+## Removes Node3D from Follow Group array.
 func erase_follow_group_node(value: Node3D) -> void:
 	Properties.follow_group_nodes_3D.erase(value)
+## Gets all Node3D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node3D]:
 	return Properties.follow_group_nodes_3D
 
+## Assigns new Auto Follow Distance value.
 func set_auto_follow_distance(value: bool) -> void:
 	_follow_group_distance_auto = value
+## Gets Auto Follow Distance value.
 func get_auto_follow_distance() -> bool:
 	return _follow_group_distance_auto
 
+## Assigns new Min Auto Follow Distance value.
 func set_min_auto_follow_distance(value: float) -> void:
 	_follow_group_distance_auto_min = value
+## Gets Min Follow Distance value.
 func get_min_auto_follow_distance() -> float:
 	return _follow_group_distance_auto_min
 
+## Assigns new Min Auto Follow Distance value.
 func set_max_auto_follow_distance(value: float) -> void:
 	_follow_group_distance_auto_max = value
+## Gets Max Auto Follow Distance value.
 func get_max_auto_follow_distance() -> float:
 	return _follow_group_distance_auto_max
 
+## Assigns new Auto Follow Distance Divisor value.
 func set_auto_follow_distance_divisor(value: float) -> void:
 	_follow_group_distance_auto_divisor = value
+
+## Gets Auto Follow Divisor value.
 func get_auto_follow_distance_divisor() -> float:
 	return _follow_group_distance_auto_divisor
 
 
+## Gets Look At Mode.
+## Note: To set a new Look At Mode, a separate PhantomCamera3D should be used.
 func get_look_at_mode() -> String:
 	return LookAtMode.keys()[look_at_mode].capitalize()
-# Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 
+## Assigns new Node3D as Look At Target.
 func set_look_at_target(value: Node3D) -> void:
 	_look_at_target_node = value
 	_should_look_at = true
 	_has_look_at_target = true
+## Gets current Node3D from Look At Target property.
 func get_look_at_target():
 	if _look_at_target_node:
 		return _look_at_target_node
 	else:
 		printerr("No Look At target node assigned")
 
+## Adds Node3D to Look At Group array.
+func add_node_to_look_at_group(node: Node3D) -> void:
+	if not _look_at_group_nodes.has(node):
+		_look_at_group_nodes.append(node)
+## Removes Node3D from Look At Group array.
+func remove_node_from_look_at_group(node: Node3D) -> void:
+	_look_at_group_nodes.erase(node)
+
+
+## Assigns a new Vector3 to the Look At Target Offset value.
 func set_look_at_target_offset(value: Vector3) -> void:
 	look_at_target_offset = value
+## Gets the current Look At Target Offset value.
 func get_look_at_target_offset() -> Vector3:
 	return look_at_target_offset
 
-func get_look_at_group_nodes() -> Array[Node3D]:
-	return _look_at_group_nodes
+## Assigns Node3D to Look At Group array.
 func append_look_at_group_node(value: Node3D) -> void:
 	if not _look_at_group_nodes.has(value):
 		_look_at_group_nodes.append(value)
 	else:
 		printerr(value, " is already part of Look At Group")
+## Assigns array of type Node3D to Look At Group array.
 func append_array_look_at_group_nodes(value: Array[Node3D]) -> void:
 	for val in value:
 		if not _look_at_group_nodes.has(val):
 			_look_at_group_nodes.append(val)
 		else:
 			printerr(val, " is already part of Look At Group")
+## Removes Node3D from Look At Group array.
 func erase_look_at_group_node(value: Node3D) -> void:
 	_look_at_group_nodes.erase(value)
+## Gets all the Node3D in Look At Group array. 
+func get_look_at_group_nodes() -> Array[Node3D]:
+	return _look_at_group_nodes
 
 
+## Gets Inactive Update Mode property.
 func get_inactive_update_mode() -> String:
 	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()

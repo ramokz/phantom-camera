@@ -252,22 +252,29 @@ func _target_position_with_offset() -> Vector2:
 ##################
 # Public Functions
 ##################
+## Gets the current PhantomCameraHost this PhantomCamera2D is assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return Properties.pcam_host_owner
 
 
+## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
 	Properties.zoom = value
+## Gets current Zoom value.
 func get_zoom() -> Vector2:
 	return Properties.zoom
 
 
+## Assigns new Priority value.
 func set_priority(value: int) -> void:
 	Properties.set_priority(value, self)
+## Gets current Priority value.
 func get_priority() -> int:
 	return Properties.priority
 
 
+## Assigns a new Tween Duration value.
+## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_duration(value: float) -> void:
 	if Properties.tween_resource:
 		Properties.tween_resource_default.duration = value
@@ -276,12 +283,15 @@ func set_tween_duration(value: float) -> void:
 		Properties.tween_resource = null # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.duration = value
+## Gets the current Tween Duration value
 func get_tween_duration() -> float:
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
 	else:
 		return Properties.tween_resource_default.duration
 
+## Assigns a new Tween Transition value.
+## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_transition(value: Constants.TweenTransitions) -> void:
 	if Properties.tween_resource:
 		Properties.tween_resource_default.duration = Properties.tween_resource.duration
@@ -290,12 +300,15 @@ func set_tween_transition(value: Constants.TweenTransitions) -> void:
 		Properties.tween_resource = null # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.transition = value
+## Gets the current Tween Transition value.
 func get_tween_transition() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
-
+		
+## Assigns a new Tween Ease value.
+## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_ease(value: Constants.TweenEases) -> void:
 	if Properties.tween_resource:
 		Properties.tween_resource_default.duration = Properties.tween_resource.duration
@@ -304,6 +317,7 @@ func set_tween_ease(value: Constants.TweenEases) -> void:
 		Properties.tween_resource = null # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.ease = value
+## Gets the Current Tween Ease value.
 func get_tween_ease() -> int:
 	if Properties.tween_resource:
 		return Properties.tween_resource.ease
@@ -311,88 +325,122 @@ func get_tween_ease() -> int:
 		return Properties.tween_resource_default.ease
 
 
+## Gets current active state of the PhantomCamera2D.
+## If it returns true, it means the PhantomCamera2D is what the Camera2D is currently following. 
 func is_active() -> bool:
 	return Properties.is_active
 
 
+## Enables or disables the Tween on Load property. 
 func set_tween_on_load(value: bool) -> void:
 	Properties.tween_onload = value
+## Gets the current Tween On Load value.
 func is_tween_on_load() -> bool:
 	return Properties.tween_onload
 
 
+## Assigns a new Node2D as the Follow Target.
 func set_follow_target_node(value: Node2D) -> void:
 	Properties.follow_target_node = value
+## Gets the current Node2D target.
 func get_follow_target_node():
 	if Properties.follow_target_node:
 		return Properties.follow_target_node
 	else:
 		printerr("No Follow Target Node assigned")
 
+
+## Assigns a new Path2D to the Follow Path property.
 func set_follow_path(value: Path2D) -> void:
 	Properties.follow_path_node = value
+## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:
 		return Properties.follow_path_node
 	else:
 		printerr("No Follow Path assigned")
 
+
+## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
 func get_follow_mode() -> int:
 	return Properties.follow_mode
 # Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 
+
+## Assigns a new Vector2 for the Follow Target Offset property.
 func set_follow_target_offset(value: Vector2) -> void:
 	Properties.follow_target_offset_2D = value
+## Gets the current Vector2 for the Follow Target Offset property.
 func get_follow_target_offset() -> Vector2:
 	return Properties.follow_target_offset_2D
 
+
+## Enables or disables Follow Damping.
 func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
+## Gets the currents Follow Damping property.
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
 
+
+## Assigns new Damping value.
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
+## Gets the currents Follow Damping value.
 func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
 
 
+## Adds a single Node2D to Follow Group array.
 func append_follow_group_node(value: Node2D) -> void:
 	if not Properties.follow_group_nodes_2D.has(value):
 		Properties.follow_group_nodes_2D.append(value)
 	else:
 		printerr(value, " is already part of Follow Group")
+## Adds an Array of type Node2D to Follow Group array.
 func append_array_follow_group_nodes(value: Array[Node2D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_2D.has(val):
 			Properties.follow_group_nodes_2D.append(val)
 		else:
 			printerr(val, " is already part of Follow Group")
+
+## Removes Node2D from Follow Group array.
 func erase_follow_group_node(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.erase(value)
+## Gets all Node2D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D
 
+## Assign new Auto zoom value.
 func set_auto_zoom(value: bool) -> void:
 	follow_group_zoom_auto = value
+## Gets auto zoom value.
 func get_auto_zoom() -> bool:
 	return follow_group_zoom_auto
 
+## Assigns Min Zoom value.
 func set_min_zoom(value: float) -> void:
 	follow_group_zoom_min = value
+## Gets Min Zoom value.
 func get_min_zoom() -> float:
 	return follow_group_zoom_min
 
+## Assigns Max Zoom value.
 func set_max_zoom(value: float) -> void:
 	follow_group_zoom_max = value
+## Gets Max Zoom value.
 func get_max_zoom() -> float:
 	return follow_group_zoom_max
 
+## Assigns Zoom Margin value.
 func set_zoom_margin(value: Vector4) -> void:
 	follow_group_zoom_margin = value
+## Gets Zoom Margin value.
 func get_zoom_margin() -> Vector4:
 	return follow_group_zoom_margin
 
 
+## Gets Interactive Update Mode property.
 func get_inactive_update_mode() -> String:
 	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
