@@ -361,8 +361,8 @@ func _process(delta: float) -> void:
 						set_global_position(_get_framed_view_global_position())
 
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
-						var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-						var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+						var viewport_width: float = get_viewport().size.x
+						var viewport_height: float = get_viewport().size.y
 						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 
@@ -512,10 +512,10 @@ func _on_dead_zone_changed() -> void:
 
 func get_unprojected_position() -> Vector2:
 	var unprojected_position: Vector2 = _get_raw_unprojected_position()
-	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-	var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var viewport_width: float = get_viewport().size.x
+	var viewport_height: float = get_viewport().size.y
 	var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-	var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+	var visible_rect_size: Vector2 = get_viewport().size
 
 	unprojected_position = unprojected_position - visible_rect_size / 2
 	if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
