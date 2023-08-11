@@ -551,14 +551,21 @@ func get_priority() -> int:
 	return Properties.priority
 
 
+## Assigns a new PhantomCameraTween resource to the PhantomCamera3D
+func set_tween_resource(value: PhantomCameraTween) -> void:
+	Properties.tween_resource = value
+## Gets the PhantomCameraTween resource assigned to the PhantomCamera3D
+func get_tween_resource() -> PhantomCameraTween:
+	return Properties.tween_resource
+
 ## Assigns a new Tween Duration value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_duration(value: float) -> void:
-	if Properties.tween_resource:
+	if get_tween_resource():
 		Properties.tween_resource_default.duration = value
 		Properties.tween_resource_default.transition = Properties.tween_resource.transition
 		Properties.tween_resource_default.ease = Properties.tween_resource.ease
-		Properties.tween_resource = null # Clears resource from PCam instance
+		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.duration = value
 ## Gets the current Tween Duration value
@@ -571,16 +578,16 @@ func get_tween_duration() -> float:
 ## Assigns a new Tween Transition value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_transition(value: Constants.TweenTransitions) -> void:
-	if Properties.tween_resource:
+	if get_tween_resource():
 		Properties.tween_resource_default.duration = Properties.tween_resource.duration
 		Properties.tween_resource_default.transition = value
 		Properties.tween_resource_default.ease = Properties.tween_resource.ease
-		Properties.tween_resource = null # Clears resource from PCam instance
+		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.transition = value
 ## Gets the current Tween Transition value.
 func get_tween_transition() -> int:
-	if Properties.tween_resource:
+	if get_tween_resource():
 		return Properties.tween_resource.transition
 	else:
 		return Properties.tween_resource_default.transition
@@ -588,16 +595,16 @@ func get_tween_transition() -> int:
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_ease(value: Constants.TweenEases) -> void:
-	if Properties.tween_resource:
+	if get_tween_resource():
 		Properties.tween_resource_default.duration = Properties.tween_resource.duration
 		Properties.tween_resource_default.transition = Properties.tween_resource.ease
 		Properties.tween_resource_default.ease = value
-		Properties.tween_resource = null # Clears resource from PCam instance
+		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.ease = value
 ## Gets the Current Tween Ease value.
 func get_tween_ease() -> int:
-	if Properties.tween_resource:
+	if get_tween_resource():
 		return Properties.tween_resource.ease
 	else:
 		return Properties.tween_resource_default.ease
