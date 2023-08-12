@@ -21,7 +21,7 @@ func _enter_tree() -> void:
 	# Phantom Camera 3D Gizmo
 	add_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
 
-	# Phantom Viewfinder
+	# Viewfinder
 	framed_viewfinder_panel_instance = FramedViewPanel.instantiate()
 	framed_viewfinder_panel_instance.editor_interface = get_editor_interface()
 	add_control_to_bottom_panel(framed_viewfinder_panel_instance, "Phantom Camera")
