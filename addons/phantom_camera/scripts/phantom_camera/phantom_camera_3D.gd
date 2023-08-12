@@ -19,7 +19,14 @@ const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
-var follow_distance: float = 1
+var follow_distance: float = 1:
+	set(value):
+		follow_distance = value
+		if is_instance_valid(Properties.follow_target_node):
+			set_global_position(_get_framed_view_global_position())
+	get:
+		return follow_distance
+
 var _follow_group_distance_auto: 			bool
 var _follow_group_distance_auto_min: 		float = 1
 var _follow_group_distance_auto_max: 		float = 5
@@ -155,15 +162,13 @@ func _set(property: StringName, value) -> bool:
 	if Properties.follow_mode == Constants.FollowMode.FRAMED:
 		if Properties.follow_framed_initial_set and Properties.follow_target_node:
 			Properties.follow_framed_initial_set = false
-#			print(_get_framed_view_global_position())
-#			global_position = _get_framed_view_global_position()
 			Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 	else:
 		if Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
 			Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 
 	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
-		if value == 0:
+		if value <= 0:
 			follow_distance = 0.001
 		else:
 			follow_distance = value
@@ -302,7 +307,6 @@ func _exit_tree() -> void:
 
 	Properties.pcam_exit_tree(self)
 
-var theta: float = PI / 4
 
 func _process(delta: float) -> void:
 	if not Properties.is_active:
