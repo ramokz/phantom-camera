@@ -181,7 +181,6 @@ func _get_camera_2D() -> Camera2D:
 
 func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 	var camera_string: String
-	var pcam_host_string: String = Constants.PCAM_HOST_NODE_NAME
 	var pcam_string: String
 	var color: Color
 	var color_alpha: Color
@@ -215,18 +214,28 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
 #								_on_dead_zone_changed()
+
 						_set_viewfinder_state()
+
+						# Related to: https://github.com/ramokz/phantom-camera/issues/105
+						# REMOVE BELOW WHEN 2D VIEWFINDER IS SUPPORTED
+						if not is_2D:
+							%NoSupportMsg.set_visible(false)
+						elif is_2D:
+							%NoSupportMsg.set_visible(true)
+						### REMOVAL END
+
 					else:
 #						No PCam in scene
 						_update_button(pcam_string, pcam_icon, color)
 						_set_empty_viewfinder_state(pcam_string, pcam_icon)
 				else:
 #					No PCamHost in scene
-					_update_button(pcam_host_string, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
+					_update_button(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
 					_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 		else:
 #			No PCamHost in scene
-			_update_button(pcam_host_string, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
+			_update_button(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
 			_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 	else:
 #		No Camera
@@ -373,6 +382,7 @@ func _process(_delta: float):
 		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
 	)
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
+	
 	if not has_camera_viewport_panel_size:
 		_on_dead_zone_changed()
 
@@ -397,3 +407,5 @@ func _on_dead_zone_changed() -> void:
 	max_horizontal = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
 	min_vertical = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
 	max_vertical = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
+	
+#	target_point.position = Vector2(viewport_width / 2, viewport_height /  2)

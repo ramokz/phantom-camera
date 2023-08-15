@@ -40,9 +40,9 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_obaj6"]
-
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_iho1a"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_obaj6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fsxik"]
 content_margin_left = 10.0
@@ -70,7 +70,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.552941, 0.647059, 0.952941, 1)
+border_color = Color(0.988235, 0.498039, 0.498039, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -219,7 +219,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-ratio = 1.77778
 stretch_mode = 1
 
 [node name="CameraViewportPanel" type="Panel" parent="FramedViewfinder/AspectRatioContainer"]
@@ -242,6 +241,25 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_q7vs4")
 
+[node name="NoSupportMsg" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
+text = "2D scene support not available yet
+(Control scenes are not supported)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="EmptyStateControl" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
@@ -263,6 +281,7 @@ color = Color(0, 0, 0, 1)
 metadata/_edit_lock_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="EmptyStateControl"]
+visible = false
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
