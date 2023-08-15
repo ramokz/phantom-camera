@@ -277,10 +277,11 @@ func get_priority() -> int:
 func set_tween_resource(value: PhantomCameraTween) -> void:
 	Properties.tween_resource = value
 ## Gets the PhantomCameraTween resource assigned to the PhantomCamera2D
+## Returns null if there's nothing assigned to it.
 func get_tween_resource() -> PhantomCameraTween:
 	return Properties.tween_resource
 
-## Assigns a new Tween Duration value.
+## Assigns a new Tween Duration value. The duration value is in seconds.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_duration(value: float) -> void:
 	if get_tween_resource():
@@ -290,7 +291,7 @@ func set_tween_duration(value: float) -> void:
 		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.duration = value
-## Gets the current Tween Duration value
+## Gets the current Tween Duration value. The duration value is in seconds.
 func get_tween_duration() -> float:
 	if get_tween_resource():
 		return get_tween_resource().duration
@@ -324,7 +325,7 @@ func set_tween_ease(value: Constants.TweenEases) -> void:
 		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.ease = value
-## Gets the Current Tween Ease value.
+## Gets the current Tween Ease value.
 func get_tween_ease() -> int:
 	if get_tween_resource():
 		return get_tween_resource().ease
@@ -338,13 +339,18 @@ func is_active() -> bool:
 	return Properties.is_active
 
 
-## Enables or disables the Tween on Load property. 
+## Enables or disables the Tween on Load. 
 func set_tween_on_load(value: bool) -> void:
 	Properties.tween_onload = value
 ## Gets the current Tween On Load value.
 func is_tween_on_load() -> bool:
 	return Properties.tween_onload
 
+
+## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
+## Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+func get_follow_mode() -> int:
+	return Properties.follow_mode
 
 ## Assigns a new Node2D as the Follow Target.
 func set_follow_target_node(value: Node2D) -> void:
@@ -366,13 +372,6 @@ func get_follow_path():
 		return Properties.follow_path_node
 	else:
 		printerr("No Follow Path assigned")
-
-
-## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
-func get_follow_mode() -> int:
-	return Properties.follow_mode
-# Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
-
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
 func set_follow_target_offset(value: Vector2) -> void:
@@ -405,7 +404,7 @@ func append_follow_group_node(value: Node2D) -> void:
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node2D to Follow Group array.
-func append_array_follow_group_nodes(value: Array[Node2D]) -> void:
+func append_follow_group_node_array(value: Array[Node2D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_2D.has(val):
 			Properties.follow_group_nodes_2D.append(val)
@@ -419,32 +418,33 @@ func erase_follow_group_node(value: Node2D) -> void:
 func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D
 
-## Assign new Auto zoom value.
+
+## Enables or disables Auto zoom when using Group Follow.
 func set_auto_zoom(value: bool) -> void:
 	follow_group_zoom_auto = value
-## Gets auto zoom value.
+## Gets Auto Zoom state.
 func get_auto_zoom() -> bool:
 	return follow_group_zoom_auto
 
-## Assigns Min Zoom value.
-func set_min_zoom(value: float) -> void:
+## Assigns new Min Auto Zoom value.
+func set_min_auto_zoom(value: float) -> void:
 	follow_group_zoom_min = value
-## Gets Min Zoom value.
-func get_min_zoom() -> float:
+## Gets Min Auto Zoom value.
+func get_min_auto_zoom() -> float:
 	return follow_group_zoom_min
 
-## Assigns Max Zoom value.
-func set_max_zoom(value: float) -> void:
+## Assigns new Max Auto Zoom value.
+func set_max_auto_zoom(value: float) -> void:
 	follow_group_zoom_max = value
-## Gets Max Zoom value.
-func get_max_zoom() -> float:
+## Gets Max Auto Zoom value.
+func get_max_auto_zoom() -> float:
 	return follow_group_zoom_max
 
-## Assigns Zoom Margin value.
-func set_zoom_margin(value: Vector4) -> void:
+## Assigns new Zoom Auto Margin value.
+func set_zoom_auto_margin(value: Vector4) -> void:
 	follow_group_zoom_margin = value
-## Gets Zoom Margin value.
-func get_zoom_margin() -> Vector4:
+## Gets Zoom Auto Margin value.
+func get_zoom_auto_margin() -> Vector4:
 	return follow_group_zoom_margin
 
 

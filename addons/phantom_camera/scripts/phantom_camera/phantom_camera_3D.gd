@@ -501,10 +501,11 @@ func get_priority() -> int:
 func set_tween_resource(value: PhantomCameraTween) -> void:
 	Properties.tween_resource = value
 ## Gets the PhantomCameraTween resource assigned to the PhantomCamera3D
+## Returns null if there's nothing assigned to it.
 func get_tween_resource() -> PhantomCameraTween:
 	return Properties.tween_resource
 
-## Assigns a new Tween Duration value.
+## Assigns a new Tween Duration value. The duration value is in seconds.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_duration(value: float) -> void:
 	if get_tween_resource():
@@ -514,7 +515,7 @@ func set_tween_duration(value: float) -> void:
 		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.duration = value
-## Gets the current Tween Duration value
+## Gets the current Tween Duration value. The duration value is in seconds.
 func get_tween_duration() -> float:
 	if Properties.tween_resource:
 		return Properties.tween_resource.duration
@@ -548,7 +549,7 @@ func set_tween_ease(value: Constants.TweenEases) -> void:
 		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		Properties.tween_resource_default.ease = value
-## Gets the Current Tween Ease value.
+## Gets the current Tween Ease value.
 func get_tween_ease() -> int:
 	if get_tween_resource():
 		return Properties.tween_resource.ease
@@ -562,12 +563,18 @@ func is_active() -> bool:
 	return Properties.is_active
 
 
-## Enables or disables the Tween on Load property. 
+## Enables or disables the Tween on Load. 
 func set_tween_on_load(value: bool) -> void:
 	Properties.tween_onload = value
 ## Gets the current Tween On Load value.
 func is_tween_on_load() -> bool:
 	return Properties.tween_onload
+
+
+## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
+## Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+func get_follow_mode() -> int:
+	return Properties.follow_mode
 
 
 ## Assigns a new Node3D as the Follow Target.
@@ -590,12 +597,6 @@ func get_follow_path():
 		return Properties.follow_path_node
 	else:
 		printerr("No Follow Path assigned")
-
-
-## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
-func get_follow_mode() -> int:
-	return Properties.follow_mode
-# Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 
 
 ## Assigns a new Vector3 for the Follow Target Offset property.
@@ -637,7 +638,7 @@ func append_follow_group_node(value: Node3D) -> void:
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node3D to Follow Group array.
-func append_array_follow_group_nodes(value: Array[Node3D]) -> void:
+func append_follow_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_3D.has(val):
 			Properties.follow_group_nodes_3D.append(val)
@@ -651,21 +652,21 @@ func erase_follow_group_node(value: Node3D) -> void:
 func get_follow_group_nodes() -> Array[Node3D]:
 	return Properties.follow_group_nodes_3D
 
-## Assigns new Auto Follow Distance value.
+## Enables or disables Auto Follow Distance when using Group Follow.
 func set_auto_follow_distance(value: bool) -> void:
 	_follow_group_distance_auto = value
-## Gets Auto Follow Distance value.
+## Gets Auto Follow Distance state.
 func get_auto_follow_distance() -> bool:
 	return _follow_group_distance_auto
 
 ## Assigns new Min Auto Follow Distance value.
 func set_min_auto_follow_distance(value: float) -> void:
 	_follow_group_distance_auto_min = value
-## Gets Min Follow Distance value.
+## Gets Min Auto Follow Distance value.
 func get_min_auto_follow_distance() -> float:
 	return _follow_group_distance_auto_min
 
-## Assigns new Min Auto Follow Distance value.
+## Assigns new Max Auto Follow Distance value.
 func set_max_auto_follow_distance(value: float) -> void:
 	_follow_group_distance_auto_max = value
 ## Gets Max Auto Follow Distance value.
@@ -681,10 +682,10 @@ func get_auto_follow_distance_divisor() -> float:
 	return _follow_group_distance_auto_divisor
 
 
-## Gets Look At Mode.
+## Gets Look At Mode. Value is based on LookAtMode enum.
 ## Note: To set a new Look At Mode, a separate PhantomCamera3D should be used.
-func get_look_at_mode() -> String:
-	return LookAtMode.keys()[look_at_mode].capitalize()
+func get_look_at_mode() -> int:
+	return look_at_mode
 
 ## Assigns new Node3D as Look At Target.
 func set_look_at_target(value: Node3D) -> void:
@@ -698,14 +699,6 @@ func get_look_at_target():
 	else:
 		printerr("No Look At target node assigned")
 
-## Adds Node3D to Look At Group array.
-func add_node_to_look_at_group(node: Node3D) -> void:
-	if not _look_at_group_nodes.has(node):
-		_look_at_group_nodes.append(node)
-## Removes Node3D from Look At Group array.
-func remove_node_from_look_at_group(node: Node3D) -> void:
-	_look_at_group_nodes.erase(node)
-
 
 ## Assigns a new Vector3 to the Look At Target Offset value.
 func set_look_at_target_offset(value: Vector3) -> void:
@@ -714,14 +707,14 @@ func set_look_at_target_offset(value: Vector3) -> void:
 func get_look_at_target_offset() -> Vector3:
 	return look_at_target_offset
 
-## Assigns Node3D to Look At Group array.
+## Appends Node3D to Look At Group array.
 func append_look_at_group_node(value: Node3D) -> void:
 	if not _look_at_group_nodes.has(value):
 		_look_at_group_nodes.append(value)
 	else:
 		printerr(value, " is already part of Look At Group")
-## Assigns array of type Node3D to Look At Group array.
-func append_array_look_at_group_nodes(value: Array[Node3D]) -> void:
+## Appends array of type Node3D to Look At Group array.
+func append_look_at_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not _look_at_group_nodes.has(val):
 			_look_at_group_nodes.append(val)
