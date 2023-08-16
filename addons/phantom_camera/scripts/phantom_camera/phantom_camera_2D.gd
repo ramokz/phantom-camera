@@ -218,10 +218,8 @@ func _physics_process(delta: float) -> void:
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
-					Properties.viewport_position = get_follow_target_node().get_global_transform_with_canvas().get_origin() / get_viewport_rect().size
-		#				print(get_follow_target_node().get_global_transform_with_canvas().get_origin())
-		#				print(Properties.viewport_position)
-				
+					Properties.viewport_position = (get_follow_target_node().get_global_transform_with_canvas().get_origin() + Properties.follow_target_offset_2D) / get_viewport_rect().size
+
 					if Properties.get_framed_side_offset() != Vector2.ZERO:
 
 						var target_position: Vector2 = _target_position_with_offset() + _camera_offset
