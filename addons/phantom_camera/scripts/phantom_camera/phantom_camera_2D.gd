@@ -246,6 +246,7 @@ func _physics_process(delta: float) -> void:
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
+
 ##################
 # Public Functions
 ##################
@@ -370,6 +371,7 @@ func get_follow_path():
 	else:
 		printerr("No Follow Path assigned")
 
+
 ## Assigns a new Vector2 for the Follow Target Offset property.
 func set_follow_target_offset(value: Vector2) -> void:
 	Properties.follow_target_offset_2D = value
@@ -384,7 +386,6 @@ func set_follow_has_damping(value: bool) -> void:
 ## Gets the currents Follow Damping property.
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
-
 
 ## Assigns new Damping value.
 func set_follow_damping_value(value: float) -> void:
@@ -407,7 +408,6 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 			Properties.follow_group_nodes_2D.append(val)
 		else:
 			printerr(val, " is already part of Follow Group")
-
 ## Removes Node2D from Follow Group array.
 func erase_follow_group_node(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.erase(value)

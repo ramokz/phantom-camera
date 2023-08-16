@@ -640,7 +640,6 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 			Properties.follow_group_nodes_3D.append(val)
 		else:
 			printerr(value, " is already part of Follow Group")
-
 ## Removes Node3D from Follow Group array.
 func erase_follow_group_node(value: Node3D) -> void:
 	Properties.follow_group_nodes_3D.erase(value)
@@ -672,7 +671,6 @@ func get_max_auto_follow_distance() -> float:
 ## Assigns new Auto Follow Distance Divisor value.
 func set_auto_follow_distance_divisor(value: float) -> void:
 	_follow_group_distance_auto_divisor = value
-
 ## Gets Auto Follow Divisor value.
 func get_auto_follow_distance_divisor() -> float:
 	return _follow_group_distance_auto_divisor
