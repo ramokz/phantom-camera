@@ -360,33 +360,7 @@ func _process(delta: float) -> void:
 					)
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
-					if Engine.is_editor_hint():
-						set_global_position(_get_framed_view_global_position())
-
-						var unprojected_position: Vector2 = _get_raw_unprojected_position()
-						var viewport_width: float = get_viewport().size.x
-						var viewport_height: float = get_viewport().size.y
-						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-
-						unprojected_position = unprojected_position - visible_rect_size / 2
-						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#							print("Landscape View")
-							var aspect_ratio_scale: float = viewport_width / viewport_height
-							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-							unprojected_position.y = (unprojected_position.y + 1) / 2
-						else:
-#							print("Portrait View")
-							var aspect_ratio_scale: float = viewport_height / viewport_width
-							unprojected_position.x = (unprojected_position.x + 1) / 2
-							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-
-						Properties.viewport_position = unprojected_position
-
-					else:
-						########################
-						# When playing the game
-						########################
+					if not Engine.is_editor_hint():
 						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
@@ -419,6 +393,28 @@ func _process(delta: float) -> void:
 						else:
 							_camera_offset = global_position - _target_position_with_offset()
 							_current_rotation = get_rotation()
+					else:
+						set_global_position(_get_framed_view_global_position())
+						var unprojected_position: Vector2 = _get_raw_unprojected_position()
+						var viewport_width: float = get_viewport().size.x
+						var viewport_height: float = get_viewport().size.y
+						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+
+						unprojected_position = unprojected_position - visible_rect_size / 2
+						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+#							Landscape View
+							var aspect_ratio_scale: float = viewport_width / viewport_height
+							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+							unprojected_position.y = (unprojected_position.y + 1) / 2
+						else:
+#							Portrait View
+							var aspect_ratio_scale: float = viewport_height / viewport_width
+							unprojected_position.x = (unprojected_position.x + 1) / 2
+							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+						Properties.viewport_position = unprojected_position
+						
 
 	if _should_look_at:
 		match look_at_mode:
