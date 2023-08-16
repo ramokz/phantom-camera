@@ -266,7 +266,7 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
-	if property == Constants.FOLLOW_VIEWFINDER_NAME:					return Properties.show_viewfinder_in_play
+	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:					return Properties.show_viewfinder_in_play
 
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value

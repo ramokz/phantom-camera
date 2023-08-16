@@ -132,7 +132,7 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
-	if property == Constants.FOLLOW_VIEWFINDER_NAME:					return Properties.show_viewfinder_in_play
+	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:					return Properties.show_viewfinder_in_play
 
 	if property == FOLLOW_GROUP_ZOOM_AUTO:								return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 								return follow_group_zoom_min

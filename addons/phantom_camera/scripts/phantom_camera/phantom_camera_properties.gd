@@ -212,7 +212,7 @@ func add_follow_framed() -> Array:
 		})
 
 		_property_list.append({
-			"name": Constants.FOLLOW_VIEWFINDER_NAME,
+			"name": Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME,
 			"type": TYPE_BOOL,
 			"hint": PROPERTY_HINT_NONE,
 			"usage": PROPERTY_USAGE_DEFAULT
@@ -353,7 +353,7 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:
 		follow_framed_dead_zone_height = value
 		dead_zone_changed.emit()
-	if property == Constants.FOLLOW_VIEWFINDER_NAME:
+	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:
 		show_viewfinder_in_play = value
 
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
