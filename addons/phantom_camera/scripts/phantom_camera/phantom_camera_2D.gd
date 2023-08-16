@@ -227,12 +227,10 @@ func _physics_process(delta: float) -> void:
 						var target_position: Vector2 = _target_position_with_offset() + _camera_offset
 						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
 						var dead_zone_height: float = Properties.follow_framed_dead_zone_height
-		#						global_position += Vector3(view_side.x, 0, -view_side.y) * delta * 5
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
 								global_position = _target_position_with_offset()
-		#						global_position.z += target_position.z - global_position.z
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								global_position = _target_position_with_offset()
 								global_position.x += target_position.x - global_position.x
@@ -243,7 +241,8 @@ func _physics_process(delta: float) -> void:
 					else:
 						_camera_offset = global_position - _target_position_with_offset()
 				else:
-					set_global_position(Properties.follow_target_node.position)
+					set_global_position(_target_position_with_offset())
+#					print(_target_position_with_offset())
 
 
 func _target_position_with_offset() -> Vector2:
