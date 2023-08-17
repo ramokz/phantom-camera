@@ -30,6 +30,10 @@ var multiple_pcam_hosts: bool
 var is_child_of_camera: bool = false
 var _is_3D: bool
 
+var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
+var framed_viewfinder_node: Control
+var viewfinder_needed_check: bool = true
+
 var camera_zoom
 
 ###################
@@ -60,7 +64,6 @@ func _enter_tree() -> void:
 
 		for pcam in _get_pcam_node_group():
 			if not multiple_pcam_hosts:
-
 				pcam_added_to_scene(pcam)
 				pcam.assign_pcam_host()
 #			else:
@@ -88,7 +91,6 @@ func _check_camera_host_amount():
 func _assign_new_active_pcam(pcam: Node) -> void:
 	var no_previous_pcam: bool
 
-
 	if _active_pcam:
 		_previous_active_pcam_position = camera.get_position()
 		_previous_active_pcam_rotation = camera.get_rotation()
@@ -107,7 +109,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	if camera is Camera2D:
 		camera_zoom = camera.get_zoom()
 
-
 	if no_previous_pcam:
 		_previous_active_pcam_position = _active_pcam.get_position()
 		_previous_active_pcam_rotation = _active_pcam.get_rotation()
@@ -115,6 +116,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	tween_duration = 0
 	trigger_pcam_tween = true
 
+#	if _active_pcam.follow_mode == _active_pcam.Constants.FollowMode.FRAMED:
+#		print("Is framed camera")
 
 func _find_pcam_with_highest_priority() -> void:
 	for pcam in _pcam_list:
@@ -131,7 +134,7 @@ func _tween_pcam(delta: float) -> void:
 		return
 	else:
 		_reset_tween_on_load()
-	
+
 	tween_duration += delta
 	camera.set_position(
 		Tween.interpolate_value(
@@ -196,24 +199,44 @@ func _pcam_follow(delta: float) -> void:
 
 	camera.set_rotation(_active_pcam.get_global_rotation())
 
-
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
 	if not trigger_pcam_tween:
+		# Camera follows the PhantomCamera
 		_pcam_follow(delta)
+
+		if viewfinder_needed_check:
+			show_viewfinder_in_play()
+			viewfinder_needed_check = false
+
 	else:
+		# Camera transitions to another PhantomCamera
 		if tween_duration < _active_pcam.get_tween_duration():
 			_tween_pcam(delta)
 		else:
 			tween_duration = 0
 			trigger_pcam_tween = false
+			show_viewfinder_in_play()
+
+
+func show_viewfinder_in_play() -> void:
+	if _active_pcam.Properties.show_viewfinder_in_play:
+		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
+			var canvas_layer: CanvasLayer = CanvasLayer.new()
+			get_tree().get_root().get_child(0).add_child(canvas_layer)
+			
+			framed_viewfinder_node = framed_viewfinder_scene.instantiate()
+			canvas_layer.add_child(framed_viewfinder_node)
+	else:
+		if framed_viewfinder_node:
+			framed_viewfinder_node.queue_free()
 
 
 func _get_pcam_node_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
-	
-	
+
+
 func _get_pcam_host_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
@@ -221,12 +244,12 @@ func _get_pcam_host_group() -> Array[Node]:
 func _process(delta: float) -> void:
 	_process_pcam(delta)
 
+
 ##################
 # Public Functions
 ##################
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
-
 	_find_pcam_with_highest_priority()
 
 

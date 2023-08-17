@@ -25,6 +25,7 @@ var follow_has_path_target: bool
 var follow_path_node: Node
 var follow_path_path: NodePath
 
+
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
@@ -35,6 +36,14 @@ var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
 
+# Framed Follow
+signal dead_zone_changed
+var follow_framed_dead_zone_width: float
+var follow_framed_dead_zone_height: float
+var follow_framed_initial_set: bool
+var show_viewfinder_in_play: bool
+var viewport_position: Vector2
+
 var zoom: Vector2 = Vector2.ONE
 
 var tween_resource: PhantomCameraTween
@@ -42,8 +51,10 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
 var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
+
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
+
 	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 	elif follow_group_paths:
@@ -64,10 +75,13 @@ func camera_enter_tree(pcam: Node):
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
 
+
 func pcam_exit_tree(pcam: Node):
 	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
 
-
+#########################
+# Add Properties
+#########################
 func add_multiple_hosts_properties() -> Array:
 	var _property_list: Array
 
@@ -142,7 +156,7 @@ func add_follow_target_property() -> Array:
 func add_follow_properties() -> Array:
 	var _property_list: Array
 	if follow_mode != Constants.FollowMode.NONE:
-		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP:
+		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP or follow_mode == Constants.FollowMode.FRAMED:
 			if is_3D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
@@ -178,6 +192,35 @@ func add_follow_properties() -> Array:
 	return _property_list
 
 
+func add_follow_framed() -> Array:
+	var _property_list: Array
+
+	if follow_mode == Constants.FollowMode.FRAMED:
+		_property_list.append({
+			"name": Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME,
+			"type": TYPE_FLOAT,
+			"hint": PROPERTY_HINT_RANGE,
+			"hint_string": "0, 1, 0.01,",
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+		_property_list.append({
+			"name": Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME,
+			"type": TYPE_FLOAT,
+			"hint": PROPERTY_HINT_RANGE,
+			"hint_string": "0, 1, 0.01,",
+			"usage": PROPERTY_USAGE_DEFAULT,
+		})
+
+		_property_list.append({
+			"name": Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME,
+			"type": TYPE_BOOL,
+			"hint": PROPERTY_HINT_NONE,
+			"usage": PROPERTY_USAGE_DEFAULT
+		})
+
+	return _property_list
+
+
 func add_tween_properties() -> Array:
 	var _property_list: Array
 
@@ -193,7 +236,7 @@ func add_tween_properties() -> Array:
 
 func add_secondary_properties() -> Array:
 	var _property_list: Array
-	
+
 	_property_list.append({
 		"name": Constants.TWEEN_ONLOAD_NAME,
 		"type": TYPE_BOOL,
@@ -211,6 +254,9 @@ func add_secondary_properties() -> Array:
 	return _property_list
 
 
+#########################
+# Set Properties
+#########################
 func set_phantom_host_property(property: StringName, value, pcam: Node):
 	if property == Constants.PCAM_HOST:
 		if value != null && value is int:
@@ -229,6 +275,9 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 
 		if follow_mode != Constants.FollowMode.GROUP:
 			has_follow_group = false
+
+			if follow_mode == Constants.FollowMode.FRAMED:
+				follow_framed_initial_set = true
 
 		pcam.notify_property_list_changed()
 
@@ -269,7 +318,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 			follow_path_node = null
 		pcam.notify_property_list_changed()
 
-
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
 		if value and value.size() > 0:
 			# Clears the Array in case of reshuffling or updated Nodes
@@ -298,6 +346,16 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 
 		pcam.notify_property_list_changed()
 
+	# Framed Follow
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:
+		follow_framed_dead_zone_width = value
+		dead_zone_changed.emit()
+	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:
+		follow_framed_dead_zone_height = value
+		dead_zone_changed.emit()
+	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:
+		show_viewfinder_in_play = value
+
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:
 		if value is Vector3:
 			follow_target_offset_3D = value
@@ -324,7 +382,7 @@ func set_secondary_properties(property: StringName, value, pcam: Node):
 			has_tweened_onload = false
 		else:
 			has_tweened_onload = true
-	
+
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:
 		inactive_update_mode = value
 
@@ -344,6 +402,9 @@ func set_priority(value: int, pcam: Node) -> void:
 #		pass
 
 
+#########################
+# Other Functions
+#########################
 func assign_pcam_host(pcam: Node) -> void:
 	pcam_host_group = pcam.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
@@ -372,6 +433,24 @@ func check_multiple_pcam_host_property(pcam: Node, multiple_host: bool = false) 
 	pcam.notify_property_list_changed()
 #	pcam_host_group.append_array(host_group)
 
-#func set_process(pcam: Node, should_process: bool) -> void:
-#	pcam.set_process(should_process)
-#	pcam.set_physics_process(should_process)
+
+func get_framed_side_offset() -> Vector2:
+	var frame_out_bounds: Vector2
+
+	if viewport_position.x < 0.5 - follow_framed_dead_zone_width / 2:
+		# Is outside left edge
+		frame_out_bounds.x = -1
+
+	if viewport_position.y < 0.5 - follow_framed_dead_zone_height / 2:
+		# Is outside top edge
+		frame_out_bounds.y = 1
+
+	if viewport_position.x > 0.5 + follow_framed_dead_zone_width / 2:
+		# Is outside right edge
+		frame_out_bounds.x = 1
+
+	if viewport_position.y > 0.5001 + follow_framed_dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
+		# Is outside bottom edge
+		frame_out_bounds.y = -1
+
+	return frame_out_bounds

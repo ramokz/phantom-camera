@@ -1,0 +1,350 @@
+[gd_scene load_steps=17 format=3 uid="uid://dbkr3d716wtx0"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_lgg6a"]
+[ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="3_6wxxp"]
+[ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="3_rn5hf"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="4_dj3lt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
+bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_detail = 1
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmo1t"]
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.745098, 0.858824, 0.380392, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q7vs4"]
+bg_color = Color(0.929412, 0.87451, 0.619608, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_iho1a"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_obaj6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fsxik"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.129412, 0.407843, 0.337255, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yh38y"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.129412, 0.407843, 0.337255, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.552941, 0.647059, 0.952941, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gci88"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.180392, 0.576471, 0.482353, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4b76l"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g5wua"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x4bx8"]
+
+[node name="ViewfinderControl" type="Control"]
+clip_contents = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_lgg6a")
+
+[node name="FramedViewfinder" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="FramedViewfinder"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="FramedViewfinder/SubViewportContainer"]
+unique_name_in_owner = true
+handle_input_locally = false
+gui_disable_input = true
+size = Vector2i(1920, 1080)
+render_target_update_mode = 4
+
+[node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="FramedViewfinder"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="DeadZoneLeftHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="DeadZoneLeftTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneLeftCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneLeftBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneCenterHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 0
+
+[node name="DeadZoneCenterTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneCenterCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_fle8t")
+
+[node name="DeadZoneCenterBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneRightHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="DeadZoneRightTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneRightCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="DeadZoneRightBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = ExtResource("2_cvat1")
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="FramedViewfinder"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 1
+
+[node name="CameraViewportPanel" type="Panel" parent="FramedViewfinder/AspectRatioContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_xmo1t")
+
+[node name="TargetPoint" type="Panel" parent="FramedViewfinder/AspectRatioContainer/CameraViewportPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_q7vs4")
+
+[node name="NoSupportMsg" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
+text = "2D scene support not available yet
+(Control scenes are not supported)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EmptyStateControl" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BGColorRect" type="ColorRect" parent="EmptyStateControl"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+metadata/_edit_lock_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="EmptyStateControl"]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -80.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="EmptyStateIcon" type="TextureRect" parent="EmptyStateControl/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("3_rn5hf")
+stretch_mode = 3
+
+[node name="EmptyStateText" type="RichTextLabel" parent="EmptyStateControl/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_fonts/normal_font = ExtResource("3_6wxxp")
+theme_override_fonts/bold_font = ExtResource("4_dj3lt")
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_styles/focus = SubResource("StyleBoxEmpty_obaj6")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
+bbcode_enabled = true
+text = "[center][b]NodeType[/b] Description [/center]"
+fit_content = true
+
+[node name="AddNodeButton" type="Button" parent="EmptyStateControl/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 54)
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_fsxik")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yh38y")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_gci88")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_4b76l")
+
+[node name="AddNodeTypeText" type="RichTextLabel" parent="EmptyStateControl/VBoxContainer/AddNodeButton"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_fonts/normal_font = ExtResource("3_6wxxp")
+theme_override_fonts/bold_font = ExtResource("4_dj3lt")
+theme_override_font_sizes/normal_font_size = 24
+theme_override_font_sizes/bold_font_size = 24
+theme_override_styles/focus = SubResource("StyleBoxEmpty_g5wua")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_x4bx8")
+bbcode_enabled = true
+text = "[center]Add [img=32]res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg[/img] [b]{NodeType}[/b][/center]"
+scroll_active = false
