@@ -329,18 +329,8 @@ func _set_viewfinder(root: Node, editor: bool):
 				_active_pcam_camera = _selected_camera.get_child(0).get_active_pcam() as PhantomCamera2D
 				if editor:
 					var camera_2D_rid: RID = _selected_camera.get_canvas_item()
-#					print(_selected_camera)
-#					print(editor_interface.get_edited_scene_root())
-#					print(editor_interface.get_edited_scene_root().get_canvas())
-#					print(_selected_camera.get_canvas_item())
-#					print(_selected_camera.get_canvas())
-#					print(sub_viewport)
-#					print(camera_2D_rid)
-#					RenderingServer.viewport_attach_canvas(sub_viewport.get_viewport_rid(), editor_interface.get_edited_scene_root().get_canvas_item())
-#					RenderingServer.viewport_attach_canvas(sub_viewport.get_viewport_rid(), editor_interface.get_edited_scene_root().get_canvas_item())
+					# TODO - Missing 2D viewport support - https://github.com/ramokz/phantom-camera/issues/105 
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
-#					TODO - Should return something
-#					print(sub_viewport.get_camera_2d())
 			else:
 				_selected_camera = pcam_host.camera as Camera3D
 				_active_pcam_camera = _selected_camera.get_child(0).get_active_pcam() as PhantomCamera3D
