@@ -70,7 +70,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.552941, 0.647059, 0.952941, 1)
+border_color = Color(0.988235, 0.498039, 0.498039, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -281,7 +281,6 @@ color = Color(0, 0, 0, 1)
 metadata/_edit_lock_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="EmptyStateControl"]
-visible = false
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
