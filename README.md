@@ -5,9 +5,11 @@ Phantom Camera is a Godot 4 plugin designed to provide and simplify common behav
 
 It allows for simple behaviours such as following and looking at specific nodes, with an optional smooth/dampened movement, to more advance logic like reframing itself to keep multiple nodes in view and dynamically animate between specific camera positions, i.e. other `PhantomCamera` nodes, on demand.
 
+https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-b8e66feec953
+
 <table>
   <tr>
-    <th>Wiki Page</th>
+    <th>Guides</th>
     <th>Roadmap</th>
   <tr>
   <tbody>
