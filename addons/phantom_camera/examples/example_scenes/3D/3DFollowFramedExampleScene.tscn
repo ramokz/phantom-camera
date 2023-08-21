@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://c4llb3gsbfv1a"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_hyn5x"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_7824u"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_g1bv4"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_6xt4f"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_t4fso"]
@@ -26,10 +26,10 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.793423, 0.608671, 0, -0.608671, 0.793423, -16.4602, 2.94169, 7.33457)
+transform = Transform3D(1, 0, 0, 0, 0.793423, 0.608671, 0, -0.608671, 0.793423, -16.4602, 2.94168, 7.33457)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
-script = ExtResource("1_hyn5x")
+script = ExtResource("1_7824u")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
@@ -38,7 +38,7 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94169, 7.33457)
+transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
 script = ExtResource("2_g1bv4")
 priority = 0
 follow_mode = 5
