@@ -4,7 +4,7 @@ extends RefCounted
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const PcamGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-var is_3D: bool
+var is_2D: bool
 
 var pcam_host_owner: PhantomCameraHost
 var scene_has_multiple_pcam_hosts: bool
@@ -58,18 +58,18 @@ func camera_enter_tree(pcam: Node):
 	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 	elif follow_group_paths:
-		if is_3D:
-			follow_group_nodes_3D.clear()
-		else:
+		if is_2D:
 			follow_group_nodes_2D.clear()
+		else:
+			follow_group_nodes_3D.clear()
 		for path in follow_group_paths:
 			if not path.is_empty() and pcam.get_node(path):
 				should_follow = true
 				has_follow_group = true
-				if is_3D:
-					follow_group_nodes_3D.append(pcam.get_node(path))
-				else:
+				if is_2D:
 					follow_group_nodes_2D.append(pcam.get_node(path))
+				else:
+					follow_group_nodes_3D.append(pcam.get_node(path))
 
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
@@ -157,17 +157,17 @@ func add_follow_properties() -> Array:
 	var _property_list: Array
 	if follow_mode != Constants.FollowMode.NONE:
 		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP or follow_mode == Constants.FollowMode.FRAMED:
-			if is_3D:
+			if is_2D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-					"type": TYPE_VECTOR3,
+					"type": TYPE_VECTOR2,
 					"hint": PROPERTY_HINT_NONE,
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
 			else:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-					"type": TYPE_VECTOR2,
+					"type": TYPE_VECTOR3,
 					"hint": PROPERTY_HINT_NONE,
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
@@ -321,10 +321,10 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
 		if value and value.size() > 0:
 			# Clears the Array in case of reshuffling or updated Nodes
-			if is_3D:
-				follow_group_nodes_3D.clear()
-			else:
+			if is_2D:
 				follow_group_nodes_2D.clear()
+			else:
+				follow_group_nodes_3D.clear()
 			follow_group_paths = value as Array[NodePath]
 
 			if not follow_group_paths.is_empty():
@@ -335,12 +335,12 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 						var node: Node = pcam.get_node(path)
 						if node is Node2D or node is Node3D:
 							# Prevents duplicated nodes from being assigned to array
-							if is_3D:
-								if follow_group_nodes_3D.find(node):
-									follow_group_nodes_3D.append(node)
-							else:
+							if is_2D:
 								if follow_group_nodes_2D.find(node):
 									follow_group_nodes_2D.append(node)
+							else:
+								if follow_group_nodes_3D.find(node):
+									follow_group_nodes_3D.append(node)
 						else:
 							printerr("Assigned non-Node3D to Follow Group")
 

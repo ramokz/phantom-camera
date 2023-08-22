@@ -152,6 +152,7 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
+	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
