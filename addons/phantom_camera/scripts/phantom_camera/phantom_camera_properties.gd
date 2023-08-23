@@ -113,11 +113,15 @@ func add_priority_properties() -> Array:
 func add_follow_mode_property() -> Array:
 	var _property_list: Array
 
+	var follow_mode_keys: Array = Constants.FollowMode.keys()
+	if is_2D:
+		follow_mode_keys.remove_at(Constants.FollowMode.THIRD_PERSON)
+	
 	_property_list.append({
 		"name": Constants.FOLLOW_MODE_PROPERTY_NAME,
 		"type": TYPE_INT,
 		"hint": PROPERTY_HINT_ENUM,
-		"hint_string": ", ".join(PackedStringArray(Constants.FollowMode.keys())).capitalize(),
+		"hint_string": ", ".join(PackedStringArray(follow_mode_keys)).capitalize(),
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
@@ -156,7 +160,10 @@ func add_follow_target_property() -> Array:
 func add_follow_properties() -> Array:
 	var _property_list: Array
 	if follow_mode != Constants.FollowMode.NONE:
-		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP or follow_mode == Constants.FollowMode.FRAMED:
+		if follow_mode == Constants.FollowMode.SIMPLE or \
+			follow_mode == Constants.FollowMode.GROUP or \
+			follow_mode == Constants.FollowMode.FRAMED or \
+			follow_mode == Constants.FollowMode.THIRD_PERSON:
 			if is_2D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
