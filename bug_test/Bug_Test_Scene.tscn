@@ -1,16 +1,22 @@
-[gd_scene load_steps=13 format=3 uid="uid://bvbydtgb2mc5s"]
+[gd_scene load_steps=13 format=3 uid="uid://dudhjli8vorjr"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_rhvxf"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_emvhe"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_453rj"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_apan7"]
+[ext_resource type="Script" path="res://bug_test/Teleporter.gd" id="5_7fe0r"]
 [ext_resource type="Script" path="res://bug_test/player_controller.gd" id="5_drl0u"]
-[ext_resource type="Script" path="res://bug_test/SpringArm.gd" id="5_tqvp8"]
 
 [sub_resource type="Resource" id="Resource_itvqx"]
 script = ExtResource("3_apan7")
 duration = 0.6
 transition = 3
+ease = 2
+
+[sub_resource type="Resource" id="Resource_rtw1o"]
+script = ExtResource("3_apan7")
+duration = 0.0
+transition = 0
 ease = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
@@ -24,12 +30,6 @@ height = 0.1
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
 
-[sub_resource type="Resource" id="Resource_0yw0t"]
-script = ExtResource("3_apan7")
-duration = 1.0
-transition = 3
-ease = 2
-
 [node name="Node3D" type="Node3D"]
 
 [node name="Camera3D2" type="Camera3D" parent="."]
@@ -37,7 +37,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.27674, 0, 2.13225)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0248747, 0.507, -0.05761)
+transform = Transform3D(1, 0, 0, 0, 0.92416, 0.382006, 0, -0.382006, 0.92416, -12.7371, 1.557, -0.73201)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -55,16 +55,6 @@ tween_parameters = SubResource("Resource_itvqx")
 tween_on_load = true
 inactive_update_mode = 0
 
-[node name="PhantomCamera3D-3" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.92416, 0.382006, 0, -0.382006, 0.92416, 4.80538, 1.59717, 1.73345)
-script = ExtResource("3_453rj")
-priority = 0
-follow_mode = 0
-look_at_mode = 0
-tween_parameters = null
-tween_on_load = true
-inactive_update_mode = 0
-
 [node name="Environment" type="Node" parent="."]
 
 [node name="Floor" parent="Environment" instance=ExtResource("1_rhvxf")]
@@ -79,11 +69,35 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.25, -0.75, -0.612372, 0.612372, 0.612372, -0.5, 0.75, -0.25, 0.612372, 3, 0.362372, -4)
 use_collision = true
 
+[node name="Teleporter" type="Node3D" parent="."]
+script = ExtResource("5_7fe0r")
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.92416, 0.382006, 0, -0.382006, 0.92416, -12.7371, 1.557, -0.73201)
+script = ExtResource("3_453rj")
+priority = 10
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = null
+tween_on_load = true
+inactive_update_mode = 0
+
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, 0.0248747, 0.507, -2.87201)
 script = ExtResource("5_drl0u")
 metadata/_edit_group_ = true
+
+[node name="StaticPhantomCamera3D" type="Node3D" parent="PlayerCharacterBody3D"]
+unique_name_in_owner = true
+transform = Transform3D(0.999711, -0.0132743, -0.00548698, 0.014361, 0.924065, 0.381967, 0, -0.382006, 0.92416, -0.0150818, 1.04989, 2.14)
+script = ExtResource("3_453rj")
+priority = 5
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_rtw1o")
+tween_on_load = false
+inactive_update_mode = 1
 
 [node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
 mesh = SubResource("CapsuleMesh_47f0o")
@@ -101,19 +115,3 @@ shape = SubResource("CapsuleShape3D_s61dn")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_s61dn")
-
-[node name="SpringArm" type="SpringArm3D" parent="PlayerCharacterBody3D"]
-transform = Transform3D(0.999897, -0.0143636, 0, 0.0143636, 0.999897, 0, 0, 0, 1, 0, 0, 0)
-spring_length = 3.0
-margin = 0.2
-script = ExtResource("5_tqvp8")
-
-[node name="PhantomCamera3D-1" type="Node3D" parent="PlayerCharacterBody3D/SpringArm"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.8144)
-script = ExtResource("3_453rj")
-priority = 10
-follow_mode = 0
-look_at_mode = 0
-tween_parameters = SubResource("Resource_0yw0t")
-tween_on_load = false
-inactive_update_mode = 0
