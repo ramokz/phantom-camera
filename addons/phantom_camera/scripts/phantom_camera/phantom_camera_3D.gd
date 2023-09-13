@@ -433,13 +433,10 @@ func _process(delta: float) -> void:
 							if not get_parent() == _spring_arm_node:
 #								print(_spring_arm_node)
 								var follow_target: Node3D = Properties.follow_target_node
-								reparent(_spring_arm_node)
-								set_follow_target_node(follow_target)
 								_spring_arm_node.set_length(follow_distance)
-#						print("Follow target: ", Properties.follow_target_node)
+								_spring_arm_node.set_rotation_degrees(rotation_degrees)
+								reparent(_spring_arm_node)
 						_spring_arm_node.set_global_position(_get_target_position_offset())
-						print(get_parent())
-#						set_position()
 				else:
 					set_global_position(_get_position_offset_distance())
 #					print(Properties.follow_target_node)
