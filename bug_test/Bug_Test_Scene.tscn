@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dudhjli8vorjr"]
+[gd_scene load_steps=14 format=3 uid="uid://dchk35v7b7klq"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_rhvxf"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_emvhe"]
@@ -30,6 +30,9 @@ height = 0.1
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
 
+[sub_resource type="PrismMesh" id="PrismMesh_lpaht"]
+size = Vector3(0.385, 0.455, 0.71)
+
 [node name="Node3D" type="Node3D"]
 
 [node name="Camera3D2" type="Camera3D" parent="."]
@@ -37,7 +40,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.27674, 0, 2.13225)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.92416, 0.382006, 0, -0.382006, 0.92416, -12.7371, 1.557, -0.73201)
+transform = Transform3D(0.38643, 0.00555109, 0.922302, -0.0143636, 0.999897, 5.55111e-17, -0.922207, -0.0132476, 0.38647, 3.71408, 0.507, -1.32613)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -73,10 +76,17 @@ use_collision = true
 script = ExtResource("5_7fe0r")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.92416, 0.382006, 0, -0.382006, 0.92416, -12.7371, 1.557, -0.73201)
+transform = Transform3D(0.386403, 0.00555071, 0.922301, -0.0143626, 0.999827, 5.55111e-17, -0.922143, -0.0132467, 0.386469, 3.71408, 0.507, -1.32613)
 script = ExtResource("3_453rj")
 priority = 10
-follow_mode = 0
+follow_mode = 5
+follow_target = NodePath("../PlayerCharacterBody3D")
+follow_parameters/distance = 4.0
+follow_parameters/target_offset = Vector3(0, 0, 0)
+follow_parameters/damping = false
+follow_parameters/dead_zone_horizontal = 0.0
+follow_parameters/dead_zone_vertical = 0.0
+follow_parameters/viewfinder_in_play = false
 look_at_mode = 0
 tween_parameters = null
 tween_on_load = true
@@ -115,3 +125,7 @@ shape = SubResource("CapsuleShape3D_s61dn")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_s61dn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0152374, 1.06072, 0)
+mesh = SubResource("PrismMesh_lpaht")
