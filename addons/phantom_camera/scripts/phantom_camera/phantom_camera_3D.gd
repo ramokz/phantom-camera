@@ -335,10 +335,7 @@ func _process(delta: float) -> void:
 					set_global_position(Properties.follow_target_node.get_global_position())
 			Constants.FollowMode.SIMPLE:
 				if Properties.follow_target_node:
-					set_global_position(
-						Properties.follow_target_node.global_position +
-						Properties.follow_target_offset_3D
-					)
+					set_global_position( _get_target_position_offset() )
 			Constants.FollowMode.GROUP:
 				if Properties.has_follow_group:
 					if Properties.follow_group_nodes_3D.size() == 1:
@@ -431,12 +428,12 @@ func _process(delta: float) -> void:
 					if is_instance_valid(Properties.follow_target_node):
 						if is_instance_valid(_spring_arm_node):
 							if not get_parent() == _spring_arm_node:
-#								print(_spring_arm_node)
 								var follow_target: Node3D = Properties.follow_target_node
 								_spring_arm_node.set_length(follow_distance)
 								_spring_arm_node.set_rotation_degrees(rotation_degrees)
 								reparent(_spring_arm_node)
-						_spring_arm_node.set_global_position(_get_target_position_offset())
+								_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+							_spring_arm_node.set_global_position(_get_target_position_offset())
 				else:
 					set_global_position(_get_position_offset_distance())
 #					print(Properties.follow_target_node)

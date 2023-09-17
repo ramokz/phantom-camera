@@ -8,7 +8,7 @@
 
 [sub_resource type="Resource" id="Resource_0yw0t"]
 script = ExtResource("3_oisgy")
-duration = 1.0
+duration = 0.0
 transition = 3
 ease = 2
 
@@ -23,7 +23,7 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999999, 0, 0, 0, 0.939695, 0.342014, 0, -0.342015, 0.939694, 0.669741, 1.87506, 1.05198)
+transform = Transform3D(0.999994, 0, 0, 0, 0.93969, 0.342006, 0, -0.342011, 0.939677, 0.669741, 1.53304, 0.112292)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -44,15 +44,14 @@ transform = Transform3D(0.25, -0.75, -0.612372, 0.612372, 0.612372, -0.5, 0.75, 
 use_collision = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.999994, 0, 0, 0, 0.93969, 0.342014, 0, -0.342019, 0.939677, 0.669741, 1.87506, 1.05198)
+transform = Transform3D(0.999994, 0, 0, 0, 0.939687, 0.342013, 0, -0.342018, 0.939674, 0.669741, 1.53304, 0.112292)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/distance = 4.0
+follow_parameters/distance = 3.0
 follow_parameters/target_offset = Vector3(0, 0, 0)
-follow_parameters/damping = true
-follow_parameters/damping_value = 10.0
+follow_parameters/damping = false
 look_at_mode = 0
 tween_parameters = SubResource("Resource_0yw0t")
 tween_on_load = false

@@ -175,9 +175,16 @@ func _reset_tween_on_load() -> void:
 			pcam.Properties.has_tweened_onload  = true
 
 
+#var update_position: bool
+#var prev_pos: Transform3D
+#var curr_pos: Transform3D
+
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
-
+	
+	
+#	var fraction: float = clampf(Engine.get_physics_interpolation_fraction(), 0, 1)
+	
 	if _active_pcam.Properties.follow_has_damping:
 		camera.set_position(
 			camera.get_position().lerp(
@@ -185,7 +192,16 @@ func _pcam_follow(delta: float) -> void:
 				delta * _active_pcam.Properties.follow_damping_value
 			)
 		)
+		
+#		camera.set_global_transform(
+#			prev_pos.interpolate_with(
+#				curr_pos,
+#				fraction #* _active_pcam.Properties.follow_damping_value
+##				delta * _active_pcam.Properties.follow_damping_value
+#			)
+#		)
 	else:
+#		print("Elsing")
 		camera.set_position(_active_pcam.get_global_position())
 
 	if not _is_3D:
@@ -241,9 +257,21 @@ func _get_pcam_host_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
 
-func _process(delta: float) -> void:
+#func _update_transform() -> void:
+#	prev_pos = curr_pos
+#	curr_pos = _active_pcam.get_global_transform()
+
+
+func _process(delta):
+	
+#	if update_position:
+#		_update_transform()
+#		update_position = false
+
 	_process_pcam(delta)
 
+#func _physics_process(delta: float) -> void:
+#	update_position = true
 
 ##################
 # Public Functions
