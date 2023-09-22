@@ -11,10 +11,10 @@ const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAME
 const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_distance"
 const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance_divisor"
 
+const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "look_at_mode"
 const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "look_at_target"
 const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "look_at_group"
 const LOOK_AT_PARAMETERS_NAME: 				StringName = "look_at_parameters/"
-const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "look_at_mode"
 const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "look_at_target_offset"
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
@@ -58,7 +58,7 @@ var look_at_target_offset: Vector3
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
-
+	
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
 
@@ -154,7 +154,6 @@ func _get_property_list() -> Array:
 func _set(property: StringName, value) -> bool:
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	Properties.set_phantom_host_property(property, value, self)
-
 	Properties.set_priority_property(property, value, self)
 
 	Properties.set_follow_properties(property, value, self)
@@ -186,18 +185,9 @@ func _set(property: StringName, value) -> bool:
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:
 		_follow_group_distance_auto_divisor = value
 
-
 	# Look At Properties
 	if property == LOOK_AT_MODE_PROPERTY_NAME:
 		look_at_mode = value
-
-		if look_at_mode == LookAtMode.NONE:
-			_should_look_at = false
-#			Properties.set_process(self, false)
-		else:
-			_should_look_at = true
-#			Properties.set_process(self, true)
-
 		notify_property_list_changed()
 
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:
@@ -266,13 +256,13 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
-	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:					return Properties.show_viewfinder_in_play
+	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:			return Properties.show_viewfinder_in_play
 
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-	if property == LOOK_AT_TARGET_PROPERTY_NAME: 						return _look_at_target_path
 	if property == LOOK_AT_MODE_PROPERTY_NAME: 							return look_at_mode
+	if property == LOOK_AT_TARGET_PROPERTY_NAME: 						return _look_at_target_path
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 				return look_at_target_offset
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:							return _look_at_group_paths
 
@@ -280,7 +270,8 @@ func _get(property: StringName):
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
-
+#	print(property)
+#	print(property == Constants.FOLLOW_MODE_PROPERTY_NAME)
 
 ###################
 # Private Functions
