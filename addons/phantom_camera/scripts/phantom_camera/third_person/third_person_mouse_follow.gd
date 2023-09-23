@@ -1,23 +1,26 @@
 extends SpringArm3D
 
-var mouse_sensitivity: float = 0.1
+var mouse_sensitivity: float = 0.05
 
-var foo: String = "Set locally"
+var min_yaw: float = -89.9
+var max_yaw: float = 50
+
+var min_pitch: float = 0
+var max_pitch: float = 360
 
 func _init():
 	_ready()
 
+
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	print(InputMap.get_actions()[0])
 	set_process_unhandled_input(true)
 	
-	print(foo)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		rotation_degrees.x -= event.relative.y * mouse_sensitivity
-		rotation_degrees.x = clamp(rotation_degrees.x, -89.9, 50)
-		
+		rotation_degrees.x = clamp(rotation_degrees.x, min_yaw, max_yaw)
+
 		rotation_degrees.y -= event.relative.x * mouse_sensitivity
-		rotation_degrees.y = wrapf(rotation_degrees.y, 0, 360)
+		rotation_degrees.y = wrapf(rotation_degrees.y, min_pitch, max_pitch)
