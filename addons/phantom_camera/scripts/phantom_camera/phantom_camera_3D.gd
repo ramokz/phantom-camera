@@ -361,7 +361,7 @@ func _process(delta: float) -> void:
 							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
 							delta
 						)
-					else:
+					elif Properties.follow_group_nodes_3D.size() > 1:
 						var bounds: AABB = AABB(Properties.follow_group_nodes_3D[0].get_position(), Vector3.ZERO)
 						for node in Properties.follow_group_nodes_3D:
 							bounds = bounds.expand(node.get_position())
