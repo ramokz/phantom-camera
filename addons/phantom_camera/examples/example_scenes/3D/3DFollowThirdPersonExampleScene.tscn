@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://ds8p6w4tn0rmh"]
+[gd_scene load_steps=11 format=3 uid="uid://4i5csj0s34nb"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_b4nxi"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_whx47"]
@@ -19,32 +19,21 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
+size = Vector3(1, 2, 10)
+
 [node name="Root" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999994, 0, 0, 0, 0.93969, 0.342006, 0, -0.342011, 0.939677, 0.669741, 1.53304, 0.112292)
+transform = Transform3D(0.999994, 0, 0, 0, 0.707118, 0.707078, 0, -0.707088, 0.707108, -0.338903, 2.62828, 3.61177)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_b4nxi")
 
-[node name="Environment" type="Node" parent="."]
-
-[node name="Floor" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
-metadata/_edit_lock_ = true
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
-metadata/_edit_lock_ = true
-
-[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(0.25, -0.75, -0.612372, 0.612372, 0.612372, -0.5, 0.75, -0.25, 0.612372, 3, 0.362372, -4)
-use_collision = true
-
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.999994, 0, 0, 0, 0.939687, 0.342013, 0, -0.342018, 0.939674, 0.669741, 1.53304, 0.112292)
+transform = Transform3D(0.999994, 0, 0, 0, 0.707102, 0.707092, 0, -0.707102, 0.707092, -0.338903, 2.62828, 3.61177)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
@@ -59,7 +48,7 @@ inactive_update_mode = 0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, 0.669741, 0.507, -2.70673)
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -0.338903, 0.507, 1.49049)
 collision_layer = 2
 script = ExtResource("5_i0ig0")
 metadata/_edit_group_ = true
@@ -75,3 +64,33 @@ shape = SubResource("CapsuleShape3D_s61dn")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_s61dn")
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="Floor" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="Wall" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.5, 0)
+mesh = SubResource("BoxMesh_wsigl")
+
+[node name="Wall2" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 0)
+mesh = SubResource("BoxMesh_wsigl")
+
+[node name="Wall3" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, 4.5)
+mesh = SubResource("BoxMesh_wsigl")
+
+[node name="Wall4" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, -4.5)
+mesh = SubResource("BoxMesh_wsigl")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(0.25, -0.75, -0.612372, 0.612372, 0.612372, -0.5, 0.75, -0.25, 0.612372, 0, 0.362372, 0)
+use_collision = true
