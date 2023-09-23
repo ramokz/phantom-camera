@@ -54,7 +54,7 @@ var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdat
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
-	
+
 	if not pcam.get_parent() is SpringArm3D and is_instance_valid(pcam.get_node(pcam.Properties.follow_target_path)):
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 	elif follow_group_paths:
@@ -75,9 +75,9 @@ func camera_enter_tree(pcam: Node):
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
 
-
 func pcam_exit_tree(pcam: Node):
 	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
+
 
 #########################
 # Add Properties
