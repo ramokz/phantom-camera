@@ -175,34 +175,10 @@ func _reset_tween_on_load() -> void:
 			pcam.Properties.has_tweened_onload  = true
 
 
-#var update_position: bool
-#var prev_pos: Transform3D
-#var curr_pos: Transform3D
-
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 	
-	
-#	var fraction: float = clampf(Engine.get_physics_interpolation_fraction(), 0, 1)
-	
-	if _active_pcam.Properties.follow_has_damping:
-		camera.set_position(
-			camera.get_position().lerp(
-				_active_pcam.get_global_position(),
-				delta * _active_pcam.Properties.follow_damping_value
-			)
-		)
-		
-#		camera.set_global_transform(
-#			prev_pos.interpolate_with(
-#				curr_pos,
-#				fraction #* _active_pcam.Properties.follow_damping_value
-##				delta * _active_pcam.Properties.follow_damping_value
-#			)
-#		)
-	else:
-#		print("Elsing")
-		camera.set_position(_active_pcam.get_global_position())
+	camera.set_position(_active_pcam.get_global_position())
 
 	if not _is_3D:
 		if _active_pcam.Properties.has_follow_group:
