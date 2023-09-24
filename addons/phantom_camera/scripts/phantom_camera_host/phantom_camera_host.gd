@@ -28,7 +28,7 @@ var tween_duration: float
 var multiple_pcam_hosts: bool
 
 var is_child_of_camera: bool = false
-var _is_3D: bool
+var _is_2D: bool
 
 var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
 var framed_viewfinder_node: Control
@@ -45,9 +45,9 @@ func _enter_tree() -> void:
 	if camera is Camera2D or camera is Camera3D:
 		is_child_of_camera = true
 		if camera is Camera2D:
-			_is_3D = false
+			_is_2D = true
 		else:
-			_is_3D = true
+			_is_2D = false
 
 		add_to_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
@@ -157,7 +157,7 @@ func _tween_pcam(delta: float) -> void:
 		)
 	)
 
-	if not _is_3D:
+	if _is_2D:
 		camera.set_zoom(
 			Tween.interpolate_value(
 				camera_zoom, \
@@ -180,7 +180,8 @@ func _pcam_follow(delta: float) -> void:
 	
 	camera.set_position(_active_pcam.get_global_position())
 
-	if not _is_3D:
+
+	if _is_2D:
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
 				camera.zoom = camera.zoom.lerp(_active_pcam.Properties.zoom, delta * _active_pcam.Properties.follow_damping_value)
