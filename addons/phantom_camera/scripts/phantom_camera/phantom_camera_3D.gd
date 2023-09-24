@@ -452,8 +452,7 @@ func _process(delta: float) -> void:
 									var opposite: float = sin(-get_rotation().x) * follow_distance + _get_target_position_offset().y
 #									global_position.y = _get_target_position_offset().y + opposite
 #                                   global_position.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
-                                    
-                                    glo_pos.y = _get_target_position_offset().y + opposite
+									glo_pos.y = _get_target_position_offset().y + opposite
 									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 									glo_pos.x = global_position.x
 									
@@ -495,23 +494,24 @@ func _process(delta: float) -> void:
 
 						Properties.viewport_position = unprojected_position
 			Constants.FollowMode.THIRD_PERSON:
-				if not Engine.is_editor_hint():
-					if is_instance_valid(Properties.follow_target_node):
-						if is_instance_valid(_spring_arm_node):
-							if not get_parent() == _spring_arm_node:
-								var follow_target: Node3D = Properties.follow_target_node
-								_spring_arm_node.set_length(follow_distance)
-								_spring_arm_node.set_rotation_degrees(rotation_degrees)
-								_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
-								reparent(_spring_arm_node)
-							
-							_interpolate_position(
-								_spring_arm_node,
-								_get_target_position_offset(), 
-								delta
-							)
-				else:
-					set_global_position(_get_position_offset_distance())
+				if Properties.follow_target_node:
+					if not Engine.is_editor_hint():
+						if is_instance_valid(Properties.follow_target_node):
+							if is_instance_valid(_spring_arm_node):
+								if not get_parent() == _spring_arm_node:
+									var follow_target: Node3D = Properties.follow_target_node
+									_spring_arm_node.set_length(follow_distance)
+									_spring_arm_node.set_rotation_degrees(rotation_degrees)
+									_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+									reparent(_spring_arm_node)
+								
+								_interpolate_position(
+									_spring_arm_node,
+									_get_target_position_offset(), 
+									delta
+								)
+					else:
+						set_global_position(_get_position_offset_distance())
 #					print(Properties.follow_target_node)
 #					print(Properties.priority)
 #						print(_spring_arm_node.get_children())
