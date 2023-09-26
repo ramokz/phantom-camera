@@ -23,7 +23,7 @@ var follow_distance: float = 1:
 	set(value):
 		follow_distance = value
 		if is_instance_valid(Properties.follow_target_node):
-			set_global_position(_get_framed_view_global_position())
+			set_global_position(_get_target_position_offset())
 	get:
 		return follow_distance
 
@@ -33,6 +33,8 @@ var _follow_group_distance_auto_max: 		float = 5
 var _follow_group_distance_auto_divisor:	float = 10
 var _camera_offset: Vector3
 var _current_rotation: Vector3
+
+var _spring_arm_node: SpringArm3D
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -67,46 +69,48 @@ func _get_property_list() -> Array:
 
 	if Properties.follow_mode != Constants.FollowMode.NONE:
 		property_list.append_array(Properties.add_follow_target_property())
-
-		if Properties.follow_mode == Constants.FollowMode.GROUP or Properties.follow_mode == Constants.FollowMode.FRAMED:
-			if not _follow_group_distance_auto:
-				property_list.append({
-					"name": FOLLOW_DISTANCE_PROPERTY_NAME,
-					"type": TYPE_FLOAT,
-					"hint": PROPERTY_HINT_NONE,
-					"usage": PROPERTY_USAGE_DEFAULT,
-				})
-
-			if Properties.follow_mode == Constants.FollowMode.GROUP:
-				property_list.append({
-					"name": FOLLOW_GROUP_DISTANCE_AUTO_NAME,
-					"type": TYPE_BOOL,
-					"hint": PROPERTY_HINT_NONE,
-					"usage": PROPERTY_USAGE_DEFAULT,
-				})
-
-				if _follow_group_distance_auto:
+		
+		if Properties.follow_mode == Constants.FollowMode.GROUP or \
+		Properties.follow_mode == Constants.FollowMode.FRAMED or \
+		Properties.follow_mode == Constants.FollowMode.THIRD_PERSON:
+				if not _follow_group_distance_auto:
 					property_list.append({
-						"name": FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME,
+						"name": FOLLOW_DISTANCE_PROPERTY_NAME,
 						"type": TYPE_FLOAT,
 						"hint": PROPERTY_HINT_NONE,
 						"usage": PROPERTY_USAGE_DEFAULT,
 					})
 
+				if Properties.follow_mode == Constants.FollowMode.GROUP:
 					property_list.append({
-						"name": FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME,
-						"type": TYPE_FLOAT,
+						"name": FOLLOW_GROUP_DISTANCE_AUTO_NAME,
+						"type": TYPE_BOOL,
 						"hint": PROPERTY_HINT_NONE,
 						"usage": PROPERTY_USAGE_DEFAULT,
 					})
 
-					property_list.append({
-						"name": FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR,
-						"type": TYPE_FLOAT,
-						"hint": PROPERTY_HINT_RANGE,
-						"hint_string": "0.01, 100, 0.01,",
-						"usage": PROPERTY_USAGE_DEFAULT,
-					})
+					if _follow_group_distance_auto:
+						property_list.append({
+							"name": FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME,
+							"type": TYPE_FLOAT,
+							"hint": PROPERTY_HINT_NONE,
+							"usage": PROPERTY_USAGE_DEFAULT,
+						})
+
+						property_list.append({
+							"name": FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME,
+							"type": TYPE_FLOAT,
+							"hint": PROPERTY_HINT_NONE,
+							"usage": PROPERTY_USAGE_DEFAULT,
+						})
+
+						property_list.append({
+							"name": FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR,
+							"type": TYPE_FLOAT,
+							"hint": PROPERTY_HINT_RANGE,
+							"hint_string": "0.01, 100, 0.01,",
+							"usage": PROPERTY_USAGE_DEFAULT,
+						})
 
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
@@ -277,7 +281,7 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
-	Properties.is_3D = true;
+	Properties.is_2D = false;
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
@@ -299,6 +303,17 @@ func _exit_tree() -> void:
 	Properties.pcam_exit_tree(self)
 
 
+func _ready():
+	if Properties.follow_mode == Constants.FollowMode.THIRD_PERSON:
+		if not Engine.is_editor_hint():
+			if not is_instance_valid(_spring_arm_node):
+				_spring_arm_node = SpringArm3D.new()
+				get_parent().add_child.call_deferred(_spring_arm_node)
+
+#var update_position: bool
+#var _active_pcam_glob_trans_prev: Transform3D
+#var _active_pcam_glob_trans_curr: Transform3D
+
 func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
@@ -311,22 +326,33 @@ func _process(delta: float) -> void:
 		match Properties.follow_mode:
 			Constants.FollowMode.GLUED:
 				if Properties.follow_target_node:
-					set_global_position(Properties.follow_target_node.get_global_position())
+#					set_global_position(Properties.follow_target_node.get_global_position())
+					_interpolate_position(
+						Properties.follow_target_node.get_global_position(),
+						delta
+					)
 			Constants.FollowMode.SIMPLE:
 				if Properties.follow_target_node:
-					set_global_position(
-						Properties.follow_target_node.global_position +
-						Properties.follow_target_offset_3D
+#					set_global_position( _get_target_position_offset() )
+					_interpolate_position(
+						_get_target_position_offset(),
+						delta
 					)
 			Constants.FollowMode.GROUP:
 				if Properties.has_follow_group:
 					if Properties.follow_group_nodes_3D.size() == 1:
-						set_global_position(
+#						set_global_position(
+#                            Properties.follow_group_nodes_3D[0].get_position() +
+#                            Properties.follow_target_offset_3D +
+#                            get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+#                        )
+						_interpolate_position(
 							Properties.follow_group_nodes_3D[0].get_position() +
 							Properties.follow_target_offset_3D +
-							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
+							delta
 						)
-					else:
+					elif Properties.follow_group_nodes_3D.size() > 1:
 						var bounds: AABB = AABB(Properties.follow_group_nodes_3D[0].get_position(), Vector3.ZERO)
 						for node in Properties.follow_group_nodes_3D:
 							bounds = bounds.expand(node.get_position())
@@ -337,55 +363,100 @@ func _process(delta: float) -> void:
 							distance = clamp(distance, _follow_group_distance_auto_min, _follow_group_distance_auto_max)
 						else:
 							distance = follow_distance
-
-						set_global_position(
+#						set_global_position(
+#                            bounds.get_center() +
+#                            Properties.follow_target_offset_3D +
+#                            get_transform().basis.z * Vector3(distance, distance, distance)
+#                        )
+						_interpolate_position(
 							bounds.get_center() +
 							Properties.follow_target_offset_3D +
-							get_transform().basis.z * Vector3(distance, distance, distance)
+							get_transform().basis.z * Vector3(distance, distance, distance),
+							delta
 						)
 			Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector3 = Properties.follow_path_node.get_global_position()
-					set_global_position(
-						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position
+#					set_global_position(
+#						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position
+#					)
+
+					_interpolate_position(
+						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position,
+						delta
 					)
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if not Engine.is_editor_hint():
-						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_target_position_with_offset())
+						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
 						if _current_rotation != get_rotation():
-							set_global_position(_get_framed_view_global_position())
+#							set_global_position(_get_position_offset_distance())
+							_interpolate_position(
+								_get_position_offset_distance(),
+								delta
+							)
 
 						if Properties.get_framed_side_offset() != Vector2.ZERO:
-							var target_position: Vector3 = _target_position_with_offset() + _camera_offset
+							var target_position: Vector3 = _get_target_position_offset() + _camera_offset
 							var dead_zone_width: float = Properties.follow_framed_dead_zone_width
 							var dead_zone_height: float = Properties.follow_framed_dead_zone_height
-
+							var glo_pos: Vector3
+							
 							if dead_zone_width == 0 || dead_zone_height == 0:
 								if dead_zone_width == 0 && dead_zone_height != 0:
-									global_position = _get_framed_view_global_position()
-									global_position.z += target_position.z - global_position.z
+#									global_position = _get_position_offset_distance()
+#									global_position.z += target_position.z - global_position.z
+									
+									glo_pos = _get_position_offset_distance()
+									glo_pos.z = global_position.z + target_position.z - global_position.z
+									_interpolate_position(
+										glo_pos,
+										delta
+									)
 								elif dead_zone_width != 0 && dead_zone_height == 0:
-									global_position = _get_framed_view_global_position()
-									global_position.x += target_position.x - global_position.x
+#									global_position = _get_position_offset_distance()
+#									global_position.x += target_position.x - global_position.x
+									
+									glo_pos = _get_position_offset_distance()
+									glo_pos.x = global_position.x + target_position.x - global_position.x
+									_interpolate_position(
+										glo_pos,
+										delta
+									)
 								else:
-									global_position = _get_framed_view_global_position()
+#									global_position = _get_position_offset_distance()
+									_interpolate_position(
+										_get_position_offset_distance(),
+										delta
+									)
 							else:
 								if _current_rotation != get_rotation():
-									var opposite: float = sin(-get_rotation().x) * follow_distance + _target_position_with_offset().y
-									global_position.y = _target_position_with_offset().y + opposite
-									global_position.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _target_position_with_offset().z
+									var opposite: float = sin(-get_rotation().x) * follow_distance + _get_target_position_offset().y
+#									global_position.y = _get_target_position_offset().y + opposite
+#                                   global_position.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
+									glo_pos.y = _get_target_position_offset().y + opposite
+									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
+									glo_pos.x = global_position.x
+									
+									_interpolate_position(
+										glo_pos, 
+										delta
+									)
 									_current_rotation = get_rotation()
 								else:
-									global_position += target_position - global_position
+#									global_position += target_position - global_position
+									_interpolate_position(
+										get_global_position() + target_position - global_position, 
+										delta
+									)
 						else:
-							_camera_offset = global_position - _target_position_with_offset()
+							_camera_offset = global_position - _get_target_position_offset()
 							_current_rotation = get_rotation()
 					else:
-						set_global_position(_get_framed_view_global_position())
+						set_global_position(_get_position_offset_distance())
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
 						var viewport_width: float = get_viewport().size.x
 						var viewport_height: float = get_viewport().size.y
@@ -405,7 +476,31 @@ func _process(delta: float) -> void:
 							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 						Properties.viewport_position = unprojected_position
-						
+			Constants.FollowMode.THIRD_PERSON:
+				if Properties.follow_target_node:
+					if not Engine.is_editor_hint():
+						if is_instance_valid(Properties.follow_target_node):
+							if is_instance_valid(_spring_arm_node):
+								if not get_parent() == _spring_arm_node:
+									var follow_target: Node3D = Properties.follow_target_node
+									_spring_arm_node.set_length(follow_distance)
+									_spring_arm_node.set_rotation_degrees(rotation_degrees)
+#									_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+									if not is_tween_on_load():
+										Properties.has_tweened_onload = false
+									reparent(_spring_arm_node)
+								
+								_interpolate_position(
+									_get_target_position_offset(), 
+									delta,
+									_spring_arm_node
+								)
+					else:
+						set_global_position(_get_position_offset_distance())
+#					print(Properties.follow_target_node)
+#					print(Properties.priority)
+#						print(_spring_arm_node.get_children())
+#					print("Third Person Follow")
 
 	if _should_look_at:
 		match look_at_mode:
@@ -426,13 +521,25 @@ func _process(delta: float) -> void:
 						look_at(bounds.get_center())
 
 
-func _target_position_with_offset() -> Vector3:
+func _get_target_position_offset() -> Vector3:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D
 
 
-func _get_framed_view_global_position() -> Vector3:
-	return _target_position_with_offset() + \
+func _get_position_offset_distance() -> Vector3:
+	return _get_target_position_offset() + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+
+
+func _interpolate_position(position: Vector3, delta: float, target: Node3D = self) -> void:
+	if Properties.follow_has_damping:
+		target.set_position(
+			target.get_position().lerp(
+				position,
+				delta * Properties.follow_damping_value
+			)
+		)
+	else:
+		target.set_position(position)
 
 
 func _get_raw_unprojected_position() -> Vector2:
@@ -440,7 +547,7 @@ func _get_raw_unprojected_position() -> Vector2:
 
 
 func _on_dead_zone_changed() -> void:
-	set_global_position( _get_framed_view_global_position() )
+	set_global_position( _get_position_offset_distance() )
 
 
 func get_unprojected_position() -> Vector2:

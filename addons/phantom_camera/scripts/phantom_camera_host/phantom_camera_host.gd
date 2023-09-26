@@ -28,13 +28,17 @@ var tween_duration: float
 var multiple_pcam_hosts: bool
 
 var is_child_of_camera: bool = false
-var _is_3D: bool
+var _is_2D: bool
 
 var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
 var framed_viewfinder_node: Control
 var viewfinder_needed_check: bool = true
 
 var camera_zoom
+
+var _should_refresh_transform: bool
+#var _active_pcam_glob_trans_prev: Transform3D
+var _active_pcam_glob_trans_curr: Transform3D
 
 ###################
 # Private Functions
@@ -45,9 +49,9 @@ func _enter_tree() -> void:
 	if camera is Camera2D or camera is Camera3D:
 		is_child_of_camera = true
 		if camera is Camera2D:
-			_is_3D = false
+			_is_2D = true
 		else:
-			_is_3D = true
+			_is_2D = false
 
 		add_to_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
@@ -79,6 +83,12 @@ func _exit_tree() -> void:
 	for pcam in _get_pcam_node_group():
 		if not multiple_pcam_hosts:
 			pcam.Properties.check_multiple_pcam_host_property(pcam)
+
+
+func _ready() -> void:
+	camera.set_global_transform(_active_pcam.get_global_transform())
+#	_active_pcam_glob_trans_prev = _active_pcam.get_global_transform()
+	_active_pcam_glob_trans_curr = _active_pcam.get_global_transform()
 
 
 func _check_camera_host_amount():
@@ -157,7 +167,7 @@ func _tween_pcam(delta: float) -> void:
 		)
 	)
 
-	if not _is_3D:
+	if _is_2D:
 		camera.set_zoom(
 			Tween.interpolate_value(
 				camera_zoom, \
@@ -172,23 +182,17 @@ func _tween_pcam(delta: float) -> void:
 
 func _reset_tween_on_load() -> void:
 	for pcam in _get_pcam_node_group():
-			pcam.Properties.has_tweened_onload  = true
+		pcam.Properties.has_tweened_onload  = true
 
 
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
-
-	if _active_pcam.Properties.follow_has_damping:
-		camera.set_position(
-			camera.get_position().lerp(
-				_active_pcam.get_global_position(),
-				delta * _active_pcam.Properties.follow_damping_value
-			)
-		)
-	else:
-		camera.set_position(_active_pcam.get_global_position())
-
-	if not _is_3D:
+	
+#	var fraction: float = clamp(Engine.get_physics_interpolation_fraction(), 0, 1)
+#	camera.set_global_transform(_active_pcam_glob_trans_prev.interpolate_with(_active_pcam_glob_trans_curr, fraction))
+	camera.set_global_transform(_active_pcam_glob_trans_curr)
+	
+	if _is_2D:
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
 				camera.zoom = camera.zoom.lerp(_active_pcam.Properties.zoom, delta * _active_pcam.Properties.follow_damping_value)
@@ -197,13 +201,15 @@ func _pcam_follow(delta: float) -> void:
 		else:
 			camera.set_zoom(_active_pcam.Properties.zoom)
 
-	camera.set_rotation(_active_pcam.get_global_rotation())
+
+func _refresh_transform() -> void:
+	_active_pcam_glob_trans_curr = _active_pcam.get_global_transform()
+
 
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
 	if not trigger_pcam_tween:
-		# Camera follows the PhantomCamera
 		_pcam_follow(delta)
 
 		if viewfinder_needed_check:
@@ -211,7 +217,6 @@ func _process_pcam(delta: float) -> void:
 			viewfinder_needed_check = false
 
 	else:
-		# Camera transitions to another PhantomCamera
 		if tween_duration < _active_pcam.get_tween_duration():
 			_tween_pcam(delta)
 		else:
@@ -241,9 +246,22 @@ func _get_pcam_host_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
 
-func _process(delta: float) -> void:
+#func _update_transform() -> void:
+#	prev_pos = curr_pos
+#	curr_pos = _active_pcam.get_global_transform()
+
+
+func _process(delta):
+	if _should_refresh_transform:
+#		_refresh_transform()
+		_active_pcam_glob_trans_curr = _active_pcam.get_global_transform()
+		_should_refresh_transform = false
+
 	_process_pcam(delta)
 
+
+func _physics_process(delta: float) -> void:
+	_should_refresh_transform = true
 
 ##################
 # Public Functions
