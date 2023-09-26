@@ -1,5 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=13 format=3 uid="uid://4i5csj0s34nb"]
 
+[ext_resource type="Script" path="res://addons/upper.gd" id="1_6tq26"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_b4nxi"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_whx47"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_oisgy"]
@@ -8,8 +9,8 @@
 
 [sub_resource type="Resource" id="Resource_0yw0t"]
 script = ExtResource("3_oisgy")
-duration = 0.0
-transition = 3
+duration = 2.0
+transition = 2
 ease = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
@@ -22,18 +23,25 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 2, 10)
 
+[sub_resource type="Resource" id="Resource_daoak"]
+script = ExtResource("3_oisgy")
+duration = 1.0
+transition = 7
+ease = 2
+
 [node name="Root" type="Node3D"]
+script = ExtResource("1_6tq26")
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999994, 0, 0, 0, 0.766056, 0.642757, 0, -0.642766, 0.766045, -0.338903, 3.07808, 4.55458)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0120916, 0.865941, 0.5, 0.00698109, -0.499951, 0.866025, -0.338903, 2.507, 4.95459)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_b4nxi")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.99999, 0, 0, 0, 0.766033, 0.642769, 0, -0.642778, 0.766023, -0.338903, 3.07808, 4.55458)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0120916, 0.865941, 0.5, 0.00698109, -0.499951, 0.866025, -0.338903, 2.507, 4.95459)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
@@ -41,7 +49,7 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 follow_parameters/distance = 4.0
 follow_parameters/target_offset = Vector3(0, 0, 0)
 follow_parameters/damping = true
-follow_parameters/damping_value = 10.0
+follow_parameters/damping_value = 5.0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_0yw0t")
 tween_on_load = false
@@ -73,20 +81,22 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
 [node name="Wall" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 6.93178, 0)
 mesh = SubResource("BoxMesh_wsigl")
 
 [node name="Wall2" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 6.93178, 0)
 mesh = SubResource("BoxMesh_wsigl")
 
 [node name="Wall3" parent="Environment" instance=ExtResource("4_lii5s")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, 4.5)
 mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
 
 [node name="Wall4" parent="Environment" instance=ExtResource("4_lii5s")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, -4.5)
 mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
@@ -95,3 +105,15 @@ metadata/_edit_lock_ = true
 [node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
 transform = Transform3D(0.25, -0.75, -0.612372, 0.612372, 0.612372, -0.5, 0.75, -0.25, 0.612372, 0, 0.362372, 0)
 use_collision = true
+metadata/_edit_lock_ = true
+
+[node name="UpperPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 2.98023e-08, 1, 0, -1, 2.98023e-08, 0, 7, 0)
+script = ExtResource("2_whx47")
+priority = 1
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_daoak")
+tween_on_load = true
+inactive_update_mode = 0
