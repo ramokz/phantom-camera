@@ -46,7 +46,10 @@ script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/distance = 4.0
+follow_parameters/spring_arm/spring_length = 4.0
+follow_parameters/spring_arm/collision_mask = 1
+follow_parameters/spring_arm/shape = null
+follow_parameters/spring_arm/margin = 0.01
 follow_parameters/target_offset = Vector3(0, 0, 0)
 follow_parameters/damping = true
 follow_parameters/damping_value = 5.0
@@ -81,12 +84,14 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
 [node name="Wall" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 6.93178, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.5, 0)
 mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
 
 [node name="Wall2" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 6.93178, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 0)
 mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
 
 [node name="Wall3" parent="Environment" instance=ExtResource("4_lii5s")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, 4.5)
@@ -109,7 +114,7 @@ metadata/_edit_lock_ = true
 
 [node name="UpperPhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 2.98023e-08, 1, 0, -1, 2.98023e-08, 0, 7, 0)
+transform = Transform3D(1, 0, 0, 0, 2.98023e-08, 1, 0, -1, 2.98023e-08, -0.200665, 7.93596, -0.162648)
 script = ExtResource("2_whx47")
 priority = 1
 follow_mode = 0

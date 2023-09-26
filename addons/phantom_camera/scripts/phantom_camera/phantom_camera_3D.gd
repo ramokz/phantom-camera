@@ -5,17 +5,23 @@ extends Node3D
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
-const FOLLOW_DISTANCE_PROPERTY_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 		StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 	StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance_divisor"
+const FOLLOW_DISTANCE_PROPERTY_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + "distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 					StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 					StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_distance"
+const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 					StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance_divisor"
 
-const LOOK_AT_MODE_PROPERTY_NAME: 			StringName = "look_at_mode"
-const LOOK_AT_TARGET_PROPERTY_NAME: 		StringName = "look_at_target"
-const LOOK_AT_GROUP_PROPERTY_NAME: 			StringName = "look_at_group"
-const LOOK_AT_PARAMETERS_NAME: 				StringName = "look_at_parameters/"
-const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 	StringName = LOOK_AT_PARAMETERS_NAME + "look_at_target_offset"
+const SPRING_ARM_PROPERTY_NAME: 							StringName = "spring_arm/"
+const FOLLOW_SPRING_ARM_COLLISION_MASK_NAME: 				StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "collision_mask"
+const FOLLOW_SPRING_ARM_SHAPE_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "shape"
+const FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME: 				StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "spring_length"
+const FOLLOW_SPRING_ARM_MARGIN_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "margin"
+
+const LOOK_AT_MODE_PROPERTY_NAME: 							StringName = "look_at_mode"
+const LOOK_AT_TARGET_PROPERTY_NAME: 						StringName = "look_at_target"
+const LOOK_AT_GROUP_PROPERTY_NAME: 							StringName = "look_at_group"
+const LOOK_AT_PARAMETERS_NAME: 								StringName = "look_at_parameters/"
+const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 					StringName = LOOK_AT_PARAMETERS_NAME + "look_at_target_offset"
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
@@ -34,7 +40,11 @@ var _follow_group_distance_auto_divisor:	float = 10
 var _camera_offset: Vector3
 var _current_rotation: Vector3
 
-var _spring_arm_node: SpringArm3D
+var _follow_spring_arm_node: SpringArm3D
+var _follow_spring_arm_collision_mask: int = 1
+var _follow_spring_arm_shape: Shape3D
+var _follow_spring_arm_margin: float = 0.01
+
 
 enum LookAtMode {
 	NONE 	= 0,
@@ -71,8 +81,7 @@ func _get_property_list() -> Array:
 		property_list.append_array(Properties.add_follow_target_property())
 		
 		if Properties.follow_mode == Constants.FollowMode.GROUP or \
-		Properties.follow_mode == Constants.FollowMode.FRAMED or \
-		Properties.follow_mode == Constants.FollowMode.THIRD_PERSON:
+		Properties.follow_mode == Constants.FollowMode.FRAMED:
 				if not _follow_group_distance_auto:
 					property_list.append({
 						"name": FOLLOW_DISTANCE_PROPERTY_NAME,
@@ -111,6 +120,32 @@ func _get_property_list() -> Array:
 							"hint_string": "0.01, 100, 0.01,",
 							"usage": PROPERTY_USAGE_DEFAULT,
 						})
+			
+		if Properties.follow_mode == Constants.FollowMode.THIRD_PERSON:
+			property_list.append({
+				"name": FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME,
+				"type": TYPE_FLOAT,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+			property_list.append({
+				"name": FOLLOW_SPRING_ARM_COLLISION_MASK_NAME,
+				"type": TYPE_INT,
+				"hint": PROPERTY_HINT_LAYERS_3D_PHYSICS,
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
+			property_list.append({
+				"name": FOLLOW_SPRING_ARM_SHAPE_NAME,
+				"type": TYPE_OBJECT,
+				"hint": PROPERTY_HINT_RESOURCE_TYPE,
+				"hint_string": "Shape3D"
+			})
+			property_list.append({
+				"name": FOLLOW_SPRING_ARM_MARGIN_NAME,
+				"type": TYPE_FLOAT,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT,
+			})
 
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
@@ -170,7 +205,7 @@ func _set(property: StringName, value) -> bool:
 		if Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
 			Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
 
-	if property == FOLLOW_DISTANCE_PROPERTY_NAME:
+	if property == FOLLOW_DISTANCE_PROPERTY_NAME or property == FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME:
 		if value <= 0:
 			follow_distance = 0.001
 		else:
@@ -188,6 +223,17 @@ func _set(property: StringName, value) -> bool:
 
 	if property == FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:
 		_follow_group_distance_auto_divisor = value
+
+
+	if property == FOLLOW_SPRING_ARM_COLLISION_MASK_NAME:
+		_follow_spring_arm_collision_mask = value
+
+	if property == FOLLOW_SPRING_ARM_MARGIN_NAME:
+		_follow_spring_arm_margin = value
+
+	if property == FOLLOW_SPRING_ARM_SHAPE_NAME:
+		_follow_spring_arm_shape = value
+
 
 	# Look At Properties
 	if property == LOOK_AT_MODE_PROPERTY_NAME:
@@ -262,6 +308,12 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
 	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:			return Properties.show_viewfinder_in_play
 
+	if property == FOLLOW_SPRING_ARM_COLLISION_MASK_NAME:				return _follow_spring_arm_collision_mask
+	if property == FOLLOW_SPRING_ARM_SHAPE_NAME:						return _follow_spring_arm_shape
+	if property == FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME:				return follow_distance
+	if property == FOLLOW_SPRING_ARM_MARGIN_NAME:						return _follow_spring_arm_margin
+	
+
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
@@ -306,9 +358,9 @@ func _exit_tree() -> void:
 func _ready():
 	if Properties.follow_mode == Constants.FollowMode.THIRD_PERSON:
 		if not Engine.is_editor_hint():
-			if not is_instance_valid(_spring_arm_node):
-				_spring_arm_node = SpringArm3D.new()
-				get_parent().add_child.call_deferred(_spring_arm_node)
+			if not is_instance_valid(_follow_spring_arm_node):
+				_follow_spring_arm_node = SpringArm3D.new()
+				get_parent().add_child.call_deferred(_follow_spring_arm_node)
 
 #var update_position: bool
 #var _active_pcam_glob_trans_prev: Transform3D
@@ -480,20 +532,23 @@ func _process(delta: float) -> void:
 				if Properties.follow_target_node:
 					if not Engine.is_editor_hint():
 						if is_instance_valid(Properties.follow_target_node):
-							if is_instance_valid(_spring_arm_node):
-								if not get_parent() == _spring_arm_node:
+							if is_instance_valid(_follow_spring_arm_node):
+								if not get_parent() == _follow_spring_arm_node:
 									var follow_target: Node3D = Properties.follow_target_node
-									_spring_arm_node.set_length(follow_distance)
-									_spring_arm_node.set_rotation_degrees(rotation_degrees)
-#									_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+									_follow_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+									_follow_spring_arm_node.set_rotation_degrees(rotation_degrees)
+									_follow_spring_arm_node.set_length(follow_distance)
+									_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
+									_follow_spring_arm_node.set_shape(_follow_spring_arm_shape)
+									_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
 									if not is_tween_on_load():
 										Properties.has_tweened_onload = false
-									reparent(_spring_arm_node)
+									reparent(_follow_spring_arm_node)
 								
 								_interpolate_position(
 									_get_target_position_offset(), 
 									delta,
-									_spring_arm_node
+									_follow_spring_arm_node
 								)
 					else:
 						set_global_position(_get_position_offset_distance())
