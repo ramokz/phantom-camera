@@ -8,6 +8,7 @@ var max_yaw: float = 50
 var min_pitch: float = 0
 var max_pitch: float = 360
 
+
 func _init():
 	_ready()
 

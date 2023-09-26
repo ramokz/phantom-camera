@@ -319,6 +319,9 @@ func _ready():
 				_spring_arm_node = SpringArm3D.new()
 				get_parent().add_child.call_deferred(_spring_arm_node)
 
+#var update_position: bool
+#var _active_pcam_glob_trans_prev: Transform3D
+#var _active_pcam_glob_trans_curr: Transform3D
 
 func _process(delta: float) -> void:
 	if not Properties.is_active:
@@ -334,7 +337,6 @@ func _process(delta: float) -> void:
 				if Properties.follow_target_node:
 #					set_global_position(Properties.follow_target_node.get_global_position())
 					_interpolate_position(
-						self,
 						Properties.follow_target_node.get_global_position(),
 						delta
 					)
@@ -342,7 +344,6 @@ func _process(delta: float) -> void:
 				if Properties.follow_target_node:
 #					set_global_position( _get_target_position_offset() )
 					_interpolate_position(
-						self,
 						_get_target_position_offset(),
 						delta
 					)
@@ -355,7 +356,6 @@ func _process(delta: float) -> void:
 #                            get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 #                        )
 						_interpolate_position(
-							self,
 							Properties.follow_group_nodes_3D[0].get_position() +
 							Properties.follow_target_offset_3D +
 							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
@@ -378,7 +378,6 @@ func _process(delta: float) -> void:
 #                            get_transform().basis.z * Vector3(distance, distance, distance)
 #                        )
 						_interpolate_position(
-							self,
 							bounds.get_center() +
 							Properties.follow_target_offset_3D +
 							get_transform().basis.z * Vector3(distance, distance, distance),
@@ -392,7 +391,6 @@ func _process(delta: float) -> void:
 #					)
 
 					_interpolate_position(
-						self,
 						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position,
 						delta
 					)
@@ -406,7 +404,6 @@ func _process(delta: float) -> void:
 						if _current_rotation != get_rotation():
 #							set_global_position(_get_position_offset_distance())
 							_interpolate_position(
-								self,
 								_get_position_offset_distance(),
 								delta
 							)
@@ -425,7 +422,6 @@ func _process(delta: float) -> void:
 									glo_pos = _get_position_offset_distance()
 									glo_pos.z = global_position.z + target_position.z - global_position.z
 									_interpolate_position(
-										self,
 										glo_pos,
 										delta
 									)
@@ -436,14 +432,12 @@ func _process(delta: float) -> void:
 									glo_pos = _get_position_offset_distance()
 									glo_pos.x = global_position.x + target_position.x - global_position.x
 									_interpolate_position(
-										self,
 										glo_pos,
 										delta
 									)
 								else:
 #									global_position = _get_position_offset_distance()
 									_interpolate_position(
-										self,
 										_get_position_offset_distance(),
 										delta
 									)
@@ -457,7 +451,6 @@ func _process(delta: float) -> void:
 									glo_pos.x = global_position.x
 									
 									_interpolate_position(
-										self,
 										glo_pos, 
 										delta
 									)
@@ -465,7 +458,6 @@ func _process(delta: float) -> void:
 								else:
 #									global_position += target_position - global_position
 									_interpolate_position(
-										self,
 										get_global_position() + target_position - global_position, 
 										delta
 									)
@@ -502,13 +494,15 @@ func _process(delta: float) -> void:
 									var follow_target: Node3D = Properties.follow_target_node
 									_spring_arm_node.set_length(follow_distance)
 									_spring_arm_node.set_rotation_degrees(rotation_degrees)
-									_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+#									_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+									if not is_tween_on_load():
+										Properties.has_tweened_onload = false
 									reparent(_spring_arm_node)
 								
 								_interpolate_position(
-									_spring_arm_node,
 									_get_target_position_offset(), 
-									delta
+									delta,
+									_spring_arm_node
 								)
 					else:
 						set_global_position(_get_position_offset_distance())
@@ -545,7 +539,7 @@ func _get_position_offset_distance() -> Vector3:
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
 
-func _interpolate_position(target: Node3D, position: Vector3, delta: float) -> void:
+func _interpolate_position(position: Vector3, delta: float, target: Node3D = self) -> void:
 	if Properties.follow_has_damping:
 		target.set_position(
 			target.get_position().lerp(
@@ -555,6 +549,7 @@ func _interpolate_position(target: Node3D, position: Vector3, delta: float) -> v
 		)
 	else:
 		target.set_position(position)
+
 
 func _get_raw_unprojected_position() -> Vector2:
 	return get_viewport().get_camera_3d().unproject_position(Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_3D)
