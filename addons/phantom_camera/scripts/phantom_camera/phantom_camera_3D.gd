@@ -378,14 +378,12 @@ func _process(delta: float) -> void:
 		match Properties.follow_mode:
 			Constants.FollowMode.GLUED:
 				if Properties.follow_target_node:
-#					set_global_position(Properties.follow_target_node.get_global_position())
 					_interpolate_position(
 						Properties.follow_target_node.get_global_position(),
 						delta
 					)
 			Constants.FollowMode.SIMPLE:
 				if Properties.follow_target_node:
-#					set_global_position( _get_target_position_offset() )
 					_interpolate_position(
 						_get_target_position_offset(),
 						delta
@@ -393,11 +391,6 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.GROUP:
 				if Properties.has_follow_group:
 					if Properties.follow_group_nodes_3D.size() == 1:
-#						set_global_position(
-#                            Properties.follow_group_nodes_3D[0].get_position() +
-#                            Properties.follow_target_offset_3D +
-#                            get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-#                        )
 						_interpolate_position(
 							Properties.follow_group_nodes_3D[0].get_position() +
 							Properties.follow_target_offset_3D +
@@ -415,11 +408,7 @@ func _process(delta: float) -> void:
 							distance = clamp(distance, _follow_group_distance_auto_min, _follow_group_distance_auto_max)
 						else:
 							distance = follow_distance
-#						set_global_position(
-#                            bounds.get_center() +
-#                            Properties.follow_target_offset_3D +
-#                            get_transform().basis.z * Vector3(distance, distance, distance)
-#                        )
+
 						_interpolate_position(
 							bounds.get_center() +
 							Properties.follow_target_offset_3D +
@@ -445,7 +434,6 @@ func _process(delta: float) -> void:
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
 						if _current_rotation != get_rotation():
-#							set_global_position(_get_position_offset_distance())
 							_interpolate_position(
 								_get_position_offset_distance(),
 								delta
@@ -459,9 +447,6 @@ func _process(delta: float) -> void:
 							
 							if dead_zone_width == 0 || dead_zone_height == 0:
 								if dead_zone_width == 0 && dead_zone_height != 0:
-#									global_position = _get_position_offset_distance()
-#									global_position.z += target_position.z - global_position.z
-									
 									glo_pos = _get_position_offset_distance()
 									glo_pos.z = global_position.z + target_position.z - global_position.z
 									_interpolate_position(
@@ -469,9 +454,6 @@ func _process(delta: float) -> void:
 										delta
 									)
 								elif dead_zone_width != 0 && dead_zone_height == 0:
-#									global_position = _get_position_offset_distance()
-#									global_position.x += target_position.x - global_position.x
-									
 									glo_pos = _get_position_offset_distance()
 									glo_pos.x = global_position.x + target_position.x - global_position.x
 									_interpolate_position(
@@ -479,7 +461,6 @@ func _process(delta: float) -> void:
 										delta
 									)
 								else:
-#									global_position = _get_position_offset_distance()
 									_interpolate_position(
 										_get_position_offset_distance(),
 										delta
@@ -487,8 +468,6 @@ func _process(delta: float) -> void:
 							else:
 								if _current_rotation != get_rotation():
 									var opposite: float = sin(-get_rotation().x) * follow_distance + _get_target_position_offset().y
-#									global_position.y = _get_target_position_offset().y + opposite
-#                                   global_position.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 									glo_pos.y = _get_target_position_offset().y + opposite
 									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 									glo_pos.x = global_position.x
@@ -499,7 +478,6 @@ func _process(delta: float) -> void:
 									)
 									_current_rotation = get_rotation()
 								else:
-#									global_position += target_position - global_position
 									_interpolate_position(
 										get_global_position() + target_position - global_position, 
 										delta
@@ -552,10 +530,6 @@ func _process(delta: float) -> void:
 								)
 					else:
 						set_global_position(_get_position_offset_distance())
-#					print(Properties.follow_target_node)
-#					print(Properties.priority)
-#						print(_spring_arm_node.get_children())
-#					print("Third Person Follow")
 
 	if _should_look_at:
 		match look_at_mode:
