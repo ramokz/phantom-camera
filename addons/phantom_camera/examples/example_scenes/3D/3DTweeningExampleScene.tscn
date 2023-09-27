@@ -64,7 +64,7 @@ metadata/_edit_lock_ = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707126, 0.707088, 0, -0.707088, 0.707126, -0.0548701, 2.5, 5.82771)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("2_b2yrt")
@@ -72,6 +72,7 @@ script = ExtResource("2_b2yrt")
 [node name="------------------" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
 transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
 script = ExtResource("3_m2w30")
 priority = 3
@@ -110,7 +111,7 @@ shape = SubResource("CapsuleShape3D_12ynn")
 [node name="Linear" type="Node3D" parent="Tweening Example"]
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Linear" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -148,7 +149,7 @@ font_size = 48
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.4)
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Sine" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -186,7 +187,7 @@ font_size = 72
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14.1)
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Circ" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -224,7 +225,7 @@ font_size = 72
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21)
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Back" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true

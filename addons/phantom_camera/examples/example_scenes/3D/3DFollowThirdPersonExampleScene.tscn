@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=14 format=3 uid="uid://4i5csj0s34nb"]
 
 [ext_resource type="Script" path="res://addons/upper.gd" id="1_6tq26"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_b4nxi"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_oisgy"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_lii5s"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_i0ig0"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_kg7u1"]
 
 [sub_resource type="Resource" id="Resource_0yw0t"]
 script = ExtResource("3_oisgy")
@@ -34,19 +35,20 @@ script = ExtResource("1_6tq26")
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0120916, 0.865941, 0.5, 0.00698109, -0.499951, 0.866025, -0.338903, 2.507, 4.95459)
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707106, 0, -0.707106, 0.707106, -0.338903, 4.04253, 5.02602)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_b4nxi")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0120916, 0.865941, 0.5, 0.00698109, -0.499951, 0.866025, -0.338903, 2.507, 4.95459)
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707106, 0, -0.707107, 0.707106, -0.338903, 4.04253, 5.02602)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/spring_arm/spring_length = 4.0
+follow_parameters/spring_arm/spring_length = 5.0
 follow_parameters/spring_arm/collision_mask = 1
 follow_parameters/spring_arm/shape = null
 follow_parameters/spring_arm/margin = 0.01
@@ -114,7 +116,7 @@ metadata/_edit_lock_ = true
 
 [node name="UpperPhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 2.98023e-08, 1, 0, -1, 2.98023e-08, -0.200665, 7.93596, -0.162648)
+transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 8.93596, -0.162648)
 script = ExtResource("2_whx47")
 priority = 1
 follow_mode = 0
@@ -122,3 +124,17 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_daoak")
 tween_on_load = true
 inactive_update_mode = 0
+
+[node name="MovementInstructionsLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.477765, 1.54367, 4.1623)
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[WASD] to move"
+font = ExtResource("7_kg7u1")
+font_size = 48
+
+[node name="MovementInstructionsLabel2" type="Label3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, 4.86528, 1.55908, 0.189242)
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[Space] to toggle PCam"
+font = ExtResource("7_kg7u1")
+font_size = 48

@@ -88,7 +88,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.997558, 0.0220123, -0.0662686, 0, 0.949012, 0.315231, 0.069829, -0.314462, 0.946695, -4.132, 2, 9.011)
+transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -4.132, 2, 9.011)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_ry0dd")
@@ -103,6 +103,7 @@ font = ExtResource("2_e7gxt")
 font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup"]
+unique_name_in_owner = true
 transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -4.132, 2, 9.011)
 script = ExtResource("2_y3dy8")
 priority = 3
