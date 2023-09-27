@@ -175,25 +175,21 @@ func _physics_process(delta: float) -> void:
 	if not Properties.should_follow: return
 
 	match Properties.follow_mode:
-		Constants.FollowMode.SIMPLE:
-			if Properties.follow_target_node:
-				set_global_position(
-					Properties.follow_target_node.get_global_position() +
-					Properties.follow_target_offset_2D
-				)
 		Constants.FollowMode.GLUED:
 			if Properties.follow_target_node:
-				set_global_position(Properties.follow_target_node.position)
+				_interpolate_position(Properties.follow_target_node.position, delta)
+		Constants.FollowMode.SIMPLE:
+			if Properties.follow_target_node:
+				_interpolate_position(_target_position_with_offset(), delta)
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					set_global_position(Properties.follow_group_nodes_2D[0].get_position())
+					_interpolate_position(Properties.follow_group_nodes_2D[0].get_position(), delta)
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:
 						rect = rect.expand(node.get_global_position())
 						if follow_group_zoom_auto:
-#							print(follow_group_zoom_margin.x)
 							rect = rect.grow_individual(
 								follow_group_zoom_margin.x,
 								follow_group_zoom_margin.y,
@@ -207,21 +203,26 @@ func _physics_process(delta: float) -> void:
 							Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
 							Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-#					print(Properties.zoom)
-					set_global_position(rect.get_center())
+					_interpolate_position(rect.get_center(), delta)
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
-					set_global_position(
-						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
-						path_position
-					)
+#					set_global_position(
+#						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
+#						path_position
+#					)
+					_interpolate_position(
+						Properties.follow_path_node.curve.get_closest_point(
+							Properties.follow_target_node.get_global_position() - path_position
+						) + path_position, \
+						delta)
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
 					Properties.viewport_position = (get_follow_target_node().get_global_transform_with_canvas().get_origin() + Properties.follow_target_offset_2D) / get_viewport_rect().size
 
 					if Properties.get_framed_side_offset() != Vector2.ZERO:
+						var glo_pos: Vector2
 
 						var target_position: Vector2 = _target_position_with_offset() + _camera_offset
 						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
@@ -229,24 +230,34 @@ func _physics_process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								global_position = _target_position_with_offset()
+								_interpolate_position(_target_position_with_offset(), delta)
 							elif dead_zone_width != 0 && dead_zone_height == 0:
-								global_position = _target_position_with_offset()
-								global_position.x += target_position.x - global_position.x
+								glo_pos = _target_position_with_offset()
+								glo_pos.x += target_position.x - global_position.x
+								_interpolate_position(glo_pos, delta)
 							else:
-								global_position = _target_position_with_offset()
+								_interpolate_position(_target_position_with_offset(), delta)
 						else:
-							global_position += target_position - global_position
+							_interpolate_position(target_position, delta)
 					else:
 						_camera_offset = global_position - _target_position_with_offset()
 				else:
 					set_global_position(_target_position_with_offset())
-#					print(_target_position_with_offset())
 
 
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
+func _interpolate_position(position: Vector2, delta: float, target: Node2D = self) -> void:
+	if Properties.follow_has_damping:
+		target.set_position(
+			target.get_position().lerp(
+				position,
+				delta * Properties.follow_damping_value
+			)
+		)
+	else:
+		target.set_position(position)
 
 ##################
 # Public Functions
