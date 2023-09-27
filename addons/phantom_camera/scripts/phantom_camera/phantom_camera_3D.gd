@@ -418,10 +418,6 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector3 = Properties.follow_path_node.get_global_position()
-#					set_global_position(
-#						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position
-#					)
-
 					_interpolate_position(
 						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) + path_position,
 						delta

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dxx7ngi0emt8h"]
+[gd_scene load_steps=23 format=3 uid="uid://dxx7ngi0emt8h"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_lm5n8"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="2_tsk60"]
@@ -21,13 +21,6 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ca4wa"]
 
-[sub_resource type="Curve3D" id="Curve3D_d73fx"]
-_data = {
-"points": PackedVector3Array(-0.712701, -0.217464, 0.110257, 0.712701, 0.217464, -0.110257, 0, 0, 0, -0.660231, 0, 1.436, 0.660231, 0, -1.436, 2.03106, 0.0306873, -3.71978, 1.05841, 2.43187e-05, 0.78705, -1.05841, -2.43187e-05, -0.78705, 0.94632, 0.0658436, -8.42353, 1.60638, 2.43187e-05, 0.225553, -1.60638, -2.43187e-05, -0.225553, -1.62861, 0.0658436, -7.79639, 1.60106, 0, -0.74276, -1.60106, 0, 0.74276, -4.4392, 4.76837e-05, -9.36475, 0, 0, 0, 0, 0, 0, -6.15116, 4.76837e-05, -5.68357, -0.827839, 0.615678, -0.877247, 0.827839, -0.615678, 0.877247, -4.49075, 0.262281, -1.25652, -0.983731, -0.466561, 0.260322, 0, 0, 0, 0, 0, 0),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0)
-}
-point_count = 8
-
 [sub_resource type="Resource" id="Resource_rw4bl"]
 script = ExtResource("3_hbjve")
 duration = 1.0
@@ -41,13 +34,6 @@ _data = {
 }
 point_count = 2
 
-[sub_resource type="Curve3D" id="Curve3D_8uw2x"]
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0),
-"tilts": PackedFloat32Array(0, 0)
-}
-point_count = 2
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_aovgi"]
 size = Vector3(6, 0.1, 10)
 
@@ -57,6 +43,13 @@ size = Vector3(6, 0.1, 10)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fsm1b"]
 transparency = 1
 albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
+
+[sub_resource type="Curve3D" id="Curve3D_8uw2x"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ctnqu"]
 size = Vector3(12, 0.1, 4)
@@ -76,7 +69,7 @@ albedo_color = Color(0.568403, 0.988235, 0.762724, 0.0901961)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999995, -0.0021625, 0.0018451, 0, 0.64907, 0.760726, -0.00284268, -0.760723, 0.649067, 4.00185, 2.99999, -1.51096)
+transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 4.00185, 2.99999, -1.51096)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_lm5n8")
@@ -86,6 +79,7 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
 transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 4.00185, 2.99999, -1.51096)
 script = ExtResource("3_bd7x3")
 priority = 3
@@ -120,41 +114,27 @@ shape = SubResource("CapsuleShape3D_ca4wa")
 
 [node name="Paths" type="Node" parent="."]
 
-[node name="CircularPath3D" type="Path3D" parent="Paths"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.53504, 4.03413, -1.18881)
-visible = false
-curve = SubResource("Curve3D_d73fx")
-
-[node name="PathFollow3D" type="PathFollow3D" parent="Paths/CircularPath3D"]
-unique_name_in_owner = true
-transform = Transform3D(-0.890483, -0.122229, 0.438107, -0.143534, 0.989435, -0.0156939, -0.431598, -0.0768643, -0.898694, 0.917038, 0.102504, -1.11173)
-progress = 1.49148
-
 [node name="PathPhantomCamera3D" type="Node3D" parent="Paths"]
 transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, 3.73176, 7.9199, -4.8731)
 script = ExtResource("3_bd7x3")
 priority = 2
 follow_mode = 4
 follow_target = NodePath("../../PlayerCharacterBody3D")
-follow_path = NodePath("../StraightFollowPath")
+follow_path = NodePath("../FollowPath")
 follow_parameters/damping = true
 follow_parameters/damping_value = 3.0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_rw4bl")
-tween_on_load = true
+tween_on_load = false
 inactive_update_mode = 0
 
-[node name="StraightFollowPath" type="Path3D" parent="Paths"]
+[node name="FollowPath" type="Path3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.73176, 7.9199, -4.8731)
 curve = SubResource("Curve3D_b33df")
 
-[node name="StraightFollowPath2" type="Path3D" parent="Paths"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92937, 7.9199, -16.7205)
-curve = SubResource("Curve3D_8uw2x")
-
 [node name="StraightPathFollowTrigger" type="Area3D" parent="Paths" node_paths=PackedStringArray("path_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.45, -10)
-priority = 5.0
+priority = 5
 script = ExtResource("5_vdqkm")
 path_pcam = NodePath("../PathPhantomCamera3D")
 metadata/_edit_group_ = true
@@ -170,21 +150,26 @@ metadata/_edit_group_ = true
 
 [node name="PathPhantomCamera3D2" type="Node3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 4.00185, 7.9199, -16.7205)
+visible = false
 script = ExtResource("3_bd7x3")
 priority = 2
 follow_mode = 4
 follow_target = NodePath("../../PlayerCharacterBody3D")
-follow_path = NodePath("../StraightFollowPath2")
+follow_path = NodePath("../FollowPath2")
 follow_parameters/damping = true
 follow_parameters/damping_value = 3.0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_rw4bl")
-tween_on_load = true
+tween_on_load = false
 inactive_update_mode = 0
+
+[node name="FollowPath2" type="Path3D" parent="Paths"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92937, 7.9199, -16.7205)
+curve = SubResource("Curve3D_8uw2x")
 
 [node name="StraightPathFollowTrigger2" type="Area3D" parent="Paths" node_paths=PackedStringArray("path_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -17)
-priority = 5.0
+priority = 5
 script = ExtResource("5_vdqkm")
 path_pcam = NodePath("../PathPhantomCamera3D2")
 metadata/_edit_group_ = true
