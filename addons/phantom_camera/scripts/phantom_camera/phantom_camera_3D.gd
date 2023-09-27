@@ -535,7 +535,7 @@ func _process(delta: float) -> void:
 							if is_instance_valid(_follow_spring_arm_node):
 								if not get_parent() == _follow_spring_arm_node:
 									var follow_target: Node3D = Properties.follow_target_node
-									_follow_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
+#									_follow_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
 									_follow_spring_arm_node.set_rotation_degrees(rotation_degrees)
 									_follow_spring_arm_node.set_length(follow_distance)
 									_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
@@ -828,6 +828,18 @@ func set_auto_follow_distance_divisor(value: float) -> void:
 func get_auto_follow_distance_divisor() -> float:
 	return _follow_group_distance_auto_divisor
 
+## Assigns new rotation (in radians) value to SpringArm for Third Person Follow mode.
+func set_third_person_rotation(value: Vector3) -> void:
+	_follow_spring_arm_node.rotation = value
+## Gets the rotation value (in radians) from the SpringArm for Third Person Follow mode.
+func get_third_person_rotation() -> Vector3:
+	return _follow_spring_arm_node.rotation
+## Assigns new rotation (in degrees) value to SpringArm for Third Person Follow mode.
+func set_third_person_rotation_degrees(value: Vector3) -> void:
+	_follow_spring_arm_node.rotation_degrees = value
+## Gets the rotation value (in degrees) from the SpringArm for Third Person Follow mode.
+func get_third_person_rotation_degrees() -> Vector3:
+	return _follow_spring_arm_node.rotation_degrees
 
 ## Gets Look At Mode. Value is based on LookAtMode enum.
 ## Note: To set a new Look At Mode, a separate PhantomCamera3D should be used.
