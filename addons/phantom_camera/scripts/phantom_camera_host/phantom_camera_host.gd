@@ -233,6 +233,10 @@ func _process_pcam(delta: float) -> void:
 		if viewfinder_needed_check:
 			show_viewfinder_in_play()
 			viewfinder_needed_check = false
+			
+		if Engine.is_editor_hint():
+			if not _is_2D:
+				camera.set_fov(_active_pcam.get_camera_fov())
 
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
