@@ -326,22 +326,22 @@ func _set(property: StringName, value) -> bool:
 	# Camera3D Property Overrides
 	if property == CAMERA_CULL_MASK_PROPERTY_NAME:
 		if value == null:
-			value = 1 # Fixes crash in cases where a Cull Mask value isn't applied
+			value = 1048575 # Fixes crash in cases where a value isn't applied
 		_camera_cull_mask = value
 	
 	if property == CAMERA_H_OFFSET_PROPERTY_NAME:
 		if value == null:
-			value = 0 # Fixes crash in cases where a Cull Mask value isn't applied
+			value = 0 # Fixes crash in cases where a value isn't applied
 		_camera_h_offset = value
 		
 	if property == CAMERA_V_OFFSET_PROPERTY_NAME:
 		if value == null:
-			value = 0 # Fixes crash in cases where a Cull Mask value isn't applied
+			value = 0 # Fixes crash in cases where a value isn't applied
 		_camera_v_offset = value
 	
 	if property == CAMERA_FOV_PROPERTY_NAME:
 		if value == null:
-			value = 75 # Fixes crash in cases where a Cull Mask value isn't applied
+			value = 75 # Fixes crash in cases where a value isn't applied
 		_camera_fov = value
 
 	return false
