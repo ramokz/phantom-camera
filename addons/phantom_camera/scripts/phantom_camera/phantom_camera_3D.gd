@@ -67,6 +67,17 @@ var look_at_mode: LookAtMode = LookAtMode.NONE
 
 var look_at_target_offset: Vector3
 
+# Camera3D
+const CAMERA_PROPERTY_NAME: StringName = "Camera3D/"
+const CAMERA_CULL_MASK_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "cull_mask"
+const CAMERA_H_OFFSET_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "h_offset"
+const CAMERA_V_OFFSET_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "v_offset"
+const CAMERA_FOV_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "FOV"
+
+var _camera_cull_mask: int = 1048575
+var _camera_h_offset: float = 0
+var _camera_v_offset: float = 0
+var _camera_fov: float = 75
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
@@ -186,6 +197,35 @@ func _get_property_list() -> Array:
 
 	property_list.append_array(Properties.add_tween_properties())
 	property_list.append_array(Properties.add_secondary_properties())
+	
+	property_list.append({
+		"name": CAMERA_CULL_MASK_PROPERTY_NAME,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_LAYERS_3D_RENDER,
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
+	
+	property_list.append({
+		"name": CAMERA_H_OFFSET_PROPERTY_NAME,
+		"type": TYPE_FLOAT,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
+	
+	property_list.append({
+		"name": CAMERA_V_OFFSET_PROPERTY_NAME,
+		"type": TYPE_FLOAT,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
+	
+	property_list.append({
+		"name": CAMERA_FOV_PROPERTY_NAME,
+		"type": TYPE_FLOAT,
+		"hint": PROPERTY_HINT_RANGE,
+		"hint_string": "1, 180, 0.1,",
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
 
 	return property_list
 
@@ -282,6 +322,27 @@ func _set(property: StringName, value) -> bool:
 
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
+	
+	# Camera3D Property Overrides
+	if property == CAMERA_CULL_MASK_PROPERTY_NAME:
+		if value == null:
+			value = 1 # Fixes crash in cases where a Cull Mask value isn't applied
+		_camera_cull_mask = value
+	
+	if property == CAMERA_H_OFFSET_PROPERTY_NAME:
+		if value == null:
+			value = 0 # Fixes crash in cases where a Cull Mask value isn't applied
+		_camera_h_offset = value
+		
+	if property == CAMERA_V_OFFSET_PROPERTY_NAME:
+		if value == null:
+			value = 0 # Fixes crash in cases where a Cull Mask value isn't applied
+		_camera_v_offset = value
+	
+	if property == CAMERA_FOV_PROPERTY_NAME:
+		if value == null:
+			value = 75 # Fixes crash in cases where a Cull Mask value isn't applied
+		_camera_fov = value
 
 	return false
 
@@ -326,8 +387,11 @@ func _get(property: StringName):
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
-#	print(property)
-#	print(property == Constants.FOLLOW_MODE_PROPERTY_NAME)
+	
+	if property == CAMERA_CULL_MASK_PROPERTY_NAME:						return _camera_cull_mask
+	if property == CAMERA_H_OFFSET_PROPERTY_NAME:						return _camera_h_offset
+	if property == CAMERA_V_OFFSET_PROPERTY_NAME:						return _camera_v_offset
+	if property == CAMERA_FOV_PROPERTY_NAME:							return _camera_fov
 
 ###################
 # Private Functions
@@ -860,3 +924,23 @@ func get_look_at_group_nodes() -> Array[Node3D]:
 ## Gets Inactive Update Mode property.
 func get_inactive_update_mode() -> String:
 	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
+
+func set_camera_cull_mask(value: int) -> void:
+	_camera_cull_mask = value
+func get_camera_cull_mask() -> int:
+	return _camera_cull_mask
+
+func set_camera_h_offset(value: float) -> void:
+	_camera_h_offset = value
+func get_camera_h_offset() -> float:
+	return _camera_h_offset
+	
+func set_camera_v_offset(value: float) -> void:
+	_camera_v_offset = value
+func get_camera_v_offset() -> float:
+	return _camera_v_offset
+
+func set_camera_fov(value: float) -> void:
+	_camera_fov = value
+func get_camera_fov() -> float:
+	return _camera_fov

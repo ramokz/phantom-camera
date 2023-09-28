@@ -19,8 +19,8 @@ var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool
 
-var _previous_active_pcam_position
-var _previous_active_pcam_rotation
+var _prev_active_pcam_position
+var _prev_active_pcam_rotation
 
 var trigger_pcam_tween: bool
 var tween_duration: float
@@ -35,6 +35,11 @@ var framed_viewfinder_node: Control
 var viewfinder_needed_check: bool = true
 
 var camera_zoom
+
+var camera_cull_mask
+var _prev_camera_h_offset
+var _prev_camera_v_offset
+var _prev_camera_fov
 
 var _should_refresh_transform: bool
 #var _active_pcam_glob_trans_prev: Transform3D
@@ -89,7 +94,9 @@ func _ready() -> void:
 	camera.set_global_transform(_active_pcam.get_global_transform())
 #	_active_pcam_glob_trans_prev = _active_pcam.get_global_transform()
 	_active_pcam_glob_trans_curr = _active_pcam.get_global_transform()
-
+	
+	if not _is_2D:
+		camera.set_fov(_active_pcam.get_camera_fov())
 
 func _check_camera_host_amount():
 	if _get_pcam_host_group().size() > 1:
@@ -102,13 +109,16 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	var no_previous_pcam: bool
 
 	if _active_pcam:
-		_previous_active_pcam_position = camera.get_position()
-		_previous_active_pcam_rotation = camera.get_rotation()
+		_prev_active_pcam_position = camera.get_position()
+		_prev_active_pcam_rotation = camera.get_rotation()
+		if not _is_2D:
+			_prev_camera_fov = camera.get_fov()
+			_prev_camera_h_offset = camera.get_h_offset()
+			_prev_camera_v_offset = camera.get_v_offset()
+
+		_active_pcam.Properties.is_active = false
 	else:
 		no_previous_pcam = true
-
-	if _active_pcam:
-		_active_pcam.Properties.is_active = false
 
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
@@ -118,16 +128,16 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if camera is Camera2D:
 		camera_zoom = camera.get_zoom()
+	else:
+		camera.set_cull_mask(_active_pcam.get_camera_cull_mask())
 
 	if no_previous_pcam:
-		_previous_active_pcam_position = _active_pcam.get_position()
-		_previous_active_pcam_rotation = _active_pcam.get_rotation()
+		_prev_active_pcam_position = _active_pcam.get_position()
+		_prev_active_pcam_rotation = _active_pcam.get_rotation()
 
 	tween_duration = 0
 	trigger_pcam_tween = true
 
-#	if _active_pcam.follow_mode == _active_pcam.Constants.FollowMode.FRAMED:
-#		print("Is framed camera")
 
 func _find_pcam_with_highest_priority() -> void:
 	for pcam in _pcam_list:
@@ -146,38 +156,45 @@ func _tween_pcam(delta: float) -> void:
 		_reset_tween_on_load()
 
 	tween_duration += delta
+
 	camera.set_position(
-		Tween.interpolate_value(
-			_previous_active_pcam_position,
-			_active_pcam.get_global_position() - _previous_active_pcam_position,
-			tween_duration,
-			_active_pcam.get_tween_duration(),
-			_active_pcam.get_tween_transition(),
-			_active_pcam.get_tween_ease(),
-		)
+		_tween_interpolate_value(_prev_active_pcam_position, _active_pcam.get_global_position())
 	)
+	
 	camera.set_rotation(
-		Tween.interpolate_value(
-			_previous_active_pcam_rotation, \
-			_active_pcam.get_global_rotation() - _previous_active_pcam_rotation,
-			tween_duration, \
-			_active_pcam.get_tween_duration(), \
-			_active_pcam.get_tween_transition(),
-			_active_pcam.get_tween_ease(),
-		)
+		_tween_interpolate_value(_prev_active_pcam_rotation, _active_pcam.get_global_rotation())
 	)
 
 	if _is_2D:
 		camera.set_zoom(
-			Tween.interpolate_value(
-				camera_zoom, \
-				_active_pcam.Properties.zoom - camera_zoom,
-				tween_duration, \
-				_active_pcam.get_tween_duration(), \
-				_active_pcam.get_tween_transition(),
-				_active_pcam.get_tween_ease(),
-			)
+			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
+	else:
+		if _prev_camera_fov != _active_pcam.get_camera_fov():
+			camera.set_fov(
+				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
+			)
+	
+		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset():
+			camera.set_h_offset(
+				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_camera_h_offset())
+			)
+#
+		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset():
+			camera.set_v_offset(
+				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_camera_v_offset())
+			)
+
+
+func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
+	return Tween.interpolate_value(
+		from, \
+		to - from,
+		tween_duration, \
+		_active_pcam.get_tween_duration(), \
+		_active_pcam.get_tween_transition(),
+		_active_pcam.get_tween_ease(),
+	)
 
 
 func _reset_tween_on_load() -> void:
@@ -203,6 +220,7 @@ func _pcam_follow(delta: float) -> void:
 
 
 func _refresh_transform() -> void:
+#	_active_pcam_glob_trans_prev = _active_pcam.get_global_transform()
 	_active_pcam_glob_trans_curr = _active_pcam.get_global_transform()
 
 
