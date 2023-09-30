@@ -170,6 +170,7 @@ func _tween_pcam(delta: float) -> void:
 		camera_2D.set_position(
 			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 		)
+		
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
@@ -177,17 +178,33 @@ func _tween_pcam(delta: float) -> void:
 		camera_3D.set_position(
 			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
 		)
-		camera_3D.set_rotation(
-			_tween_interpolate_value(_prev_active_pcam_3D_rotation, _active_pcam.get_global_rotation())
+		
+		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
+		camera_3D.set_quaternion(
+			Tween.interpolate_value(
+				prev_active_pcam_3D_basis, \
+				prev_active_pcam_3D_basis.inverse() * Quaternion(_active_pcam_3D_glob_transform.basis.orthonormalized()),
+				tween_duration, \
+				_active_pcam.get_tween_duration(), \
+				_active_pcam.get_tween_transition(),
+				_active_pcam.get_tween_ease(),
+			)
 		)
+		
+		camera_3D.set_transform(
+			camera_3D.transform.orthonormalized()
+		)
+		
 		if _prev_camera_fov != _active_pcam.get_camera_fov():
 			camera_3D.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
 			)
+			
 		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset():
 			camera_3D.set_h_offset(
 				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_camera_h_offset())
 			)
+			
 		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset():
 			camera_3D.set_v_offset(
 				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_camera_v_offset())
