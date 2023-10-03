@@ -1,10 +1,11 @@
-[gd_scene load_steps=17 format=3 uid="uid://dbkr3d716wtx0"]
+[gd_scene load_steps=22 format=3 uid="uid://dbkr3d716wtx0"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_lgg6a"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="3_6wxxp"]
 [ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="3_rn5hf"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="4_dj3lt"]
+[ext_resource type="Texture2D" uid="uid://cblr1js4af56m" path="res://addons/phantom_camera/icons/features/Priority.svg" id="6_he7wn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
 bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
@@ -92,6 +93,44 @@ corner_radius_bottom_left = 10
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g5wua"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x4bx8"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_agqdu"]
+bg_color = Color(0.72549, 0.227451, 0.34902, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ja3vm"]
+bg_color = Color(0.53, 0.1643, 0.255725, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mk273"]
+bg_color = Color(0.43, 0.1333, 0.207475, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_840sd"]
 
 [node name="ViewfinderControl" type="Control"]
 clip_contents = true
@@ -347,3 +386,51 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_x4bx8")
 bbcode_enabled = true
 text = "[center]Add [img=32]res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg[/img] [b]{NodeType}[/b][/center]"
 scroll_active = false
+
+[node name="PriorityOverrideButton" type="Button" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 157.0
+offset_bottom = 58.0
+tooltip_text = "Overridden by XXXX"
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_agqdu")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ja3vm")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mk273")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_840sd")
+
+[node name="PriorityOverrideIcon" type="TextureRect" parent="PriorityOverrideButton"]
+layout_mode = 1
+offset_left = 10.0
+offset_top = 6.0
+offset_right = 34.0
+offset_bottom = 30.0
+texture = ExtResource("6_he7wn")
+expand_mode = 1
+
+[node name="PriorityOverrideByLabel" type="Label" parent="PriorityOverrideButton"]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 7.0
+offset_right = 144.0
+offset_bottom = 30.0
+theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_font_sizes/font_size = 14
+text = "OVERRIDEN BY"
+vertical_alignment = 1
+
+[node name="PriorityOverrideNameLabel" type="Label" parent="PriorityOverrideButton"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 36.0
+offset_top = 25.0
+offset_right = 130.0
+offset_bottom = 48.0
+theme_override_fonts/font = ExtResource("3_6wxxp")
+theme_override_font_sizes/font_size = 14
+text = "PCam_Namedasd"
+vertical_alignment = 1
+text_overrun_behavior = 3
