@@ -32,6 +32,8 @@ var multiple_pcam_hosts: bool
 var is_child_of_camera: bool = false
 var _is_2D: bool
 
+signal update_editor_viewfinder
+
 var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
 var framed_viewfinder_node: Control
 var viewfinder_needed_check: bool = true
@@ -170,7 +172,7 @@ func _tween_pcam(delta: float) -> void:
 		camera_2D.set_position(
 			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 		)
-		
+
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
@@ -178,7 +180,7 @@ func _tween_pcam(delta: float) -> void:
 		camera_3D.set_position(
 			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
 		)
-		
+
 		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
 		camera_3D.set_quaternion(
 			Tween.interpolate_value(
@@ -199,12 +201,12 @@ func _tween_pcam(delta: float) -> void:
 			camera_3D.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
 			)
-			
+
 		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset():
 			camera_3D.set_h_offset(
 				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_camera_h_offset())
 			)
-			
+
 		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset():
 			camera_3D.set_v_offset(
 				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_camera_v_offset())
@@ -248,7 +250,7 @@ func _refresh_transform() -> void:
 		_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
 	else:
 		_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
-		
+
 
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
@@ -328,6 +330,8 @@ func pcam_removed_from_scene(pcam) -> void:
 
 
 func pcam_priority_updated(pcam: Node) -> void:
+	if Engine.is_editor_hint() and _active_pcam.Properties.priority_override: return
+	
 	var current_pcam_priority: int = pcam.get_priority()
 
 	if current_pcam_priority >= _active_pcam_priority and pcam != _active_pcam:
@@ -338,6 +342,17 @@ func pcam_priority_updated(pcam: Node) -> void:
 			_find_pcam_with_highest_priority()
 		else:
 			_active_pcam_priority = current_pcam_priority
+
+
+func pcam_priority_override(pcam: Node) -> void:
+	if Engine.is_editor_hint() and _active_pcam.Properties.priority_override:
+		_active_pcam.Properties.priority_override = false
+
+	_assign_new_active_pcam(pcam)
+	update_editor_viewfinder.emit()
+
+func pcam_priority_override_disabled() -> void:
+	update_editor_viewfinder.emit()
 
 
 func get_active_pcam() -> Node:

@@ -351,6 +351,7 @@ func _get(property: StringName):
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	if property == Constants.PHANTOM_CAMERA_HOST: return Properties.pcam_host_owner.name
 
+	if property == Constants.PRIORITY_OVERRIDE: 						return Properties.priority_override
 	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 				return Properties.follow_mode

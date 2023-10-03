@@ -16,6 +16,7 @@ const PCAM_HOST_COLOR: Color = Color("E0E0E0")
 
 # Primary
 const PRIORITY_PROPERTY_NAME: StringName = "priority"
+const PRIORITY_OVERRIDE: StringName = "priority_override"
 const PCAM_HOST: StringName = "phantom_camera_host"
 
 # Follow

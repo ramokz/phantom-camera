@@ -12,6 +12,7 @@ var pcam_host_group: Array[Node]
 
 var is_active: bool
 
+var priority_override: bool
 var priority: int = 0
 
 var tween_onload: bool = true
@@ -103,6 +104,11 @@ func add_multiple_hosts_properties() -> Array:
 
 func add_priority_properties() -> Array:
 	var _property_list: Array
+	
+	_property_list.append({
+		"name": Constants.PRIORITY_OVERRIDE,
+		"type": TYPE_BOOL,
+	})
 
 	_property_list.append({
 		"name": Constants.PRIORITY_PROPERTY_NAME,
@@ -276,6 +282,16 @@ func set_phantom_host_property(property: StringName, value, pcam: Node):
 
 
 func set_priority_property(property: StringName, value, pcam: Node):
+	if Engine.is_editor_hint() and is_instance_valid(pcam_host_owner):
+		if property == Constants.PRIORITY_OVERRIDE:
+			if value == true:
+				priority_override = value
+				pcam_host_owner.pcam_priority_override(pcam)
+			else:
+				priority_override = value
+				pcam_host_owner.pcam_priority_updated(pcam)
+				pcam_host_owner.pcam_priority_override_disabled()
+		
 	if property == Constants.PRIORITY_PROPERTY_NAME:
 		set_priority(value, pcam)
 
@@ -429,6 +445,11 @@ func assign_pcam_host(pcam: Node) -> void:
 #			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
 #			multiple_pcam_host_group.append(camera_host)
 #			return null
+
+
+func toggle_priorty_override(pcam: Node) -> void:
+	if pcam_host_owner:
+		pcam_host_owner.pcam_priority_updated(pcam)
 
 
 func assign_specific_pcam_host(pcam: Node, pcam_host: PhantomCameraHost) -> void:
