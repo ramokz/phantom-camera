@@ -47,7 +47,6 @@ var _prev_camera_fov
 var _should_refresh_transform: bool
 var _active_pcam_2D_glob_transform: Transform2D
 var _active_pcam_3D_glob_transform: Transform3D
-var _active_pcam_3D_glob_rotation: Vector3
 
 ###################
 # Private Functions
@@ -192,11 +191,7 @@ func _tween_pcam(delta: float) -> void:
 				_active_pcam.get_tween_ease(),
 			)
 		)
-		
-		camera_3D.set_transform(
-			camera_3D.transform.orthonormalized()
-		)
-		
+
 		if _prev_camera_fov != _active_pcam.get_camera_fov():
 			camera_3D.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
@@ -273,6 +268,7 @@ func _process_pcam(delta: float) -> void:
 			tween_duration = 0
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
+			_pcam_follow(delta)
 
 
 func show_viewfinder_in_play() -> void:
