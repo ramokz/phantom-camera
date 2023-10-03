@@ -8,6 +8,11 @@ var _selected_camera: Node
 var _active_pcam_camera
 var pcam_host_group: Array[Node]
 
+var editor_interface: EditorInterface
+
+####################
+# Dead Zone Controls
+####################
 @onready var dead_zone_center_hbox: VBoxContainer = %DeadZoneCenterHBoxContainer
 @onready var dead_zone_center_center_panel: Panel = %DeadZoneCenterCenterPanel
 @onready var dead_zone_left_center_panel: Panel = %DeadZoneLeftCenterPanel
@@ -19,14 +24,11 @@ var aspect_ratio_container: AspectRatioContainer
 @onready var camera_viewport_panel: Panel = aspect_ratio_containers.get_child(0)
 @onready var _framed_viewfinder: Control = %FramedViewfinder
 @onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
-
-var editor_interface: EditorInterface
-
 @onready var sub_viewport: SubViewport = %SubViewport
 
-########################
-# Viewfinder Empty State
-########################
+###########################
+# Viewfinder Empty Controls
+###########################
 @onready var _empty_state_control: Control = %EmptyStateControl
 @onready var _empty_state_icon: Control = %EmptyStateIcon
 @onready var _empty_state_text: RichTextLabel = %EmptyStateText
@@ -65,7 +67,7 @@ var max_vertical: float
 
 
 func _ready():
-	connect("visibility_changed", _visibility_check)
+	visibility_changed.connect(_visibility_check)
 	set_process(false)
 	
 	aspect_ratio_containers.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
@@ -83,8 +85,8 @@ func _ready():
 		_set_viewfinder(root_node, false)
 
 	if Engine.is_editor_hint():
-		get_tree().connect("node_added", _node_added)
-		get_tree().connect("node_removed", _node_added)
+		get_tree().node_added.connect(_node_added)
+		get_tree().node_removed.connect(_node_added)
 	else:
 		_empty_state_control.set_visible(false)
 
@@ -93,15 +95,15 @@ func _ready():
 
 func _exit_tree() -> void:
 	if Engine.is_editor_hint():
-		if get_tree().is_connected("node_added", _node_added):
-			get_tree().disconnect("node_added", _node_added)
-			get_tree().disconnect("node_removed", _node_added)
+		if get_tree().node_added.is_connected(_node_added):
+			get_tree().node_added.disconnect(_node_added)
+			get_tree().node_removed.disconnect(_node_added)
 
-	if aspect_ratio_containers.is_connected("resized", _resized):
-		aspect_ratio_containers.disconnect("resized", _resized)
+	if aspect_ratio_containers.resized.is_connected(_resized):
+		aspect_ratio_containers.resized.disconnect(_resized)
 
-	if _add_node_button.is_connected("pressed", _add_node):
-		_add_node_button.disconnect("pressed", _add_node)
+	if _add_node_button.pressed.is_connected(_add_node):
+		_add_node_button.pressed.disconnect(_add_node)
 
 	if is_instance_valid(_active_pcam_camera):
 		if _active_pcam_camera.Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
@@ -305,10 +307,10 @@ func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> voi
 	else:
 		_empty_state_text.set_text("[center]No [b]" + text + "[/b] in scene[/center]")
 
-	if _add_node_button.is_connected("pressed", _add_node):
-		_add_node_button.disconnect("pressed", _add_node)
+	if _add_node_button.pressed.is_connected(_add_node):
+		_add_node_button.pressed.disconnect(_add_node)
 
-	_add_node_button.connect("pressed", Callable(_add_node).bind(text))
+	_add_node_button.pressed.connect(_add_node.bind(text))
 
 
 func _add_node(node_type: String) -> void:
@@ -380,8 +382,8 @@ func _set_viewfinder(root: Node, editor: bool):
 			if not pcam_host.update_editor_viewfinder.is_connected(_on_update_editor_viewfinder):
 				pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder.bind(pcam_host))
 
-			if not aspect_ratio_containers.is_connected("resized", _resized):
-				aspect_ratio_containers.connect("resized", _resized)
+			if not aspect_ratio_containers.resized.is_connected(_resized):
+				aspect_ratio_containers.resized.connect(_resized)
 
 			if not _active_pcam_camera.Properties.is_connected(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
 				_active_pcam_camera.Properties.connect(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
