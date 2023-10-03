@@ -17,6 +17,8 @@ var priority: int = 0
 
 var tween_onload: bool = true
 var has_tweened_onload: bool = true
+
+# Follow
 var should_follow: bool
 var has_follow_group: bool
 var follow_target_node: Node
@@ -25,14 +27,13 @@ var follow_has_target: bool
 var follow_has_path_target: bool
 var follow_path_node: Node
 var follow_path_path: NodePath
-
-
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
+# Follow Group
 var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
