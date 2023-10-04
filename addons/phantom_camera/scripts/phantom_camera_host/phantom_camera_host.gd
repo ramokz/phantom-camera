@@ -222,6 +222,9 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 func _reset_tween_on_load() -> void:
 	for pcam in _get_pcam_node_group():
 		pcam.Properties.has_tweened_onload  = true
+	
+	if not _is_2D:
+		camera_3D.set_fov(_active_pcam.get_camera_fov())
 
 
 func _pcam_follow(delta: float) -> void:
