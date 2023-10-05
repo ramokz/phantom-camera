@@ -63,7 +63,7 @@ var _should_look_at: 			bool
 var _has_look_at_target: 		bool
 var _has_look_at_target_group: 	bool
 
-var look_at_mode: LookAtMode = LookAtMode.NONE
+var look_at_mode_enum: LookAtMode = LookAtMode.NONE
 
 var look_at_target_offset: Vector3
 
@@ -170,8 +170,8 @@ func _get_property_list() -> Array:
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
-	if look_at_mode != LookAtMode.NONE:
-		if look_at_mode == LookAtMode.GROUP:
+	if look_at_mode_enum != LookAtMode.NONE:
+		if look_at_mode_enum == LookAtMode.GROUP:
 			property_list.append({
 				"name": LOOK_AT_GROUP_PROPERTY_NAME,
 				"type": TYPE_ARRAY,
@@ -187,7 +187,7 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 		if _should_look_at:
-			if look_at_mode == LookAtMode.SIMPLE:
+			if look_at_mode_enum == LookAtMode.SIMPLE:
 				property_list.append({
 					"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
 					"type": TYPE_VECTOR3,
@@ -277,7 +277,13 @@ func _set(property: StringName, value) -> bool:
 
 	# Look At Properties
 	if property == LOOK_AT_MODE_PROPERTY_NAME:
-		look_at_mode = value
+		look_at_mode_enum = value
+
+		if look_at_mode_enum == LookAtMode.NONE:
+			_should_look_at = false
+		else:
+			_should_look_at = true
+		
 		notify_property_list_changed()
 
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:
@@ -374,12 +380,11 @@ func _get(property: StringName):
 	if property == FOLLOW_SPRING_ARM_SHAPE_NAME:						return _follow_spring_arm_shape
 	if property == FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME:				return follow_distance
 	if property == FOLLOW_SPRING_ARM_MARGIN_NAME:						return _follow_spring_arm_margin
-	
 
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-	if property == LOOK_AT_MODE_PROPERTY_NAME: 							return look_at_mode
+	if property == LOOK_AT_MODE_PROPERTY_NAME: 							return look_at_mode_enum
 	if property == LOOK_AT_TARGET_PROPERTY_NAME: 						return _look_at_target_path
 	if property == LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 				return look_at_target_offset
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:							return _look_at_group_paths
@@ -593,7 +598,7 @@ func _process(delta: float) -> void:
 						set_global_position(_get_position_offset_distance())
 
 	if _should_look_at:
-		match look_at_mode:
+		match look_at_mode_enum:
 			LookAtMode.MIMIC:
 				if _has_look_at_target:
 					set_rotation(_look_at_target_node.get_rotation())
@@ -879,7 +884,7 @@ func get_third_person_rotation_degrees() -> Vector3:
 ## Gets Look At Mode. Value is based on LookAtMode enum.
 ## Note: To set a new Look At Mode, a separate PhantomCamera3D should be used.
 func get_look_at_mode() -> int:
-	return look_at_mode
+	return look_at_mode_enum
 
 ## Assigns new Node3D as Look At Target.
 func set_look_at_target(value: Node3D) -> void:
