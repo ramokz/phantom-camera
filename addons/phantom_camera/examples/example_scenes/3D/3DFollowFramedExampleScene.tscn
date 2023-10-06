@@ -41,6 +41,7 @@ metadata/_edit_lock_ = true
 unique_name_in_owner = true
 transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
 script = ExtResource("2_g1bv4")
+priority_override = false
 priority = 0
 follow_mode = 5
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -54,6 +55,10 @@ look_at_mode = 0
 tween_parameters = null
 tween_on_load = false
 inactive_update_mode = 0
+Camera3D/cull_mask = 1048575
+Camera3D/h_offset = 0.0
+Camera3D/v_offset = 0.0
+Camera3D/FOV = 75.0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

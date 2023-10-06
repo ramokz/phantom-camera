@@ -106,6 +106,7 @@ font_size = 48
 unique_name_in_owner = true
 transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -4.132, 2, 9.011)
 script = ExtResource("2_y3dy8")
+priority_override = false
 priority = 3
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -116,6 +117,10 @@ look_at_mode = 0
 tween_parameters = ExtResource("4_a27nb")
 tween_on_load = false
 inactive_update_mode = 0
+Camera3D/cull_mask = 1048575
+Camera3D/h_offset = 0.0
+Camera3D/v_offset = 0.0
+Camera3D/FOV = 75.0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
@@ -140,14 +145,19 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 
 [node name="NPCPhantomCamera3D" type="Node3D" parent="NPCGroup"]
 unique_name_in_owner = true
-transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.139449, -0.78728, -0.0859841, 0.610572, -2.98802, 1.50739, 1.19719)
+transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.13945, -0.78728, -0.0859841, 0.610571, -2.98802, 1.50739, 1.19719)
 script = ExtResource("2_y3dy8")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_su0l1")
 tween_on_load = true
 inactive_update_mode = 0
+Camera3D/cull_mask = 1048575
+Camera3D/h_offset = 0.0
+Camera3D/v_offset = 0.0
+Camera3D/FOV = 75.0
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, -3.04693, 0.367287, 0.953757)
@@ -206,12 +216,17 @@ font = ExtResource("2_e7gxt")
 [node name="NorthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89638, 4.73986, 0.115512)
 script = ExtResource("2_y3dy8")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = ExtResource("8_c0sgt")
 tween_on_load = true
 inactive_update_mode = 0
+Camera3D/cull_mask = 1048575
+Camera3D/h_offset = 0.0
+Camera3D/v_offset = 0.0
+Camera3D/FOV = 75.0
 
 [node name="NorthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, -0.9)
@@ -227,12 +242,17 @@ shape = SubResource("BoxShape3D_wcrbb")
 [node name="EntryRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(0.258818, -0.482963, 0.836515, 1.3027e-15, 0.866025, 0.499999, -0.965924, -0.129409, 0.224143, 6.69741, 4.73364, 4.02374)
 script = ExtResource("2_y3dy8")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = ExtResource("8_c0sgt")
 tween_on_load = true
 inactive_update_mode = 0
+Camera3D/cull_mask = 1048575
+Camera3D/h_offset = 0.0
+Camera3D/v_offset = 0.0
+Camera3D/FOV = 75.0
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.00003, -0.454982, 3.00572)
@@ -248,12 +268,17 @@ shape = SubResource("BoxShape3D_ctyr8")
 [node name="SouthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(-0.766043, -0.492403, 0.413175, 0, 0.642787, 0.766043, -0.642786, 0.586825, -0.492403, 6.89741, 4.73364, 5.62374)
 script = ExtResource("2_y3dy8")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = ExtResource("8_c0sgt")
 tween_on_load = true
 inactive_update_mode = 0
+Camera3D/cull_mask = 1048575
+Camera3D/h_offset = 0.0
+Camera3D/v_offset = 0.0
+Camera3D/FOV = 75.0
 
 [node name="SouthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 6.7)

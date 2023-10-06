@@ -102,14 +102,6 @@ unique_name_in_owner = true
 transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.507, -0.0163251)
 collision_layer = 2
 script = ExtResource("5_p60kr")
-mouse_sensitivity = null
-min_yaw = null
-max_yaw = null
-min_pitch = null
-max_pitch = null
-SPEED = null
-JUMP_VELOCITY = null
-enable_gravity = null
 metadata/_edit_group_ = true
 
 [node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
