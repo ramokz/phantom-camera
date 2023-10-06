@@ -277,6 +277,9 @@ func _set(property: StringName, value) -> bool:
 
 	# Look At Properties
 	if property == LOOK_AT_MODE_PROPERTY_NAME:
+		if value == null:
+			value = LookAtMode.NONE
+		
 		look_at_mode_enum = value
 
 		if look_at_mode_enum == LookAtMode.NONE:
@@ -880,6 +883,35 @@ func set_third_person_rotation_degrees(value: Vector3) -> void:
 ## Gets the rotation value (in degrees) from the SpringArm for Third Person Follow mode.
 func get_third_person_rotation_degrees() -> Vector3:
 	return _follow_spring_arm_node.rotation_degrees
+
+## Assigns a new Third Person SpringArm3D Length value.
+func set_spring_arm_spring_length(value: float) -> void:
+	follow_distance = value
+## Gets Third Person SpringArm3D Length value.
+func get_spring_arm_spring_length() -> float:
+	return follow_distance
+
+## Assigns a new Third Person SpringArm3D Collision Mask value.
+func set_spring_arm_collision_mask(value: int) -> void:
+	_follow_spring_arm_collision_mask = value
+## Gets Third Person SpringArm3D Collision Mask value.
+func get_spring_arm_collision_mask() -> int:
+	return _follow_spring_arm_collision_mask
+
+## Assigns a new Third Person SpringArm3D Shape value.
+func set_spring_arm_shape(value: Shape3D) -> void:
+	_follow_spring_arm_shape = value
+## Gets Third Person SpringArm3D Shape value.
+func get_spring_arm_shape() -> Shape3D:
+	return _follow_spring_arm_shape
+
+## Assigns a new Third Person SpringArm3D Shape value.
+func set_spring_arm_margin(value: float) -> void:
+	_follow_spring_arm_margin = value
+## Gets Third Person SpringArm3D Shape value.
+func get_spring_arm_margin() -> float:
+	return _follow_spring_arm_margin
+
 
 ## Gets Look At Mode. Value is based on LookAtMode enum.
 ## Note: To set a new Look At Mode, a separate PhantomCamera3D should be used.
