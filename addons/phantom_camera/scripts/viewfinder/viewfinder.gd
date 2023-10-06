@@ -430,6 +430,7 @@ func _on_update_editor_viewfinder(pcam_host: PhantomCameraHost) -> void:
 		_active_pcam_camera = pcam_host.get_active_pcam()
 		_priority_override_button.set_visible(true)
 		_priority_override_name_label.set_text(_active_pcam_camera.name)
+		_priority_override_button.set_tooltip_text(_active_pcam_camera.name)
 	else:
 		_priority_override_button.set_visible(false)
 

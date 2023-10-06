@@ -5,7 +5,7 @@
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="3_6wxxp"]
 [ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="3_rn5hf"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="4_dj3lt"]
-[ext_resource type="Texture2D" uid="uid://cblr1js4af56m" path="res://addons/phantom_camera/icons/features/Priority.svg" id="6_he7wn"]
+[ext_resource type="Texture2D" uid="uid://dy8eifa6aw2en" path="res://addons/phantom_camera/icons/misc/PriorityOverride.svg" id="6_8cb64"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
 bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
@@ -394,8 +394,7 @@ layout_mode = 1
 offset_left = 5.0
 offset_top = 5.0
 offset_right = 157.0
-offset_bottom = 58.0
-tooltip_text = "Overridden by XXXX"
+offset_bottom = 57.0
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_agqdu")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ja3vm")
@@ -404,19 +403,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_840sd")
 
 [node name="PriorityOverrideIcon" type="TextureRect" parent="PriorityOverrideButton"]
 layout_mode = 1
-offset_left = 10.0
-offset_top = 6.0
-offset_right = 34.0
-offset_bottom = 30.0
-texture = ExtResource("6_he7wn")
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 32.0
+offset_bottom = 28.0
+texture = ExtResource("6_8cb64")
 expand_mode = 1
 
 [node name="PriorityOverrideByLabel" type="Label" parent="PriorityOverrideButton"]
 layout_mode = 0
-offset_left = 36.0
-offset_top = 7.0
-offset_right = 144.0
-offset_bottom = 30.0
+offset_left = 30.0
+offset_top = 1.0
+offset_right = 140.0
+offset_bottom = 24.0
 theme_override_fonts/font = ExtResource("4_dj3lt")
 theme_override_font_sizes/font_size = 14
 text = "OVERRIDEN BY"
@@ -425,12 +424,13 @@ vertical_alignment = 1
 [node name="PriorityOverrideNameLabel" type="Label" parent="PriorityOverrideButton"]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 36.0
-offset_top = 25.0
-offset_right = 130.0
-offset_bottom = 48.0
+offset_left = 6.0
+offset_top = 21.0
+offset_right = 145.0
+offset_bottom = 44.0
 theme_override_fonts/font = ExtResource("3_6wxxp")
 theme_override_font_sizes/font_size = 14
-text = "PCam_Namedasd"
+text = "PCam_Name
+"
 vertical_alignment = 1
 text_overrun_behavior = 3
