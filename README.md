@@ -89,10 +89,10 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </thead>
     <tr>
         <td align="center">      
-            <video src="https://user-images.githubusercontent.com/5159399/226146668-48f8a24c-cdf9-4977-a9a1-76388b1532c8.mp4"/> 
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/ec211454-5079-44d7-b4f9-29204f3f836f"/> 
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226146678-83243b53-4dfe-4cb6-8604-0a13fed04ea0.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/b992b06f-e9bb-4f52-b55d-427c10fbef72"/>
         </td>
     </tr>
 </table>
@@ -124,13 +124,14 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </thead>
     <tr>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226145332-9766cbe0-8807-4a65-ad07-8d2e6186bc97.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/e1905dd4-16cf-43ab-a369-5ac29e820a38"/>
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226146299-e0522e2f-b0e5-4d56-a58a-e3ef5b24f383.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/60732a36-ff63-461d-972b-be179121fd12"/>
         </td>
     </tr>
 </table>
+
 
 <br>
 
@@ -160,10 +161,10 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </thead>
     <tr>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/228355571-16ad5324-27b0-4952-a8c2-eff5b011494a.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/2b099a97-ef6d-4546-8863-a03297eef830"/>
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/228356217-7c7f239e-2d3a-46e2-becd-cb7230d1e3e7.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/521f713a-eee4-488e-9093-17aaa3c31acb"/>
         </td>
     </tr>
 </table>
@@ -196,10 +197,10 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </thead>
     <tr>
         <td align="center">      
-            <video src="https://github-production-user-asset-6210df.s3.amazonaws.com/5159399/273397473-287c2b8c-9f93-42cd-98e3-d4eb0e98460f.mp4"/> 
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/a887a603-b95f-474e-9141-b451ac6a8d91"/> 
         </td>
         <td align="center">
-            <video src="https://github-production-user-asset-6210df.s3.amazonaws.com/5159399/273397543-a29d1d78-a980-41dd-9093-a12e54a55fd4.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/ff091b27-bdbb-4115-a3f2-939a24b2b6de"/>
         </td>
     </tr>
 </table>
@@ -233,7 +234,7 @@ Define the Zoom level for the <code>Camera2D</code>.
     </thead>
     <tr>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226146048-adb853ff-0f5e-4cac-bb7c-900d95486505.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/327db36a-29c1-40d3-a378-18e98d9012ce"/>
         </td>
         <td align="center" valign="center">
             Not available in 3D
@@ -297,7 +298,7 @@ Looks At the target with an optional offset.
             Not available in 2D
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226205072-bb3a7865-fb33-443e-a849-cf7c8305919f.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/4bb74152-c549-4845-af03-f3edd73be645"/>
         </td>
     </tr>
 </table>
@@ -333,7 +334,7 @@ Looks At the target with an optional offset.
             Not available in 2D
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226199734-f2657feb-e892-47cd-9255-607d1fa85f6d.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/5350d466-a1ca-48b6-8b4f-bfc4009e2f6f"/>
         </td>
     </tr>
 </table>
@@ -367,10 +368,10 @@ Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly acti
     </thead>
     <tr>
         <td align="center">      
-            <video src="https://user-images.githubusercontent.com/5159399/226145076-300ad120-b52a-4636-87de-309270f9e6c6.mp4"/> 
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/b11e9447-26fe-4cda-b0af-8f0d2507bcdf"/> 
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226145029-d4a05ea8-0a0b-464f-a045-3fd562b1855f.mp4"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/ec551b24-228e-4617-88e4-728315cf163d"/>
         </td>
     </tr>
 </table>
