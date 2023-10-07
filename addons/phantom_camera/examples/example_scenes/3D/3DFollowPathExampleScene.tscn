@@ -94,10 +94,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_m07s2")
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 90.0
+camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -134,10 +131,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_rw4bl")
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="FollowPath" type="Path3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.73176, 7.9199, -4.8731)
@@ -174,10 +168,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_rw4bl")
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="FollowPath2" type="Path3D" parent="Paths"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92937, 7.9199, -16.7205)

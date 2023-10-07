@@ -86,10 +86,7 @@ look_at_mode = 0
 tween_parameters = ExtResource("4_aj0kl")
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -140,10 +137,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_hml7x")
 tween_on_load = true
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -183,10 +177,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_pjwwe")
 tween_on_load = true
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -226,10 +217,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_ex8sv")
 tween_on_load = true
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -269,10 +257,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_n4qdq")
 tween_on_load = true
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)

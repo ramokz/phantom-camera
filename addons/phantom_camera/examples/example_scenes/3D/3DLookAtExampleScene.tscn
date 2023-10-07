@@ -30,7 +30,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999952, -0.00114636, 0.00116873, 0, 0.713788, 0.700216, -0.00163718, -0.700172, 0.713831, -12.3172, 5.78213, 6.64571)
+transform = Transform3D(0.999952, -0.00114636, 0.00116873, -5.82049e-11, 0.713788, 0.700216, -0.00163718, -0.700172, 0.713831, -12.3172, 5.78213, 6.64571)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_lldvu")
@@ -53,10 +53,7 @@ look_at_group = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath
 tween_parameters = null
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
