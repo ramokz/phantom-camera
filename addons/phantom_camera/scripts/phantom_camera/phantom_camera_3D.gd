@@ -68,16 +68,9 @@ var look_at_mode_enum: LookAtMode = LookAtMode.NONE
 var look_at_target_offset: Vector3
 
 # Camera3D
-const CAMERA_PROPERTY_NAME: StringName = "Camera3D/"
-const CAMERA_CULL_MASK_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "cull_mask"
-const CAMERA_H_OFFSET_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "h_offset"
-const CAMERA_V_OFFSET_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "v_offset"
-const CAMERA_FOV_PROPERTY_NAME: StringName = CAMERA_PROPERTY_NAME + "FOV"
-
-var _camera_cull_mask: int = 1048575
-var _camera_h_offset: float = 0
-var _camera_v_offset: float = 0
-var _camera_fov: float = 75
+const CAMERA_3D_RESOURCE_PROPERTY_NAME: StringName = "camera_3D_resource"
+var _camera_3D_resouce: Camera3DResource
+var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
@@ -197,34 +190,12 @@ func _get_property_list() -> Array:
 
 	property_list.append_array(Properties.add_tween_properties())
 	property_list.append_array(Properties.add_secondary_properties())
-	
+
 	property_list.append({
-		"name": CAMERA_CULL_MASK_PROPERTY_NAME,
-		"type": TYPE_INT,
-		"hint": PROPERTY_HINT_LAYERS_3D_RENDER,
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
-	
-	property_list.append({
-		"name": CAMERA_H_OFFSET_PROPERTY_NAME,
-		"type": TYPE_FLOAT,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
-	
-	property_list.append({
-		"name": CAMERA_V_OFFSET_PROPERTY_NAME,
-		"type": TYPE_FLOAT,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
-	
-	property_list.append({
-		"name": CAMERA_FOV_PROPERTY_NAME,
-		"type": TYPE_FLOAT,
-		"hint": PROPERTY_HINT_RANGE,
-		"hint_string": "1, 180, 0.1,",
-		"usage": PROPERTY_USAGE_DEFAULT,
+		"name": CAMERA_3D_RESOURCE_PROPERTY_NAME,
+		"type": TYPE_OBJECT,
+		"hint": PROPERTY_HINT_RESOURCE_TYPE,
+		"hint_string": "Camera3DResource"
 	})
 
 	return property_list
@@ -331,28 +302,10 @@ func _set(property: StringName, value) -> bool:
 
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
-	
-	# Camera3D Property Overrides
-	if property == CAMERA_CULL_MASK_PROPERTY_NAME:
-		if value == null:
-			value = 1048575 # Fixes crash in cases where a value isn't applied
-		_camera_cull_mask = value
-	
-	if property == CAMERA_H_OFFSET_PROPERTY_NAME:
-		if value == null:
-			value = 0 # Fixes crash in cases where a value isn't applied
-		_camera_h_offset = value
-		
-	if property == CAMERA_V_OFFSET_PROPERTY_NAME:
-		if value == null:
-			value = 0 # Fixes crash in cases where a value isn't applied
-		_camera_v_offset = value
-	
-	if property == CAMERA_FOV_PROPERTY_NAME:
-		if value == null:
-			value = 75 # Fixes crash in cases where a value isn't applied
-		_camera_fov = value
 
+	if property == CAMERA_3D_RESOURCE_PROPERTY_NAME:
+		_camera_3D_resouce = value
+	
 	return false
 
 
@@ -396,11 +349,9 @@ func _get(property: StringName):
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
-	
-	if property == CAMERA_CULL_MASK_PROPERTY_NAME:						return _camera_cull_mask
-	if property == CAMERA_H_OFFSET_PROPERTY_NAME:						return _camera_h_offset
-	if property == CAMERA_V_OFFSET_PROPERTY_NAME:						return _camera_v_offset
-	if property == CAMERA_FOV_PROPERTY_NAME:							return _camera_fov
+
+	if property ==  CAMERA_3D_RESOURCE_PROPERTY_NAME:					return _camera_3D_resouce
+
 
 ###################
 # Private Functions
@@ -435,9 +386,6 @@ func _ready():
 				_follow_spring_arm_node = SpringArm3D.new()
 				get_parent().add_child.call_deferred(_follow_spring_arm_node)
 
-#var update_position: bool
-#var _active_pcam_glob_trans_prev: Transform3D
-#var _active_pcam_glob_trans_curr: Transform3D
 
 func _process(delta: float) -> void:
 	if not Properties.is_active:
@@ -963,22 +911,83 @@ func get_look_at_group_nodes() -> Array[Node3D]:
 func get_inactive_update_mode() -> String:
 	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
 
+
+## Assogms a new Camera3D Resource to this PhantomCamera3D
+func set_camera_3D_resource(value: Camera3DResource) -> void:
+	_camera_3D_resouce = value
+## Gets the Camera3D resource assigned to the PhantomCamera3D
+## Returns null if there's nothing assigned to it.
+func get_camera_3D_resource() -> Camera3DResource:
+	return _camera_3D_resouce
+
+## Assigns a new Camera3D Cull Mask value.
+## Note: This will override and make the Camera3D Resource unique to this PhantomCamera3D.
 func set_camera_cull_mask(value: int) -> void:
-	_camera_cull_mask = value
+	if get_camera_3D_resource():
+		_camera_3D_resouce_default.cull_mask = value
+		_camera_3D_resouce_default.h_offset = _camera_3D_resouce.h_offset
+		_camera_3D_resouce_default.v_offset = _camera_3D_resouce.v_offset
+		_camera_3D_resouce_default.fov = _camera_3D_resouce.fov
+		set_camera_3D_resource(null) # Clears resource from PCam instance
+	else:
+		_camera_3D_resouce_default.cull_mask = value
+## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_cull_mask() -> int:
-	return _camera_cull_mask
+	if get_camera_3D_resource():
+		return _camera_3D_resouce.cull_mask
+	else:
+		return _camera_3D_resouce_default.cull_mask
 
+## Assigns a new Camera3D H Offset value.
+## Note: This will override and make the Camera3D Resource unique to this PhantomCamera3D.
 func set_camera_h_offset(value: float) -> void:
-	_camera_h_offset = value
+	if get_camera_3D_resource():
+		_camera_3D_resouce_default.cull_mask = _camera_3D_resouce.cull_mask
+		_camera_3D_resouce_default.h_offset = value
+		_camera_3D_resouce_default.v_offset = _camera_3D_resouce.v_offset
+		_camera_3D_resouce_default.fov = _camera_3D_resouce.fov
+		set_camera_3D_resource(null) # Clears resource from PCam instance
+	else:
+		_camera_3D_resouce_default.h_offset = value
+## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_h_offset() -> float:
-	return _camera_h_offset
-	
-func set_camera_v_offset(value: float) -> void:
-	_camera_v_offset = value
-func get_camera_v_offset() -> float:
-	return _camera_v_offset
+	if get_camera_3D_resource():
+		return _camera_3D_resouce.h_offset
+	else:
+		return _camera_3D_resouce_default.h_offset
 
+## Assigns a new Camera3D V Offset value.
+## Note: This will override and make the Camera3D Resource unique to this PhantomCamera3D.
+func set_camera_v_offset(value: float) -> void:
+	if get_camera_3D_resource():
+		_camera_3D_resouce_default.cull_mask = _camera_3D_resouce.cull_mask
+		_camera_3D_resouce_default.h_offset = _camera_3D_resouce.h_offset
+		_camera_3D_resouce_default.v_offset = value
+		_camera_3D_resouce_default.fov = _camera_3D_resouce.fov
+		set_camera_3D_resource(null) # Clears resource from PCam instance
+	else:
+		_camera_3D_resouce_default.v_offset = value
+## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
+func get_camera_v_offset() -> float:
+	if get_camera_3D_resource():
+		return _camera_3D_resouce.v_offset
+	else:
+		return _camera_3D_resouce_default.v_offset
+
+## Assigns a new Camera3D FOV value.
+## Note: This will override and make the Camera3D Resource unique to this PhantomCamera3D.
 func set_camera_fov(value: float) -> void:
-	_camera_fov = value
+	if get_camera_3D_resource():
+		_camera_3D_resouce_default.cull_mask = _camera_3D_resouce.cull_mask
+		_camera_3D_resouce_default.h_offset = _camera_3D_resouce.h_offset
+		_camera_3D_resouce_default.v_offset = _camera_3D_resouce.v_offset
+		_camera_3D_resouce_default.fov = value
+		set_camera_3D_resource(null) # Clears resource from PCam instance
+	else:
+		_camera_3D_resouce_default.fov = value
+## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_fov() -> float:
-	return _camera_fov
+	if get_camera_3D_resource():
+		return _camera_3D_resouce.fov
+	else:
+		return _camera_3D_resouce_default.fov

@@ -5,8 +5,6 @@ extends Node
 
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-var _damping: float
-
 var _pcam_tween: Tween
 var _tween_default_ease: Tween.EaseType
 var _easing: Tween.TransitionType
@@ -22,7 +20,6 @@ var _active_pcam_has_damping: bool
 
 var _prev_active_pcam_2D_transform: Transform2D
 var _prev_active_pcam_3D_transform: Transform3D
-var _prev_active_pcam_3D_rotation: Vector3
 
 var trigger_pcam_tween: bool
 var tween_duration: float
@@ -38,11 +35,11 @@ var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinde
 var framed_viewfinder_node: Control
 var viewfinder_needed_check: bool = true
 
-var camera_zoom
+var camera_zoom: Vector2
 
-var _prev_camera_h_offset
-var _prev_camera_v_offset
-var _prev_camera_fov
+var _prev_camera_h_offset: float
+var _prev_camera_v_offset: float
+var _prev_camera_fov: float
 
 var _should_refresh_transform: bool
 var _active_pcam_2D_glob_transform: Transform2D
@@ -118,7 +115,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_active_pcam_2D_transform = camera_2D.get_transform()
 		else:
 			_prev_active_pcam_3D_transform = camera_3D.get_transform()
-			_prev_active_pcam_3D_rotation = camera_3D.get_global_rotation()
 			_prev_camera_fov = camera_3D.get_fov()
 			_prev_camera_h_offset = camera_3D.get_h_offset()
 			_prev_camera_v_offset = camera_3D.get_v_offset()
@@ -136,14 +132,14 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
 	else:
-		camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
-
+		if _active_pcam.get_camera_3D_resource():
+			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
+			
 	if no_previous_pcam:
 		if _is_2D:
 			_prev_active_pcam_2D_transform = _active_pcam.get_transform()
 		else:
 			_prev_active_pcam_3D_transform = _active_pcam.get_transform()
-			_prev_active_pcam_3D_rotation = _active_pcam.get_global_rotation()
 
 	tween_duration = 0
 	trigger_pcam_tween = true
@@ -191,18 +187,18 @@ func _tween_pcam(delta: float) -> void:
 				_active_pcam.get_tween_ease(),
 			)
 		)
-
-		if _prev_camera_fov != _active_pcam.get_camera_fov():
+	
+		if _prev_camera_fov != _active_pcam.get_camera_fov() and _active_pcam.get_camera_3D_resource():
 			camera_3D.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
 			)
 
-		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset():
+		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset() and _active_pcam.get_camera_3D_resource():
 			camera_3D.set_h_offset(
 				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_camera_h_offset())
 			)
 
-		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset():
+		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset() and _active_pcam.get_camera_3D_resource():
 			camera_3D.set_v_offset(
 				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_camera_v_offset())
 			)
@@ -224,7 +220,10 @@ func _reset_tween_on_load() -> void:
 		pcam.Properties.has_tweened_onload  = true
 	
 	if not _is_2D:
-		camera_3D.set_fov(_active_pcam.get_camera_fov())
+		if _active_pcam.get_camera_3D_resource():
+			camera_3D.set_fov(_active_pcam.get_camera_fov())
+			camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
+			camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
 
 
 func _pcam_follow(delta: float) -> void:
@@ -261,8 +260,10 @@ func _process_pcam(delta: float) -> void:
 			viewfinder_needed_check = false
 			
 		if Engine.is_editor_hint():
-			if not _is_2D:
+			if _active_pcam.get_camera_3D_resource():
 				camera_3D.set_fov(_active_pcam.get_camera_fov())
+				camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
+				camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
 
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
