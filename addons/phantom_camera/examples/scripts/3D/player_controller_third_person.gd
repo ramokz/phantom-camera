@@ -2,6 +2,7 @@ extends "player_controller.gd"
 
 @onready var _aim_pcam: PhantomCamera3D = %PlayerAimPhantomCamera3D
 @onready var _model: Node3D = $PlayerModel
+@onready var _ceiling_pcam: PhantomCamera3D = %CeilingPhantomCamera3D
 
 @export var mouse_sensitivity: float = 0.05
 
@@ -39,6 +40,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				_toggle_aim_pcam(event)
 			else:
 				_toggle_aim_pcam(event)
+				
+		if event is InputEventKey and event.pressed:
+			if event.keycode == KEY_SPACE:
+				if _ceiling_pcam.get_priority() < 30 and _player_pcam.is_active():
+					_ceiling_pcam.set_priority(30)
+				else:
+					_ceiling_pcam.set_priority(1)
 
 
 func _set_pcam_rotation(pcam: PhantomCamera3D, event: InputEvent) -> void:
