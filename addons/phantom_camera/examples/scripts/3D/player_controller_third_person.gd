@@ -40,6 +40,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			else:
 				_toggle_aim_pcam(event)
 
+
 func _set_pcam_rotation(pcam: PhantomCamera3D, event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		var pcam_rotation_degrees: Vector3
@@ -54,7 +55,10 @@ func _set_pcam_rotation(pcam: PhantomCamera3D, event: InputEvent) -> void:
 
 
 func _toggle_aim_pcam(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 2:
+	if event is InputEventMouseButton \
+		and event.is_pressed() \
+		and event.button_index == 2 \
+		and (_player_pcam.is_active() or _aim_pcam.is_active()):
 		if _player_pcam.get_priority() > _aim_pcam.get_priority():
 			_aim_pcam.set_priority(30)
 		else:
