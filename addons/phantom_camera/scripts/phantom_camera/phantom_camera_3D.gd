@@ -853,10 +853,10 @@ func set_spring_arm_shape(value: Shape3D) -> void:
 func get_spring_arm_shape() -> Shape3D:
 	return _follow_spring_arm_shape
 
-## Assigns a new Third Person SpringArm3D Shape value.
+## Assigns a new Third Person SpringArm3D Margin value.
 func set_spring_arm_margin(value: float) -> void:
 	_follow_spring_arm_margin = value
-## Gets Third Person SpringArm3D Shape value.
+## Gets Third Person SpringArm3D Margin value.
 func get_spring_arm_margin() -> float:
 	return _follow_spring_arm_margin
 
