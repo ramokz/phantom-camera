@@ -1,10 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=19 format=3 uid="uid://4i5csj0s34nb"]
 
-[ext_resource type="Script" path="res://addons/upper.gd" id="1_6tq26"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_b4nxi"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_whx47"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_oisgy"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_lii5s"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="5_jt2lp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="5_p60kr"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_kg7u1"]
 
@@ -14,11 +14,25 @@ duration = 0.3
 transition = 1
 ease = 2
 
+[sub_resource type="Resource" id="Resource_bai5y"]
+script = ExtResource("5_jt2lp")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
 [sub_resource type="Resource" id="Resource_xvcjx"]
 script = ExtResource("3_oisgy")
 duration = 0.25
 transition = 1
 ease = 2
+
+[sub_resource type="Resource" id="Resource_yf1op"]
+script = ExtResource("5_jt2lp")
+cull_mask = 1048575
+h_offset = 1.0
+v_offset = 0.0
+fov = 50.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
 
@@ -31,7 +45,10 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 size = Vector3(0.5, 0.5, 0.3)
 
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
-size = Vector3(1, 2, 10)
+size = Vector3(1, 10, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bj3re"]
+size = Vector3(1, 7, 7)
 
 [sub_resource type="Resource" id="Resource_daoak"]
 script = ExtResource("3_oisgy")
@@ -40,11 +57,10 @@ transition = 7
 ease = 2
 
 [node name="Root" type="Node3D"]
-script = ExtResource("1_6tq26")
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.257, 3.01476)
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -52,7 +68,7 @@ script = ExtResource("1_b4nxi")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.257, 3.01476)
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
 script = ExtResource("2_whx47")
 priority_override = false
 priority = 10
@@ -61,7 +77,7 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 follow_parameters/spring_arm/spring_length = 3.5
 follow_parameters/spring_arm/collision_mask = 1
 follow_parameters/spring_arm/shape = null
-follow_parameters/spring_arm/margin = 0.3
+follow_parameters/spring_arm/margin = 0.2
 follow_parameters/target_offset = Vector3(0, 0, 0)
 follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
@@ -69,14 +85,11 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_0yw0t")
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = SubResource("Resource_bai5y")
 
 [node name="PlayerAimPhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35435, 1.41338)
+transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35423, 1.41338)
 script = ExtResource("2_whx47")
 priority_override = false
 priority = 0
@@ -85,21 +98,18 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 follow_parameters/spring_arm/spring_length = 1.5
 follow_parameters/spring_arm/collision_mask = 1
 follow_parameters/spring_arm/shape = null
-follow_parameters/spring_arm/margin = 0.04
+follow_parameters/spring_arm/margin = 0.5
 follow_parameters/target_offset = Vector3(0, 0.795, 0)
 follow_parameters/damping = false
 look_at_mode = 0
 tween_parameters = SubResource("Resource_xvcjx")
 tween_on_load = false
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 1.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 50.0
+camera_3D_resource = SubResource("Resource_yf1op")
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.507, -0.0163251)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, -0.0163251)
 collision_layer = 2
 script = ExtResource("5_p60kr")
 metadata/_edit_group_ = true
@@ -133,22 +143,37 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
 [node name="Wall" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 4.5, 0)
 mesh = SubResource("BoxMesh_wsigl")
 metadata/_edit_lock_ = true
 
+[node name="Wall5" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.133, 3, -6.5)
+mesh = SubResource("BoxMesh_bj3re")
+metadata/_edit_lock_ = true
+
+[node name="Wall6" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 3, 0)
+mesh = SubResource("BoxMesh_bj3re")
+metadata/_edit_lock_ = true
+
+[node name="Wall7" parent="Environment" instance=ExtResource("4_lii5s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 3, 0)
+mesh = SubResource("BoxMesh_bj3re")
+metadata/_edit_lock_ = true
+
 [node name="Wall2" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 4.5, 0)
 mesh = SubResource("BoxMesh_wsigl")
 metadata/_edit_lock_ = true
 
 [node name="Wall3" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, 4.5)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 4.5, 10.5)
 mesh = SubResource("BoxMesh_wsigl")
 metadata/_edit_lock_ = true
 
 [node name="Wall4" parent="Environment" instance=ExtResource("4_lii5s")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0.5, -4.5)
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 4.5, -9.5)
 mesh = SubResource("BoxMesh_wsigl")
 metadata/_edit_lock_ = true
 
@@ -156,9 +181,9 @@ metadata/_edit_lock_ = true
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
 metadata/_edit_lock_ = true
 
-[node name="UpperPhantomCamera3D" type="Node3D" parent="."]
+[node name="CeilingPhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 8.93596, -0.162648)
+transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 13.366, -0.162648)
 script = ExtResource("2_whx47")
 priority_override = false
 priority = 1
@@ -167,10 +192,7 @@ look_at_mode = 0
 tween_parameters = SubResource("Resource_daoak")
 tween_on_load = true
 inactive_update_mode = 0
-Camera3D/cull_mask = 1048575
-Camera3D/h_offset = 0.0
-Camera3D/v_offset = 0.0
-Camera3D/FOV = 75.0
+camera_3D_resource = null
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.477765, 1.54367, 4.1623)
