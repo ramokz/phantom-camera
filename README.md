@@ -196,10 +196,10 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </thead>
     <tr>
         <td align="center">      
-            <video src="https://user-images.githubusercontent.com/5159399/226145076-300ad120-b52a-4636-87de-309270f9e6c6.mp4"/> 
+            <video src="https://github-production-user-asset-6210df.s3.amazonaws.com/5159399/273397473-287c2b8c-9f93-42cd-98e3-d4eb0e98460f.mp4"/> 
         </td>
         <td align="center">
-            <video src="https://user-images.githubusercontent.com/5159399/226145029-d4a05ea8-0a0b-464f-a045-3fd562b1855f.mp4"/>
+            <video src="https://github-production-user-asset-6210df.s3.amazonaws.com/5159399/273397543-a29d1d78-a980-41dd-9093-a12e54a55fd4.mp4"/>
         </td>
     </tr>
 </table>
