@@ -195,16 +195,21 @@ inactive_update_mode = 0
 camera_3D_resource = null
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.477765, 1.54367, 4.1623)
-visible = false
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0505604, -0.484909, 1.44357)
 modulate = Color(0.294118, 1, 0.631373, 1)
 text = "[WASD] to move"
 font = ExtResource("7_kg7u1")
 font_size = 48
 
+[node name="MovementInstructionsLabel3" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0505604, -0.484909, 0.817134)
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[Right Mouse Click] to \"aim\""
+font = ExtResource("7_kg7u1")
+font_size = 48
+
 [node name="MovementInstructionsLabel2" type="Label3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, 4.86528, 1.55908, 0.189242)
-visible = false
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0440154, -0.490478, -6.30248)
 modulate = Color(0.294118, 1, 0.631373, 1)
 text = "[Space] to toggle PCam"
 font = ExtResource("7_kg7u1")
