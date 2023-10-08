@@ -65,7 +65,7 @@ func _set_pcam_rotation(pcam: PhantomCamera3D, event: InputEvent) -> void:
 		# Change the Y rotation value
 		pcam_rotation_degrees.y -= event.relative.x * mouse_sensitivity
 		
-		# Sets the rotation to fully loop around its target, but witout going below or exceeding 0 and 360 degrees
+		# Sets the rotation to fully loop around its target, but witout going below or exceeding 0 and 360 degrees respectively
 		pcam_rotation_degrees.y = wrapf(pcam_rotation_degrees.y, min_pitch, max_pitch)
 		
 		# Change the SpringArm3D node's rotation and rotate around its target
