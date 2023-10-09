@@ -184,7 +184,7 @@ func _physics_process(delta: float) -> void:
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					_interpolate_position(Properties.follow_group_nodes_2D[0].get_position(), delta)
+					_interpolate_position(Properties.follow_group_nodes_2D[0].get_global_position(), delta)
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:

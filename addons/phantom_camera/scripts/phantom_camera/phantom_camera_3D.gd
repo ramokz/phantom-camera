@@ -413,15 +413,15 @@ func _process(delta: float) -> void:
 				if Properties.has_follow_group:
 					if Properties.follow_group_nodes_3D.size() == 1:
 						_interpolate_position(
-							Properties.follow_group_nodes_3D[0].get_position() +
+							Properties.follow_group_nodes_3D[0].get_global_position() +
 							Properties.follow_target_offset_3D +
 							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
 							delta
 						)
 					elif Properties.follow_group_nodes_3D.size() > 1:
-						var bounds: AABB = AABB(Properties.follow_group_nodes_3D[0].get_position(), Vector3.ZERO)
+						var bounds: AABB = AABB(Properties.follow_group_nodes_3D[0].get_global_position(), Vector3.ZERO)
 						for node in Properties.follow_group_nodes_3D:
-							bounds = bounds.expand(node.get_position())
+							bounds = bounds.expand(node.get_global_position())
 
 						var distance: float
 						if _follow_group_distance_auto:
@@ -450,7 +450,7 @@ func _process(delta: float) -> void:
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
 
-						if _current_rotation != get_rotation():
+						if _current_rotation != get_global_rotation():
 							_interpolate_position(
 								_get_position_offset_distance(),
 								delta
@@ -483,8 +483,8 @@ func _process(delta: float) -> void:
 										delta
 									)
 							else:
-								if _current_rotation != get_rotation():
-									var opposite: float = sin(-get_rotation().x) * follow_distance + _get_target_position_offset().y
+								if _current_rotation != get_global_rotation():
+									var opposite: float = sin(-get_global_rotation().x) * follow_distance + _get_target_position_offset().y
 									glo_pos.y = _get_target_position_offset().y + opposite
 									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 									glo_pos.x = global_position.x
@@ -493,7 +493,7 @@ func _process(delta: float) -> void:
 										glo_pos, 
 										delta
 									)
-									_current_rotation = get_rotation()
+									_current_rotation = get_global_rotation()
 								else:
 									_interpolate_position(
 										get_global_position() + target_position - global_position, 
@@ -501,7 +501,7 @@ func _process(delta: float) -> void:
 									)
 						else:
 							_camera_offset = global_position - _get_target_position_offset()
-							_current_rotation = get_rotation()
+							_current_rotation = get_global_rotation()
 					else:
 						set_global_position(_get_position_offset_distance())
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
@@ -552,18 +552,18 @@ func _process(delta: float) -> void:
 		match look_at_mode_enum:
 			LookAtMode.MIMIC:
 				if _has_look_at_target:
-					set_rotation(_look_at_target_node.get_rotation())
+					set_global_rotation(_look_at_target_node.get_global_rotation())
 			LookAtMode.SIMPLE:
 				if _has_look_at_target:
-					look_at(_look_at_target_node.get_position() + look_at_target_offset)
+					look_at(_look_at_target_node.get_global_position() + look_at_target_offset)
 			LookAtMode.GROUP:
 				if _has_look_at_target_group:
 					if _look_at_group_nodes.size() == 1:
-						look_at(_look_at_group_nodes[0].get_position())
+						look_at(_look_at_group_nodes[0].get_global_position())
 					else:
-						var bounds: AABB = AABB(_look_at_group_nodes[0].get_position(), Vector3.ZERO)
+						var bounds: AABB = AABB(_look_at_group_nodes[0].get_global_position(), Vector3.ZERO)
 						for node in _look_at_group_nodes:
-							bounds = bounds.expand(node.get_position())
+							bounds = bounds.expand(node.get_global_position())
 						look_at(bounds.get_center())
 
 
