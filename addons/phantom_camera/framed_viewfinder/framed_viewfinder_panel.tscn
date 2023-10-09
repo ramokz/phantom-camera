@@ -393,7 +393,7 @@ visible = false
 layout_mode = 1
 offset_left = 5.0
 offset_top = 5.0
-offset_right = 157.0
+offset_right = 165.0
 offset_bottom = 57.0
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_agqdu")
@@ -418,7 +418,7 @@ offset_right = 140.0
 offset_bottom = 24.0
 theme_override_fonts/font = ExtResource("4_dj3lt")
 theme_override_font_sizes/font_size = 14
-text = "OVERRIDEN BY"
+text = "OVERRIDDEN BY"
 vertical_alignment = 1
 
 [node name="PriorityOverrideNameLabel" type="Label" parent="PriorityOverrideButton"]
@@ -426,7 +426,7 @@ unique_name_in_owner = true
 layout_mode = 0
 offset_left = 6.0
 offset_top = 21.0
-offset_right = 145.0
+offset_right = 153.0
 offset_bottom = 44.0
 theme_override_fonts/font = ExtResource("3_6wxxp")
 theme_override_font_sizes/font_size = 14
