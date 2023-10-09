@@ -94,6 +94,8 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
+	if not is_instance_valid(_active_pcam): return
+	
 	if _is_2D:
 		_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
 	else:
@@ -298,6 +300,8 @@ func _get_pcam_host_group() -> Array[Node]:
 
 
 func _process(delta):
+	if not is_instance_valid(_active_pcam): return
+	
 	if _should_refresh_transform:
 #		_refresh_transform()
 		if _is_2D:
@@ -333,6 +337,8 @@ func pcam_removed_from_scene(pcam) -> void:
 func pcam_priority_updated(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.Properties.priority_override: return
 	
+	if not is_instance_valid(pcam): return
+		
 	var current_pcam_priority: int = pcam.get_priority()
 
 	if current_pcam_priority >= _active_pcam_priority and pcam != _active_pcam:
