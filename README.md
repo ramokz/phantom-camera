@@ -205,6 +205,43 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     </tr>
 </table>
 
+<br>
+
+<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#third-person">
+  <img src=".github/assets/icons/Follow-Third-Person.svg"/>
+</a>
+<h4>
+    <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#third-person">Third Person</a>
+</h4>
+<p>
+  As the name implies, this mode is meant to be used for third person camera experiences.<br>
+It works by applying a <code>SpringArm3D</code> node as a parent, where its properties, such as <code>Collison Mask</code>, <code>Spring Length</code> and <code>Margin</code>, can be adjusted from the <code>PhantomCamera</code> node.
+</p>
+<table>
+    <thead>
+        <tr>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera2D</b>
+            </th>
+            <th align="center" valign="top" width="2000">
+              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <br/>
+              <b>PhantomCamera3D</b>
+            </th>
+        </tr>
+    </thead>
+    <tr>
+        <td align="center">      
+            Not available in 2D
+        </td>
+        <td align="center">
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/419c403d-257a-4d15-8c16-04972fc36a43"/>
+        </td>
+    </tr>
+</table>
+
 <hr>
 
 <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">
