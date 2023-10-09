@@ -578,14 +578,14 @@ func _get_position_offset_distance() -> Vector3:
 
 func _interpolate_position(position: Vector3, delta: float, target: Node3D = self) -> void:
 	if Properties.follow_has_damping:
-		target.set_position(
-			target.get_position().lerp(
+		target.set_global_position(
+			target.get_global_position().lerp(
 				position,
 				delta * Properties.follow_damping_value
 			)
 		)
 	else:
-		target.set_position(position)
+		target.set_global_position(position)
 
 
 func _get_raw_unprojected_position() -> Vector2:

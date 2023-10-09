@@ -247,14 +247,14 @@ func _target_position_with_offset() -> Vector2:
 
 func _interpolate_position(position: Vector2, delta: float, target: Node2D = self) -> void:
 	if Properties.follow_has_damping:
-		target.set_position(
-			target.get_position().lerp(
+		target.set_global_position(
+			target.get_global_position().lerp(
 				position,
 				delta * Properties.follow_damping_value
 			)
 		)
 	else:
-		target.set_position(position)
+		target.set_global_position(position)
 
 ##################
 # Public Functions

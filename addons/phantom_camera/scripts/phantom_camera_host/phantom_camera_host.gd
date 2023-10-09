@@ -164,7 +164,7 @@ func _tween_pcam(delta: float) -> void:
 	tween_duration += delta
 
 	if _is_2D:
-		camera_2D.set_position(
+		camera_2D.set_global_position(
 			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 		)
 
@@ -172,7 +172,7 @@ func _tween_pcam(delta: float) -> void:
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
 	else:
-		camera_3D.set_position(
+		camera_3D.set_global_position(
 			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
 		)
 
@@ -260,10 +260,11 @@ func _process_pcam(delta: float) -> void:
 			viewfinder_needed_check = false
 			
 		if Engine.is_editor_hint():
-			if _active_pcam.get_camera_3D_resource():
-				camera_3D.set_fov(_active_pcam.get_camera_fov())
-				camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
-				camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
+			if not _is_2D:
+				if _active_pcam.get_camera_3D_resource():
+					camera_3D.set_fov(_active_pcam.get_camera_fov())
+					camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
+					camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
 
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
