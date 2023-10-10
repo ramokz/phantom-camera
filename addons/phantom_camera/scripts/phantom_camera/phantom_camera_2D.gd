@@ -15,6 +15,11 @@ var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
+const TILE_MAP_CLAMP_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp"
+const TILE_MAP_NODE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tilemap"
+var tile_map_clamp_bool: bool
+var tile_map_clamp_node: TileMap
+
 var _camera_offset: Vector2
 
 func _get_property_list() -> Array:
@@ -68,6 +73,19 @@ func _get_property_list() -> Array:
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
 		property_list.append_array(Properties.add_follow_framed())
+		
+		property_list.append({
+			"name": TILE_MAP_CLAMP_PROPERTY_NAME,
+			"type": TYPE_BOOL,
+		})
+		
+		if tile_map_clamp_bool:
+			property_list.append({
+				"name": TILE_MAP_NODE_PROPERTY_NAME,
+				"type": TYPE_NODE_PATH,
+				"hint": PROPERTY_HINT_TYPE_STRING,
+				"hint_string": "TileMap"
+			})
 
 	property_list.append_array(Properties.add_tween_properties())
 
@@ -112,6 +130,20 @@ func _set(property: StringName, value) -> bool:
 		follow_group_zoom_margin = value
 
 	Properties.set_follow_properties(property, value, self)
+	
+	if property == TILE_MAP_CLAMP_PROPERTY_NAME:
+		tile_map_clamp_bool = value
+		notify_property_list_changed()
+	if property == TILE_MAP_NODE_PROPERTY_NAME:
+		if value is TileMap:
+			if is_instance_valid(value):
+				tile_map_clamp_node = value
+		elif value is NodePath:
+			if has_node(value):
+				tile_map_clamp_node = get_node(value)
+			else:
+				tile_map_clamp_node = null
+	
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 
@@ -141,6 +173,9 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
+
+	if property == TILE_MAP_CLAMP_PROPERTY_NAME:						return tile_map_clamp_bool
+	if property == TILE_MAP_NODE_PROPERTY_NAME:							return tile_map_clamp_node
 
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
 
