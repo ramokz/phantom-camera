@@ -198,8 +198,7 @@ func _exit_tree() -> void:
 
 	Properties.pcam_exit_tree(self)
 
-func _physics_process(delta: float) -> void:
-#	print(follow_group_zoom_margin)
+func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
