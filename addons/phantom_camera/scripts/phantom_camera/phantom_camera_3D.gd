@@ -775,6 +775,7 @@ func get_follow_distance() -> float:
 func append_follow_group_node(value: Node3D) -> void:
 	if not Properties.follow_group_nodes_3D.has(value):
 		Properties.follow_group_nodes_3D.append(value)
+		Properties.should_follow = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node3D to Follow Group array.
@@ -782,11 +783,14 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_3D.has(val):
 			Properties.follow_group_nodes_3D.append(val)
+			Properties.should_follow = true
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes Node3D from Follow Group array.
 func erase_follow_group_node(value: Node3D) -> void:
 	Properties.follow_group_nodes_3D.erase(value)
+	if get_follow_group_nodes().size() < 1:
+		Properties.should_follow = false 
 ## Gets all Node3D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node3D]:
 	return Properties.follow_group_nodes_3D
@@ -890,6 +894,7 @@ func get_look_at_target_offset() -> Vector3:
 func append_look_at_group_node(value: Node3D) -> void:
 	if not _look_at_group_nodes.has(value):
 		_look_at_group_nodes.append(value)
+		_has_look_at_target_group = true
 	else:
 		printerr(value, " is already part of Look At Group")
 ## Appends array of type Node3D to Look At Group array.
@@ -897,11 +902,14 @@ func append_look_at_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not _look_at_group_nodes.has(val):
 			_look_at_group_nodes.append(val)
+			_has_look_at_target_group = true
 		else:
 			printerr(val, " is already part of Look At Group")
 ## Removes Node3D from Look At Group array.
 func erase_look_at_group_node(value: Node3D) -> void:
 	_look_at_group_nodes.erase(value)
+	if _look_at_group_nodes.size() < 1:
+		_has_look_at_target_group = false
 ## Gets all the Node3D in Look At Group array. 
 func get_look_at_group_nodes() -> Array[Node3D]:
 	return _look_at_group_nodes
