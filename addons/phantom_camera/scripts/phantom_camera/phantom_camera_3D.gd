@@ -720,6 +720,11 @@ func get_follow_mode() -> int:
 ## Assigns a new Node3D as the Follow Target.
 func set_follow_target_node(value: Node3D) -> void:
 	Properties.follow_target_node = value
+	Properties.should_follow = true
+## Removes the current Node3D Follow Target.
+func erase_follow_target_node() -> void:
+	Properties.should_follow = false
+	Properties.follow_target_node = null
 ## Gets the current Node3D target.
 func get_follow_target_node():
 	if Properties.follow_target_node:
@@ -731,6 +736,9 @@ func get_follow_target_node():
 ## Assigns a new Path3D to the Follow Path property.
 func set_follow_path(value: Path3D) -> void:
 	Properties.follow_path_node = value
+## Erases the current Path3D frp, the Follow Target
+func erase_follow_path() -> void:
+	Properties.follow_path_node = null
 ## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:

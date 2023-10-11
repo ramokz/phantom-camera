@@ -359,10 +359,15 @@ func is_tween_on_load() -> bool:
 func get_follow_mode() -> int:
 	return Properties.follow_mode
 
-## Assigns a new Node2D as the Follow Target.
+## Assigns a new Node2D as the Follow Target property.
 func set_follow_target_node(value: Node2D) -> void:
 	Properties.follow_target_node = value
-## Gets the current Node2D target.
+	Properties.should_follow = true
+## Erases the current Node2D from the Follow Target property.
+func erase_follow_target_node() -> void:
+	Properties.should_follow = false
+	Properties.follow_target_node = null
+## Gets the current Node2D target property.
 func get_follow_target_node():
 	if Properties.follow_target_node:
 		return Properties.follow_target_node
@@ -373,6 +378,9 @@ func get_follow_target_node():
 ## Assigns a new Path2D to the Follow Path property.
 func set_follow_path(value: Path2D) -> void:
 	Properties.follow_path_node = value
+## Erases the current Path2D from the Follow Path property.
+func erase_follow_path() -> void:
+	Properties.follow_path_node = null
 ## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:
