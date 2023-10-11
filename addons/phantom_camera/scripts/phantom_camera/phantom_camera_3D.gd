@@ -560,7 +560,7 @@ func _process(delta: float) -> void:
 				if _has_look_at_target_group:
 					if _look_at_group_nodes.size() == 1:
 						look_at(_look_at_group_nodes[0].get_global_position())
-					else:
+					elif _look_at_group_nodes.size() > 1:
 						var bounds: AABB = AABB(_look_at_group_nodes[0].get_global_position(), Vector3.ZERO)
 						for node in _look_at_group_nodes:
 							bounds = bounds.expand(node.get_global_position())
