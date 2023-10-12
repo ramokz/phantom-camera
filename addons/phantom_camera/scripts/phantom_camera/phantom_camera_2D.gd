@@ -273,7 +273,13 @@ func _process(delta: float) -> void:
 						_camera_offset = global_position - _target_position_with_offset()
 				else:
 					set_global_position(_target_position_with_offset())
-
+	if not Engine.is_editor_hint():
+		pass
+#		print(tile_map_clamp_node.tile_set.tile_size)
+#		print(tile_map_clamp_node.get_global_position())
+#		var tile_map_size: Vector2 = Vector2(tile_map_clamp_node.get_used_rect().size) * Vector2(tile_map_clamp_node.tile_set.tile_size) + tile_map_clamp_node.get_global_position()
+#		print(get_global_position())
+#	print(tile_map_clamp_node.get_global_position())
 
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
