@@ -286,8 +286,8 @@ func _set(property: StringName, value) -> bool:
 		var value_node_path: NodePath = value as NodePath
 		if not value_node_path.is_empty():
 			_should_look_at = true
-			_has_look_at_target = true
 			if has_node(_look_at_target_path):
+				_has_look_at_target = true
 				set_rotation(Vector3(0,0,0))
 				_look_at_target_node = get_node(_look_at_target_path)
 		else:
@@ -361,15 +361,16 @@ func _enter_tree() -> void:
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
-	if _look_at_target_path:
-		_look_at_target_node = get_node(_look_at_target_path)
-	elif _look_at_group_paths:
-		_look_at_group_nodes.clear()
-		for path in _look_at_group_paths:
-			if not path.is_empty() and get_node(path):
-				_should_look_at = true
-				_has_look_at_target_group = true
-				_look_at_group_nodes.append(get_node(path))
+	if not get_parent() is SpringArm3D:
+		if _look_at_target_path:
+			_look_at_target_node = get_node(_look_at_target_path)
+		elif _look_at_group_paths:
+			_look_at_group_nodes.clear()
+			for path in _look_at_group_paths:
+				if not path.is_empty() and get_node(path):
+					_should_look_at = true
+					_has_look_at_target_group = true
+					_look_at_group_nodes.append(get_node(path))
 
 
 func _exit_tree() -> void:
@@ -536,6 +537,7 @@ func _process(delta: float) -> void:
 									_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
 									_follow_spring_arm_node.set_shape(_follow_spring_arm_shape)
 									_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
+
 									if not is_tween_on_load():
 										Properties.has_tweened_onload = false
 									reparent(_follow_spring_arm_node)

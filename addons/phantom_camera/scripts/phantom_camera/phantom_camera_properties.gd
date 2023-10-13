@@ -56,7 +56,6 @@ var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdat
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
-#	print(not pcam.get_parent() is SpringArm3D)
 	
 	if pcam.Properties.follow_target_path and \
 		not pcam.get_parent() is SpringArm3D and \
