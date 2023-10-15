@@ -786,6 +786,7 @@ func append_follow_group_node(value: Node3D) -> void:
 	if not Properties.follow_group_nodes_3D.has(value):
 		Properties.follow_group_nodes_3D.append(value)
 		Properties.should_follow = true
+		Properties.has_follow_group = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node3D to Follow Group array.
@@ -794,6 +795,7 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 		if not Properties.follow_group_nodes_3D.has(val):
 			Properties.follow_group_nodes_3D.append(val)
 			Properties.should_follow = true
+			Properties.has_follow_group = true
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes Node3D from Follow Group array.
@@ -801,6 +803,7 @@ func erase_follow_group_node(value: Node3D) -> void:
 	Properties.follow_group_nodes_3D.erase(value)
 	if get_follow_group_nodes().size() < 1:
 		Properties.should_follow = false 
+		Properties.has_follow_group = false
 ## Gets all Node3D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node3D]:
 	return Properties.follow_group_nodes_3D
