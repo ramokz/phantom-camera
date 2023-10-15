@@ -1,11 +1,11 @@
 [gd_scene load_steps=22 format=3 uid="uid://dbkr3d716wtx0"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_lgg6a"]
-[ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/framed_viewfinder/deadzone_style_box.tres" id="2_cvat1"]
-[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="3_6wxxp"]
-[ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="3_rn5hf"]
-[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="4_dj3lt"]
-[ext_resource type="Texture2D" uid="uid://dy8eifa6aw2en" path="res://addons/phantom_camera/icons/misc/PriorityOverride.svg" id="6_8cb64"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/viewfinder/viewfinder.gd" id="1_utvi8"]
+[ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/editor/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_li3i3"]
+[ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="4_1dven"]
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="5_4jhax"]
+[ext_resource type="Texture2D" uid="uid://dy8eifa6aw2en" path="res://addons/phantom_camera/icons/misc/PriorityOverride.svg" id="6_ptuth"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
 bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
@@ -132,7 +132,7 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_840sd"]
 
-[node name="ViewfinderControl" type="Control"]
+[node name="ViewfinderPanel" type="Control"]
 clip_contents = true
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 3
@@ -144,7 +144,7 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
-script = ExtResource("1_lgg6a")
+script = ExtResource("1_utvi8")
 
 [node name="FramedViewfinder" type="Control" parent="."]
 unique_name_in_owner = true
@@ -193,17 +193,17 @@ theme_override_constants/separation = 0
 [node name="DeadZoneLeftTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneLeftCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneLeftBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneCenterHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
 unique_name_in_owner = true
@@ -215,7 +215,7 @@ theme_override_constants/separation = 0
 [node name="DeadZoneCenterTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneCenterCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 unique_name_in_owner = true
@@ -226,7 +226,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_fle8t")
 [node name="DeadZoneCenterBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneRightHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
 clip_contents = true
@@ -237,17 +237,17 @@ theme_override_constants/separation = 0
 [node name="DeadZoneRightTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneRightCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneRightBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = ExtResource("2_cvat1")
+theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="FramedViewfinder"]
 unique_name_in_owner = true
@@ -291,7 +291,7 @@ offset_top = -8.0
 offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_fonts/font = ExtResource("3_li3i3")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
 text = "2D scene support not available yet
@@ -334,15 +334,15 @@ alignment = 1
 [node name="EmptyStateIcon" type="TextureRect" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-texture = ExtResource("3_rn5hf")
+texture = ExtResource("4_1dven")
 stretch_mode = 3
 
 [node name="EmptyStateText" type="RichTextLabel" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
-theme_override_fonts/normal_font = ExtResource("3_6wxxp")
-theme_override_fonts/bold_font = ExtResource("4_dj3lt")
+theme_override_fonts/normal_font = ExtResource("5_4jhax")
+theme_override_fonts/bold_font = ExtResource("3_li3i3")
 theme_override_font_sizes/normal_font_size = 24
 theme_override_font_sizes/bold_font_size = 24
 theme_override_styles/focus = SubResource("StyleBoxEmpty_obaj6")
@@ -358,7 +358,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_fonts/font = ExtResource("3_li3i3")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxFlat_fsxik")
 theme_override_styles/hover = SubResource("StyleBoxFlat_yh38y")
@@ -377,8 +377,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
-theme_override_fonts/normal_font = ExtResource("3_6wxxp")
-theme_override_fonts/bold_font = ExtResource("4_dj3lt")
+theme_override_fonts/normal_font = ExtResource("5_4jhax")
+theme_override_fonts/bold_font = ExtResource("3_li3i3")
 theme_override_font_sizes/normal_font_size = 24
 theme_override_font_sizes/bold_font_size = 24
 theme_override_styles/focus = SubResource("StyleBoxEmpty_g5wua")
@@ -407,7 +407,7 @@ offset_left = 8.0
 offset_top = 4.0
 offset_right = 32.0
 offset_bottom = 28.0
-texture = ExtResource("6_8cb64")
+texture = ExtResource("6_ptuth")
 expand_mode = 1
 
 [node name="PriorityOverrideByLabel" type="Label" parent="PriorityOverrideButton"]
@@ -416,7 +416,7 @@ offset_left = 30.0
 offset_top = 1.0
 offset_right = 140.0
 offset_bottom = 24.0
-theme_override_fonts/font = ExtResource("4_dj3lt")
+theme_override_fonts/font = ExtResource("3_li3i3")
 theme_override_font_sizes/font_size = 14
 text = "OVERRIDDEN BY"
 vertical_alignment = 1
@@ -428,7 +428,7 @@ offset_left = 6.0
 offset_top = 21.0
 offset_right = 153.0
 offset_bottom = 44.0
-theme_override_fonts/font = ExtResource("3_6wxxp")
+theme_override_fonts/font = ExtResource("5_4jhax")
 theme_override_font_sizes/font_size = 14
 text = "PCam_Name
 "

@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://cuqkqsp3ikv5u"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/updater/update_button.gd" id="1_xtaw5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7fd1"]
+bg_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="UpdateButton" type="Button"]
+visible = false
+offset_right = 147.0
+offset_bottom = 23.0
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_c7fd1")
+text = "Update is available"
+script = ExtResource("1_xtaw5")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+unique_name_in_owner = true
+
+[node name="DownloadDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+title = "New Update"
+size = Vector2i(300, 250)
+unresizable = true
+always_on_top = true
+ok_button_text = "Close"
+
+[node name="DownloadUpdatePanel" type="Panel" parent="DownloadDialog"]
+unique_name_in_owner = true
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="UpdateFailedDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
