@@ -417,6 +417,7 @@ func append_follow_group_node(value: Node2D) -> void:
 	if not Properties.follow_group_nodes_2D.has(value):
 		Properties.follow_group_nodes_2D.append(value)
 		Properties.should_follow = true
+		Properties.has_follow_group = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node2D to Follow Group array.
@@ -425,6 +426,7 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 		if not Properties.follow_group_nodes_2D.has(val):
 			Properties.follow_group_nodes_2D.append(val)
 			Properties.should_follow = true
+			Properties.has_follow_group = true
 		else:
 			printerr(val, " is already part of Follow Group")
 ## Removes Node2D from Follow Group array.
@@ -432,6 +434,7 @@ func erase_follow_group_node(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.erase(value)
 	if Properties.follow_group_nodes_2D.size() < 1:
 		Properties.should_follow = false
+		Properties.has_follow_group = false
 ## Gets all Node2D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D
