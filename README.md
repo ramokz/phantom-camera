@@ -9,7 +9,7 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
 
 <table>
   <tr>
-    <th>Guides</th>
+    <th>Documentation & Guides</th>
     <th>Roadmap</th>
   <tr>
   <tbody>
