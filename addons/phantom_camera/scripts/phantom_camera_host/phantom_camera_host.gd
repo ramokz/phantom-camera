@@ -31,7 +31,7 @@ var _is_2D: bool
 
 signal update_editor_viewfinder
 
-var viewfinder_scene = load("res://addons/phantom_camera/editor/viewfinder/viewfinder_panel.tscn")
+var viewfinder_scene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 var viewfinder_node: Control
 var viewfinder_needed_check: bool = true
 

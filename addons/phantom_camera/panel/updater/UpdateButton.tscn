@@ -1,9 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://cuqkqsp3ikv5u"]
+[gd_scene load_steps=5 format=3 uid="uid://cuqkqsp3ikv5u"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/updater/update_button.gd" id="1_xtaw5"]
+[ext_resource type="PackedScene" uid="uid://b25fl4usw0nlp" path="res://addons/phantom_camera/panel/updater/download_update_panel.tscn" id="2_vtgcx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7fd1"]
 bg_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dr4n4"]
+content_margin_bottom = 20.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
 
 [node name="UpdateButton" type="Button"]
 visible = false
@@ -23,15 +32,20 @@ unique_name_in_owner = true
 [node name="DownloadDialog" type="AcceptDialog" parent="."]
 unique_name_in_owner = true
 title = "New Update"
-size = Vector2i(300, 250)
+size = Vector2i(350, 350)
+visible = true
+transient = false
 unresizable = true
+borderless = true
 always_on_top = true
+theme_override_styles/panel = SubResource("StyleBoxFlat_dr4n4")
 ok_button_text = "Close"
 
-[node name="DownloadUpdatePanel" type="Panel" parent="DownloadDialog"]
+[node name="DownloadUpdatePanel" parent="DownloadDialog" instance=ExtResource("2_vtgcx")]
 unique_name_in_owner = true
-offset_right = 40.0
-offset_bottom = 40.0
+
+[node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
 
 [node name="UpdateFailedDialog" type="AcceptDialog" parent="."]
 unique_name_in_owner = true

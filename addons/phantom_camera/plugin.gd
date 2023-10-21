@@ -8,8 +8,8 @@ const PCAM_3D: String = "PhantomCamera3D"
 const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_3D.gd")
 var pcam_3D_gizmo_plugin = Pcam3DPlugin.new()
 
-const EditorPanel = preload("res://addons/phantom_camera/editor/editor.tscn")
-#const ViewfinderPanel = preload("res://addons/phantom_camera/editor/editor.tscn")
+const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
+#const ViewfinderPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 var editor_panel_instance
 #var viewfinder_panel_instance
 
@@ -26,6 +26,7 @@ func _enter_tree() -> void:
 	# Viewfinder
 	editor_panel_instance = EditorPanel.instantiate()
 	editor_panel_instance.editor_interface = get_editor_interface()
+	editor_panel_instance.editor_plugin = self
 	add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
 	_make_visible(false)
 
@@ -54,5 +55,9 @@ func _make_visible(visible):
 
 
 func _scene_changed(scene_root: Node) -> void:
-	print(editor_panel_instance.viewfinder)
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
+
+func get_version() -> String:
+	var config: ConfigFile = ConfigFile.new()
+	config.load(get_script().resource_path.get_base_dir() + "/plugin.cfg")
+	return config.get_value("plugin", "version")
