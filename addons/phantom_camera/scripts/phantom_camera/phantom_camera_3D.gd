@@ -286,8 +286,8 @@ func _set(property: StringName, value) -> bool:
 		var value_node_path: NodePath = value as NodePath
 		if not value_node_path.is_empty():
 			_should_look_at = true
-			_has_look_at_target = true
 			if has_node(_look_at_target_path):
+				_has_look_at_target = true
 				set_rotation(Vector3(0,0,0))
 				_look_at_target_node = get_node(_look_at_target_path)
 		else:
@@ -361,15 +361,16 @@ func _enter_tree() -> void:
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
-	if _look_at_target_path:
-		_look_at_target_node = get_node(_look_at_target_path)
-	elif _look_at_group_paths:
-		_look_at_group_nodes.clear()
-		for path in _look_at_group_paths:
-			if not path.is_empty() and get_node(path):
-				_should_look_at = true
-				_has_look_at_target_group = true
-				_look_at_group_nodes.append(get_node(path))
+	if not get_parent() is SpringArm3D:
+		if _look_at_target_path:
+			_look_at_target_node = get_node(_look_at_target_path)
+		elif _look_at_group_paths:
+			_look_at_group_nodes.clear()
+			for path in _look_at_group_paths:
+				if not path.is_empty() and get_node(path):
+					_should_look_at = true
+					_has_look_at_target_group = true
+					_look_at_group_nodes.append(get_node(path))
 
 
 func _exit_tree() -> void:
@@ -536,6 +537,7 @@ func _process(delta: float) -> void:
 									_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
 									_follow_spring_arm_node.set_shape(_follow_spring_arm_shape)
 									_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
+
 									if not is_tween_on_load():
 										Properties.has_tweened_onload = false
 									reparent(_follow_spring_arm_node)
@@ -560,7 +562,7 @@ func _process(delta: float) -> void:
 				if _has_look_at_target_group:
 					if _look_at_group_nodes.size() == 1:
 						look_at(_look_at_group_nodes[0].get_global_position())
-					else:
+					elif _look_at_group_nodes.size() > 1:
 						var bounds: AABB = AABB(_look_at_group_nodes[0].get_global_position(), Vector3.ZERO)
 						for node in _look_at_group_nodes:
 							bounds = bounds.expand(node.get_global_position())
@@ -720,6 +722,11 @@ func get_follow_mode() -> int:
 ## Assigns a new Node3D as the Follow Target.
 func set_follow_target_node(value: Node3D) -> void:
 	Properties.follow_target_node = value
+	Properties.should_follow = true
+## Removes the current Node3D Follow Target.
+func erase_follow_target_node() -> void:
+	Properties.should_follow = false
+	Properties.follow_target_node = null
 ## Gets the current Node3D target.
 func get_follow_target_node():
 	if Properties.follow_target_node:
@@ -731,6 +738,9 @@ func get_follow_target_node():
 ## Assigns a new Path3D to the Follow Path property.
 func set_follow_path(value: Path3D) -> void:
 	Properties.follow_path_node = value
+## Erases the current Path3D frp, the Follow Target
+func erase_follow_path() -> void:
+	Properties.follow_path_node = null
 ## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:
@@ -775,6 +785,8 @@ func get_follow_distance() -> float:
 func append_follow_group_node(value: Node3D) -> void:
 	if not Properties.follow_group_nodes_3D.has(value):
 		Properties.follow_group_nodes_3D.append(value)
+		Properties.should_follow = true
+		Properties.has_follow_group = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node3D to Follow Group array.
@@ -782,11 +794,16 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_3D.has(val):
 			Properties.follow_group_nodes_3D.append(val)
+			Properties.should_follow = true
+			Properties.has_follow_group = true
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes Node3D from Follow Group array.
 func erase_follow_group_node(value: Node3D) -> void:
 	Properties.follow_group_nodes_3D.erase(value)
+	if get_follow_group_nodes().size() < 1:
+		Properties.should_follow = false 
+		Properties.has_follow_group = false
 ## Gets all Node3D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node3D]:
 	return Properties.follow_group_nodes_3D
@@ -890,6 +907,7 @@ func get_look_at_target_offset() -> Vector3:
 func append_look_at_group_node(value: Node3D) -> void:
 	if not _look_at_group_nodes.has(value):
 		_look_at_group_nodes.append(value)
+		_has_look_at_target_group = true
 	else:
 		printerr(value, " is already part of Look At Group")
 ## Appends array of type Node3D to Look At Group array.
@@ -897,11 +915,14 @@ func append_look_at_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not _look_at_group_nodes.has(val):
 			_look_at_group_nodes.append(val)
+			_has_look_at_target_group = true
 		else:
 			printerr(val, " is already part of Look At Group")
 ## Removes Node3D from Look At Group array.
 func erase_look_at_group_node(value: Node3D) -> void:
 	_look_at_group_nodes.erase(value)
+	if _look_at_group_nodes.size() < 1:
+		_has_look_at_target_group = false
 ## Gets all the Node3D in Look At Group array. 
 func get_look_at_group_nodes() -> Array[Node3D]:
 	return _look_at_group_nodes

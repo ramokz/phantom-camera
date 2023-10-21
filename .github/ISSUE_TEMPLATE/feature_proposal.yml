@@ -22,6 +22,7 @@ body:
       options:
         - 2D
         - 3D
+        - Editor
     validations:
       required: true
 

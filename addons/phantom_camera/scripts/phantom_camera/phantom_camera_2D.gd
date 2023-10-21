@@ -359,10 +359,15 @@ func is_tween_on_load() -> bool:
 func get_follow_mode() -> int:
 	return Properties.follow_mode
 
-## Assigns a new Node2D as the Follow Target.
+## Assigns a new Node2D as the Follow Target property.
 func set_follow_target_node(value: Node2D) -> void:
 	Properties.follow_target_node = value
-## Gets the current Node2D target.
+	Properties.should_follow = true
+## Erases the current Node2D from the Follow Target property.
+func erase_follow_target_node() -> void:
+	Properties.should_follow = false
+	Properties.follow_target_node = null
+## Gets the current Node2D target property.
 func get_follow_target_node():
 	if Properties.follow_target_node:
 		return Properties.follow_target_node
@@ -373,6 +378,9 @@ func get_follow_target_node():
 ## Assigns a new Path2D to the Follow Path property.
 func set_follow_path(value: Path2D) -> void:
 	Properties.follow_path_node = value
+## Erases the current Path2D from the Follow Path property.
+func erase_follow_path() -> void:
+	Properties.follow_path_node = null
 ## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:
@@ -408,6 +416,8 @@ func get_follow_damping_value() -> float:
 func append_follow_group_node(value: Node2D) -> void:
 	if not Properties.follow_group_nodes_2D.has(value):
 		Properties.follow_group_nodes_2D.append(value)
+		Properties.should_follow = true
+		Properties.has_follow_group = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node2D to Follow Group array.
@@ -415,11 +425,16 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_2D.has(val):
 			Properties.follow_group_nodes_2D.append(val)
+			Properties.should_follow = true
+			Properties.has_follow_group = true
 		else:
 			printerr(val, " is already part of Follow Group")
 ## Removes Node2D from Follow Group array.
 func erase_follow_group_node(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.erase(value)
+	if Properties.follow_group_nodes_2D.size() < 1:
+		Properties.should_follow = false
+		Properties.has_follow_group = false
 ## Gets all Node2D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D
