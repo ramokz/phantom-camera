@@ -259,6 +259,9 @@ func _interpolate_position(position: Vector2, delta: float, target: Node2D = sel
 ##################
 # Public Functions
 ##################
+## Assigns the PhantomCamera2D to a new PhantomCameraHost.
+func assign_pcam_host() -> void:
+	Properties.assign_pcam_host(self)
 ## Gets the current PhantomCameraHost this PhantomCamera2D is assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return Properties.pcam_host_owner
