@@ -43,6 +43,8 @@ ok_button_text = "Close"
 
 [node name="DownloadUpdatePanel" parent="DownloadDialog" instance=ExtResource("2_vtgcx")]
 unique_name_in_owner = true
+offset_right = 350.0
+offset_bottom = 289.0
 
 [node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
