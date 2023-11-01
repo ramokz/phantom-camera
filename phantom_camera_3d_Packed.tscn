@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://bb6prlrhhqxhk"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="1_4ykvg"]
+
+[node name="PhantomCamera3D2" type="Node3D"]
+script = ExtResource("1_4ykvg")
+priority_override = false
+priority = 10
+follow_mode = 3
+follow_group = Array[NodePath]([])
+follow_parameters/distance = 4.0
+follow_parameters/auto_distance = false
+look_at_mode = 0
+tween_parameters = null
+tween_on_load = true
+inactive_update_mode = 0
+camera_3D_resource = null

@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://cobi1mom61jwe"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="1_idqo6"]
+
+[node name="PhantomCamera2D" type="Node2D"]
+script = ExtResource("1_idqo6")
+priority_override = null
+priority = 0
+zoom = Vector2(1.5, 1.5)
+follow_mode = 3
+follow_group = Array[NodePath]([])
+follow_parameters/auto_zoom = true
+follow_parameters/min_zoom = 0.3
+follow_parameters/max_zoom = 2.0
+follow_parameters/zoom_margin = Vector4(50, 50, 50, 50)
+tween_parameters = null
+tween_on_load = false
+inactive_update_mode = 0
