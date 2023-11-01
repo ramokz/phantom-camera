@@ -1,11 +1,11 @@
 extends CharacterBody3D
 
-
-@export var SPEED = 5.0
-@export var JUMP_VELOCITY = 4.5
+@export var SPEED: float = 5.0
+@export var JUMP_VELOCITY: float = 4.5
 @export var enable_gravity = true
 
 @onready var _camera: Camera3D = %MainCamera3D
+@onready var _player_pcam: PhantomCamera3D = %PlayerPhantomCamera3D
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = 9.8

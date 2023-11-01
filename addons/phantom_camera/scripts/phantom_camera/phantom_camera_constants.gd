@@ -16,6 +16,7 @@ const PCAM_HOST_COLOR: Color = Color("E0E0E0")
 
 # Primary
 const PRIORITY_PROPERTY_NAME: StringName = "priority"
+const PRIORITY_OVERRIDE: StringName = "priority_override"
 const PCAM_HOST: StringName = "phantom_camera_host"
 
 # Follow
@@ -47,12 +48,13 @@ const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "inactive_update_mode"
 
 
 enum FollowMode {
-	NONE 	= 0,
-	GLUED 	= 1,
-	SIMPLE 	= 2,
-	GROUP	= 3,
-	PATH	= 4,
-	FRAMED = 5,
+	NONE 			= 0,
+	GLUED 			= 1,
+	SIMPLE 			= 2,
+	GROUP 			= 3,
+	PATH 			= 4,
+	FRAMED 			= 5,
+	THIRD_PERSON 	= 6,
 }
 
 enum TweenTransitions {

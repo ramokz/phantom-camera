@@ -4,7 +4,7 @@ extends RefCounted
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const PcamGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-var is_3D: bool
+var is_2D: bool
 
 var pcam_host_owner: PhantomCameraHost
 var scene_has_multiple_pcam_hosts: bool
@@ -12,10 +12,13 @@ var pcam_host_group: Array[Node]
 
 var is_active: bool
 
+var priority_override: bool
 var priority: int = 0
 
 var tween_onload: bool = true
 var has_tweened_onload: bool = true
+
+# Follow
 var should_follow: bool
 var has_follow_group: bool
 var follow_target_node: Node
@@ -24,14 +27,13 @@ var follow_has_target: bool
 var follow_has_path_target: bool
 var follow_path_node: Node
 var follow_path_path: NodePath
-
-
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
+# Follow Group
 var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
@@ -54,30 +56,33 @@ var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdat
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
+	
+	if pcam.Properties.follow_target_path and \
+		not pcam.get_parent() is SpringArm3D and \
+		is_instance_valid(pcam.get_node(pcam.Properties.follow_target_path)):
 
-	if pcam.Properties.follow_target_path:
 		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
 	elif follow_group_paths:
-		if is_3D:
-			follow_group_nodes_3D.clear()
-		else:
+		if is_2D:
 			follow_group_nodes_2D.clear()
+		else:
+			follow_group_nodes_3D.clear()
+
 		for path in follow_group_paths:
 			if not path.is_empty() and pcam.get_node(path):
 				should_follow = true
 				has_follow_group = true
-				if is_3D:
-					follow_group_nodes_3D.append(pcam.get_node(path))
-				else:
+				if is_2D:
 					follow_group_nodes_2D.append(pcam.get_node(path))
-
+				else:
+					follow_group_nodes_3D.append(pcam.get_node(path))
+	
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
-
-
 func pcam_exit_tree(pcam: Node):
 	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
+
 
 #########################
 # Add Properties
@@ -99,6 +104,11 @@ func add_multiple_hosts_properties() -> Array:
 
 func add_priority_properties() -> Array:
 	var _property_list: Array
+	
+	_property_list.append({
+		"name": Constants.PRIORITY_OVERRIDE,
+		"type": TYPE_BOOL,
+	})
 
 	_property_list.append({
 		"name": Constants.PRIORITY_PROPERTY_NAME,
@@ -113,11 +123,15 @@ func add_priority_properties() -> Array:
 func add_follow_mode_property() -> Array:
 	var _property_list: Array
 
+	var follow_mode_keys: Array = Constants.FollowMode.keys()
+	if is_2D:
+		follow_mode_keys.remove_at(Constants.FollowMode.THIRD_PERSON)
+	
 	_property_list.append({
 		"name": Constants.FOLLOW_MODE_PROPERTY_NAME,
 		"type": TYPE_INT,
 		"hint": PROPERTY_HINT_ENUM,
-		"hint_string": ", ".join(PackedStringArray(Constants.FollowMode.keys())).capitalize(),
+		"hint_string": ", ".join(PackedStringArray(follow_mode_keys)).capitalize(),
 		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
@@ -156,18 +170,21 @@ func add_follow_target_property() -> Array:
 func add_follow_properties() -> Array:
 	var _property_list: Array
 	if follow_mode != Constants.FollowMode.NONE:
-		if follow_mode == Constants.FollowMode.SIMPLE or follow_mode == Constants.FollowMode.GROUP or follow_mode == Constants.FollowMode.FRAMED:
-			if is_3D:
+		if follow_mode == Constants.FollowMode.SIMPLE or \
+			follow_mode == Constants.FollowMode.GROUP or \
+			follow_mode == Constants.FollowMode.FRAMED or \
+			follow_mode == Constants.FollowMode.THIRD_PERSON:
+			if is_2D:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-					"type": TYPE_VECTOR3,
+					"type": TYPE_VECTOR2,
 					"hint": PROPERTY_HINT_NONE,
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
 			else:
 				_property_list.append({
 					"name": Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME,
-					"type": TYPE_VECTOR2,
+					"type": TYPE_VECTOR3,
 					"hint": PROPERTY_HINT_NONE,
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
@@ -265,6 +282,16 @@ func set_phantom_host_property(property: StringName, value, pcam: Node):
 
 
 func set_priority_property(property: StringName, value, pcam: Node):
+	if Engine.is_editor_hint() and is_instance_valid(pcam_host_owner):
+		if property == Constants.PRIORITY_OVERRIDE:
+			if value == true:
+				priority_override = value
+				pcam_host_owner.pcam_priority_override(pcam)
+			else:
+				priority_override = value
+				pcam_host_owner.pcam_priority_updated(pcam)
+				pcam_host_owner.pcam_priority_override_disabled()
+		
 	if property == Constants.PRIORITY_PROPERTY_NAME:
 		set_priority(value, pcam)
 
@@ -321,10 +348,10 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 	if property == Constants.FOLLOW_GROUP_PROPERTY_NAME:
 		if value and value.size() > 0:
 			# Clears the Array in case of reshuffling or updated Nodes
-			if is_3D:
-				follow_group_nodes_3D.clear()
-			else:
+			if is_2D:
 				follow_group_nodes_2D.clear()
+			else:
+				follow_group_nodes_3D.clear()
 			follow_group_paths = value as Array[NodePath]
 
 			if not follow_group_paths.is_empty():
@@ -335,12 +362,12 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 						var node: Node = pcam.get_node(path)
 						if node is Node2D or node is Node3D:
 							# Prevents duplicated nodes from being assigned to array
-							if is_3D:
-								if follow_group_nodes_3D.find(node):
-									follow_group_nodes_3D.append(node)
-							else:
+							if is_2D:
 								if follow_group_nodes_2D.find(node):
 									follow_group_nodes_2D.append(node)
+							else:
+								if follow_group_nodes_3D.find(node):
+									follow_group_nodes_3D.append(node)
 						else:
 							printerr("Assigned non-Node3D to Follow Group")
 
@@ -418,6 +445,11 @@ func assign_pcam_host(pcam: Node) -> void:
 #			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
 #			multiple_pcam_host_group.append(camera_host)
 #			return null
+
+
+func toggle_priorty_override(pcam: Node) -> void:
+	if pcam_host_owner:
+		pcam_host_owner.pcam_priority_updated(pcam)
 
 
 func assign_specific_pcam_host(pcam: Node, pcam_host: PhantomCameraHost) -> void:

@@ -152,6 +152,7 @@ func _get(property: StringName):
 # Private Functions
 ###################
 func _enter_tree() -> void:
+	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
@@ -174,25 +175,21 @@ func _physics_process(delta: float) -> void:
 	if not Properties.should_follow: return
 
 	match Properties.follow_mode:
-		Constants.FollowMode.SIMPLE:
-			if Properties.follow_target_node:
-				set_global_position(
-					Properties.follow_target_node.get_global_position() +
-					Properties.follow_target_offset_2D
-				)
 		Constants.FollowMode.GLUED:
 			if Properties.follow_target_node:
-				set_global_position(Properties.follow_target_node.position)
+				_interpolate_position(Properties.follow_target_node.position, delta)
+		Constants.FollowMode.SIMPLE:
+			if Properties.follow_target_node:
+				_interpolate_position(_target_position_with_offset(), delta)
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					set_global_position(Properties.follow_group_nodes_2D[0].get_position())
+					_interpolate_position(Properties.follow_group_nodes_2D[0].get_global_position(), delta)
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:
 						rect = rect.expand(node.get_global_position())
 						if follow_group_zoom_auto:
-#							print(follow_group_zoom_margin.x)
 							rect = rect.grow_individual(
 								follow_group_zoom_margin.x,
 								follow_group_zoom_margin.y,
@@ -206,21 +203,22 @@ func _physics_process(delta: float) -> void:
 							Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
 							Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-#					print(Properties.zoom)
-					set_global_position(rect.get_center())
+					_interpolate_position(rect.get_center(), delta)
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
-					set_global_position(
-						Properties.follow_path_node.curve.get_closest_point(Properties.follow_target_node.get_global_position() - path_position) +
-						path_position
-					)
+					_interpolate_position(
+						Properties.follow_path_node.curve.get_closest_point(
+							Properties.follow_target_node.get_global_position() - path_position
+						) + path_position, \
+						delta)
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
 					Properties.viewport_position = (get_follow_target_node().get_global_transform_with_canvas().get_origin() + Properties.follow_target_offset_2D) / get_viewport_rect().size
 
 					if Properties.get_framed_side_offset() != Vector2.ZERO:
+						var glo_pos: Vector2
 
 						var target_position: Vector2 = _target_position_with_offset() + _camera_offset
 						var dead_zone_width: float = Properties.follow_framed_dead_zone_width
@@ -228,28 +226,42 @@ func _physics_process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								global_position = _target_position_with_offset()
+								_interpolate_position(_target_position_with_offset(), delta)
 							elif dead_zone_width != 0 && dead_zone_height == 0:
-								global_position = _target_position_with_offset()
-								global_position.x += target_position.x - global_position.x
+								glo_pos = _target_position_with_offset()
+								glo_pos.x += target_position.x - global_position.x
+								_interpolate_position(glo_pos, delta)
 							else:
-								global_position = _target_position_with_offset()
+								_interpolate_position(_target_position_with_offset(), delta)
 						else:
-							global_position += target_position - global_position
+							_interpolate_position(target_position, delta)
 					else:
 						_camera_offset = global_position - _target_position_with_offset()
 				else:
 					set_global_position(_target_position_with_offset())
-#					print(_target_position_with_offset())
 
 
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
 
+func _interpolate_position(position: Vector2, delta: float, target: Node2D = self) -> void:
+	if Properties.follow_has_damping:
+		target.set_global_position(
+			target.get_global_position().lerp(
+				position,
+				delta * Properties.follow_damping_value
+			)
+		)
+	else:
+		target.set_global_position(position)
+
 ##################
 # Public Functions
 ##################
+## Assigns the PhantomCamera2D to a new PhantomCameraHost.
+func assign_pcam_host() -> void:
+	Properties.assign_pcam_host(self)
 ## Gets the current PhantomCameraHost this PhantomCamera2D is assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return Properties.pcam_host_owner
@@ -350,10 +362,15 @@ func is_tween_on_load() -> bool:
 func get_follow_mode() -> int:
 	return Properties.follow_mode
 
-## Assigns a new Node2D as the Follow Target.
+## Assigns a new Node2D as the Follow Target property.
 func set_follow_target_node(value: Node2D) -> void:
 	Properties.follow_target_node = value
-## Gets the current Node2D target.
+	Properties.should_follow = true
+## Erases the current Node2D from the Follow Target property.
+func erase_follow_target_node() -> void:
+	Properties.should_follow = false
+	Properties.follow_target_node = null
+## Gets the current Node2D target property.
 func get_follow_target_node():
 	if Properties.follow_target_node:
 		return Properties.follow_target_node
@@ -364,6 +381,9 @@ func get_follow_target_node():
 ## Assigns a new Path2D to the Follow Path property.
 func set_follow_path(value: Path2D) -> void:
 	Properties.follow_path_node = value
+## Erases the current Path2D from the Follow Path property.
+func erase_follow_path() -> void:
+	Properties.follow_path_node = null
 ## Gets the current Path2D from the Follow Path property.
 func get_follow_path():
 	if Properties.follow_path_node:
@@ -399,6 +419,8 @@ func get_follow_damping_value() -> float:
 func append_follow_group_node(value: Node2D) -> void:
 	if not Properties.follow_group_nodes_2D.has(value):
 		Properties.follow_group_nodes_2D.append(value)
+		Properties.should_follow = true
+		Properties.has_follow_group = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node2D to Follow Group array.
@@ -406,11 +428,16 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 	for val in value:
 		if not Properties.follow_group_nodes_2D.has(val):
 			Properties.follow_group_nodes_2D.append(val)
+			Properties.should_follow = true
+			Properties.has_follow_group = true
 		else:
 			printerr(val, " is already part of Follow Group")
 ## Removes Node2D from Follow Group array.
 func erase_follow_group_node(value: Node2D) -> void:
 	Properties.follow_group_nodes_2D.erase(value)
+	if Properties.follow_group_nodes_2D.size() < 1:
+		Properties.should_follow = false
+		Properties.has_follow_group = false
 ## Gets all Node2D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node2D]:
 	return Properties.follow_group_nodes_2D

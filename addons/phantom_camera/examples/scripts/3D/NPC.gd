@@ -6,7 +6,7 @@ extends Node3D
 
 @onready var player: CharacterBody3D = %PlayerCharacterBody3D
 
-@onready var move_to_location: Vector3 = %MoveToLocation.get_position()
+@onready var move_to_location: Vector3 = %MoveToLocation.get_global_position()
 
 var dialogue_label_initial_position: Vector3
 var dialogue_label_initial_rotation: Vector3
@@ -24,8 +24,8 @@ func _ready() -> void:
 
 	dialogueLabel3D.set_visible(false)
 
-	dialogue_label_initial_position = dialogueLabel3D.get_position()
-	dialogue_label_initial_rotation = dialogueLabel3D.get_rotation()
+	dialogue_label_initial_position = dialogueLabel3D.get_global_position()
+	dialogue_label_initial_rotation = dialogueLabel3D.get_global_rotation()
 
 func _interactable(area_3D: Area3D) -> void:
 	if area_3D.get_parent() is CharacterBody3D:

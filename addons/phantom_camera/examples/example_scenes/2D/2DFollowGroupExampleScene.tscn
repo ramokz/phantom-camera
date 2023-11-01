@@ -627,7 +627,7 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(325, -222)
-zoom = Vector2(1.69558, 1.69558)
+zoom = Vector2(1.32483, 1.32483)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_2efwt")
@@ -654,8 +654,9 @@ texture = ExtResource("5_0v2cd")
 unique_name_in_owner = true
 position = Vector2(325, -222)
 script = ExtResource("6_diuy4")
+priority_override = null
 priority = 6
-zoom = Vector2(1.69558, 1.69558)
+zoom = Vector2(1.32483, 1.32483)
 follow_mode = 3
 follow_group = Array[NodePath]([NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")])
 follow_parameters/auto_zoom = true
@@ -744,6 +745,7 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("6_diuy4")
+priority_override = null
 priority = 0
 zoom = Vector2(2, 2)
 follow_mode = 0
@@ -755,6 +757,7 @@ inactive_update_mode = 0
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("6_diuy4")
+priority_override = null
 priority = 0
 zoom = Vector2(2.5, 2.5)
 follow_mode = 0

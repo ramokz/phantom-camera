@@ -64,7 +64,7 @@ metadata/_edit_lock_ = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707126, 0.707088, 0, -0.707088, 0.707126, -0.0548701, 2.5, 5.82771)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("2_b2yrt")
@@ -72,8 +72,10 @@ script = ExtResource("2_b2yrt")
 [node name="------------------" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
 transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
 script = ExtResource("3_m2w30")
+priority_override = false
 priority = 3
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -84,6 +86,7 @@ look_at_mode = 0
 tween_parameters = ExtResource("4_aj0kl")
 tween_on_load = false
 inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -110,7 +113,7 @@ shape = SubResource("CapsuleShape3D_12ynn")
 [node name="Linear" type="Node3D" parent="Tweening Example"]
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Linear" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -127,12 +130,14 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_hml7x")
 tween_on_load = true
 inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -148,7 +153,7 @@ font_size = 48
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.4)
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Sine" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -165,12 +170,14 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_pjwwe")
 tween_on_load = true
 inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -186,7 +193,7 @@ font_size = 72
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14.1)
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Circ" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -203,12 +210,14 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_ex8sv")
 tween_on_load = true
 inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -224,7 +233,7 @@ font_size = 72
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21)
 
 [node name="EntryRoomTrigger" type="Area3D" parent="Tweening Example/Back" node_paths=PackedStringArray("area_pcam")]
-priority = 5.0
+priority = 5
 script = ExtResource("5_h0ouh")
 area_pcam = NodePath("../PhantomCamera3D")
 metadata/_edit_group_ = true
@@ -241,12 +250,14 @@ metadata/_edit_group_ = true
 [node name="PhantomCamera3D" type="Node3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, -0.8, 4.8, 3.3)
 script = ExtResource("3_m2w30")
+priority_override = false
 priority = 0
 follow_mode = 0
 look_at_mode = 0
 tween_parameters = SubResource("Resource_n4qdq")
 tween_on_load = true
 inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)

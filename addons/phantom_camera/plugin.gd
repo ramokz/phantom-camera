@@ -29,6 +29,7 @@ func _enter_tree() -> void:
 
 	connect("scene_changed", _scene_changed)
 
+
 func _exit_tree() -> void:
 	remove_custom_type(PCAM_2D)
 	remove_custom_type(PCAM_3D)
@@ -50,5 +51,4 @@ func _make_visible(visible):
 		framed_viewfinder_panel_instance.set_visible(visible)
 
 func _scene_changed(scene_root: Node) -> void:
-#	print(scene_root)
 	framed_viewfinder_panel_instance.scene_changed(scene_root)

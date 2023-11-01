@@ -26,7 +26,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.793423, 0.608671, 0, -0.608671, 0.793423, -16.4602, 2.94168, 7.33457)
+transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_7824u")
@@ -38,8 +38,10 @@ metadata/_edit_lock_ = true
 [node name="Player" type="Node" parent="."]
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
+unique_name_in_owner = true
 transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
 script = ExtResource("2_g1bv4")
+priority_override = false
 priority = 0
 follow_mode = 5
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -53,6 +55,7 @@ look_at_mode = 0
 tween_parameters = null
 tween_on_load = false
 inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
