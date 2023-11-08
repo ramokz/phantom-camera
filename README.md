@@ -1,4 +1,4 @@
-<img src="./.github/assets/banners/phantom-camera-banner.svg">
+<img width="850" alt="phantom-camera-readme-header" src="https://github.com/ramokz/phantom-camera/assets/5159399/8766f92e-cc43-4ff7-83fc-6ac864f8e3ff">
 
 # What is it?
 Phantom Camera is a Godot 4 plugin designed to provide and simplify common behaviors for the built-in `Camera2D` and `Camera3D` nodes - heavily inspired by a Unity package called Cinemachine.

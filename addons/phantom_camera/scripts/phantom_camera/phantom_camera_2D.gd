@@ -15,6 +15,17 @@ var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
+const TILE_MAP_CLAMP_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp"
+const TILE_MAP_CLAMP_NODE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_node"
+const TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_preview"
+const TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_margin"
+var tile_map_clamp_bool: bool
+var tile_map_clamp_node: TileMap
+var tile_map_clamp_preview: bool
+var tile_map_clamp_margin: Vector4
+var tile_map_clamp_rect_border: Rect2
+var tile_map_clamp_rect_zone: Rect2
+
 var _camera_offset: Vector2
 
 func _get_property_list() -> Array:
@@ -68,6 +79,30 @@ func _get_property_list() -> Array:
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
 		property_list.append_array(Properties.add_follow_framed())
+		
+		property_list.append({
+			"name": TILE_MAP_CLAMP_PROPERTY_NAME,
+			"type": TYPE_BOOL,
+		})
+		
+		if tile_map_clamp_bool:
+			property_list.append({
+				"name": TILE_MAP_CLAMP_NODE_PROPERTY_NAME,
+				"type": TYPE_NODE_PATH,
+				"hint": PROPERTY_HINT_TYPE_STRING,
+				"hint_string": "TileMap"
+			})
+			if is_instance_valid(tile_map_clamp_node):
+				property_list.append({
+					"name": TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME,
+					"type": TYPE_VECTOR4,
+				})
+				
+				property_list.append({
+					"name": TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME,
+					"type": TYPE_BOOL,
+				})
+			
 
 	property_list.append_array(Properties.add_tween_properties())
 
@@ -112,6 +147,28 @@ func _set(property: StringName, value) -> bool:
 		follow_group_zoom_margin = value
 
 	Properties.set_follow_properties(property, value, self)
+	
+	if property == TILE_MAP_CLAMP_PROPERTY_NAME:
+		tile_map_clamp_bool = value
+		queue_redraw()
+		notify_property_list_changed()
+	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:
+		if value is TileMap:
+			if is_instance_valid(value):
+				tile_map_clamp_node = value
+		elif value is NodePath:
+			if has_node(value):
+				tile_map_clamp_node = get_node(value)
+				queue_redraw()
+			else:
+				tile_map_clamp_node = null
+	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:
+		tile_map_clamp_margin = value
+		queue_redraw()
+	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:
+		tile_map_clamp_preview = value
+		queue_redraw()
+	
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 
@@ -142,8 +199,13 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
+	if property == TILE_MAP_CLAMP_PROPERTY_NAME:						return tile_map_clamp_bool
+	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:					return tile_map_clamp_node
+	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:					return tile_map_clamp_margin
+	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:				return tile_map_clamp_preview
+	
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
-
+	
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
 
@@ -163,8 +225,7 @@ func _exit_tree() -> void:
 
 	Properties.pcam_exit_tree(self)
 
-func _physics_process(delta: float) -> void:
-#	print(follow_group_zoom_margin)
+func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
@@ -236,25 +297,66 @@ func _physics_process(delta: float) -> void:
 						else:
 							_interpolate_position(target_position, delta)
 					else:
-						_camera_offset = global_position - _target_position_with_offset()
+						_camera_offset = get_global_position() - _target_position_with_offset()
 				else:
 					set_global_position(_target_position_with_offset())
+
+
+func _draw():
+	if tile_map_clamp_bool and tile_map_clamp_preview and is_instance_valid(tile_map_clamp_node) and OS.has_feature("editor"): # Only appears in the editor
+		draw_rect(tile_map_clamp_rect_border, Color("3ab99a"), false, 2)
+		draw_rect(tile_map_clamp_rect_zone, Color("3ab99a33"))
+#		print(tile_map_clamp_rect_border)
 
 
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
 
-func _interpolate_position(position: Vector2, delta: float, target: Node2D = self) -> void:
+func _interpolate_position(_global_position: Vector2, delta: float, target: Node2D = self) -> void:
+	if tile_map_clamp_bool:
+		var tile_map_size: Vector2 = Vector2(tile_map_clamp_node.get_used_rect().size) * Vector2(tile_map_clamp_node.tile_set.tile_size) * tile_map_clamp_node.get_scale()
+		var tile_map_position: Vector2 = tile_map_clamp_node.get_global_position() + Vector2(tile_map_clamp_node.get_used_rect().position) * Vector2(tile_map_clamp_node.tile_set.tile_size) * tile_map_clamp_node.get_scale()
+		
+		## Calculates the Rect2 based on the Tile Map position and size
+		tile_map_clamp_rect_border = Rect2(tile_map_position, tile_map_size)
+		
+		## Calculates the Rect2 based on the Tile Map position and size + margin
+		tile_map_clamp_rect_zone = Rect2(
+			tile_map_clamp_rect_border.position + Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y),
+			tile_map_clamp_rect_border.size - Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y) - Vector2(tile_map_clamp_margin.z, tile_map_clamp_margin.w)
+		)
+
+		# Clamps the movement to the margin'ed area of the clamp Rect2
+		var clamped_position: Vector2
+		clamped_position.x = clamp(
+			_global_position.x,
+			tile_map_clamp_rect_zone.position.x,
+			tile_map_clamp_rect_zone.position.x + tile_map_clamp_rect_zone.size.x
+		)
+		clamped_position.y = clamp(
+			_global_position.y,
+			tile_map_clamp_rect_zone.position.y,
+			tile_map_clamp_rect_zone.position.y + tile_map_clamp_rect_zone.size.y
+		)
+
+		_global_position = clamped_position
+
+		tile_map_clamp_rect_border.position -= get_global_position()
+		tile_map_clamp_rect_zone.position -= get_global_position()
+		
+		if tile_map_clamp_preview and is_instance_valid(tile_map_clamp_node) and OS.has_feature("editor"): # Only appears in the editor
+			queue_redraw()
+
 	if Properties.follow_has_damping:
 		target.set_global_position(
 			target.get_global_position().lerp(
-				position,
+				_global_position,
 				delta * Properties.follow_damping_value
 			)
 		)
 	else:
-		target.set_global_position(position)
+		target.set_global_position(_global_position)
 
 ##################
 # Public Functions
@@ -470,6 +572,30 @@ func set_zoom_auto_margin(value: Vector4) -> void:
 ## Gets Zoom Auto Margin value.
 func get_zoom_auto_margin() -> Vector4:
 	return follow_group_zoom_margin
+
+
+## Set Tile Map Clamp state
+func set_tile_map_clamp(value: bool) -> void:
+	tile_map_clamp_bool = value
+## Get Tile Map Clamp State state
+func get_tile_map_clamp() -> bool:
+	return tile_map_clamp_bool
+
+## Set Tile Map Clamp Node
+func set_tile_map_clamp_node(value: TileMap) -> void:
+	tile_map_clamp_node = value
+## Get Tile Map Clamp Node
+func get_tile_map_clamp_node() -> TileMap:
+	if not is_instance_valid(tile_map_clamp_node):
+		printerr("No Tile Map Clamp Node set")
+	return tile_map_clamp_node
+
+## Set Tile Map Clamp Margin
+func set_tile_map_clamp_margin(value: Vector4) -> void:
+	tile_map_clamp_margin = value
+## Get Tile Map Clamp Margin
+func get_tile_map_clamp_margin() -> Vector4:
+	return tile_map_clamp_margin
 
 
 ## Gets Interactive Update Mode property.
