@@ -6,6 +6,9 @@ extends Node2D
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
+const FRAME_PREVIEW: StringName = "frame_preview"
+var frame_preview: bool = true
+
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
 const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_zoom"
@@ -34,7 +37,7 @@ func _get_property_list() -> Array:
 		"name": Constants.ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
 		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT
+		"usage": PROPERTY_USAGE_DEFAULT,
 	})
 
 	property_list.append_array(Properties.add_follow_mode_property())
@@ -83,7 +86,7 @@ func _get_property_list() -> Array:
 			"name": TILE_MAP_CLAMP_NODE_PROPERTY_NAME,
 			"type": TYPE_NODE_PATH,
 			"hint": PROPERTY_HINT_TYPE_STRING,
-			"hint_string": "TileMap"
+			"hint_string": "TileMap",
 		})
 		if is_instance_valid(tile_map_clamp_node):
 			property_list.append({
@@ -100,6 +103,11 @@ func _get_property_list() -> Array:
 	property_list.append_array(Properties.add_tween_properties())
 
 	property_list.append_array(Properties.add_secondary_properties())
+	
+	property_list.append({
+		"name": FRAME_PREVIEW,
+		"type": TYPE_BOOL,
+	})
 
 	return property_list
 
@@ -161,6 +169,12 @@ func _set(property: StringName, value) -> bool:
 
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
+	
+	if property == FRAME_PREVIEW:
+		if value == null:
+			value = true
+		frame_preview = value
+		queue_redraw()
 
 	return false
 
@@ -198,6 +212,7 @@ func _get(property: StringName):
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
+	if property == FRAME_PREVIEW: 										return frame_preview
 
 
 ###################
@@ -294,9 +309,21 @@ func _process(delta: float) -> void:
 
 func _draw():
 	if tile_map_clamp_preview and is_instance_valid(tile_map_clamp_node) and OS.has_feature("editor"): # Only appears in the editor
-		draw_rect(tile_map_clamp_rect_border, Color("3ab99a"), false, 2)
-		draw_rect(tile_map_clamp_rect_zone, Color("3ab99a33"))
-#		print(tile_map_clamp_rect_border)
+		draw_rect(tile_map_clamp_rect_border, Constants.COLOR_PCAM, false, 2)
+		draw_rect(tile_map_clamp_rect_zone, Constants.COLOR_PCAM_33)
+	
+	if Engine.is_editor_hint():
+		if not frame_preview or Properties.is_active: return
+		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
+		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
+		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
+		
+		draw_rect(Rect2(-screen_size_zoom / 2, screen_size_zoom), Color("3ab99a"), false, 2)
+		
+#	print(get_viewport().size)
+#	print(get_viewport_rect().size)
+#	print(OS.get_windows_size)
+	
 
 
 func _target_position_with_offset() -> Vector2:
