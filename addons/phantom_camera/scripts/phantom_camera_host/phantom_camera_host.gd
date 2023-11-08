@@ -115,6 +115,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	if _active_pcam:
 		if _is_2D:
 			_prev_active_pcam_2D_transform = camera_2D.get_transform()
+			_active_pcam.queue_redraw()
 		else:
 			_prev_active_pcam_3D_transform = camera_3D.get_transform()
 			_prev_camera_fov = camera_3D.get_fov()
@@ -276,6 +277,7 @@ func _process_pcam(delta: float) -> void:
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
+			_active_pcam.queue_redraw()
 
 
 func show_viewfinder_in_play() -> void:
