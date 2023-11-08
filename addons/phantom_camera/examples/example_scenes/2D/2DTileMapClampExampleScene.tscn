@@ -738,9 +738,3 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D/PlayerArea2D"]
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_18i13")
-
-[node name="Polygon2D" type="Polygon2D" parent="."]
-unique_name_in_owner = true
-visible = false
-color = Color(0.701009, 0.838873, 0.460856, 0.0941176)
-polygon = PackedVector2Array(-240, -136, 280, -136, 280, 48, -240, 48)
