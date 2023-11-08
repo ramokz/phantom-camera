@@ -649,6 +649,7 @@ follow_parameters/damping_value = 20.0
 follow_parameters/dead_zone_horizontal = 0.362
 follow_parameters/dead_zone_vertical = 1.0
 follow_parameters/viewfinder_in_play = true
+follow_parameters/tile_map_clamp = false
 tween_parameters = ExtResource("6_tu4q2")
 tween_on_load = false
 inactive_update_mode = 0
