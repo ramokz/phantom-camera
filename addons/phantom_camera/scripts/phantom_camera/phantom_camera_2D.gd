@@ -574,6 +574,30 @@ func get_zoom_auto_margin() -> Vector4:
 	return follow_group_zoom_margin
 
 
+## Set Tile Map Clamp state
+func set_tile_map_clamp(value: bool) -> void:
+	tile_map_clamp_bool = value
+## Get Tile Map Clamp State state
+func get_tile_map_clamp() -> bool:
+	return tile_map_clamp_bool
+
+## Set Tile Map Clamp Node
+func set_tile_map_clamp_node(value: TileMap) -> void:
+	tile_map_clamp_node = value
+## Get Tile Map Clamp Node
+func get_tile_map_clamp_node() -> TileMap:
+	if not is_instance_valid(tile_map_clamp_node):
+		printerr("No Tile Map Clamp Node set")
+	return tile_map_clamp_node
+
+## Set Tile Map Clamp Margin
+func set_tile_map_clamp_margin(value: Vector4) -> void:
+	tile_map_clamp_margin = value
+## Get Tile Map Clamp Margin
+func get_tile_map_clamp_margin() -> Vector4:
+	return tile_map_clamp_margin
+
+
 ## Gets Interactive Update Mode property.
 func get_inactive_update_mode() -> String:
 	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
