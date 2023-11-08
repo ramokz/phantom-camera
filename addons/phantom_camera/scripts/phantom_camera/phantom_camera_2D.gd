@@ -79,12 +79,12 @@ func _get_property_list() -> Array:
 	if Properties.follow_has_target || Properties.has_follow_group:
 		property_list.append_array(Properties.add_follow_properties())
 		property_list.append_array(Properties.add_follow_framed())
-		
+
 		property_list.append({
 			"name": TILE_MAP_CLAMP_PROPERTY_NAME,
 			"type": TYPE_BOOL,
 		})
-		
+
 		if tile_map_clamp_bool:
 			property_list.append({
 				"name": TILE_MAP_CLAMP_NODE_PROPERTY_NAME,
@@ -97,12 +97,12 @@ func _get_property_list() -> Array:
 					"name": TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME,
 					"type": TYPE_VECTOR4,
 				})
-				
+
 				property_list.append({
 					"name": TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME,
 					"type": TYPE_BOOL,
 				})
-			
+
 
 	property_list.append_array(Properties.add_tween_properties())
 
@@ -147,7 +147,7 @@ func _set(property: StringName, value) -> bool:
 		follow_group_zoom_margin = value
 
 	Properties.set_follow_properties(property, value, self)
-	
+
 	if property == TILE_MAP_CLAMP_PROPERTY_NAME:
 		tile_map_clamp_bool = value
 		queue_redraw()
@@ -168,7 +168,7 @@ func _set(property: StringName, value) -> bool:
 	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:
 		tile_map_clamp_preview = value
 		queue_redraw()
-	
+
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 
@@ -203,9 +203,9 @@ func _get(property: StringName):
 	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:					return tile_map_clamp_node
 	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:					return tile_map_clamp_margin
 	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:				return tile_map_clamp_preview
-	
+
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
-	
+
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
 
@@ -317,10 +317,10 @@ func _interpolate_position(_global_position: Vector2, delta: float, target: Node
 	if tile_map_clamp_bool:
 		var tile_map_size: Vector2 = Vector2(tile_map_clamp_node.get_used_rect().size) * Vector2(tile_map_clamp_node.tile_set.tile_size) * tile_map_clamp_node.get_scale()
 		var tile_map_position: Vector2 = tile_map_clamp_node.get_global_position() + Vector2(tile_map_clamp_node.get_used_rect().position) * Vector2(tile_map_clamp_node.tile_set.tile_size) * tile_map_clamp_node.get_scale()
-		
+
 		## Calculates the Rect2 based on the Tile Map position and size
 		tile_map_clamp_rect_border = Rect2(tile_map_position, tile_map_size)
-		
+
 		## Calculates the Rect2 based on the Tile Map position and size + margin
 		tile_map_clamp_rect_zone = Rect2(
 			tile_map_clamp_rect_border.position + Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y),
@@ -344,7 +344,7 @@ func _interpolate_position(_global_position: Vector2, delta: float, target: Node
 
 		tile_map_clamp_rect_border.position -= get_global_position()
 		tile_map_clamp_rect_zone.position -= get_global_position()
-		
+
 		if tile_map_clamp_preview and is_instance_valid(tile_map_clamp_node) and OS.has_feature("editor"): # Only appears in the editor
 			queue_redraw()
 
@@ -426,7 +426,7 @@ func get_tween_transition() -> int:
 		return get_tween_resource().transition
 	else:
 		return Properties.tween_resource_default.transition
-		
+
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_ease(value: Constants.TweenEases) -> void:
@@ -446,12 +446,12 @@ func get_tween_ease() -> int:
 
 
 ## Gets current active state of the PhantomCamera2D.
-## If it returns true, it means the PhantomCamera2D is what the Camera2D is currently following. 
+## If it returns true, it means the PhantomCamera2D is what the Camera2D is currently following.
 func is_active() -> bool:
 	return Properties.is_active
 
 
-## Enables or disables the Tween on Load. 
+## Enables or disables the Tween on Load.
 func set_tween_on_load(value: bool) -> void:
 	Properties.tween_onload = value
 ## Gets the current Tween On Load value.
