@@ -4,8 +4,6 @@ extends CharacterBody2D
 @onready var player_sprite: Sprite2D = %PlayerSprite
 @onready var interaction_prompt: Panel = %InteractionPrompt
 @onready var ui_sign:Control = %UISign
-@onready var item_pcam2D: PhantomCamera2D = %ItemFocusPhantomCamera2D
-@onready var inventory_pcam2D: PhantomCamera2D = %InventoryPhantomCamera2D
 @onready var dark_overlay: ColorRect = %DarkOverlay
 
 const KEY_STRINGNAME: StringName = "Key"
@@ -146,12 +144,12 @@ func _show_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 			match cell_data_type:
 				"Sign":
 					_interactive_UI = %UISign
-					_active_pcam = item_pcam2D
+					_active_pcam = %ItemFocusPhantomCamera2D
 					_interactive_object = InteractiveType.ITEM
 				"Inventory":
 					_interactive_UI = %UIInventory
 					_interactive_object = InteractiveType.INVENTORY
-					_active_pcam = inventory_pcam2D
+					_active_pcam = %InventoryPhantomCamera2D
 
 
 func _hide_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shape: int) -> void:

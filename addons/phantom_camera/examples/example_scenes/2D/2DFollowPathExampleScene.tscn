@@ -769,6 +769,7 @@ follow_target = NodePath("../Player/CharacterBody2D")
 follow_path = NodePath("../Path2D")
 follow_parameters/damping = true
 follow_parameters/damping_value = 5.0
+follow_parameters/tile_map_clamp = false
 tween_parameters = ExtResource("6_4vtmp")
 tween_on_load = false
 inactive_update_mode = 0
