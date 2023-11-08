@@ -277,7 +277,8 @@ func _process_pcam(delta: float) -> void:
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
-			_active_pcam.queue_redraw()
+			if Engine.is_editor_hint() and _is_2D:
+				_active_pcam.queue_redraw()
 
 
 func show_viewfinder_in_play() -> void:
