@@ -166,6 +166,7 @@ func _set(property: StringName, value) -> bool:
 
 
 func _get(property: StringName):
+	if property == Constants.PRIORITY_OVERRIDE: 						return Properties.priority_override
 	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
 	if property == Constants.ZOOM_PROPERTY_NAME: 						return Properties.zoom
