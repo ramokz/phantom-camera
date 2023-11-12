@@ -1,0 +1,21 @@
+:root {
+    /* Brand Colours */
+    --vp-c-brand-1: #3AB99A;
+    --vp-c-brand-2: var(--vp-c-brand-1);
+    
+    /*--vp-font-family-base: */
+    
+    /* Background */
+    --vp-c-bg: #141C21;
+    --vp-c-bg-alt: #0c1518;
+    
+    /*--vp-home*/
+    
+    
+    /* Buttons */
+    --vp-button-brand-bg: var(--vp-c-brand-1);
+    --vp-button-brand-text: var(--vp-c-bg);
+    
+    --vp-button-brand-hover-bg: var(--vp-c-white);
+    --vp-button-brand-hover-text: var(--vp-c-bg);
+}

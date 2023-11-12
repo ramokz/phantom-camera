@@ -2,6 +2,7 @@
 .DS_Store
 project.godot
 .idea/
+*.zip
 
 /.import
 /.vscode
@@ -16,3 +17,9 @@ export_presets.cfg
 
 # Godot 4+ specific ignores
 .godot/
+
+# Docs specic ignores
+#/docs/
+node_modules
+cache
+dist
