@@ -1,8 +1,7 @@
 {
   "devDependencies": {
-    "eslint": "^8.53.0",
-    "vitepress": "^1.0.0-rc.25",
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "vitepress": "^1.0.0-rc.25"
   },
   "scripts": {
     "docs:dev": "vitepress dev docs",
