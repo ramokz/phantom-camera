@@ -4,15 +4,35 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Phantom Camera",
   description: "A dynamic 2D & 3D camera plugin for Godot 4",
-  head: [['link', {rel: 'icon', href: '/favicon.png'}]],
+  head: [
+      ['link', {rel: 'icon', type: 'image/svg+xml', href: '/assets/phantom-camera.svg'}],
+      ['link', {rel: 'icon', type: 'image/png', href: '/favicon.png'}],
+  ],
   appearance: 'force-dark',
+  transformHead({ assets }) {
+    const fontFile = assets.find(file => /Nunito-VariableFont_wght\.\w+\.ttf/)
+    if (fontFile) {
+      return [
+          [
+              'link',
+            {
+              rel: 'preload',
+              href: fontFile,
+              as: 'font',
+              type: 'font/ttf',
+              crossorigin: '',
+            }
+          ]
+      ]
+    }
+  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: '/assets/phantom-camera.svg',
     
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' },
+      { text: 'Docs', link: '/introduction/getting-started' },
     ],
     
     outline: {
@@ -25,9 +45,9 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           { text: 'Getting Started', link: '/introduction/getting-started' },
-          { text: 'Phantom Camera 2D', link: '/introduction/phantom-camera-2d' },
-          { text: 'Phantom Camera 3D', link: '/introduction/phantom-camera-3d' },
-          { text: 'Phantom Camera Host', link: '/introduction/phantom-camera-host' },
+          { text: 'PhantomCamera2D', link: '/introduction/phantom-camera-2d' },
+          { text: 'PhantomCamera3D', link: '/introduction/phantom-camera-3d' },
+          { text: 'PhantomCameraHost', link: '/introduction/phantom-camera-host' },
         ]
       },
       {
@@ -54,9 +74,20 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Tween',
+        text: 'Tween', link: "/tween/overview",
+      },
+      {
+        text: 'Inactive Update Mode', link: "/tween/overview",
+      },
+      {
+        text: 'Viewfinder', link: "/tween/overview",
+      },
+      {
+        text: 'Contribute',
         items: [
-          {text: 'Overview', link: "/follow-modes/overview"},
+          {text: 'Feature Proposals', link: "/look-at-modes/feature-proposals"},
+          {text: 'Bug reports', link: "/contribute/bug-reports"},
+          {text: 'PRs', link: "/contribute/code"},
         ]
       },
     ],
@@ -66,7 +97,9 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/ramokz/phantom-camera' }
+      { icon: 'github', link: 'https://github.com/ramokz/phantom-camera' },
+      { icon: 'mastodon', link: 'https://mastodon.gamedev.place/@marcusskov' },
+      { icon: 'twitter', link: 'https://twitter.com/marcusskov' }
     ]
   }
 })
