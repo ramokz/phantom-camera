@@ -1,21 +1,52 @@
 :root {
     /* Brand Colours */
     --vp-c-brand-1: #3AB99A;
-    --vp-c-brand-2: var(--vp-c-brand-1);
+    --vp-c-white: #F5F5F5;
     
     /*--vp-font-family-base: */
+    --vp-font-family-base: "Nunito", sans-serif;
+    --vp-code-font-size: 14px;
     
     /* Background */
     --vp-c-bg: #141C21;
     --vp-c-bg-alt: #0c1518;
     
-    /*--vp-home*/
-    
-    
     /* Buttons */
     --vp-button-brand-bg: var(--vp-c-brand-1);
     --vp-button-brand-text: var(--vp-c-bg);
-    
     --vp-button-brand-hover-bg: var(--vp-c-white);
     --vp-button-brand-hover-text: var(--vp-c-bg);
+    
+    /*--vp-home*/
+    --vp-home-hero-name-background: linear-gradient(180deg, rgba(58,185,154,1) 0%, rgba(27,158,127,1) 100%);;
+    --vp-home-hero-image-background-image: linear-gradient(180deg, rgba(58,185,154,1) 0%, rgba(27,158,127,1) 100%);
+    
+    /* Cards */
+    --vp-c-bg-soft: var(--vp-c-bg-alt);
+}
+
+::selection {
+    background: var(--vp-c-brand-1);
+    color: var(--vp-c-bg);
+}
+
+body {
+    font-size: 16px;
+}
+
+.vp-doc h1 {
+    font-weight: 800;
+}
+
+.vp-doc h2 {
+    font-weight: 700;
+}
+
+.vp-doc h3 {
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.vp-doc hr {
+    margin: 42px 0;
 }
