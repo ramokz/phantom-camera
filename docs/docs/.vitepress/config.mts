@@ -10,7 +10,8 @@ export default defineConfig({
   ],
   appearance: 'force-dark',
   transformHead({ assets }) {
-    const fontFile = assets.find(file => /Nunito-VariableFont_wght\.\w+\.ttf/)
+    const fontFile = assets.find(file => /Nunito-VariableFont\.\w+\.ttf/)
+    const codeFontFile = assets.find(file => /JetBrainsMono[wght]\.\w+\.ttf/)
     if (fontFile) {
       return [
           [
@@ -25,6 +26,21 @@ export default defineConfig({
           ]
       ]
     }
+    if (codeFontFile) {
+      return [
+        [
+          'link',
+          {
+            rel: 'preload',
+            href: codeFontFile,
+            as: 'font',
+            type: 'font/ttf',
+            crossorigin: '',
+          }
+        ]
+      ]
+    }
+    
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config

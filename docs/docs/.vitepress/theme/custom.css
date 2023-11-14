@@ -4,7 +4,8 @@
     --vp-c-white: #F5F5F5;
     
     /*--vp-font-family-base: */
-    --vp-font-family-base: "Nunito", sans-serif;
+    --vp-font-family-base: 'Nunito', sans-serif;
+    --vp-font-family-mono: 'JetBrains Mono', serif;
     --vp-code-font-size: 14px;
     
     /* Background */
