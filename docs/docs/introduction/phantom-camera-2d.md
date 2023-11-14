@@ -1,8 +1,9 @@
-![Wiki-PhantomCamera2D](https://user-images.githubusercontent.com/5159399/216775720-f97259db-b8d8-4e52-a995-d82f35abe2f7.png)
-# Overview
+<img src="../assets/phantom-camera-2D.svg" height="256" width="256"/>
+
+# PhantomCamera2D
 > Inherits: Node2D
 
-Shorten to `pcam_2D`, is used in 2D scenes and allows for following any node that is inherited from `Node2D`.
+Shorten to `PCam2D` (text) or `pcam_2D` (code), is used in 2D scenes.
 
 ⚠️ A scene must contain a [`pcam_host`](https://github.com/ramokz/phantom-camera/wiki/PhantomCameraHost) for the `pcam_2D` node to work.
 
@@ -76,62 +77,4 @@ Can be found in: `res://addons/phantom_camera/examples/2DExampleScene.tscn`
 
 ## Methods
 
-### `PhantomCameraHost` get_pcam_host_owner ()
-
-Gets the current `PhantomCameraHost` this `PhantomCamera2D` is assigned to.
-
-#### Example
-```gdscript
-    pcam.get_pcam_host_owner()
-```
-
-<hr>
-
-### `bool` is_active ()
-
-```gdscript
-    pcam.is_active()
-```
-Gets current active state of the PhantomCamera2D.
-
-If it returns true, it means the `PhantomCamera2D` is what the `Camera2D` is currently following.
-
-<h3>Methods</h3>
-<table>
-    <tr>
-        <td width="1200">
-            <h4><code>PhantomCameraHost</code> get_pcam_host_owner ()</h4>
-            <blockquote><b>Example:</b> pcam.get_pcam_host_owner()</blockquote>
-            <p>Gets the current <code>PhantomCameraHost</code> this <code>PhantomCamera2D</code> is assigned to.</p>
-        </td>
-    </tr>
-    <tr>
-        <td width="1200">
-            <h4><code>bool</code> is_active ()</h4>
-            <blockquote><b>Example:</b> pcam.is_active()</blockquote>
-            <p>Gets current active state of the <code>PhantomCamera2D</code>.</p>
-            <p>If it returns true, it means the <code>PhantomCamera2D</code> is what the <code>Camera2D</code> is currently following.</p>
-        </td>
-      </tr>
-    <tr>
-        <td width="1200">
-            <h4><code>void</code> set_tween_on_load (bool value)</h4>
-            <blockquote><b>Example:</b> pcam.tween_onload(false)</blockquote>
-            <p>Enables or disables the Tween on Load. </p>
-        </td>
-    </tr>
-    <tr>
-        <td width="1200">
-            <h4><code>bool</code> is_tween_on_load ()</h4>
-            <blockquote><b>Example:</b> pcam.is_tween_on_load()</blockquote>
-            <p>Gets the current Tween On Load value.</p>
-        </td>
-    </tr>
-    <tr>
-        <td width="1200">
-            <h4><code>string</code> get_inactive_update_mode ()</h4>
-            <blockquote><b>Example:</b> pcam.get_inactive_update_mode()</blockquote>
-            <p>Returns Interactive Update Mode property name.</p>
-        </td>
-    </tr>
-</table>
+<!--@include: ./parts/phantom-camera-methods.md-->
