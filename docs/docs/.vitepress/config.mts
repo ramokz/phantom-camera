@@ -116,6 +116,10 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/ramokz/phantom-camera' },
       { icon: 'mastodon', link: 'https://mastodon.gamedev.place/@marcusskov' },
       { icon: 'twitter', link: 'https://twitter.com/marcusskov' }
-    ]
+    ],
+    
+    editLink: {
+      pattern: 'https://github.com/ramokz/phantom-camera/edit/main/documentation/docs/:path'
+    }
   }
 })
