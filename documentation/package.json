@@ -1,6 +1,8 @@
 {
   "devDependencies": {
     "bun-types": "latest",
+    "eslint": "^8.53.0",
+    "eslint-plugin-vue": "^9.18.1",
     "vitepress": "^1.0.0-rc.25"
   },
   "scripts": {
