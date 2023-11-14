@@ -2,6 +2,7 @@
     /* Brand Colours */
     --vp-c-brand-1: #3AB99A;
     --vp-c-white: #F5F5F5;
+    --vp-c-danger-1: #B93A59;
     
     /*--vp-font-family-base: */
     --vp-font-family-base: 'Nunito', sans-serif;
@@ -36,18 +37,26 @@ body {
 }
 
 .vp-doc h1 {
-    font-weight: 800;
+    font-weight: 900;
+    font-size: 40px;
 }
 
 .vp-doc h2 {
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 28px;
+    margin-bottom: 30px;
 }
 
 .vp-doc h3 {
-    font-weight: 500;
-    margin-bottom: 10px;
+    font-weight: 700;
+    margin-top: 0px;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+.vp-doc h4 {
+    opacity: 0.7;
 }
 
 .vp-doc hr {
-    margin: 42px 0;
+    margin: 30px 0 20px 0;
 }
