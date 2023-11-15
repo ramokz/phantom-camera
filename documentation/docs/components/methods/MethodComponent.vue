@@ -17,7 +17,6 @@ const id = computed<string>(() => {
     return props.methodName.replace(/ /g, '-').toLowerCase() + "-" + props.methodType.replace(/ /g, '-').toLowerCase()
   }
 })
-
 </script>
 
 
@@ -33,12 +32,6 @@ const id = computed<string>(() => {
   </div>
   
   <div>
-    <slot name="description">
-      <p class="missing-text">METHOD DESCRIPTION</p>
-    </slot>
-  </div>
-  
-  <div>
     <slot name="codeExample">
       <p class="missing-text">MISSING CODE EXAMPLE</p>
     </slot>
@@ -48,26 +41,16 @@ const id = computed<string>(() => {
 
 <style scoped>
 .method {
-  --font-size: 18px;
+  --font-size: 16px;
   font-size: var(--font-size);
   color: var(--vp-c-white);
   font-weight: 700;
-}
-
-.method :deep(p) {
-  font-family: var(--vp-font-family-mono);
+  &:deep(p) {
+    font-family: var(--vp-font-family-mono);
+  }
 }
 
 .method :deep(code) {
   font-size: var(--font-size);
-}
-
-h4 {
-  font-size: 20px;
-}
-
-.missing-text {
-  color: var(--vp-c-danger-1);
-  font-size: 24px;
 }
 </style>

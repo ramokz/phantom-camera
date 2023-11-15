@@ -33,7 +33,7 @@
 }
 
 body {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .vp-doc h1 {
@@ -43,20 +43,56 @@ body {
 
 .vp-doc h2 {
     font-weight: 800;
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 30px;
 }
 
 .vp-doc h3 {
     font-weight: 700;
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 20px;
-    font-size: 24px;
+    font-size: 28px;
 }
+
 .vp-doc h4 {
     opacity: 0.7;
+    font-size: 20px;
 }
 
 .vp-doc hr {
     margin: 30px 0 20px 0;
+}
+
+.property-method-container {
+    padding: 20px 20px 10px 20px;
+    margin-bottom: 36px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px 10px rgba(12, 21, 24, 0.40);
+    
+    transition: box-shadow 120ms;
+    transition-timing-function: linear;
+    &:hover {
+        box-shadow: 0 0 15px 15px rgba(12, 21, 24, 0.60);
+    }
+}
+
+.property-core-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5%;
+    & > .property-method-container {
+        width: 100%;
+        @media(min-width: 600px) {
+            width: 47.5%;
+        }
+    }
+}
+
+.missing-text {
+    color: var(--vp-c-danger-1);
+    font-size: 24px;
+}
+
+.vp-doc a {
+    font-weight: inherit; /* Resets default theme behaviour */
 }

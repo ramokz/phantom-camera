@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { computed, useSlots } from 'vue'
+import {computed, useSlots} from "vue";
 
 const props = defineProps({
-  methodName: {
+  propertyName: {
     type: String,
     required: true,
-  }
+  },
+  propertyPageLink: {
+    type: String,
+    required: true,
+  },
 })
 
-// Returns a unique ID to apply to the anchor tag
-const id = computed(() =>{
-  return props.methodName.replace(/ /g, '-').toLowerCase()
+const id = computed<String>(() =>{
+  return props.propertyName.replace(/ /g, '-').toLowerCase()
 })
 
 
@@ -46,31 +49,43 @@ const hasSetGet = computed(() => {
 </script>
 
 <template>
-  
   <div class="property-method-container">
-  <h3 :id="id" tabindex="-1">{{ methodName }}
-    <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${methodName}`">&#8203;</a>
-  </h3>
-    <MethodComponent method-type="setter" :methodName="methodName" v-if="hasSetterContent">
+    <h3 :id="id" tabindex="-1">
+      {{ propertyName }}
+      <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${propertyName}`">&#8203;</a>
+    </h3>
+    <h3 class="property-name" >
+      <slot name="propertyType">
+        MISSING PROPERTY TYPE
+      </slot>
+      
+    </h3>
+      <slot name="propertyDescription">
+
+        <p class="missing-text">
+          MISSING PROPERTY DESCRIPTION
+        </p>
+      </slot>
+    
+    <hr>
+
+    <h3 :id="id" tabindex="-1">{{ methodName }}
+      <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${methodName}`">&#8203;</a>
+    </h3>
+    <MethodComponent method-type="setter" :methodName="propertyName" v-if="hasSetterContent">
       <template #method>
         <slot :name="setMethod"/>
-      </template>
-      <template #description>
-        <slot :name="setDescription"/>
       </template>
       <template #codeExample>
         <slot :name="setCodeExample"/>
       </template>
     </MethodComponent>
-    
-    <hr v-if="hasSetGet" />
-    
-    <MethodComponent method-type="getter" :methodName="methodName" v-if="hasGetterContent">
+
+<!--    <hr v-if="hasSetGet" />-->
+
+    <MethodComponent method-type="getter" :methodName="propertyName" v-if="hasGetterContent">
       <template #method>
         <slot :name="getMethod"/>
-      </template>
-      <template #description>
-        <slot :name="getDescription"/>
       </template>
       <template #codeExample>
         <slot :name="getCodeExample"/>
@@ -79,18 +94,30 @@ const hasSetGet = computed(() => {
   </div>
 </template>
 
-
 <style scoped>
-  hr {
-    border: none;
-    border-top: 1px solid var(--vp-c-divider);
-    color: var(--vp-c-divider);
-    overflow: visible;
-    text-align: center;
-    height: 5px;
-  }
 
-hr:after {
+.property-name {
+  --font-size: 22px;  
+  font-size: var(--font-size);
+  
+  &:deep(code) {
+    font-size: var(--font-size);
+  }
+}
+
+/*
+hr {
+  border: none;
+  border-top: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-divider);
+  overflow: visible;
+  text-align: center;
+  height: 5px;
+}
+
+hr:nth-of-type(2) {
+  margin: 0 20%;
+  &:after {
     background: var(--vp-c-bg);
     content: '§';
     font-size: 18px;
@@ -98,4 +125,6 @@ hr:after {
     position: relative;
     top: -13px;
   }
+}
+ */
 </style>

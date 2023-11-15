@@ -8,12 +8,17 @@ import './custom.css'
 import MethodComponent from "../../components/methods/MethodComponent.vue";
 import MethodSetGet from "../../components/methods/MethodSetGet.vue";
 
+import PropertyCore from "../../components/properties/PropertyCore.vue";
+import PropertySecondary from "../../components/properties/PropertySecondary.vue";
+
 export default {
   extends: DefaultTheme,
   async enhanceApp({ app }) {
     // register your custom global components
     app.component('MethodComponent', MethodComponent),
-    app.component('MethodSetGet', MethodSetGet)
+    app.component('MethodSetGet', MethodSetGet),
+    app.component('PropertyCore', PropertyCore),
+    app.component('PropertySecondary', PropertySecondary)
   },
   Layout: () => {
     return h(DefaultTheme.Layout, null, {

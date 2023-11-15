@@ -67,6 +67,9 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Priority', link: "/priority",
+      },
+      {
         text: 'Follow Modes',
         items: [
           {text: 'Overview', link: "/follow-modes/overview"},
