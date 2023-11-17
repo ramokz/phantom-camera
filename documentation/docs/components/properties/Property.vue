@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {computed, useSlots} from "vue";
+import { store } from '../../store'
 
 const props = defineProps({
   propertyName: {
@@ -14,12 +15,25 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  disableOutlineEntry: {
+    bool: String,
+    required: false
+  }
 })
 
 const id = computed<String>(() =>{
+  if (props.disableOutlineEntry) { return null }
+  
   return props.propertyName.replace(/ /g, '-').toLowerCase()
 })
 
+const roundedCorners = computed( () => {
+  if (store.is2D) {
+    return '0 20px 20px 20px'
+  } else {
+    return '20px'
+  }
+})
 
 // Setter names
 const setMethod: string = "setMethod"
@@ -53,7 +67,7 @@ const hasSetGet = computed(() => {
 </script>
 
 <template>
-  <div class="property-method-container">
+  <div class="property-method-container" :style="{borderRadius: roundedCorners}">
     <h3 :id="id" tabindex="-1">
       {{ propertyName }}
       <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${propertyName}`">&#8203;</a>
@@ -88,7 +102,7 @@ const hasSetGet = computed(() => {
 
 <!--    <hr v-if="hasSetGet" />-->
 
-    <MethodComponent method-type="Getter" :methodName="propertyName" v-if="hasGetterContent">
+    <MethodComponent method-type="Getter" :methodName="propertyName" v-show="false" v-if="hasGetterContent">
       <template #method>
         <slot :name="getMethod"/>
       </template>
@@ -128,6 +142,8 @@ const hasSetGet = computed(() => {
   padding: 20px 20px 10px 20px;
   margin-bottom: 36px;
   border-radius: 20px;
-  border: 1px solid var(--vp-c-gray-3);
+  border: 2px solid var(--vp-c-gray-3);
+  background: var(--vp-c-bg-alt);
+  box-shadow: 0px 0px 40px var(--vp-c-bg) inset;
 }
 </style>

@@ -86,3 +86,7 @@ body {
 .vp-doc a {
     font-weight: inherit; /* Resets default theme behaviour */
 }
+
+.page-header-icon {
+    width: 256px;
+}

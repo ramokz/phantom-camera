@@ -10,9 +10,14 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  disableOutlineEntry: {
+    bool: String,
+    required: false
+  }
 })
 
 const id = computed<string>(() => {
+  if (props.disableOutlineEntry) return null
   if (props.methodName) {
     return props.methodName.replace(/ /g, '-').toLowerCase() + "-" + props.methodType.replace(/ /g, '-').toLowerCase()
   }
