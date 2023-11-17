@@ -1,9 +1,4 @@
-<PropertySecondary propertyName="Active State">
-<template v-slot:propertyType>
-
-`bool` is_active = `false`
-
-</template>
+<Property propertyName="Active State" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
 
 Determines how the `Camera` tweens to this `PhantomCamera` once becoming active.
@@ -32,8 +27,8 @@ pcam.is_active()
 
 </template>
 
-</PropertySecondary>
-<PropertySecondary propertyName="Tween on Load">
+</Property>
+<Property propertyName="Tween on Load" propertyType="bool" propertyDefault="true">
 <template v-slot:propertyType>
 
 `bool` tween_on_load = `true`
@@ -73,13 +68,8 @@ pcam.set_tween_on_load(false)
 :::
 
 </template>
-</PropertySecondary>
-<PropertySecondary propertyName="Inactive Update Mode">
-<template v-slot:propertyType>
-
-`InactiveUpdateMode` inactive_update_mode = `ALWAYS`
-
-</template>
+</Property>
+<Property propertyName="Inactive Update Mode" propertyType="InactiveUpdateMode" propertyDefault="ALWAYS">
 <template v-slot:propertyDescription>
 
 Enables or disables the Tween on Load.
@@ -99,9 +89,9 @@ pcam.get_inactive_update_mode()
 :::
 
 </template>
-</PropertySecondary>
+</Property>
 
-<PropertySecondary propertyName="Frame Preview">
+<Property propertyName="Frame Preview" propertyType="bool" propertyDefault="true">
 
 <template v-slot:propertyType>
 
@@ -110,7 +100,9 @@ pcam.get_inactive_update_mode()
 </template>
 
 <template v-slot:propertyDescription>
+
 Enables a preview 
+
 </template>
 <template v-slot:getMethod>
 
@@ -126,4 +118,4 @@ pcam.get_inactive_update_mode()
 :::
 
 </template>
-</PropertySecondary>
+</Property>

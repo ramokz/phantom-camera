@@ -9,7 +9,7 @@ import MethodComponent from "../../components/methods/MethodComponent.vue";
 import MethodSetGet from "../../components/methods/MethodSetGet.vue";
 
 import PropertyCore from "../../components/properties/PropertyCore.vue";
-import PropertySecondary from "../../components/properties/PropertySecondary.vue";
+import Property from "../../components/properties/Property.vue";
 
 export default {
   extends: DefaultTheme,
@@ -18,7 +18,7 @@ export default {
     app.component('MethodComponent', MethodComponent),
     app.component('MethodSetGet', MethodSetGet),
     app.component('PropertyCore', PropertyCore),
-    app.component('PropertySecondary', PropertySecondary)
+    app.component('Property', Property)
   },
   Layout: () => {
     return h(DefaultTheme.Layout, null, {
