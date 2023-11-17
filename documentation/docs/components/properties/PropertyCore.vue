@@ -41,3 +41,18 @@ const id = computed(() =>{
     </div>
   </div>
 </template>
+
+<style scoped>
+.property-method-container {
+  padding: 20px 20px 10px 20px;
+  margin-bottom: 36px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px 10px rgba(12, 21, 24, 0.40);
+
+  transition: box-shadow 120ms;
+  transition-timing-function: linear;
+&:hover {
+    box-shadow: 0 0 15px 15px rgba(12, 21, 24, 0.60);
+  }
+}
+</style>

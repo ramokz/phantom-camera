@@ -3,6 +3,8 @@
     --vp-c-brand-1: #3AB99A;
     --vp-c-white: #F5F5F5;
     --vp-c-danger-1: #B93A59;
+
+    --vp-c-gray-1: #B2B4B6;
     
     /*--vp-font-family-base: */
     --vp-font-family-base: 'Nunito', sans-serif;
@@ -55,25 +57,13 @@ body {
 }
 
 .vp-doc h4 {
-    opacity: 0.7;
+    /*color: #B2B4B6;*/
+    color: var(--vp-c-gray-1);
     font-size: 20px;
 }
 
 .vp-doc hr {
     margin: 30px 0 20px 0;
-}
-
-.property-method-container {
-    padding: 20px 20px 10px 20px;
-    margin-bottom: 36px;
-    border-radius: 20px;
-    box-shadow: 0 0 10px 10px rgba(12, 21, 24, 0.40);
-    
-    transition: box-shadow 120ms;
-    transition-timing-function: linear;
-    &:hover {
-        box-shadow: 0 0 15px 15px rgba(12, 21, 24, 0.60);
-    }
 }
 
 .property-core-group {

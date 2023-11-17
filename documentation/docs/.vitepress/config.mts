@@ -11,11 +11,11 @@ export default defineConfig({
   appearance: 'force-dark',
   transformHead({ assets }) {
     const fontFile = assets.find(file => /Nunito-VariableFont\.\w+\.ttf/)
-    const codeFontFile = assets.find(file => /JetBrainsMono[wght]\.\w+\.ttf/)
+    const codeFontFile = assets.find(file => /JetBrainsMono\.\w+\.ttf/)
     if (fontFile) {
       return [
           [
-              'link',
+            'link',
             {
               rel: 'preload',
               href: fontFile,
@@ -73,7 +73,6 @@ export default defineConfig({
         text: 'Follow Modes',
         items: [
           {text: 'Overview', link: "/follow-modes/overview"},
-          {text: 'None', link: '/follow-modes/none'},
           {text: 'Glued', link: '/follow-modes/glued'},
           {text: 'Simple', link: '/follow-modes/simple'},
           {text: 'Group', link: '/follow-modes/group'},
@@ -86,27 +85,22 @@ export default defineConfig({
         text: 'Look At Modes',
         items: [
           {text: 'Overview', link: "/look-at-modes/overview"},
-          {text: 'None', link: '/look-at-modes/none'},
           {text: 'Mimic', link: '/look-at-modes/mimic'},
           {text: 'Simple', link: '/look-at-modes/simple'},
           {text: 'Group', link: '/look-at-modes/group'},
         ]
       },
+      { text: 'Tween', link: "/tween", },
       {
-        text: 'Tween', link: "/tween/overview",
+        text: 'Inactive Update Mode', link: "/inactive-update-mode",
       },
-      {
-        text: 'Inactive Update Mode', link: "/tween/overview",
-      },
-      {
-        text: 'Viewfinder', link: "/tween/overview",
-      },
+      { text: 'Viewfinder', link: "/viewfinder", },
       {
         text: 'Contribute',
         items: [
-          {text: 'Feature Proposals', link: "/look-at-modes/feature-proposals"},
-          {text: 'Bug reports', link: "/contribute/bug-reports"},
-          {text: 'PRs', link: "/contribute/code"},
+          { text: 'Feature Proposals', link: "/look-at-modes/feature-proposals" },
+          { text: 'Bug reports', link: "/contribute/bug-reports" },
+          { text: 'PRs', link: "/contribute/code" },
         ]
       },
     ],
