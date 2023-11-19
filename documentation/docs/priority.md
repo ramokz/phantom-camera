@@ -23,7 +23,7 @@ Determines which `PCam` is currently used. The one with the highest priority wil
 `void` set_priority (`int` priority)
 
 </template>
-<template v-slot:setCodeExample>
+<template v-slot:setExample>
 
 ::: details Example
 ```gdscript
@@ -37,7 +37,7 @@ pcam.set_priority(10)
 `int` get_priority()
 
 </template>
-<template v-slot:getCodeExample>
+<template v-slot:getExample>
 
 ::: details Example
 ```gdscript

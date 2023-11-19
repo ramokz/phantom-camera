@@ -11,7 +11,7 @@ const props = defineProps({
     required: true,
   },
   disableOutlineEntry: {
-    bool: String,
+    bool: Boolean,
     required: false
   }
 })
@@ -26,20 +26,20 @@ const id = computed<string>(() => {
 
 
 <template>
-  <h4 :id="id" tabindex="-1">{{ methodType }}
-    <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${id}`">&#8203;</a>
-  </h4>
-  
-  <div class="method">
-    <slot name="method">
-      <p class="missing-text">MISSING METHOD</p>
-    </slot>
-  </div>
-  
   <div>
-    <slot name="codeExample">
-      <p class="missing-text">MISSING CODE EXAMPLE</p>
-    </slot>
+    <h4 :id="id" tabindex="-1">{{ methodType }}
+      <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${id}`">&#8203;</a>
+    </h4>
+    
+    <div class="method">
+      <slot name="method">
+        <p class="missing-text">MISSING METHOD</p>
+      </slot>
+    </div>
+    
+    <div>
+      <slot name="example"/>
+    </div>
   </div>
 </template>
 

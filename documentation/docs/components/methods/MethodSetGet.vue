@@ -16,13 +16,11 @@ const id = computed(() =>{
 
 // Setter names
 const setMethod: string = "setMethod"
-const setDescription: string = "setDescription"
-const setCodeExample: string = "setCodeExample"
+const setExample: string = "setExample"
 
 // Getter names
 const getMethod: string = "getMethod"
-const getDescription: string = "getDescription"
-const getCodeExample: string = "getCodeExample"
+const getExample: string = "getExample"
 
 
 const slots = useSlots()
@@ -33,10 +31,10 @@ const hasType = (typeArray: Array<string>) => {
 }
 
 const hasSetterContent = computed(() => {
-  return hasType([setMethod, setDescription, setDescription])
+  return hasType([setMethod, setExample])
 })
 const hasGetterContent = computed(() => {
-  return hasType([getMethod, getDescription, getCodeExample])
+  return hasType([getMethod, getExample])
 })
 
 const hasSetGet = computed(() => {
@@ -47,36 +45,30 @@ const hasSetGet = computed(() => {
 
 <template>
   
-  <div class="property-method-container">
+<div class="property-method-container">
   <h3 :id="id" tabindex="-1">{{ methodName }}
     <a class="header-anchor" :href="`#${id}`" :aria-label="`Permalink to ${methodName}`">&#8203;</a>
   </h3>
-    <MethodComponent method-type="setter" :methodName="methodName" v-if="hasSetterContent">
-      <template #method>
-        <slot :name="setMethod"/>
-      </template>
-      <template #description>
-        <slot :name="setDescription"/>
-      </template>
-      <template #codeExample>
-        <slot :name="setCodeExample"/>
-      </template>
-    </MethodComponent>
-    
-    <hr v-if="hasSetGet" />
-    
-    <MethodComponent method-type="getter" :methodName="methodName" v-if="hasGetterContent">
-      <template #method>
-        <slot :name="getMethod"/>
-      </template>
-      <template #description>
-        <slot :name="getDescription"/>
-      </template>
-      <template #codeExample>
-        <slot :name="getCodeExample"/>
-      </template>
-    </MethodComponent>
-  </div>
+  <MethodComponent method-type="setter" :methodName="methodName" v-if="hasSetterContent">
+    <template #method>
+      <slot :name="setMethod"/>
+    </template>
+    <template #codeExample>
+      <slot :name="setExample"/>
+    </template>
+  </MethodComponent>
+  
+  <hr v-if="hasSetGet" />
+  
+  <MethodComponent method-type="getter" :methodName="methodName" v-if="hasGetterContent">
+    <template #method>
+      <slot :name="getMethod"/>
+    </template>
+    <template #codeExample>
+      <slot :name="getExample"/>
+    </template>
+  </MethodComponent>
+</div>
 </template>
 
 
