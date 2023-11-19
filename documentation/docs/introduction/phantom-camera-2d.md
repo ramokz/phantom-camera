@@ -3,9 +3,9 @@
 # PhantomCamera2D
 > Inherits: Node2D
 
-`PhantomCamera2D`, shortened to `PCam2D` (text) or `pcam_2D` (code), is used in 2D scenes.
+`PhantomCamera2D`, shortened to `PCam2D` (text) or `pcam_2d` (code), is used in 2D scenes.
 
-⚠️ A scene must contain a [`pcam_host`](https://github.com/ramokz/phantom-camera/wiki/PhantomCameraHost) for the `pcam_2D` node to work.
+⚠️ A scene must contain a [`pcam_host`](https://github.com/ramokz/phantom-camera/wiki/PhantomCameraHost) for the `pcam_2d` node to work.
 
 ## Example Scene
 Can be found in: `res://addons/phantom_camera/examples/2DExampleScene.tscn`
@@ -47,3 +47,25 @@ Determines how the `Camera` tweens to this `PCam` upon becoming active.
 
 ## Secondary Properties
 <!--@include: ./parts/phantom-camera-properties.md-->
+
+<Property propertyName="Frame Preview" propertyType="bool" propertyDefault="true">
+<template v-slot:propertyDescription>
+
+Enables a preview
+
+</template>
+<template v-slot:getMethod>
+
+`string` get_inactive_update_mode()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_inactive_update_mode()
+```
+:::
+
+</template>
+</Property>

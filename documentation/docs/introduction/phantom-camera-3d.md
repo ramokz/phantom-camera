@@ -4,9 +4,9 @@
 
 > Inherits: Node3D
 
-`PhantomCamera3D`, shortened to `PCam3D` (text) or `pcam_3D` (code), is used in 3D scenes.
+`PhantomCamera3D`, shortened to `PCam3D` (text) or `pcam_3d` (code), is used in 3D scenes.
 
-⚠️ A scene must contain a [`pcam_host`](https://github.com/ramokz/phantom-camera/wiki/PhantomCameraHost) for the `pcam_3D` node to work.
+⚠️ A scene must contain a [`pcam_host`](https://github.com/ramokz/phantom-camera/wiki/PhantomCameraHost) for the `pcam_3d` node to work.
 
 ## Example Scene
 
