@@ -48,7 +48,185 @@ Determines how the `Camera` tweens to this `PhantomCamera` upon becoming active.
 </PropertyCore>
 </div>
 
-
-
 ## Secondary Properties
 <!--@include: ./parts/phantom-camera-properties.md-->
+
+<Property propertyName="Camera3D Resource" propertyType="Camera3DResource" propertyDefault="null">
+<template v-slot:propertyDescription>
+
+A resource type that allows for overriding the `Camera3D` node's properties.
+
+</template>
+<template v-slot:setMethod>
+
+`void` set_camera_3D_resource(`Camera3DResource` resource)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_camera_3D_resource(resource)
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`Camera3DResource` get_camera_3D_resource()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_camera_3D_resource()
+```
+:::
+
+</template>
+</Property>
+
+<Property propertyName="Camera Cull Mask" propertyType="int" propertyDefault="1048575">
+<template v-slot:propertyDescription>
+
+Overrides the Camera Cull Mask property of the `Camera3D` once becoming active.
+
+</template>
+<template v-slot:setMethod>
+
+`void` set_camera_cull_mask(`int` cull_mask)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_camera_cull_mask(cull_mask)
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`int` get_camera_cull_mask()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_camera_cull_mask()
+```
+:::
+
+</template>
+</Property>
+
+<Property propertyName="H Offset" propertyType="float" propertyDefault="0">
+<template v-slot:propertyDescription>
+
+Overrides the H Offset property of the `Camera3D` once becoming active.
+
+</template>
+<template v-slot:setMethod>
+
+`void` set_camera_h_offset(`float` h_offset)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_camera_h_offset(4.2)
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`int` get_camera_h_offset()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_camera_h_offset()
+```
+:::
+
+</template>
+</Property>
+
+<Property propertyName="V Offset" propertyType="float" propertyDefault="0">
+<template v-slot:propertyDescription>
+
+Overrides the V Offset property of the `Camera3D` once becoming active.
+
+</template>
+<template v-slot:setMethod>
+
+`void` set_camera_v_offset(`float` v_offset)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_camera_v_offset(4.2)
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`int` get_camera_v_offset()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_camera_v_offset()
+```
+:::
+
+</template>
+</Property>
+
+<Property propertyName="FOV" propertyType="float" propertyDefault="0">
+<template v-slot:propertyDescription>
+
+Overrides the FOV (Field of View) property of the `Camera3D` once becoming active.
+
+</template>
+<template v-slot:setMethod>
+
+`void` set_camera_fov(`float` fov)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_camera_fov(4.2)
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`int` get_camera_fov()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_camera_fov()
+```
+:::
+
+</template>
+</Property>

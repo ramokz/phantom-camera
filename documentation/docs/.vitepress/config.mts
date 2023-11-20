@@ -40,8 +40,10 @@ export default defineConfig({
         ]
       ]
     }
-    
   },
+  srcExclude: [
+    '**/parts/*.md'  
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: '/assets/phantom-camera.svg',
@@ -82,9 +84,6 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Zoom (2D)', link: "/zoom",
-      },
-      {
         text: 'Look At Modes (3D)',
         items: [
           {text: 'Overview', link: "/look-at-modes/overview"},
@@ -97,10 +96,10 @@ export default defineConfig({
         text: 'Tween', link: "/tween",
       },
       {
-        text: 'Inactive Update Mode', link: "/inactive-update-mode",
+        text: 'Viewfinder', link: "/viewfinder",
       },
       {
-        text: 'Viewfinder', link: "/viewfinder",
+        text: 'AnimationPlayer', link: "/animation-player",
       },
       {
         text: 'Contribute',

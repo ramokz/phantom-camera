@@ -28,14 +28,6 @@ Define how the `Camera` should follow its target(s).
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Zoom" propertyPageLink="/zoom" propertyIcon="./../../assets/feature-zoom.svg">
-<template v-slot:propertyDescription>
-
-Set the `Zoom` level for the `Camera`.
-
-</template>
-</PropertyCore>
-
 <PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="./../../assets/feature-tween.svg">
 <template v-slot:propertyDescription>
 
@@ -47,6 +39,42 @@ Determines how the `Camera` tweens to this `PCam` upon becoming active.
 
 ## Secondary Properties
 <!--@include: ./parts/phantom-camera-properties.md-->
+
+<Property propertyName="Zoom" propertyType="Vector2" propertyDefault="Vector2(1,1)">
+<template v-slot:propertyDescription>
+
+Applies a zoom level to the `PCam2D`, effectively overrides the `Zoom` property of the `Camera2D` node.
+
+</template>
+<template v-slot:setMethod>
+
+`Vector2` set_zoom()
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_zoom(Vector2(1.5, 1.5))
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`Vector2` get_zoom()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_zoom()
+```
+:::
+
+</template>
+</Property>
 
 <Property propertyName="Frame Preview" propertyType="bool" propertyDefault="true">
 <template v-slot:propertyDescription>

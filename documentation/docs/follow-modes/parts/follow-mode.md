@@ -3,7 +3,7 @@
 
 Defines the current `Follow Mode` of the `PCam` based on `Constants.FOLLOW_MODE` enum.
 
-The Setter for `Follow Mode` has purposely not been added.<br>
+**_Note:_** The Setter for `Follow Mode` has purposely not been added.<br>
 A separate `PCam` should be used instead.
 
 </template>

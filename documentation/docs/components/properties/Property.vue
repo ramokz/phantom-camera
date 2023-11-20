@@ -142,7 +142,7 @@ const hasSetGet = computed(() => {
 }
 
 .property-method-container {
-  padding: 20px 20px 10px 20px;
+  padding: 30px 30px 20px 30px;
   margin-bottom: 36px;
   border-radius: 20px;
   border: 2px solid var(--vp-c-gray-3);

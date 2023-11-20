@@ -7,6 +7,7 @@ Has similar logic to glued, but with the additional option to be offset from its
 
 ## Properties
 <!--@include: ./parts/follow-mode.md-->
+
 <Property2D3D propertyName="Group Targets" propertyType2D="Array[Node2D]" propertyDefault2D="null" propertyType3D="Array[Node3D]" propertyDefault3D="null">
 
 <template v-slot:propertyDescription>

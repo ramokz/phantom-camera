@@ -1,7 +1,6 @@
 <img src="./assets/feature-priority.svg" height="256" width="256"/>
 
 # Priority
-
 The most important property of the plugin.
 
 

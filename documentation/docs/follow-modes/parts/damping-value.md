@@ -3,9 +3,9 @@
 
 Defines the damping amount.
 
-**Lower value** = slower / heavier camera movement
+**Lower value** = slower / heavier camera movement.
 
-**Higher value** = fast camera movement.
+**Higher value** = faster camera movement.
 
 </template>
 

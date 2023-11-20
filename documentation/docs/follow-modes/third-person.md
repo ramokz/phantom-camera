@@ -1,6 +1,6 @@
 <img alt="Third Person Icon" class="page-header-icon" src="../assets/follow-third-person.svg" />
 
-# Third Person Follow
+# Third Person Follow (3D)
 As the name implies, this mode is meant to be used for third person camera experiences. It works by applying a `SpringArm3D` where the properties, such as `Collison Mask`, `Spring Length` and `Margin`, can be controlled from the `PCam3D`.
 
 To adjust the orbit rotation around the target, the PhantomCamera3D uses the setter function `set_third_person_rotation()` (radians) or `set_third_person_rotation_degrees()` (degrees).
@@ -43,9 +43,79 @@ func _unhandled_input(event) -> void:
 
 <!--@include: ./parts/follow-mode.md-->
 
-<!--@include: ./parts/follow-target.md-->
+<Property propertyName="Follow Target" propertyType="Node3D" propertyDefault="null">
+<template v-slot:propertyDescription>
 
-<!--@include: ./parts/follow-offset.md-->
+Determines which Node should be followed. The `Camera` will follow the position of the Follow Target based on the Follow Mode and its parameters.
+
+</template>
+<template v-slot:setMethod>
+
+`void` set_follow_target_node(`Node3D` target_node)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_follow_target_node(player_node)
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`Node3D` get_follow_target_node()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_follow_target_node()
+```
+:::
+
+</template>
+</Property>
+
+<Property propertyName="Follow Target Offset" propertyType="Vector3" propertyDefault="Vector3(0,0,0)">
+<template v-slot:propertyDescription>
+
+Offsets the targeted position.
+
+</template>
+
+<template v-slot:setMethod>
+
+`void` set_follow_target_offset(`Vector3` offset)
+
+</template>
+<template v-slot:setExample>
+
+::: details Example
+```gdscript
+pcam.set_follow_target_offset(Vector3(1, 1, 1))
+```
+:::
+
+</template>
+<template v-slot:getMethod>
+
+`Vector3` get_follow_target_offset()
+
+</template>
+<template v-slot:getExample>
+
+::: details Example
+```gdscript
+pcam.get_follow_target_offset()
+```
+:::
+
+</template>
+
+</Property>
 
 <!--@include: ./parts/damping.md-->
 

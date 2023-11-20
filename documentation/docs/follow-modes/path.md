@@ -7,8 +7,7 @@ Follows a target while being positionally confined to a `Path` node. The positio
 
 ## Properties
 <!--@include: ./parts/follow-mode.md-->
-<!--@include: ./parts/damping.md-->
-<!--@include: ./parts/damping-value.md-->
+
 <!--@include: ./parts/follow-target.md-->
 
 <Property2D3D propertyName="Follow Path" propertyType2D="Path2D" propertyDefault2D="null" propertyType3D="Path3D" propertyDefault3D="null">
@@ -79,3 +78,7 @@ pcam.get_follow_path()
 </template>
 
 </Property2D3D>
+
+<!--@include: ./parts/damping.md-->
+
+<!--@include: ./parts/damping-value.md-->

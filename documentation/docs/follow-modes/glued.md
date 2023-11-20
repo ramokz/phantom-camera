@@ -8,7 +8,7 @@ This is the simplest of the follow modes and, likely, requires additional extern
 
 ## Properties
 <!--@include: ./parts/follow-mode.md-->
+<!--@include: ./parts/follow-target.md-->
 <!--@include: ./parts/damping.md-->
 <!--@include: ./parts/damping-value.md-->
-<!--@include: ./parts/follow-target.md-->
 
