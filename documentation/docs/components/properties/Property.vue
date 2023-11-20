@@ -84,7 +84,7 @@ const hasSetGet = computed(() => {
       </p>
     </slot>
 
-    <p class="property-usage-note"><i>Note:</i> Properties should be modified and read via setters and getters respectively.</p>
+    <p class="property-usage-note" v-if="hasSetterContent && hasGetterContent"><i>Note:</i> Properties should be modified and read via setters and getters respectively.</p>
     
     <hr v-if="hasSetGet" />
     

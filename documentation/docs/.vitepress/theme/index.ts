@@ -10,6 +10,7 @@ import MethodComponent from "../../components/methods/MethodComponent.vue";
 import PropertyCore from "../../components/properties/PropertyCore.vue";
 import Property from "../../components/properties/Property.vue";
 import Property2D3D from "../../components/properties/Property2D3D.vue";
+import Property2D3DOnly from "../../components/properties/Property2D3DOnly.vue";
 
 export default {
   extends: DefaultTheme,
@@ -18,7 +19,8 @@ export default {
     app.component('MethodComponent', MethodComponent),
     app.component('PropertyCore', PropertyCore),
     app.component('Property', Property),
-    app.component('Property2D3D', Property2D3D)
+    app.component('Property2D3D', Property2D3D),
+    app.component('Property2D3DOnly', Property2D3DOnly)
   },
   Layout: () => {
     return h(DefaultTheme.Layout, null, {

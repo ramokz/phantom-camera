@@ -25,7 +25,7 @@ import { store } from '../../store.ts'
     },
   })
 
-  const borderRadius: Ref<String> = ref('10px')
+  const borderRadius: Ref<String> = ref()
   const setCornerRadius = (value?: boolean) => {
     if (store.is2D || value) {
       borderRadius.value = "0 24px 24px 24px"
@@ -55,25 +55,6 @@ import { store } from '../../store.ts'
   const hasPropertyType = (typeArray: Array<string>) => {
     return slotContent.some(value => typeArray.includes(value))
   }
-
-  // 2D Slot Names
-  const setMethod2D: string = "setMethod2D"
-  const setExample2D: string = "setExample2D"
-  const getMethod2D: string = "setMethod2D"
-  const getExample2D: string = "setExample2D"
-  
-  // 3D Slot Names
-  const setMethod3D: string = "setMethod3D"
-  const setExample3D: string = "setExample2D"
-  const getMethod3D: string = "getMethod3D"
-  const getExample3D: string = "getExample2D"
-  
-  const has2DContent = computed(() => {
-    return hasPropertyType([setMethod2D, setExample2D, getMethod2D, getExample2D]) && store.is2D
-  })
-  const has3DContent = computed(() => {
-    return hasPropertyType([setMethod3D, setExample3D, getMethod3D, getExample3D])
-  })
   
   const propertyNameID = computed(() => {
     return props.propertyName.replace(/ /g, '')
@@ -88,83 +69,63 @@ import { store } from '../../store.ts'
         <img alt="Phantom Camera 2D" src="../../assets/phantom-camera-2D.svg" width="32"/>
         2D
       </label>
-    <div v-if="has2DContent">
-    </div>
       <input type="radio" :id="propertyNameID + '3D'" :name="propertyNameID" :value="!store.is2D" v-model="store.is2D" :checked="!store.is2D" @change="store.toggle2D(false)">
       <label :for="propertyNameID + '3D'">
         <img alt="Phantom Camera 3D" src="../../assets/phantom-camera-3D.svg" width="32"/>
         3D
       </label>
-    <div v-if="has3DContent">
-    </div>
   </div>
   <Property :style="{borderRadius: borderRadius}" :propertyName="propertyName" :propertyType="propertyObj.type" :propertyDefault="propertyObj.default">
     <template #propertyDescription>
       <slot name="propertyDescription"/>
     </template>
     <template #setMethod>
-      <div v-if="has2DContent">
-        <div v-show="store.is2D">
-          <slot name="setMethod2D">
-            <p class="missing-text">Missing setMethod2D</p>
-          </slot>
-        </div>
+      <div v-show="store.is2D">
+        <slot name="setMethod2D">
+          <p class="missing-text">Missing setMethod2D</p>
+        </slot>
       </div>
 
-      <div v-if="has3DContent">
-        <div v-show="!store.is2D">
-          <slot name="setMethod3D">
-            <p class="missing-text">Missing setMethod3D</p>
-          </slot>
-        </div>
+      <div v-if="!store.is2D">
+        <slot name="setMethod3D">
+          <p class="missing-text">Missing setMethod3D</p>
+        </slot>
       </div>
     </template>
     <template #setExample >
-      <div v-if="has2DContent">
-        <div v-show="store.is2D">
-          <slot name="setExample2D">
-            <p class="missing-text">Missing setExample2D</p>
-          </slot>
-        </div>
+      <div v-show="store.is2D">
+        <slot name="setExample2D">
+          <p class="missing-text">Missing setExample2D</p>
+        </slot>
       </div>
-      <div v-if="has3DContent">
-        <div v-show="!store.is2D">
-          <slot name="setExample3D">
-            <p class="missing-text">Missing setExample3D</p>
-          </slot>
-        </div>
+      <div v-show="!store.is2D">
+        <slot name="setExample3D">
+          <p class="missing-text">Missing setExample3D</p>
+        </slot>
       </div>
     </template>
     <template #getMethod>
-      <div v-if="has2DContent">
-        <div v-show="store.is2D">
-          <slot name="getMethod2D">
-            <p class="missing-text">Missing getMethod2D</p>
-          </slot>
-        </div>
+      <div v-show="store.is2D">
+        <slot name="getMethod2D">
+          <p class="missing-text">Missing getMethod2D</p>
+        </slot>
       </div>
-      <div v-if="has3DContent">
-        <div v-show="!store.is2D">
-          <slot name="getMethod3D">
-            <p class="missing-text">Missing getMethod3D</p>
-          </slot>
-        </div>
+      <div v-show="!store.is2D">
+        <slot name="getMethod3D">
+          <p class="missing-text">Missing getMethod3D</p>
+        </slot>
       </div>
     </template>
     <template #getExample>
-      <div v-if="has2DContent">
-        <div v-show="store.is2D">
-          <slot name="getExample2D">
-            <p class="missing-text">Missing getExample2D</p>
-          </slot>
-        </div>
+      <div v-show="store.is2D">
+        <slot name="getExample2D">
+          <p class="missing-text">Missing getExample2D</p>
+        </slot>
       </div>
-      <div v-if="has3DContent">
-        <div v-show="!store.is2D">
-          <slot name="getExample3D">
-            <p class="missing-text">Missing getExample3D</p>
-          </slot>
-        </div>
+      <div v-show="!store.is2D">
+        <slot name="getExample3D">
+          <p class="missing-text">Missing getExample3D</p>
+        </slot>
       </div>
     </template>
   </Property>

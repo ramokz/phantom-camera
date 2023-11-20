@@ -7,7 +7,12 @@ Has similar logic to glued, but with the additional option to be offset from its
 
 ## Properties
 <!--@include: ./parts/follow-mode.md-->
-<!--@include: ./parts/damping.md-->
-<!--@include: ./parts/damping-value.md-->
+
 <!--@include: ./parts/follow-target.md-->
+
 <!--@include: ./parts/follow-offset.md-->
+
+<!--@include: ./parts/damping.md-->
+
+<!--@include: ./parts/damping-value.md-->
+

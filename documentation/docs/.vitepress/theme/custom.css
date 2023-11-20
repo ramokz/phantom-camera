@@ -1,10 +1,10 @@
 :root {
     /* Brand Colours */
     --vp-c-brand-1: #3AB99A;
+    --vp-c-brand-2: var(--vp-c-white);
     --vp-c-white: #F5F5F5;
     --vp-c-danger-1: #B93A59;
-
-    --vp-c-gray-1: #B2B4B6;
+    --vp-c-gray-1: #848686;
     
     /*--vp-font-family-base: */
     --vp-font-family-base: 'Nunito', sans-serif;

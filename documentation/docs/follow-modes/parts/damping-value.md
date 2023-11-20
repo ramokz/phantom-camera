@@ -11,7 +11,7 @@ Defines the damping amount.
 
 <template v-slot:setMethod>
 
-`void` set_follow_damping_value(`float` value)
+`void` set_follow_damping_value(`float` damping_value)
 
 </template>
 

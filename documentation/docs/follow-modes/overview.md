@@ -35,21 +35,21 @@ It also allows for dynamically readjusting itself to keep multiple targets withi
 <PropertyCore propertyName="Path" propertyPageLink="./path" propertyIcon="./../../assets/follow-path.svg">
 <template v-slot:propertyDescription>
 
-Determines how the `Camera` tweens to this `PCam` upon becoming active.
+Follows a target while being positionally confined to a `Path` node. The position on the path is based on the closest baked point relative to the target's position.
 
 </template>
 </PropertyCore>
-<PropertyCore propertyName="Framed" propertyPageLink="/tween" propertyIcon="./../../assets/follow-framed.svg">
+<PropertyCore propertyName="Framed" propertyPageLink="/follow-modes/framed" propertyIcon="./../../assets/follow-framed.svg">
 <template v-slot:propertyDescription>
 
-Determines how the `Camera` tweens to this `PCam` upon becoming active.
+Enables dynamic framing of a given target using dead zones. Dead zones enable the camera to remain still until the target moves far enough away from the camera's view. This is determined by the horizontal and vertical dead zone size in their respective properties within the inspector.
 
 </template>
 </PropertyCore>
-<PropertyCore propertyName="Third Person" propertyPageLink="/tween" propertyIcon="./../../assets/follow-third-person.svg">
+<PropertyCore propertyName="Third Person" propertyPageLink="/follow-modes/third-person" propertyIcon="./../../assets/follow-third-person.svg">
 <template v-slot:propertyDescription>
 
-Determines how the `Camera` tweens to this `PCam` upon becoming active.
+As the name implies, this mode is meant to be used for third person camera experiences. It works by applying a SpringArm3D where the properties, such as `Collison Mask`, `Spring Length` and `Margin`, can be controlled from the PhantomCamera3D.
 
 _This is for 3D scenes only_
 
