@@ -78,11 +78,14 @@ export default defineConfig({
           {text: 'Group', link: '/follow-modes/group'},
           {text: 'Path', link: '/follow-modes/path'},
           {text: 'Framed', link: '/follow-modes/framed'},
-          {text: 'Third Person', link: '/follow-modes/third-person'},
+          {text: 'Third Person (3D)', link: '/follow-modes/third-person'},
         ]
       },
       {
-        text: 'Look At Modes',
+        text: 'Zoom (2D)', link: "/zoom",
+      },
+      {
+        text: 'Look At Modes (3D)',
         items: [
           {text: 'Overview', link: "/look-at-modes/overview"},
           {text: 'Mimic', link: '/look-at-modes/mimic'},
@@ -90,11 +93,15 @@ export default defineConfig({
           {text: 'Group', link: '/look-at-modes/group'},
         ]
       },
-      { text: 'Tween', link: "/tween", },
+      {
+        text: 'Tween', link: "/tween",
+      },
       {
         text: 'Inactive Update Mode', link: "/inactive-update-mode",
       },
-      { text: 'Viewfinder', link: "/viewfinder", },
+      {
+        text: 'Viewfinder', link: "/viewfinder",
+      },
       {
         text: 'Contribute',
         items: [
