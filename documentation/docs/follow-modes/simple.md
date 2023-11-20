@@ -1,6 +1,6 @@
 <img alt="Follow Simple" class="page-header-icon" src="../assets/follow-simple.svg" />
 
-# Follow - Simple
+# Simple Follow
 
 Has similar logic to glued, but with the additional option to be offset from its target location.
 

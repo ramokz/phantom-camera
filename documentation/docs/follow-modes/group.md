@@ -1,6 +1,6 @@
 <img alt="Follow Group Icon" class="page-header-icon" src="../assets/follow-group.svg" />
 
-# Follow - Group
+# Group Follow
 
 Has similar logic to glued, but with the additional option to be offset from its target location.
 

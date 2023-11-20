@@ -1,6 +1,6 @@
 <img src="../assets/feature-follow.svg" height="256" width="256"/>
 
-# Follow - Overview
+# Follow Overview
 
 Determines the positional logic for the `PCam`.
 This is 

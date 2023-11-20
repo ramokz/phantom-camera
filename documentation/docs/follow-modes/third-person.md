@@ -1,6 +1,6 @@
 <img alt="Third Person Icon" class="page-header-icon" src="../assets/follow-third-person.svg" />
 
-# Follow - Third Person
+# Third Person Follow
 As the name implies, this mode is meant to be used for third person camera experiences. It works by applying a `SpringArm3D` where the properties, such as `Collison Mask`, `Spring Length` and `Margin`, can be controlled from the `PCam3D`.
 
 To adjust the orbit rotation around the target, the PhantomCamera3D uses the setter function `set_third_person_rotation()` (radians) or `set_third_person_rotation_degrees()` (degrees).

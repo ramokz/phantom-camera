@@ -1,6 +1,6 @@
 <img alt="Follow Glued" class="page-header-icon" src="../assets/follow-glued.svg" />
 
-# Follow - Glued
+# Glued Follow
 
 Mimics the positional movement of the target.
 

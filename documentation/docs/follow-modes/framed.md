@@ -1,6 +1,6 @@
 <img alt="Follow Framed Icon" class="page-header-icon" src="../assets/follow-framed.svg" />
 
-# Follow - Framed
+# Framed Follow
 
 Enables dynamic framing of a given target using dead zones. Dead zones enable the camera to remain still until the target moves far enough away from the camera's view. This is determined by the horizontal and vertical dead zone size in their respective properties within the inspector.
 Previewing the Dead Zone

@@ -1,6 +1,6 @@
 <img alt="Follow Group Icon" class="page-header-icon" src="../assets/follow-path.svg" />
 
-# Follow - Path
+# Path Follow
 
 Follows a target while being positionally confined to a `Path` node. The position on the path is based on the closest baked point relative to the target's position.
 
