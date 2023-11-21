@@ -6,8 +6,9 @@ Defines how `PCams` transitions between one another. Changing the tween values f
 
 This is a resource type that can be either used for one `PCam` or reused across multiple.
 
-By default, all `PCams` will by default use a `linear` transition, `easeInOut` ease and `1s` duration.
+By default, all `PCams` will use a `linear` transition, `easeInOut` ease with a `1s` duration.
 
+### Instant Transitions
 To have an instant transitions, simply apply a value of `0` to the duration property.
 
 <Property propertyName="Tween Resource" propertyType="PhantomCameraTween" propertyDefault="null">
@@ -15,17 +16,19 @@ To have an instant transitions, simply apply a value of `0` to the duration prop
 
 The resource that defines how this `PCam` should be transitioned to.
 
+Can be shared across multiple `PCams`
+
 </template>
 <template v-slot:setMethod>
 
-`void` set_tween_resource(`PhantomCameraTween` offset)
+`void` set_tween_resource(`PhantomCameraTween` tween_resource)
 
 </template>
 <template v-slot:setExample>
 
 ::: details Example
 ```gdscript
-pcam.set_tween_resource(tween_resource_name)
+pcam.set_tween_resource(tween_resource)
 ```
 :::
 
@@ -86,7 +89,6 @@ pcam.get_tween_duration()
 <template v-slot:propertyDescription>
 
 Defines the `Transition` type for the tweening to this `PCam` using the `Constants.TweenTransitions` enum.
-The values of it is as follow:
 
 | Transition Name | Value |
 |-----------------|-------|
@@ -116,7 +118,7 @@ The values of it is as follow:
 pcam.set_tween_transition(2)
 
 # Instead of applying an int directly,
-# it's also possible to supply an enum value like so
+# it's also possible to supply an enum value like so:
 pcam.set_tween_transition(pcam.Constants.TweenTransitions.QUINT)
 
 ```
@@ -143,7 +145,6 @@ pcam.get_tween_transition()
 <template v-slot:propertyDescription>
 
 Defines the `Ease` type for the tweening to this `PCam` using the `Constants.TweenEases` enum.
-The values of it is as follow:
 
 | Ease Type   | Value |
 |-------------|-------|
@@ -162,11 +163,11 @@ The values of it is as follow:
 
 ::: details Example
 ```gdscript
-pcam.set_tween_ease(3)
+pcam.set_tween_ease(0)
 
 # Instead of applying an int directly,
 # it's also possible to supply an enum value like so
-pcam.set_tween_ease(pcam.Constants.TweenEases.QUINT)
+pcam.set_tween_ease(pcam.Constants.TweenEases.EASE_IN)
 
 ```
 :::

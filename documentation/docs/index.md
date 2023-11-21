@@ -7,7 +7,7 @@ hero:
   text: "Documentation"
   tagline: 👻🎥 A dynamic 2D & 3D camera addon for Godot 4
   image:
-    src: /assets/phantom-camera.svg
+    src: /assets/phantom-camera-hero.svg
     alt: Phantom Camera icon
   actions:
     - theme: brand

@@ -49,8 +49,12 @@ export default defineConfig({
     logo: '/assets/phantom-camera.svg',
     
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Docs', link: '/introduction/getting-started' },
+      {
+        text: 'Home', link: '/'
+      },
+      {
+        text: 'Docs', link: '/introduction/getting-started'
+      },
     ],
     
     outline: {
@@ -62,10 +66,18 @@ export default defineConfig({
       {
         text: 'Introduction',
         items: [
-          { text: 'Getting Started', link: '/introduction/getting-started' },
-          { text: 'PhantomCamera2D', link: '/introduction/phantom-camera-2d' },
-          { text: 'PhantomCamera3D', link: '/introduction/phantom-camera-3d' },
-          { text: 'PhantomCameraHost', link: '/introduction/phantom-camera-host' },
+          {
+            text: 'Getting Started', link: '/introduction/getting-started'
+          },
+          {
+            text: 'PhantomCamera2D', link: '/introduction/phantom-camera-2d'
+          },
+          {
+            text: 'PhantomCamera3D', link: '/introduction/phantom-camera-3d'
+          },
+          {
+            text: 'PhantomCameraHost', link: '/introduction/phantom-camera-host'
+          },
         ]
       },
       {
@@ -74,22 +86,44 @@ export default defineConfig({
       {
         text: 'Follow Modes',
         items: [
-          {text: 'Overview', link: "/follow-modes/overview"},
-          {text: 'Glued', link: '/follow-modes/glued'},
-          {text: 'Simple', link: '/follow-modes/simple'},
-          {text: 'Group', link: '/follow-modes/group'},
-          {text: 'Path', link: '/follow-modes/path'},
-          {text: 'Framed', link: '/follow-modes/framed'},
-          {text: 'Third Person (3D)', link: '/follow-modes/third-person'},
+          {
+            text: 'Overview', link: "/follow-modes/overview"
+          },
+          {
+            text: 'Glued', link: '/follow-modes/glued'
+          },
+          {
+            text: 'Simple', link: '/follow-modes/simple'
+          },
+          {
+            text: 'Group', link: '/follow-modes/group'
+          },
+          {
+            text: 'Path', link: '/follow-modes/path'
+          },
+          {
+            text: 'Framed', link: '/follow-modes/framed'
+          },
+          {
+            text: 'Third Person (3D)', link: '/follow-modes/third-person'
+          },
         ]
       },
       {
         text: 'Look At Modes (3D)',
         items: [
-          {text: 'Overview', link: "/look-at-modes/overview"},
-          {text: 'Mimic', link: '/look-at-modes/mimic'},
-          {text: 'Simple', link: '/look-at-modes/simple'},
-          {text: 'Group', link: '/look-at-modes/group'},
+          {
+            text: 'Overview', link: "/look-at-modes/overview"
+          },
+          {
+            text: 'Mimic', link: '/look-at-modes/mimic'
+          },
+          {
+            text: 'Simple', link: '/look-at-modes/simple'
+          },
+          {
+            text: 'Group', link: '/look-at-modes/group'
+          },
         ]
       },
       {
@@ -104,9 +138,15 @@ export default defineConfig({
       {
         text: 'Contribute',
         items: [
-          { text: 'Feature Proposals', link: "/look-at-modes/feature-proposals" },
-          { text: 'Bug reports', link: "/contribute/bug-reports" },
-          { text: 'PRs', link: "/contribute/code" },
+          {
+            text: 'Feature Proposals', link: "/look-at-modes/feature-proposals"
+          },
+          {
+            text: 'Bug reports', link: "/contribute/bug-reports"
+          },
+          {
+            text: 'PRs', link: "/contribute/code"
+          },
         ]
       },
     ],

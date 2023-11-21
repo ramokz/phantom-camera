@@ -19,7 +19,7 @@ Defines the damping amount.
 
 ::: details Example
 ```gdscript
-pcam.set_follow_has_damping(5)
+pcam.set_follow_damping_value(5)
 ```
 :::
 
@@ -34,7 +34,7 @@ pcam.set_follow_has_damping(5)
 
 ::: details Example
 ```gdscript
-pcam.is_active()
+pcam.get_follow_damping_value()
 ```
 :::
 

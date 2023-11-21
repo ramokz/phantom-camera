@@ -1,13 +1,12 @@
-<img alt="Follow Simple" class="page-header-icon" src="../assets/follow-simple.svg" />
+<img alt="Follow Simple" class="page-header-icon" src="../assets/follow-simple.svg" height="256" width="256" />
 
 # Simple Follow
 
-Has similar logic to glued, but with the additional option to be offset from its target location.
+Has similar logic to `Glued Follow`, but with the additional option to be offset from its target location.
 
+This mode is useful for things like character controllers in a fixed angle perspective. 
 
 ## Properties
-<!--@include: ./parts/follow-mode.md-->
-
 <!--@include: ./parts/follow-target.md-->
 
 <!--@include: ./parts/follow-offset.md-->

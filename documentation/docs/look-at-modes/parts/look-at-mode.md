@@ -1,10 +1,18 @@
 <Property propertyName="Look At Mode" propertyType="LookAtEnum" propertyDefault="None">
 <template v-slot:propertyDescription>
 
-Gets `Look At Mode`. Value is based on `LookAtMode` enum.
+Gets `Look At Mode`. Value is based on `Constants.LookAtMode` enum.
 
-**_Note:_** The Setter for `Follow Mode` has purposely not been added.<br>
+| Look At Mode | Value |
+|--------------|-------|
+| NONE         | 0     |
+| MIMIC        | 1     |
+| SIMPLE       | 2     |
+| GROUP        | 3     |
+
+**_Note:_** The Setter for `Look At Mode` has purposely not been added.<br>
 A separate `PCam3D` should be used instead.
+
 
 </template>
 <template v-slot:getMethod>

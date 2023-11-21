@@ -87,6 +87,6 @@ body {
     font-weight: inherit; /* Resets default theme behaviour */
 }
 
-.page-header-icon {
-    width: 256px;
+.vp-doc strong {
+    font-weight: 650;
 }

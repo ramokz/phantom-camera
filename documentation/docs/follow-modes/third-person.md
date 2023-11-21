@@ -1,52 +1,16 @@
-<img alt="Third Person Icon" class="page-header-icon" src="../assets/follow-third-person.svg" />
+<img alt="Third Person Icon" class="page-header-icon" src="../assets/follow-third-person.svg" height="256" width="256"/>
 
 # Third Person Follow (3D)
 As the name implies, this mode is meant to be used for third person camera experiences. It works by applying a `SpringArm3D` where the properties, such as `Collison Mask`, `Spring Length` and `Margin`, can be controlled from the `PCam3D`.
 
-To adjust the orbit rotation around the target, the PhantomCamera3D uses the setter function `set_third_person_rotation()` (radians) or `set_third_person_rotation_degrees()` (degrees).
-
-## Example Setup
-```gdscript
-var mouse_sensitivity: float = 0.05
-
-var min_yaw: float = -89.9
-var max_yaw: float = 50
-
-var min_pitch: float = 0
-var max_pitch: float = 360
-
-func _unhandled_input(event) -> void:
-  # Trigger whenever the mouse moves.
-  if event is InputEventMouseMotion:
-    var pcam_rotation_degrees: Vector3
-
-    # Assigns the current 3D rotation of the SpringArm3D node - so it starts off where it is in the editor.
-    pcam_rotation_degrees = pcam.get_third_person_rotation_degrees()
-
-    # Change the X rotation.
-    pcam_rotation_degrees.x -= event.relative.y * mouse_sensitivity
-		
-    # Clamp the rotation in the X axis so it go over or under the target.
-    pcam_rotation_degrees.x = clampf(pcam_rotation_degrees.x, min_yaw, max_yaw)
-
-    # Change the Y rotation value.
-    pcam_rotation_degrees.y -= event.relative.x * mouse_sensitivity
-		
-    # Sets the rotation to fully loop around its target, but without going below or exceeding 0 and 360 degrees respectively.
-    pcam_rotation_degrees.y = wrapf(pcam_rotation_degrees.y, min_pitch, max_pitch)
-		
-    # Change the SpringArm3D node's rotation and rotate around its target.
-    pcam.set_third_person_rotation_degrees(pcam_rotation_degrees)
-```
+To adjust the orbit rotation around the target, use either [set_third_person_rotation()](#third-person-rotation) (radians) or [set_third_person_rotation_degrees()](#third-person-rotation-degrees) (degrees).
 
 ## Properties
-
-<!--@include: ./parts/follow-mode.md-->
 
 <Property propertyName="Follow Target" propertyType="Node3D" propertyDefault="null">
 <template v-slot:propertyDescription>
 
-Determines which Node should be followed. The `Camera` will follow the position of the Follow Target based on the Follow Mode and its parameters.
+Determines which Node should be followed. The `PCam3D` will follow the position of the Follow Target based on the Follow Mode and its parameters.
 
 </template>
 <template v-slot:setMethod>
@@ -124,7 +88,7 @@ pcam.get_follow_target_offset()
 <Property propertyName="Spring Length" propertyType="float" propertyDefault="1.0">
 <template v-slot:propertyDescription>
 
-Defines the `SpringArm3D` node's length.
+Defines the `SpringArm3D` node's spring length.
 
 </template>
 <template v-slot:setMethod>
@@ -160,7 +124,7 @@ pcam.get_spring_arm_spring_length()
 <Property propertyName="Collision Mask" propertyType="int" propertyDefault="1">
 <template v-slot:propertyDescription>
 
-Defines the `SpringArm3D` node's Collision Mask.
+Defines the `SpringArm3D` node's `Collision Mask`.
 
 </template>
 <template v-slot:setMethod>
@@ -232,7 +196,7 @@ pcam.get_spring_arm_shape()
 <Property propertyName="Margin" propertyType="float" propertyDefault="0.01">
 <template v-slot:propertyDescription>
 
-Defines the `SpringArm3D` node's Margin.
+Defines the `SpringArm3D` node's `Margin`.
 
 </template>
 <template v-slot:setMethod>
@@ -268,7 +232,7 @@ pcam.get_spring_arm_margin()
 <Property propertyName="Third Person Rotation" propertyType="Vector3" propertyDefault="Vector3(0,0,0)">
 <template v-slot:propertyDescription>
 
-Defines the rotation (in radians) value of the Third Person `SpringArm` node.
+Defines the rotation (in radians) value of the Third Person `SpringArm3D` node.
 
 </template>
 <template v-slot:setMethod>
@@ -304,12 +268,12 @@ pcam.get_third_person_rotation()
 <Property propertyName="Third Person Rotation Degrees" propertyType="Vector3" propertyDefault="Vector3(0,0,0)">
 <template v-slot:propertyDescription>
 
-Defines the rotation (in degrees) value of the Third Person `SpringArm` node.
+Defines the rotation (in degrees) value of the Third Person `SpringArm3D` node.
 
 </template>
 <template v-slot:setMethod>
 
-`void` set_third_person_rotation_degrees(`Vector3` spring_arm_rotation)
+`void` set_third_person_rotation_degrees(`Vector3` spring_arm_rotation_deg)
 
 </template>
 <template v-slot:setExample>
@@ -336,3 +300,37 @@ pcam.get_third_person_rotation_degrees()
 
 </template>
 </Property>
+
+## Example Setup
+```gdscript
+var mouse_sensitivity: float = 0.05
+
+var min_yaw: float = -89.9
+var max_yaw: float = 50
+
+var min_pitch: float = 0
+var max_pitch: float = 360
+
+func _unhandled_input(event) -> void:
+  # Trigger whenever the mouse moves.
+  if event is InputEventMouseMotion:
+    var pcam_rotation_degrees: Vector3
+
+    # Assigns the current 3D rotation of the SpringArm3D node - to start off where it is in the editor.
+    pcam_rotation_degrees = pcam.get_third_person_rotation_degrees()
+
+    # Change the X rotation.
+    pcam_rotation_degrees.x -= event.relative.y * mouse_sensitivity
+		
+    # Clamp the rotation in the X axis so it can go over or under the target.
+    pcam_rotation_degrees.x = clampf(pcam_rotation_degrees.x, min_yaw, max_yaw)
+
+    # Change the Y rotation value.
+    pcam_rotation_degrees.y -= event.relative.x * mouse_sensitivity
+		
+    # Sets the rotation to fully loop around its target, but without going below or exceeding 0 and 360 degrees respectively.
+    pcam_rotation_degrees.y = wrapf(pcam_rotation_degrees.y, min_pitch, max_pitch)
+		
+    # Change the SpringArm3D node's rotation and rotate around its target.
+    pcam.set_third_person_rotation_degrees(pcam_rotation_degrees)
+```

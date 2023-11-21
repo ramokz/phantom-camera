@@ -4,5 +4,5 @@
 
 The simplest of the available options. Effectively copies the rotational value of the targeted `Node3D`.
 
-<!--@include: ./parts/look-at-mode.md-->
+## Properties
 <!--@include: ./parts/look-at-target.md-->

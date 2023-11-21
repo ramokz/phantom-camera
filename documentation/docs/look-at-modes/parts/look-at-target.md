@@ -1,7 +1,7 @@
 <Property propertyName="Look At Target" propertyType="Node3D" propertyDefault="null">
 <template v-slot:propertyDescription>
 
-Determines which `Node3D` should be look at. The `PCam2D` will update its rotational value as the target changes its position.
+Determines which `Node3D` should be looked at. The `PCam3D` will update its rotational value as the target changes its position.
 
 </template>
 <template v-slot:setMethod>

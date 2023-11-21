@@ -2,7 +2,7 @@
 
 # Look At Overview (3D)
 
-Modifies the rotational value of the `Camera3D`.
+For 3D scenes, it affects the rotational value of the `Camera3D` where it can keep a persistent forward direction at either a single or multiple targets.
 
 ## Core Modes
 
@@ -29,3 +29,6 @@ Allows for multiple targets to be looked at. The camera will look at the centre 
 </template>
 </PropertyCore>
 </div>
+
+## Properties
+<!--@include: ./parts/look-at-mode.md-->

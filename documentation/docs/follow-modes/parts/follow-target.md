@@ -2,7 +2,7 @@
 
 <template v-slot:propertyDescription>
 
-Determines which Node should be followed. The `Camera` will follow the position of the Follow Target based on the Follow Mode and its parameters.
+Determines which `Node` should be followed. The `Camera` will follow the position of the `Follow Target` based on the `Follow Mode` type and its parameters.
 
 </template>
 <template v-slot:setMethod2D>

@@ -1,7 +1,9 @@
 <Property propertyName="Damping" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
 
-Enables damping follow movement, which leads to heavier / slower camera follow movement.
+Applies a damping effect on the `Camera`'s movement. Leading to heavier / slower camera follow movement that responds more slowly as the targeted node moves around.
+
+This is useful to avoid sharp and rapid camera movement and lead to 
 
 </template>
 
@@ -15,7 +17,7 @@ Enables damping follow movement, which leads to heavier / slower camera follow m
 
 ::: details Example
 ```gdscript
-void set_follow_has_damping(bool value)
+pcam.set_follow_has_damping(true)
 ```
 :::
 

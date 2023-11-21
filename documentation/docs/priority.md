@@ -4,17 +4,17 @@
 The most important property of the plugin.
 
 
-It defines which `PCam` a scene's `Camera2D`/`Camera3D` should be corresponding with and be attached to. This is decided by the `pcam` with the highest `Priority`.
+It defines which `PCam` a scene's `Camera2D`/`Camera3D` should be corresponding with and be attached to. This is decided by the `PCam` with the highest `Priority`.
 
 
-Changing `Priority` will send an event to the scene's `pcam_host`, which will then determine whether if the `Priority` value is greater than or equal to the currently highest `pcam`'s in the scene and reattach the `Camera2D`/`Camera3D` accordingly.
+Changing `Priority` will send an event to the scene's `PCamHost`, which will then determine whether if the `Priority` value is greater than or equal to the currently highest `pcam`'s in the scene and reattach the `Camera` accordingly.
 
 
 ## Properties 
 <Property propertyName="Priority" propertyType="int" propertyDefault="0">
 <template v-slot:propertyDescription>
 
-Determines which `PCam` is currently used. The one with the highest priority will be what decides what `PCam` the scene's `Camera2D`/`Camera3D` is attached to.
+Determines which `PCam` is currently active. The one with the highest priority will be what decides what `PCam` a scene's `Camera` is attached to.
 
 </template>
 <template v-slot:setMethod>
