@@ -139,13 +139,10 @@ export default defineConfig({
         text: 'Contribute',
         items: [
           {
-            text: 'Feature Proposals', link: "/look-at-modes/feature-proposals"
+            text: 'How To Contribute', link: "/contribute/how-to-contribute"
           },
           {
-            text: 'Bug reports', link: "/contribute/bug-reports"
-          },
-          {
-            text: 'PRs', link: "/contribute/code"
+            text: 'Questions', link: "/contribute/questions"
           },
         ]
       },
@@ -158,7 +155,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ramokz/phantom-camera' },
       { icon: 'mastodon', link: 'https://mastodon.gamedev.place/@marcusskov' },
-      { icon: 'twitter', link: 'https://twitter.com/marcusskov' }
+      { icon: '', link: 'https://twitter.com/marcusskov' }
     ],
     
     editLink: {
