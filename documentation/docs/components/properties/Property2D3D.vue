@@ -66,12 +66,12 @@ import { store } from '../../store.ts'
   <div class="toggle-tabs">
       <input type="radio" :id="propertyNameID + '2D'" :name="propertyNameID" :value="store.is2D" v-model="store.is2D" :checked="store.is2D" @change="store.toggle2D(true)">
       <label :for="propertyNameID + '2D'" @mouseenter="setCornerRadius(true)" @mouseleave="setCornerRadius(false)">
-        <img alt="Phantom Camera 2D" src="../../assets/phantom-camera-2D.svg" width="32"/>
+        <img alt="Phantom Camera 2D" src="../../assets/icons/phantom-camera-2D.svg" width="32"/>
         2D
       </label>
       <input type="radio" :id="propertyNameID + '3D'" :name="propertyNameID" :value="!store.is2D" v-model="store.is2D" :checked="!store.is2D" @change="store.toggle2D(false)">
       <label :for="propertyNameID + '3D'">
-        <img alt="Phantom Camera 3D" src="../../assets/phantom-camera-3D.svg" width="32"/>
+        <img alt="Phantom Camera 3D" src="../../assets/icons/phantom-camera-3D.svg" width="32"/>
         3D
       </label>
   </div>

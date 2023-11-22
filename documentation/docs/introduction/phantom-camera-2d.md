@@ -1,4 +1,4 @@
-<img src="../assets/phantom-camera-2D.svg" height="256" width="256"/>
+<img src="../assets/icons/phantom-camera-2D.svg" height="256" width="256"/>
 
 # PhantomCamera2D
 > Inherits: Node2D

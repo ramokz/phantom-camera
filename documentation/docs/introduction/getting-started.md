@@ -1,4 +1,4 @@
-<img alt="Phantom Camera icon" src="../assets/phantom-camera.svg" width="256"/>
+<img alt="Phantom Camera icon" src="../assets/icons/phantom-camera.svg" width="256"/>
 
 # Getting Started
 

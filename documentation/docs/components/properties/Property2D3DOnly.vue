@@ -17,8 +17,8 @@ const props = defineProps({
 
 <template>
   <div class="container2D3DOnly">
-    <img alt="Phantom Camera 2D" src="../../assets/phantom-camera-2D.svg" v-if="is2D" width="24"/>
-    <img alt="Phantom Camera 3D" src="../../assets/phantom-camera-3D.svg" v-if="!is2D" width="24"/>
+    <img alt="Phantom Camera 2D" src="../../assets/icons/phantom-camera-2D.svg" v-if="is2D" width="24"/>
+    <img alt="Phantom Camera 3D" src="../../assets/icons/phantom-camera-3D.svg" v-if="!is2D" width="24"/>
     <div>
       <p>
         This property is for <code>PCam{{ is2D ? '2D' : '3D' }}</code> <b><i>only</i></b>.

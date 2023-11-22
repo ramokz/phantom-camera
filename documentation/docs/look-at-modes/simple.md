@@ -1,4 +1,4 @@
-<img src="../assets/look-at-simple.svg" height="256" width="256"/>
+<img src="../assets/icons/look-at-simple.svg" height="256" width="256"/>
 
 # Simple Look At (3D)
 

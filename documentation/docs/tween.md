@@ -1,4 +1,4 @@
-<img src="./assets/feature-tween.svg" height="256" width="256"/>
+<img src="./assets/icons/feature-tween.svg" height="256" width="256"/>
 
 # Tween
 
@@ -10,6 +10,8 @@ By default, all `PCams` will use a `linear` transition, `easeInOut` ease with a 
 
 ### Instant Transitions
 To have an instant transitions, simply apply a value of `0` to the duration property.
+
+## Properties
 
 <Property propertyName="Tween Resource" propertyType="PhantomCameraTween" propertyDefault="null">
 <template v-slot:propertyDescription>

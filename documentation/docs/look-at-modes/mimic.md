@@ -1,4 +1,4 @@
-<img src="../assets/look-at-mimic.svg" height="256" width="256"/>
+<img src="../assets/icons/look-at-mimic.svg" height="256" width="256"/>
 
 # Mimic Look At (3D)
 

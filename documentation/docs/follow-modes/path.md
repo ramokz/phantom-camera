@@ -1,4 +1,4 @@
-<img alt="Follow Group Icon" class="page-header-icon" src="../assets/follow-path.svg" height="256" width="256" />
+<img alt="Follow Group Icon" class="page-header-icon" src="../assets/icons/follow-path.svg" height="256" width="256" />
 
 # Path Follow
 

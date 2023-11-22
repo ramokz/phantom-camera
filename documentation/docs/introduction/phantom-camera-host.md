@@ -1,4 +1,4 @@
-<img src="../assets/phantom-camera-host.svg" height="256" width="256"/>
+<img src="../assets/icons/phantom-camera-host.svg" height="256" width="256"/>
 
 # PhantomCameraHost
 > Inherits: Node

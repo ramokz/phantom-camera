@@ -1,4 +1,4 @@
-<img src="../assets/look-at-group.svg" height="256" width="256"/>
+<img src="../assets/icons/look-at-group.svg" height="256" width="256"/>
 
 # Group Look At (3D)
 

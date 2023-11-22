@@ -5,7 +5,7 @@ export default defineConfig({
   title: "Phantom Camera",
   description: "A dynamic 2D & 3D camera plugin for Godot 4",
   head: [
-      ['link', {rel: 'icon', type: 'image/svg+xml', href: '/assets/phantom-camera.svg'}],
+      ['link', {rel: 'icon', type: 'image/svg+xml', href: '/assets/icons/phantom-camera.svg'}],
       ['link', {rel: 'icon', type: 'image/png', href: '/favicon.png'}],
   ],
   appearance: 'force-dark',

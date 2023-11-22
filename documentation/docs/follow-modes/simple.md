@@ -1,4 +1,4 @@
-<img alt="Follow Simple" class="page-header-icon" src="../assets/follow-simple.svg" height="256" width="256" />
+<img alt="Follow Simple" class="page-header-icon" src="../assets/icons/follow-simple.svg" height="256" width="256" />
 
 # Simple Follow
 

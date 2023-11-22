@@ -1,4 +1,4 @@
-<img alt="Follow Framed Icon" class="page-header-icon" src="../assets/follow-framed.svg" height="256" width="256" />
+<img alt="Follow Framed Icon" class="page-header-icon" src="../assets/icons/follow-framed.svg" height="256" width="256" />
 
 # Framed Follow
 

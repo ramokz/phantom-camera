@@ -1,4 +1,4 @@
-<img src="./assets/feature-viewfinder.svg" height="256" width="256"/>
+<img src="./assets/icons/feature-viewfinder.svg" height="256" width="256"/>
 
 # Viewfinder
 _⚠️ OBS: This is currently only functional in 3D scenes with `PCam3D` nodes._

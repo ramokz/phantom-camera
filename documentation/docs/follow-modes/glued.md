@@ -1,4 +1,4 @@
-<img alt="Follow Glued" class="page-header-icon" src="../assets/follow-glued.svg" height="256" width="256" />
+<img alt="Follow Glued" class="page-header-icon" src="../assets/icons/follow-glued.svg" height="256" width="256" />
 
 # Glued Follow
 

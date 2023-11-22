@@ -1,4 +1,4 @@
-<img alt="Third Person Icon" class="page-header-icon" src="../assets/follow-third-person.svg" height="256" width="256"/>
+<img alt="Third Person Icon" class="page-header-icon" src="../assets/icons/follow-third-person.svg" height="256" width="256"/>
 
 # Third Person Follow (3D)
 As the name implies, this mode is meant to be used for third person camera experiences. It works by applying a `SpringArm3D` where the properties, such as `Collison Mask`, `Spring Length` and `Margin`, can be controlled from the `PCam3D`.
@@ -228,6 +228,8 @@ pcam.get_spring_arm_margin()
 
 </template>
 </Property>
+
+## Methods
 
 <Property propertyName="Third Person Rotation" propertyType="Vector3" propertyDefault="Vector3(0,0,0)">
 <template v-slot:propertyDescription>
