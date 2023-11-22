@@ -27,14 +27,6 @@ const id = computed<String>(() =>{
   return props.propertyName.replace(/ /g, '-').toLowerCase()
 })
 
-const roundedCorners = computed( () => {
-  if (!store.is2D) {
-    return '20px'
-  } else {
-    return '0 20px 20px 20px'
-  }
-})
-
 // Setter names
 const setMethod: string = "setMethod"
 const setExample: string = "setExample"
@@ -84,7 +76,7 @@ const hasSetGet = computed(() => {
       </p>
     </slot>
 
-    <p class="property-usage-note" v-if="hasSetterContent && hasGetterContent"><i>Note:</i> Properties should be modified and read via  their setters & getters respectively during runtime.</p>
+    <p class="property-usage-note" v-if="hasSetterContent && hasGetterContent"><b><i>Note:</i></b> Properties should be modified and read via  their setters & getters respectively during runtime.</p>
     
     <hr v-if="hasSetGet" />
     
@@ -113,6 +105,11 @@ const hasSetGet = computed(() => {
         </slot>
       </template>
     </MethodComponent>
+    
+    <div v-if="!hasSetGet">
+      <p class="property-usage-note"><b><i>Note:</i></b> This property is only accessible within the node's inspector panel in the editor. </p> 
+    </div>
+    
   </div>
 </template>
 
