@@ -5,6 +5,12 @@ As the name implies, this mode is meant to be used for third person camera exper
 
 To adjust the orbit rotation around the target, use either [set_third_person_rotation()](#third-person-rotation) (radians) or [set_third_person_rotation_degrees()](#third-person-rotation-degrees) (degrees).
 
+## Video Example
+
+<video controls>
+<source src="../assets/videos/follow-third-person-3d.mp4">
+</video>
+
 ## Properties
 
 <Property propertyName="Follow Target" propertyType="Node3D" propertyDefault="null">

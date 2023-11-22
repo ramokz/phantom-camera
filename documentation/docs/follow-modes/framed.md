@@ -8,6 +8,10 @@ Previewing the Dead Zone can be done from the [Viewfinder panel](../viewfinder),
 
 Alternatively, enable the [Play Viewfinder](#play-viewfinder) property in the inspector to show the dead zone while running the game from the editor.
 
+## Video Examples
+
+<VideoTabs propertyName="follow-framed-videos" video2d="../assets/videos/follow-framed-2d.mp4" video3d="../assets/videos/follow-framed-3d.mp4"/>
+
 ## Properties
 
 <!--@include: ./parts/follow-target.md-->

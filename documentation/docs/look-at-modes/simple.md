@@ -2,7 +2,13 @@
 
 # Simple Look At (3D)
 
-The simplest of the available options. Effectively copies the rotational value of the targeted `Node3D`.
+Looks At the target with an optional offset.
+
+## Video Example
+
+<video controls>
+<source src="../assets/videos/look-at-simple.mp4">
+</video>
 
 ## Properties
 

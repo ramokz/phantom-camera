@@ -1,6 +1,6 @@
 <img alt="Animation Player" src="./assets/icons/animation-player.svg" height="256" width="256"/>
 
-# AnimationPlayer
+# Timeline Animation
 To switch between `PCams` using a timeline, in e.g. cutscenes, using an `AnimationPlayer` node, simply keyframe the `Priority` property to the desired value and time.
 
 ### Note

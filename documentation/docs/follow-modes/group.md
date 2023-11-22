@@ -8,6 +8,10 @@ A distance parameter can be either statically or dynamically applied, which in t
 
 This mode can be useful for single stage experiences that relies on having multiple targets in view at all times.
 
+## Video Examples
+
+<VideoTabs propertyName="follow-group-videos" video2d="../assets/videos/follow-group-2d.mp4" video3d="../assets/videos/follow-group-3d.mp4"/>
+
 ## Properties
 
 <Property2D3D propertyName="Group Targets" propertyType2D="Array[Node2D]" propertyDefault2D="null" propertyType3D="Array[Node3D]" propertyDefault3D="null">

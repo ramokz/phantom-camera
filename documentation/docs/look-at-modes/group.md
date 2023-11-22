@@ -1,8 +1,14 @@
 <img src="../assets/icons/look-at-group.svg" height="256" width="256"/>
 
+
 # Group Look At (3D)
 
 Allows for multiple targets to be looked at. The `Pcam3D` will create a `AABB` that surrounds the targets and will look at the centre of it.
+
+## Video Example
+<video controls>
+<source src="../assets/videos/look-at-group.mp4">
+</video>
 
 ## Properties
 

@@ -6,6 +6,8 @@ Follows a target while being positionally confined to a `Path` node. The positio
 
 **_Note:_** that this _can_ lead to sudden Camera jumps if the `Path` spline has steep curvatures.
 
+## Video Examples
+<VideoTabs propertyName="follow-path-videos" video2d="../assets/videos/follow-path-2d.mp4" video3d="../assets/videos/follow-path-3d.mp4"/>
 
 ## Properties
 <!--@include: ./parts/follow-target.md-->

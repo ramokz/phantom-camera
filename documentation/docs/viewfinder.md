@@ -9,6 +9,11 @@ It's accessible from the bottom panel in the editor labelled `Phantom Camera`.
 
 The viewfinder rendering of the scene will only work when the combination of a `Camera`, `PCamHost` and `PCam` are present and set up correctly in the scene.
 
+## Video Example
+<video controls>
+<source src="./assets/videos/viewfinder.mp4">
+</video>
+
 ## Dead Zones
 When Follow Mode is set to Framed, dead zones will also be visible in the viewfinder and, if enabled, when playing the game from the editor.
 

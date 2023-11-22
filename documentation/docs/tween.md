@@ -11,6 +11,10 @@ By default, all `PCams` will use a `linear` transition, `easeInOut` ease with a 
 ### Instant Transitions
 To have an instant transitions, simply apply a value of `0` to the duration property.
 
+## Video Examples
+
+<VideoTabs propertyName="follow-simple-videos" video2d="../assets/videos/tween-2d.mp4" video3d="../assets/videos/tween-3d.mp4"/>
+
 ## Properties
 
 <Property propertyName="Tween Resource" propertyType="PhantomCameraTween" propertyDefault="null">

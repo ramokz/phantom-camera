@@ -4,10 +4,10 @@
 The most important property of the plugin.
 
 
-It defines which `PCam` a scene's `Camera2D`/`Camera3D` should be corresponding with and be attached to. This is decided by the `PCam` with the highest `Priority`.
+It defines which `PCam` a scene's `Camera` should be corresponding with and be attached to. This is decided by the `PCam` with the highest `Priority`.
 
 
-Changing `Priority` will send an event to the scene's `PCamHost`, which will then determine whether if the `Priority` value is greater than or equal to the currently highest `pcam`'s in the scene and reattach the `Camera` accordingly.
+Changing `Priority` will send an event to the scene's `PCamHost`, which will then determine whether if the `Priority` value is greater than or equal to the currently highest `pcam`'s in the scene. The `PCam` with the highest value will then reattach the `Camera` accordingly.
 
 
 ## Properties 
@@ -52,7 +52,7 @@ pcam.get_priority()
 ## Priority Override
 
 To quickly preview a `PCam` without adjusting its `Priority`, there is an optional `Priority Override` property that allows the selected PhantomCamera to ignore the `Priority` system and become the active one.
-**Note:** This is only enabled within the editor to be used with the [Viewfinder](./viewfinder.md), and will be disabled when running the game.
+**Note:** This is only enabled within the editor to be used with the [Viewfinder](./viewfinder), and will be disabled when running the game.
 
 <Property propertyName="Priority Override" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
