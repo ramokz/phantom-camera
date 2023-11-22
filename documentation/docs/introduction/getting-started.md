@@ -57,12 +57,14 @@ After this, the scene is then meeting the minimum requirements and you can now u
 When multiple `PCams` are in a given scene, the `Priority` property is what determines which one controls the `Camera` node. The one with the highest value becomes the active, and therefore controlling, `PCam`.
 
 Switching a `PCam`'s priority can be done either from either the inspector within the editor or via code (see the [Priority page](../priority) for more on that.)
-This is also how to tween, or interpolate, between different PhantomCameras. See the Tween page for more on this.
+This is also how to tween, or interpolate, between different PhantomCameras. See the [Tween page](../tween) for more on this.
 
 ### Example
 ![prim](../assets/guides/phantom-camera-first-priority.svg)
+_PlayerPCam has the highest Priority at 10_
 
-![prim](../assets/guides/phantom-camera-first-priority.svg)
+![prim](../assets/guides/phantom-camera-second-priority.svg)
+_NodePCam now has the highest Priority at 20_
 
 
 ## 💾 Installation
@@ -85,4 +87,4 @@ This is also how to tween, or interpolate, between different PhantomCameras. See
 3. Enable the plugin inside `Project/Project Settings/Plugins`.
 
 ## Example Scenes
-Scenes demonstrating different features can be found in the addon under `addons/phantom_camera/examples/example_scenes`.
+Scenes demonstrating different features can be found in the addon under `addons/phantom_camera/examples/example_scenes`

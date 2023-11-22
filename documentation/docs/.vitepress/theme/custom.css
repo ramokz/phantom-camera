@@ -90,3 +90,13 @@ body {
 .vp-doc strong {
     font-weight: 650;
 }
+
+.side-by-side {
+    display: flex;
+    gap: 42px;
+    /*flex-wrap: wrap;*/
+    
+    & video {
+        width: 100%;
+    }
+}

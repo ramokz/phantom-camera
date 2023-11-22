@@ -3,16 +3,11 @@
 # PhantomCamera2D
 > Inherits: Node2D
 
-`PhantomCamera2D`, shortened to `PCam2D` (text) or `pcam_2d` (code), is used in 2D scenes.
-
-⚠️ A scene must contain a [`pcam_host`](https://github.com/ramokz/phantom-camera/wiki/PhantomCameraHost) for the `pcam_2d` node to work.
-
-## Example Scene
-Can be found in: `res://addons/phantom_camera/examples/2DExampleScene.tscn`
+`PhantomCamera2D`, shortened to `PCam2D` (text) and `pcam_2d` (code), is used in 2D scenes.
 
 ## Core Properties
 <div class="property-core-group">
-<PropertyCore propertyName="Priority" propertyPageLink="/priority" propertyIcon="./../../assets/feature-priority.svg">
+<PropertyCore propertyName="Priority" propertyPageLink="/priority" propertyIcon="./../../assets/icons/feature-priority.svg">
 <template v-slot:propertyDescription>
 
 Determines which `PCam` should be active with the `Camera`.
@@ -20,7 +15,7 @@ Determines which `PCam` should be active with the `Camera`.
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Follow Mode" propertyPageLink="/follow-modes/overview" propertyIcon="./../../assets/feature-follow.svg">
+<PropertyCore propertyName="Follow Mode" propertyPageLink="/follow-modes/overview" propertyIcon="./../../assets/icons/feature-follow.svg">
 <template v-slot:propertyDescription>
 
 Define how the `Camera` should follow its target(s).
@@ -28,7 +23,7 @@ Define how the `Camera` should follow its target(s).
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="./../../assets/feature-tween.svg">
+<PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="./../../assets/icons/feature-tween.svg">
 <template v-slot:propertyDescription>
 
 Determines how the `Camera` tweens to this `PCam` upon becoming active.
@@ -76,24 +71,14 @@ pcam.get_zoom()
 </template>
 </Property>
 
-<Property propertyName="Frame Preview" propertyType="bool" propertyDefault="true">
-<template v-slot:propertyDescription>
+[//]: # (<Property propertyName="Frame Preview" propertyType="bool" propertyDefault="true">)
 
-Enables a preview
+[//]: # (<template v-slot:propertyDescription>)
 
-</template>
-<template v-slot:getMethod>
+[//]: # ()
+[//]: # (Enables a preview of what the `PCam2D` will see in the scene. It works identically to how a `Camera2D` shows which area will be visible during runtime. Likewise, this too will be affected by the `Zoom` property and the `Viewport Width` and `Viewport Height` defined in the `Project Settings`.)
 
-`string` get_inactive_update_mode()
+[//]: # ()
+[//]: # (</template>)
 
-</template>
-<template v-slot:getExample>
-
-::: details Example
-```gdscript
-pcam.get_inactive_update_mode()
-```
-:::
-
-</template>
-</Property>
+[//]: # (</Property>)
