@@ -133,7 +133,7 @@ export default defineConfig({
         text: 'Viewfinder', link: "/viewfinder",
       },
       {
-        text: 'AnimationPlayer', link: "/animation-player",
+        text: 'Timeline Animation', link: "/timeline-animation",
       },
       {
         text: 'Contribute',
@@ -146,6 +146,9 @@ export default defineConfig({
           },
         ]
       },
+      {
+        text: 'Roadmap', link: "/roadmap"
+      },
     ],
     
     search: {
@@ -155,7 +158,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ramokz/phantom-camera' },
       { icon: 'mastodon', link: 'https://mastodon.gamedev.place/@marcusskov' },
-      { icon: '', link: 'https://twitter.com/marcusskov' }
+      { icon: 'twitter', link: 'https://twitter.com/marcusskov' }
     ],
     
     editLink: {
