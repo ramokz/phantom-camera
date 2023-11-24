@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   appearance: 'force-dark',
   transformHead({ assets }) {
-    const fontFile = assets.find(file => /Nunito-VariableFont\.\w+\.ttf/)
+    const fontFile = assets.find(file => /Nunito\.\w+\.ttf/)
     const codeFontFile = assets.find(file => /JetBrainsMono\.\w+\.ttf/)
     if (fontFile) {
       return [
@@ -67,16 +67,33 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           {
-            text: 'Getting Started', link: '/introduction/getting-started'
+            text: 'What is this Addon?', link: '/introduction/what-is-this-addon'
           },
           {
-            text: 'PhantomCamera2D', link: '/introduction/phantom-camera-2d'
+            text: 'Installation', link: '/introduction/installation'
           },
           {
-            text: 'PhantomCamera3D', link: '/introduction/phantom-camera-3d'
+            text: 'Scene Requirements', link: '/introduction/scene-requirements'
           },
           {
-            text: 'PhantomCameraHost', link: '/introduction/phantom-camera-host'
+            text: 'Multiple Phantom Cameras', link: '/introduction/multiple-phantom-cameras'
+          },
+        ]
+      },
+      {
+        text: 'Core Nodes',
+        items: [
+          {
+            text: 'Overview', link: '/core-nodes/overview'
+          },
+          {
+            text: 'PhantomCamera2D', link: '/core-nodes/phantom-camera-2d'
+          },
+          {
+            text: 'PhantomCamera3D', link: '/core-nodes/phantom-camera-3d'
+          },
+          {
+            text: 'PhantomCameraHost', link: '/core-nodes/phantom-camera-host'
           },
         ]
       },
@@ -136,13 +153,16 @@ export default defineConfig({
         text: 'Timeline Animation', link: "/timeline-animation",
       },
       {
-        text: 'Contribute',
+        text: 'Support',
         items: [
           {
-            text: 'How To Contribute', link: "/contribute/how-to-contribute"
+            text: 'How To Contribute', link: "/support/how-to-contribute"
           },
           {
-            text: 'Questions', link: "/contribute/questions"
+            text: 'FAQ', link: "/support/faq"
+          },
+          {
+            text: 'Questions & Help', link: "/support/questions-help"
           },
         ]
       },

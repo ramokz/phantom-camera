@@ -8,7 +8,7 @@
     
     /*--vp-font-family-base: */
     --vp-font-family-base: 'Nunito', sans-serif;
-    --vp-font-family-mono: 'JetBrains Mono', serif;
+    --vp-font-family-mono: 'JetBrains Mono', sans-serif;
     --vp-code-font-size: 14px;
     
     /* Background */
@@ -84,7 +84,8 @@ body {
 }
 
 .vp-doc a {
-    font-weight: inherit; /* Resets default theme behaviour */
+    font-weight: 700;
+    text-decoration: none;
 }
 
 .vp-doc strong {
