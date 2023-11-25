@@ -1,0 +1,19 @@
+{
+  "devDependencies": {
+    "bun-types": "latest",
+    "eslint": "^8.53.0",
+    "eslint-plugin-vue": "^9.18.1",
+    "vitepress": "^1.0.0-rc.25"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "name": "docs",
+  "module": "index.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
