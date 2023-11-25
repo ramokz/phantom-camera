@@ -32,17 +32,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Not needed if lastUpdated is not enabled
-      # - uses: pnpm/action-setup@v2 # Uncomment this if you're using pnpm
-      - uses: oven-sh/setup-bun@v1 # Uncomment this if you're using Bun
+      - uses: pnpm/action-setup@v2 # Uncomment this if you're using pnpm
+      # - uses: oven-sh/setup-bun@v1 # Uncomment this if you're using Bun
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: npm # or pnpm / yarn
+          cache: pnpm # npm or pnpm / yarn
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Install dependencies
-        run: bun install # npm ci or pnpm install / yarn install / bun install
+        run: pnpm install #bun install # npm ci or pnpm install / yarn install / bun install
       - name: Build with VitePress
         run: |
           npm run docs:build # or pnpm docs:build / yarn docs:build / bun run docs:build
