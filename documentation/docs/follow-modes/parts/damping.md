@@ -1,9 +1,9 @@
 <Property propertyName="Damping" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
 
-Applies a damping effect on the `Camera`'s movement. Leading to heavier / slower camera follow movement that responds more slowly as the targeted node moves around.
+Applies a damping effect on the `Camera`'s movement. Leading to heavier / slower camera movement as the targeted node moves around.
 
-This is useful to avoid sharp and rapid camera movement and lead to 
+This is useful to avoid sharp and rapid camera movement.
 
 </template>
 

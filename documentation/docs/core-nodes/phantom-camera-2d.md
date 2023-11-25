@@ -10,7 +10,7 @@
 <PropertyCore propertyName="Priority" propertyPageLink="/priority" propertyIcon="./../../assets/icons/feature-priority.svg">
 <template v-slot:propertyDescription>
 
-Determines which `PCam` should be active with the `Camera`.
+Determines which `PCam2D` should be controlling the `Camera2D`.
 
 </template>
 </PropertyCore>
@@ -18,7 +18,7 @@ Determines which `PCam` should be active with the `Camera`.
 <PropertyCore propertyName="Follow Mode" propertyPageLink="/follow-modes/overview" propertyIcon="./../../assets/icons/feature-follow.svg">
 <template v-slot:propertyDescription>
 
-Define how the `Camera` should follow its target(s).
+Enables the `PCam2D` to follow specific target(s) using various logics.
 
 </template>
 </PropertyCore>
@@ -26,7 +26,7 @@ Define how the `Camera` should follow its target(s).
 <PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="./../../assets/icons/feature-tween.svg">
 <template v-slot:propertyDescription>
 
-Determines how the `Camera` tweens to this `PCam` upon becoming active.
+Determines how the `Camera2D` should tween to this `PCam2D` upon becoming active.
 
 </template>
 </PropertyCore>
@@ -38,7 +38,7 @@ Determines how the `Camera` tweens to this `PCam` upon becoming active.
 <Property propertyName="Zoom" propertyType="Vector2" propertyDefault="Vector2(1,1)">
 <template v-slot:propertyDescription>
 
-Applies a zoom level to the `PCam2D`, effectively overrides the `Zoom` property of the `Camera2D` node.
+Applies a zoom level to the `PCam2D`, which effectively overrides the `Zoom` property of the `Camera2D` node.
 
 </template>
 <template v-slot:setMethod>

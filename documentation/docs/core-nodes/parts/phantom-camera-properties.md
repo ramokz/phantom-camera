@@ -1,7 +1,7 @@
 <Property propertyName="Active State" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
 
-Determines how the `Camera` tweens to this `PhantomCamera` once becoming active.
+Returns `true` if this `PCam` is the one controlling the scene's `Camera`.
 
 </template>
 
@@ -23,7 +23,7 @@ pcam.is_active()
 <Property propertyName="Tween on Load" propertyType="bool" propertyDefault="true">
 <template v-slot:propertyDescription>
 
-By default, the moment a `PCam` is instantiated into a scene and has the highest priority, it will perform its tween transition.
+By default, the moment a `PCam` is instantiated into a scene, and has the highest priority, it will perform its tween transition.
 
 This is most obvious if a `PCam` has a long duration and is attached to a playable character that can be moved the moment a scene is loaded.
 
@@ -59,10 +59,18 @@ pcam.is_tween_on_load()
 
 </template>
 </Property>
-<Property propertyName="Inactive Update Mode" propertyType="InactiveUpdateMode" propertyDefault="ALWAYS">
+<Property propertyName="Inactive Update Mode" propertyType="int" propertyDefault="0" :editorOnly="true">
 <template v-slot:propertyDescription>
 
-Enables or disables the Tween on Load.
+Determines how often an inactive `PCam` should update its positional and rotational values.
+This is meant to reduce the amount of calculations inactive `PCams` are doing when idling to improve performance. The value is based on the enum type `Constants.InactiveUpdateMode`.
+
+| Inactive Update Mode | Value |
+|----------------------|-------|
+| ALWAYS               | 0     |
+| NEVER                | 1     |
+ 
+
 
 </template>
 <template v-slot:getMethod>

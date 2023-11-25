@@ -1,8 +1,9 @@
 <img src="../assets/icons/feature-look-at.svg" height="256" width="256"/>
 
 # Look At Overview (3D)
+Determines the rotational logic for a given `PCam3D`.
 
-For 3D scenes, it affects the rotational value of the `Camera3D` where it can keep a persistent forward direction at either a single or multiple targets.
+The different modes has different functionalities and purposes, so choosing the correct mode depends on what each `PCam` is meant to do.
 
 ## Core Modes
 
@@ -17,7 +18,7 @@ The simplest of the available options. Effectively copies the rotational value o
 <PropertyCore propertyName="Simple" propertyPageLink="./simple" propertyIcon="./../../assets/icons/look-at-simple.svg">
 <template v-slot:propertyDescription>
 
-Similar to `Mimic`, but allows for offsetting the position that is being looked at.
+Keeps a persistent forward direction towards a target.
 
 </template>
 </PropertyCore>

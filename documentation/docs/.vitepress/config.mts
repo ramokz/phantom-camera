@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Phantom Camera",
-  description: "A dynamic 2D & 3D camera plugin for Godot 4",
+  description: "A dynamic 2D & 3D camera addon for Godot 4",
   head: [
       ['link', {rel: 'icon', type: 'image/svg+xml', href: '/assets/icons/phantom-camera.svg'}],
       ['link', {rel: 'icon', type: 'image/png', href: '/favicon.png'}],
@@ -53,7 +53,7 @@ export default defineConfig({
         text: 'Home', link: '/'
       },
       {
-        text: 'Docs', link: '/introduction/getting-started'
+        text: 'Docs', link: '/introduction/what-is-this'
       },
     ],
     
@@ -67,16 +67,13 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           {
-            text: 'What is this Addon?', link: '/introduction/what-is-this-addon'
+            text: 'What is this?', link: '/introduction/what-is-this'
           },
           {
             text: 'Installation', link: '/introduction/installation'
           },
           {
             text: 'Scene Requirements', link: '/introduction/scene-requirements'
-          },
-          {
-            text: 'Multiple Phantom Cameras', link: '/introduction/multiple-phantom-cameras'
           },
         ]
       },
@@ -94,6 +91,9 @@ export default defineConfig({
           },
           {
             text: 'PhantomCameraHost', link: '/core-nodes/phantom-camera-host'
+          },
+          {
+            text: 'Multiple Phantom Cameras', link: '/core-nodes/multiple-phantom-cameras'
           },
         ]
       },

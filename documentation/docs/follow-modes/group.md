@@ -4,7 +4,7 @@
 
 Allows for multiple nodes to be followed and affect the `PCam`'s positional behaviour. It works by setting a `Rect2` (2D) or `AABB` (3D) bounding box around the targets where the `PCam` will track the centre of it.
 
-A distance parameter can be either statically or dynamically applied, which in turn allows the `PCam` to readjust itself to keep multiple targets within view if they start to spread out too much.
+An [Auto Zoom (2D)](#auto-zoom-(2d)) and [Auto Distance (3D)](#auto-distance-(3d)) parameter can be applied to dynamically make the `PCam` readjust itself to keep multiple targets within view if they start to spread out.
 
 This mode can be useful for single stage experiences that relies on having multiple targets in view at all times.
 
@@ -151,7 +151,9 @@ pcam.get_auto_zoom()
 <Property propertyName="Min Auto Zoom (2D)" propertyType="float" propertyDefault="1">
 <template v-slot:propertyDescription>
 
-Sets the minimum zoom level, in other words how close the `Camera` will move towards the scene, when `Auto Zoom` is enabled.
+Sets the minimum zoom level, in other words how far away the `Camera2D` can be from scene.
+
+This only works when `Auto Zoom` is enabled.
 
 <Property2D3DOnly :is2D="true" altProp="Min Auto Distance" altPropLink="./group#min-auto-distance-(3d)"/>
 
@@ -190,7 +192,9 @@ pcam.get_min_auto_zoom()
 <Property propertyName="Max Auto Zoom (2D)" propertyType="float" propertyDefault="5">
 <template v-slot:propertyDescription>
 
-Sets the maximum zoom level, in other words how far away the `Camera` will move away from the scene, when `Auto Zoom` is enabled.
+Sets the maximum zoom level, in other words how close the `Camera` can move towards the scene.
+
+This only works when `Auto Zoom` is enabled.
 
 <Property2D3DOnly :is2D="true" altProp="Max Auto Distance" altPropLink="./group#max-auto-distance-(3d)"/>
 
@@ -273,7 +277,7 @@ pcam.get_zoom_margin()
 <Property propertyName="Auto Distance (3D)" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
 
-Enables the `PCam` to automatically distance itself based on the targets' distances between each other. It creates an `AABB` that surrounds the targets. The `PCam`'s actual target is the centre of AABB.
+Enables the `PCam` to automatically distance itself based on the targets' distances between each other.
 
 It looks at the longest axis between the different targets and interpolates the distance length between the `Minimum Distance` and `Maximum Distance` properties below.
 
@@ -292,7 +296,7 @@ It looks at the longest axis between the different targets and interpolates the 
 
 ::: details Example
 ```gdscript
-pcam.set_auto_follow_distance(4.2)
+pcam.set_auto_follow_distance(true)
 ```
 :::
 
@@ -320,7 +324,7 @@ Sets the minimum distance between the `Camera` and centre of `AABB`.
 
 **Note:** This distance will only ever be reached when all the targets' positions are in the exact same `Vector3` coordinate, which will very unlikely happen, so adjust the value here accordingly.
 
-<Property2D3DOnly :is2D="false" altProp="Min Auto Zoom" altPropLink="./group#min-auto-zoom-(2d)"/>
+<Property2D3DOnly :is2D="false" altProp="Max Auto Zoom" altPropLink="./group#max-auto-zoom-(2d)"/>
 
 </template>
 <template v-slot:setMethod>
@@ -358,7 +362,7 @@ pcam.get_min_auto_follow_distance()
 
 Sets the maximum distance between the `Camera` and centre of `AABB`.
 
-<Property2D3DOnly :is2D="false" altProp="Max Auto Zoom" altPropLink="./group#max-auto-zoom-(2d)"/>
+<Property2D3DOnly :is2D="false" altProp="Min Auto Zoom" altPropLink="./group#min-auto-zoom-(2d)"/>
 
 </template>
 <template v-slot:setMethod>
@@ -394,13 +398,10 @@ pcam.get_max_auto_follow_distance()
 <Property propertyName="Auto Distance Divisor (3D)" propertyType="float" propertyDefault="10">
 <template v-slot:propertyDescription>
 
-Determines the speed of the `Auto Distance` calculation reaches the maximum distance. The higher the value, the sooner the maximum distance is reached.
+Determines how fast the `Auto Distance` moves between the maximum and minimum distance. The higher the value, the sooner the maximum distance is reached.
 
 This value should be based on the sizes of the `Minimum Distance` and `Maximum Distance`. <br>
-E.g. if the value between the `Minimum Distance` and `Maximum Distance` is small short, consider keeping the number low and vice versa.
-
-<Property2D3DOnly :is2D="false" altProp="Max Auto Zoom" altPropLink="./group#zoom-margin-(2d)"/>
-
+E.g. if the value between the `Minimum Distance` and `Maximum Distance` is small, consider keeping the number low and vice versa.
 
 </template>
 <template v-slot:setMethod>

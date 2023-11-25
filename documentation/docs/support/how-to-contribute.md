@@ -26,7 +26,7 @@ If a bug report or feature proposal already exists and isn't in the current mile
 - Minor code changes that only affect specific area(s)
 - Typos
 
-Feel free to submit a PR with any minor changes. Even small things helps a lot!
+Feel free to submit a PR with any minor changes **without** raising a ticket. Even small things helps a lot!
 
 
 ## 📃 Documentation Contributions

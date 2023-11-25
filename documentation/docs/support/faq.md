@@ -1,14 +1,14 @@
 # FAQ
 
-## What is the intent behind the plugin?
+## What is the intent behind the addon?
 
 Cameras are an essential part of practically any game for rendering what you see on the screen. But rarely do they remain static and immovable, but instead dynamic and changes based on what happens in the game.
 
-The plugin is meant to simplify some common camera behaviour, such as smoothly moving between different points in space at specified points in time or retain a particular positional/rotational value relative to other elements.
+The addon is meant to simplify some common camera behaviour, such as smoothly moving between different points in space at specified points in time or retain a particular positional/rotational value relative to other elements.
 
 The end goal is to make it functional enough to become a generalised camera extension for Godot projects.
 
-## What is the state of the plugin?
+## What is the state of the addon?
 
 Ongoing, but still in early stages. Core features have been implemented, but may change as more get added. Things will likely break or change along the way. It's also worth keeping in mind that lots of key and, likely, frequently used features are yet to be done.
 

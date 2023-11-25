@@ -1,7 +1,7 @@
 <img src="./assets/icons/feature-priority.svg" height="256" width="256"/>
 
 # Priority
-The most important property of the plugin.
+Is one of the most important properties in this addon.
 
 
 It defines which `PCam` a scene's `Camera` should be corresponding with and be attached to. This is decided by the `PCam` with the highest `Priority`.
@@ -49,17 +49,11 @@ pcam.get_priority()
 </template>
 </Property>
 
-<img src="https://raw.githubusercontent.com/ramokz/phantom-camera/main/.github/assets/icons/Priority-Override.svg" height="64">
-
-## Priority Override
-
-To quickly preview a `PCam` without adjusting its `Priority`, there is an optional `Priority Override` property that allows the selected PhantomCamera to ignore the `Priority` system and become the active one.
-**Note:** This is only enabled within the editor to be used with the [Viewfinder](./viewfinder), and will be disabled when running the game.
-
 <Property propertyName="Priority Override" propertyType="bool" propertyDefault="false">
 <template v-slot:propertyDescription>
 
-Will override all other `PCams` in the scene.
+To quickly preview a `PCam` without adjusting its `Priority`, this property allows the selected `PCam` to ignore the `Priority` system altogether and forcefully become the active one.
+It's partly designed to work within the [Viewfinder](./viewfinder), and will be disabled when running a build export of the game.
 
 </template>
 

@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /introduction/getting-started
+      link: /introduction/what-is-this
     - theme: alt
       text: GitHub Repo
       link: https://github.com/ramokz/phantom-camera

@@ -16,8 +16,13 @@ const props = defineProps({
     required: true,
   },
   disableOutlineEntry: {
-    bool: String,
+    type: String,
     required: false
+  },
+  editorOnly: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -49,10 +54,6 @@ const hasGetterContent = computed(() => {
   return hasPropertyType([getMethod, getExample])
 })
 
-const hasSetGet = computed(() => {
-  return !!(hasSetterContent.value && hasGetterContent.value);
-})
-
 </script>
 
 <template>
@@ -76,9 +77,8 @@ const hasSetGet = computed(() => {
       </p>
     </slot>
 
-    <p class="property-usage-note" v-if="hasSetterContent && hasGetterContent"><b><i>Note:</i></b> Properties should be modified and read via  their setters & getters respectively during runtime.</p>
-    
-    <hr v-if="hasSetGet" />
+    <p class="property-usage-note" v-if="hasSetterContent && hasGetterContent"><b><i>Note:</i></b> During runtime, properties should be modified and read via  their setters & getters respectively.</p>
+    <hr v-if="hasGetterContent || hasSetterContent" />
     
     <MethodComponent method-type="Setter" :methodName="propertyName" v-if="hasSetterContent">
       <template #method>
@@ -106,8 +106,11 @@ const hasSetGet = computed(() => {
       </template>
     </MethodComponent>
     
-    <div v-if="!hasSetGet">
-      <p class="property-usage-note"><b><i>Note:</i></b> This property is only accessible within the node's inspector panel in the editor. </p> 
+    <div v-if="!hasGetterContent && !hasSetterContent">
+      <p class="property-usage-note"><b><i>Note:</i></b> This property is only <i>accessible</i> within the node's inspector panel in the editor. </p> 
+    </div>
+    <div v-if="editorOnly">
+      <p class="property-usage-note"><b><i>Note:</i></b> This property is only <i>modifiable</i> within the node's inspector panel in the editor. </p> 
     </div>
     
   </div>

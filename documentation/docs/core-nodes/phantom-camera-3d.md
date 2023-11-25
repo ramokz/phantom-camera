@@ -12,7 +12,7 @@
 <PropertyCore propertyName="Priority" propertyPageLink="/priority" propertyIcon="./../../assets/icons/feature-priority.svg">
 <template v-slot:propertyDescription>
 
-Determines which `PCam` should be active with the `Camera`.
+Determines which `PCam3D` should be controlling the `Camera3D`.
 
 </template>
 </PropertyCore>
@@ -20,7 +20,7 @@ Determines which `PCam` should be active with the `Camera`.
 <PropertyCore propertyName="Follow Mode" propertyPageLink="/follow-modes/overview" propertyIcon="./../../assets/icons/feature-follow.svg">
 <template v-slot:propertyDescription>
 
-Define how the `Camera` should follow its target(s).
+Enables the `PCam3D` to follow specific target(s) using various logics.
 
 </template>
 </PropertyCore>
@@ -28,15 +28,15 @@ Define how the `Camera` should follow its target(s).
 <PropertyCore propertyName="Look At" propertyPageLink="/zoom" propertyIcon="./../../assets/icons/feature-look-at.svg">
 <template v-slot:propertyDescription>
 
-Defines where the `Camera` should be looking at, which will adjust its rotational value.
 
+Enables the `PCam3D` to look at specific node(s), effectively adjusting its rotational value.
 </template>
 </PropertyCore>
 
 <PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="./../../assets/icons/feature-tween.svg">
 <template v-slot:propertyDescription>
 
-Determines how the `Camera` tweens to this `PhantomCamera` upon becoming active.
+Determines how the `Camera3D` should tween to this `PhantomCamera3D` upon becoming active.
 
 </template>
 </PropertyCore>

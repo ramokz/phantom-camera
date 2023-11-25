@@ -22,7 +22,7 @@ To have an instant transitions, simply apply a value of `0` to the duration prop
 
 The resource that defines how this `PCam` should be transitioned to.
 
-Can be shared across multiple `PCams`
+Can be shared across multiple `PCams`.
 
 </template>
 <template v-slot:setMethod>

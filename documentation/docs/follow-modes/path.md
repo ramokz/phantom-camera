@@ -16,7 +16,7 @@ Follows a target while being positionally confined to a `Path` node. The positio
 
 <template v-slot:propertyDescription>
 
-Determines the `Path` node the `PCam` should be bound to. The `Camera` will follow the position of the `Follow Target` while sticking to the closest point on this path.
+Determines the `Path` node the `PCam` should be bound to. The `PCam` will follow the position of the `Follow Target` while sticking to the closest point on this path.
 
 </template>
 <template v-slot:setMethod2D>

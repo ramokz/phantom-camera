@@ -27,7 +27,7 @@ Has similar logic to `Glued`, but with the additional option to apply a position
 <template v-slot:propertyDescription>
 
 Allows for multiple nodes to be selected.
-Can also dynamically readjusting itself to keep multiple targets within view, should they start to spread out.
+Can also dynamically readjusting itself to keep multiple targets within view should they start to spread out.
 
 </template>
 </PropertyCore>
@@ -41,7 +41,7 @@ Follows a target while being positionally confined to a `Path` node. The positio
 <PropertyCore propertyName="Framed" propertyPageLink="/follow-modes/framed" propertyIcon="./../../assets/icons/follow-framed.svg">
 <template v-slot:propertyDescription>
 
-Enables a dynamic framing of a given target using dead zones. The dead zones allows the `Camera` to remain still until the target tries to move beyond the dead zone.
+Enables a dynamic framing of a given target using dead zones. The dead zones allows the `Camera` to remain still until the target tries to move beyond it.
 
 </template>
 </PropertyCore>
