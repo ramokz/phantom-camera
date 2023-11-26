@@ -8,7 +8,7 @@ export default defineConfig({
       ['link', {rel: 'icon', type: 'image/svg+xml', href: '/assets/icons/phantom-camera.svg'}],
       ['link', {rel: 'icon', type: 'image/png', href: '/favicon.png'}],
   ],
-  base: '/repo/documentation/',
+  base: '/docs/',
   appearance: 'force-dark',
   transformHead({ assets }) {
     const fontFile = assets.find(file => /Nunito\.\w+\.ttf/)
