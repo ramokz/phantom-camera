@@ -9,7 +9,7 @@
 ## Core Properties
 <div class="property-core-group">
 
-<PropertyCore propertyName="Priority" propertyPageLink="/priority" propertyIcon="feature-priority.svg">
+<PropertyCore propertyName="Priority" propertyPageLink="../priority" propertyIcon="feature-priority.svg">
 <template v-slot:propertyDescription>
 
 Determines which `PCam3D` should be controlling the `Camera3D`.
@@ -17,7 +17,7 @@ Determines which `PCam3D` should be controlling the `Camera3D`.
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Follow Mode" propertyPageLink="/follow-modes/overview" propertyIcon="feature-follow.svg">
+<PropertyCore propertyName="Follow Mode" propertyPageLink="../follow-modes/overview" propertyIcon="feature-follow.svg">
 <template v-slot:propertyDescription>
 
 Enables the `PCam3D` to follow specific target(s) using various logics.
@@ -25,7 +25,7 @@ Enables the `PCam3D` to follow specific target(s) using various logics.
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Look At" propertyPageLink="/look-at-modes/overview" propertyIcon="feature-look-at.svg">
+<PropertyCore propertyName="Look At" propertyPageLink="../look-at-modes/overview" propertyIcon="feature-look-at.svg">
 <template v-slot:propertyDescription>
 
 
@@ -34,7 +34,7 @@ Enables the `PCam3D` to look at specific node(s), effectively adjusting its rota
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="feature-tween.svg">
+<PropertyCore propertyName="Tween" propertyPageLink="../tween" propertyIcon="feature-tween.svg">
 <template v-slot:propertyDescription>
 
 Determines how the `Camera3D` should tween to this `PhantomCamera3D` upon becoming active.

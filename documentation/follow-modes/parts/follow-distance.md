@@ -3,7 +3,7 @@
 
 Sets a distance offset from the centre of the target. The distance is applied to the `PCam`'s local z axis.
 
-<Property2D3DOnly :is2D="false" altProp="Zoom" altPropLink="./../introduction/phantom-camera-2d#zoom"/>
+<Property2D3DOnly :is2D="false" altProp="Zoom" altPropLink="../core-nodes/phantom-camera-2d#zoom"/>
 
 
 </template>

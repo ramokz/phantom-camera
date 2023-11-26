@@ -22,23 +22,13 @@ const props = defineProps({
 const id = computed(() =>{
   return props.propertyName.replace(/ /g, '-').toLowerCase()
 })
-
-const iconUrl = new URL(`/assets/icons/${props.propertyIcon}`, import.meta.url).href
-
-const iconPath = computed(() => {
-  return `/assets/icons/${props.propertyIcon}`
-})
-
 </script>
 
 <template>
   <div class="property-method-container">
     <div class="feature-icon">
       <a :href="propertyPageLink">
-<!--        <img :src="iconUrl" width="64"/>-->
-<!--        <img alt="image alt" src="../../../../assets/icons/feature-priority.svg" width="64"/>-->
-        <img alt="image alt" :src="iconPath" width="64"/>
-<!--        <img alt="image alt" :src="withBase(iconPath)" width="64"/>-->
+        <img alt="image alt" :src="withBase(`/assets/icons/${props.propertyIcon}`)" width="64"/>
       </a>
     </div>
     <div>

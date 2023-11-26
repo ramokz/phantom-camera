@@ -7,7 +7,7 @@
 
 ## Core Properties
 <div class="property-core-group">
-<PropertyCore propertyName="Priority" propertyPageLink="/priority" propertyIcon="feature-priority.svg">
+<PropertyCore propertyName="Priority" propertyPageLink="../priority" propertyIcon="feature-priority.svg">
 <template v-slot:propertyDescription>
 
 Determines which `PCam2D` should be controlling the `Camera2D`.
@@ -15,7 +15,7 @@ Determines which `PCam2D` should be controlling the `Camera2D`.
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Follow Mode" propertyPageLink="/follow-modes/overview" propertyIcon="feature-follow.svg">
+<PropertyCore propertyName="Follow Mode" propertyPageLink="../follow-modes/overview" propertyIcon="feature-follow.svg">
 <template v-slot:propertyDescription>
 
 Enables the `PCam2D` to follow specific target(s) using various logics.
@@ -23,7 +23,7 @@ Enables the `PCam2D` to follow specific target(s) using various logics.
 </template>
 </PropertyCore>
 
-<PropertyCore propertyName="Tween" propertyPageLink="/tween" propertyIcon="feature-tween.svg">
+<PropertyCore propertyName="Tween" propertyPageLink="../tween" propertyIcon="feature-tween.svg">
 <template v-slot:propertyDescription>
 
 Determines how the `Camera2D` should tween to this `PCam2D` upon becoming active.

@@ -37,11 +37,10 @@ If you spot a typo or other minor text issue, then please feel free to submit a 
 ### Code changes
 Excluding typos, to make changes that affects the site directly, such as the config files, Vue components or CSS, it's recommended to run the site locally using your preferred IDE.
 
-The documentation site is using [VitePress](https://vitepress.dev/) (Vue 3). It uses `TypeScript`, vanilla `CSS` and run using [Bun](https://bun.sh/) (as opposed to `npm` or `yarn`).
+The documentation site is using [VitePress](https://vitepress.dev/) (Vue 3). It uses `TypeScript`, vanilla `CSS` and run using [pnpm](https://pnpm.io/) (as opposed to `npm` or `yarn`).
 
 
 ## Future Contribution Guide
-
 There is plan to provide a codebase overview of the addon once it has reached a more mature stage, likely in version 1.0. The intent of it is to provide an easier onboarding flow to understand how all the scripts work and where to look to do specific things.
 
 
