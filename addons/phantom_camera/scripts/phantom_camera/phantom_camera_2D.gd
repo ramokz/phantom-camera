@@ -86,7 +86,7 @@ func _get_property_list() -> Array:
 		property_list.append({
 			"name": TILE_MAP_CLAMP_NODE_PROPERTY_NAME,
 			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_TYPE_STRING,
+			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
 			"hint_string": "TileMap",
 		})
 		if has_node(tile_map_clamp_node_path):
