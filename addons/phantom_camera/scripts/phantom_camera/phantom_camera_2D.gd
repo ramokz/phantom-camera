@@ -231,6 +231,12 @@ func _exit_tree() -> void:
 
 	Properties.pcam_exit_tree(self)
 
+
+func _ready() -> void:
+	if has_node(tile_map_clamp_node_path):
+			tile_map_clamp_node = get_node(tile_map_clamp_node_path)
+
+
 func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
