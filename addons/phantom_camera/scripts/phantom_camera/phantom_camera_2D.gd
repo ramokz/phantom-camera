@@ -223,6 +223,8 @@ func _enter_tree() -> void:
 	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
+	if has_node(tile_map_clamp_node_path):
+		tile_map_clamp_node = get_node(tile_map_clamp_node_path)
 
 
 func _exit_tree() -> void:
@@ -230,11 +232,6 @@ func _exit_tree() -> void:
 		Properties.pcam_host_owner.pcam_removed_from_scene(self)
 
 	Properties.pcam_exit_tree(self)
-
-
-func _ready() -> void:
-	if has_node(tile_map_clamp_node_path):
-		tile_map_clamp_node = get_node(tile_map_clamp_node_path)
 
 
 func _process(delta: float) -> void:
