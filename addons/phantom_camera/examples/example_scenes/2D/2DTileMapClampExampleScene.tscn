@@ -607,10 +607,6 @@ format = 2
 layer_0/name = "Background"
 layer_0/tile_data = PackedInt32Array(-458743, 851968, 6, -458744, 786432, 6, -458745, 786432, 6, -458746, 786432, 6, -458747, 786432, 6, -458748, 786432, 6, -458749, 786432, 6, -458750, 786432, 6, -458751, 786432, 6, -458752, 786432, 6, -393217, 786432, 6, -393218, 786432, 6, -393219, 786432, 6, -393220, 786432, 6, -393221, 720896, 6)
 layer_1/name = "Terrain"
-layer_1/enabled = true
-layer_1/modulate = Color(1, 1, 1, 1)
-layer_1/y_sort_enabled = false
-layer_1/y_sort_origin = 0
 layer_1/z_index = 1
 layer_1/tile_data = PackedInt32Array(65531, 720896, 0, 65533, 720896, 0, 65534, 720896, 0, 65535, 720896, 0, 0, 720896, 0, 1, 720896, 0, 2, 720896, 0, 3, 720896, 0, 4, 720896, 0, 5, 720896, 0, 6, 720896, 0, 7, 720896, 0, 8, 720896, 0, 9, 720896, 0, 65532, 720896, 0)
 
@@ -621,10 +617,6 @@ tile_set = SubResource("TileSet_kf7eg")
 format = 2
 layer_0/name = "Background"
 layer_1/name = "Terrain"
-layer_1/enabled = true
-layer_1/modulate = Color(1, 1, 1, 1)
-layer_1/y_sort_enabled = false
-layer_1/y_sort_origin = 0
 layer_1/z_index = 1
 layer_1/tile_data = PackedInt32Array(65531, 720896, 0, 65533, 720896, 0, 65534, 720896, 0, 65535, 720896, 0, 0, 720896, 0, 1, 720896, 0, 2, 720896, 0, 3, 720896, 0, 4, 720896, 0, 5, 720896, 0, 6, 720896, 0, 7, 720896, 0, 8, 720896, 0, 9, 720896, 0, 10, 458752, 0, 11, 458752, 0, 12, 458752, 0, 13, 458752, 0, 14, 458752, 0, 15, 458752, 0, 16, 458752, 0, 17, 458752, 0, 65530, 458752, 0, 65529, 458752, 0, 65528, 458752, 0, 65527, 458752, 0, 65526, 458752, 0, 65525, 458752, 0, 65532, 720896, 0, 65524, 524288, 0, 65523, 524288, 0, 65522, 524288, 0, 65521, 524288, 0, 65520, 524288, 0, 65519, 524288, 0, 65518, 524288, 0, 65517, 524288, 0, 65516, 524288, 0, 18, 524288, 0, 19, 524288, 0, 20, 524288, 0, 21, 524288, 0, 22, 524288, 0, 23, 524288, 0, 24, 524288, 0, 25, 524288, 0, 26, 524288, 0, 27, 524288, 0)
 
@@ -651,7 +643,7 @@ script = ExtResource("4_46dx6")
 unique_name_in_owner = true
 position = Vector2(-69, -154)
 script = ExtResource("5_g63p7")
-priority_override = null
+priority_override = false
 priority = 5
 zoom = Vector2(2, 2)
 follow_mode = 2
@@ -659,14 +651,13 @@ follow_target = NodePath("../CharacterBody2D")
 follow_parameters/target_offset = Vector2(0, -120)
 follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
-follow_parameters/tile_map_clamp = true
-follow_parameters/tile_map_clamp_node = Object(TileMap,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"editor_description":"","visible":true,"modulate":Color(1, 1, 1, 1),"self_modulate":Color(1, 1, 1, 1),"show_behind_parent":false,"top_level":false,"clip_children":0,"light_mask":1,"visibility_layer":1,"z_index":-1,"z_as_relative":true,"y_sort_enabled":false,"texture_filter":0,"texture_repeat":0,"material":null,"use_parent_material":false,"position":Vector2(0, 0),"rotation":0.0,"scale":Vector2(3, 3),"skew":0.0,"tile_set":SubResource("TileSet_kf7eg"),"cell_quadrant_size":16,"collision_animatable":false,"collision_visibility_mode":0,"navigation_visibility_mode":0,"format":2,"layer_0/name":"Background","layer_0/enabled":true,"layer_0/modulate":Color(1, 1, 1, 1),"layer_0/y_sort_enabled":false,"layer_0/y_sort_origin":0,"layer_0/z_index":0,"layer_0/tile_data":PackedInt32Array(-458743, 851968, 6, -458744, 786432, 6, -458745, 786432, 6, -458746, 786432, 6, -458747, 786432, 6, -458748, 786432, 6, -458749, 786432, 6, -458750, 786432, 6, -458751, 786432, 6, -458752, 786432, 6, -393217, 786432, 6, -393218, 786432, 6, -393219, 786432, 6, -393220, 786432, 6, -393221, 720896, 6),"layer_1/name":"Terrain","layer_1/enabled":true,"layer_1/modulate":Color(1, 1, 1, 1),"layer_1/y_sort_enabled":false,"layer_1/y_sort_origin":0,"layer_1/z_index":1,"layer_1/tile_data":PackedInt32Array(65531, 720896, 0, 65533, 720896, 0, 65534, 720896, 0, 65535, 720896, 0, 0, 720896, 0, 1, 720896, 0, 2, 720896, 0, 3, 720896, 0, 4, 720896, 0, 5, 720896, 0, 6, 720896, 0, 7, 720896, 0, 8, 720896, 0, 9, 720896, 0, 65532, 720896, 0),"script":null)
-
+follow_parameters/tile_map_clamp_target = NodePath("../../TileMap")
 follow_parameters/tile_map_clamp_margin = Vector4(-200, 0, 100, 0)
 follow_parameters/tile_map_clamp_preview = true
 tween_parameters = ExtResource("6_jieb7")
 tween_on_load = false
 inactive_update_mode = 0
+frame_preview = true
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(-69, -34)

@@ -152,10 +152,7 @@ func _set(property: StringName, value) -> bool:
 
 	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:
 		if value is NodePath:
-			if has_node(value):
-				tile_map_clamp_node_path = value
-			else:
-				tile_map_clamp_node_path = ""
+			tile_map_clamp_node_path = value
 		elif value is TileMap:
 			if is_instance_valid(value):
 				tile_map_clamp_node_path = value.get_path()
