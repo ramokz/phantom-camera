@@ -234,7 +234,7 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	if has_node(tile_map_clamp_node_path):
-			tile_map_clamp_node = get_node(tile_map_clamp_node_path)
+		tile_map_clamp_node = get_node(tile_map_clamp_node_path)
 
 
 func _process(delta: float) -> void:
