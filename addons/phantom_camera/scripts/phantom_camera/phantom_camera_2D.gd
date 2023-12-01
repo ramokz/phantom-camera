@@ -22,6 +22,7 @@ const TILE_MAP_CLAMP_NODE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETER
 const TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_preview"
 const TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_margin"
 var tile_map_clamp_node: TileMap
+var tile_map_clamp_node_path: NodePath
 var tile_map_clamp_preview: bool
 var tile_map_clamp_margin: Vector4
 var tile_map_clamp_rect_border: Rect2
@@ -88,7 +89,7 @@ func _get_property_list() -> Array:
 			"hint": PROPERTY_HINT_TYPE_STRING,
 			"hint_string": "TileMap",
 		})
-		if is_instance_valid(tile_map_clamp_node):
+		if has_node(tile_map_clamp_node_path):
 			property_list.append({
 				"name": TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME,
 				"type": TYPE_VECTOR4,
@@ -150,14 +151,17 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_follow_properties(property, value, self)
 
 	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:
-		if value is TileMap:
-			if is_instance_valid(value):
-				tile_map_clamp_node = value
-		elif value is NodePath:
+		if value is NodePath:
 			if has_node(value):
-				tile_map_clamp_node = get_node(value)
+				tile_map_clamp_node_path = value
 			else:
-				tile_map_clamp_node = null
+				tile_map_clamp_node_path = ""
+		elif value is TileMap:
+			if is_instance_valid(value):
+				tile_map_clamp_node_path = value.get_path()
+		if has_node(tile_map_clamp_node_path):
+			tile_map_clamp_node = get_node(tile_map_clamp_node_path)
+
 		notify_property_list_changed()
 		queue_redraw()
 	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:
@@ -204,7 +208,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:					return tile_map_clamp_node
+	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:					return tile_map_clamp_node_path
 	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:					return tile_map_clamp_margin
 	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:				return tile_map_clamp_preview
 
@@ -593,12 +597,13 @@ func get_zoom_auto_margin() -> Vector4:
 
 ## Set Tile Map Clamp Node
 func set_tile_map_clamp_node(value: TileMap) -> void:
-	tile_map_clamp_node = value
+	tile_map_clamp_node_path = value.get_path()
+	tile_map_clamp_node = get_node(tile_map_clamp_node_path)
 ## Get Tile Map Clamp Node
 func get_tile_map_clamp_node() -> TileMap:
-	if not is_instance_valid(tile_map_clamp_node):
+	if not get_node_or_null(tile_map_clamp_node_path):
 		printerr("No Tile Map Clamp Node set")
-	return tile_map_clamp_node
+	return get_node(tile_map_clamp_node_path)
 
 ## Set Tile Map Clamp Margin
 func set_tile_map_clamp_margin(value: Vector4) -> void:
