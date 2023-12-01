@@ -89,7 +89,7 @@ func _get_property_list() -> Array:
 			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
 			"hint_string": "TileMap",
 		})
-		if has_node(tile_map_clamp_node_path):
+		if tile_map_clamp_node_path:
 			property_list.append({
 				"name": TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME,
 				"type": TYPE_VECTOR4,
