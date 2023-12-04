@@ -447,9 +447,17 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if not Engine.is_editor_hint():
+						if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
+							_interpolate_position(
+								_get_position_offset_distance(),
+								delta
+							)
+							return
+						
 						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
+						_current_rotation = get_global_rotation()
 
 						if _current_rotation != get_global_rotation():
 							_interpolate_position(
