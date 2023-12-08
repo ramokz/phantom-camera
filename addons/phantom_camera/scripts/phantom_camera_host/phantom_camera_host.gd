@@ -134,6 +134,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
+		_active_pcam.set_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
