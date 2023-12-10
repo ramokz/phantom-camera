@@ -1,17 +1,17 @@
 [gd_scene load_steps=15 format=3 uid="uid://ddahqjpe2qos5"]
 
-[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_mli1g"]
-[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_ddye0"]
-[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_8nrpf"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_46dx6"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_g63p7"]
-[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_jieb7"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="7_jvgme"]
-[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_vdd1g"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="9_e6r3v"]
+[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_wmhqb"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_v5qg2"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_oqmwp"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="4_4b648"]
+[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="5_c6aev"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_tahws"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_yh2um"]
+[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_h2jna"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="9_thf62"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
-texture = ExtResource("1_mli1g")
+texture = ExtResource("1_wmhqb")
 0:0/0 = 0
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:0/0/physics_layer_0/angular_velocity = 0.0
@@ -622,11 +622,11 @@ layer_1/tile_data = PackedInt32Array(65531, 720896, 0, 65533, 720896, 0, 65534, 
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="UIInventory" parent="UI" instance=ExtResource("2_ddye0")]
+[node name="UIInventory" parent="UI" instance=ExtResource("2_v5qg2")]
 unique_name_in_owner = true
 visible = false
 
-[node name="UISign" parent="UI" instance=ExtResource("3_8nrpf")]
+[node name="UISign" parent="UI" instance=ExtResource("3_oqmwp")]
 unique_name_in_owner = true
 visible = false
 
@@ -634,30 +634,31 @@ visible = false
 
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
 unique_name_in_owner = true
-position = Vector2(126, -28)
-script = ExtResource("5_g63p7")
+position = Vector2(126, -148)
+script = ExtResource("4_4b648")
 priority_override = false
 priority = 5
 zoom = Vector2(2, 2)
-follow_mode = 1
+follow_mode = 2
 follow_target = NodePath("../CharacterBody2D")
+follow_parameters/target_offset = Vector2(0, -120)
 follow_parameters/damping = true
 follow_parameters/damping_value = 5.0
 frame_preview = true
-limit/draw_limits = false
+limit/draw_limits = true
 limit/left = -500
-limit/top = -1000
+limit/top = -500
 limit/right = 500
-limit/bottom = 500
+limit/bottom = 300
 limit/smoothed = true
 limit/tile_map_limit_target = NodePath("")
-tween_parameters = ExtResource("6_jieb7")
+tween_parameters = ExtResource("5_c6aev")
 tween_on_load = false
 inactive_update_mode = 0
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(126, -28)
-script = ExtResource("7_jvgme")
+script = ExtResource("6_tahws")
 
 [node name="DarkOverlay" type="ColorRect" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -702,7 +703,7 @@ offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("8_vdd1g")
+theme_override_fonts/font = ExtResource("7_yh2um")
 theme_override_font_sizes/font_size = 26
 text = "F"
 horizontal_alignment = 1
@@ -711,7 +712,7 @@ vertical_alignment = 1
 [node name="PlayerSprite" type="Sprite2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("9_e6r3v")
+texture = ExtResource("8_h2jna")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D"]
 position = Vector2(0, -0.5)
@@ -727,12 +728,13 @@ position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_18i13")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(126, -28)
+position = Vector2(126, -148)
 zoom = Vector2(2, 2)
 limit_left = -500
-limit_top = -1000
+limit_top = -500
 limit_right = 500
-limit_bottom = 500
+limit_bottom = 300
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
-script = ExtResource("4_46dx6")
+script = ExtResource("9_thf62")
