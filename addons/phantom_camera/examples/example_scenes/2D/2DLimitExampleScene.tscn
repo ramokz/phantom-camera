@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://ddahqjpe2qos5"]
+[gd_scene load_steps=15 format=3 uid="uid://w20wokw3ohsq"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_wmhqb"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_v5qg2"]
