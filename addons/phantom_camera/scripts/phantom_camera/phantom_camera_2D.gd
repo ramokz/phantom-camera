@@ -205,9 +205,11 @@ func _set(property: StringName, value) -> bool:
 		if value is NodePath:
 			value = value as NodePath
 			tile_map_limit_node_path = value
+			
 			if has_node(tile_map_limit_node_path):
 				tile_map_limit_node = get_node(tile_map_limit_node_path)
-				set_camera_2d_limit_all_sides()
+			
+			set_camera_2d_limit_all_sides()
 		elif value is TileMap:
 			if is_instance_valid(value):
 				tile_map_limit_node_path = value.get_path()
