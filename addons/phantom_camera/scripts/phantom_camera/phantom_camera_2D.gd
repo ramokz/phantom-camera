@@ -32,6 +32,7 @@ var camera_2d_limit_left: int = -10000000
 var camera_2d_limit_top: int = -10000000
 var camera_2d_limit_right: int = 10000000  
 var camera_2d_limit_bottom: int = 10000000
+var camera_2d_limit_smoothed: bool
 
 const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"  
 const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"  
@@ -122,6 +123,10 @@ func _get_property_list() -> Array:
 			"name": CAMERA_2D_LIMIT_BOTTOM,
 			"type": TYPE_INT
 		})
+	property_list.append({
+		"name": CAMERA_2D_LIMIT_SMOOTHED,
+		"type": TYPE_BOOL
+	})
 		
 	
 	property_list.append({
@@ -201,6 +206,8 @@ func _set(property: StringName, value) -> bool:
 	if property == CAMERA_2D_LIMIT_BOTTOM:
 		camera_2d_limit_bottom = value
 		_set_camera_2d_limit(SIDE_BOTTOM, value)
+	if property == CAMERA_2D_LIMIT_SMOOTHED:
+		camera_2d_limit_smoothed = value
 	
 	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:
 		if value is NodePath:
@@ -267,6 +274,7 @@ func _get(property: StringName):
 	if property == CAMERA_2D_LIMIT_TOP:									return camera_2d_limit_top
 	if property == CAMERA_2D_LIMIT_RIGHT:								return camera_2d_limit_right
 	if property == CAMERA_2D_LIMIT_BOTTOM:								return camera_2d_limit_bottom
+	if property == CAMERA_2D_LIMIT_SMOOTHED:							return camera_2d_limit_smoothed
 	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:					return tile_map_limit_node_path
 	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:					return tile_map_limit_margin
 	
@@ -304,14 +312,14 @@ func _process(delta: float) -> void:
 	match Properties.follow_mode:
 		Constants.FollowMode.GLUED:
 			if Properties.follow_target_node:
-				_interpolate_position(Properties.follow_target_node.position, delta)
+				set_global_position(Properties.follow_target_node.get_global_position())
 		Constants.FollowMode.SIMPLE:
 			if Properties.follow_target_node:
-				_interpolate_position(_target_position_with_offset(), delta)
+				set_global_position(_target_position_with_offset())
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					_interpolate_position(Properties.follow_group_nodes_2D[0].get_global_position(), delta)
+					set_global_position(Properties.follow_group_nodes_2D[0].get_global_position())
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:
@@ -330,15 +338,14 @@ func _process(delta: float) -> void:
 							Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
 							Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-					_interpolate_position(rect.get_center(), delta)
+					set_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
-					_interpolate_position(
+					set_global_position(
 						Properties.follow_path_node.curve.get_closest_point(
 							Properties.follow_target_node.get_global_position() - path_position
-						) + path_position, \
-						delta)
+						) + path_position)
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
@@ -353,15 +360,15 @@ func _process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								_interpolate_position(_target_position_with_offset(), delta)
+								set_global_position(_target_position_with_offset())
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _target_position_with_offset()
 								glo_pos.x += target_position.x - global_position.x
-								_interpolate_position(glo_pos, delta)
+								set_global_position(glo_pos)
 							else:
-								_interpolate_position(_target_position_with_offset(), delta)
+								set_global_position(_target_position_with_offset())
 						else:
-							_interpolate_position(target_position, delta)
+							set_global_position(target_position)
 					else:
 						_camera_offset = get_global_position() - _target_position_with_offset()
 				else:
@@ -383,17 +390,6 @@ func _draw():
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
-
-func _interpolate_position(_global_position: Vector2, delta: float, target: Node2D = self) -> void:
-	if Properties.follow_has_damping:
-		target.set_global_position(
-			target.get_global_position().lerp(
-				_global_position,
-				delta * Properties.follow_damping_value
-			)
-		)
-	else:
-		target.set_global_position(_global_position)
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()):

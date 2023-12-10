@@ -161,6 +161,10 @@ func _tween_pcam(delta: float) -> void:
 	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
 		trigger_pcam_tween = false
 		_reset_tween_on_load()
+		if _is_2D:
+			camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+			camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+			camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
 		return
 	else:
 		_reset_tween_on_load()
