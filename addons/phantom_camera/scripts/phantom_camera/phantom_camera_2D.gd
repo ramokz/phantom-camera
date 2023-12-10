@@ -32,13 +32,13 @@ var camera_2d_limit_top: int = -10000000
 var camera_2d_limit_right: int = 10000000  
 var camera_2d_limit_bottom: int = 10000000
 
-const TILE_MAP_CLAMP_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_clamp_target"  
-const TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_clamp_margin"  
-var tile_map_clamp_node: TileMap
-var tile_map_clamp_node_path: NodePath
-var tile_map_clamp_margin: Vector4
-var tile_map_clamp_rect_border: Rect2
-var tile_map_clamp_rect_zone: Rect2
+const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"  
+const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"  
+var tile_map_limit_node: TileMap
+var tile_map_limit_node_path: NodePath
+var tile_map_limit_margin: Vector4
+var tile_map_limit_rect_border: Rect2
+var tile_map_limit_rect_zone: Rect2
 
 var _camera_offset: Vector2
 
@@ -104,7 +104,7 @@ func _get_property_list() -> Array:
 		"type": TYPE_BOOL
 	})
 		
-	if not tile_map_clamp_node_path:
+	if not tile_map_limit_node_path:
 		property_list.append({
 			"name": CAMERA_2D_LIMIT_LEFT,
 			"type": TYPE_INT
@@ -124,14 +124,14 @@ func _get_property_list() -> Array:
 		
 	
 	property_list.append({
-		"name": TILE_MAP_CLAMP_NODE_PROPERTY_NAME,
+		"name": TILE_MAP_LIMIT_NODE_PROPERTY_NAME,
 		"type": TYPE_NODE_PATH,
 		"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
 		"hint_string": "TileMap",
 	})
-	if tile_map_clamp_node_path:
+	if tile_map_limit_node_path:
 		property_list.append({
-			"name": TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME,
+			"name": TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME,
 			"type": TYPE_VECTOR4,
 		})
 
@@ -180,23 +180,6 @@ func _set(property: StringName, value) -> bool:
 
 	Properties.set_follow_properties(property, value, self)
 
-	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:
-		if value is NodePath:
-			value = value as NodePath
-			tile_map_clamp_node_path = value
-			if has_node(tile_map_clamp_node_path):
-				tile_map_clamp_node = get_node(tile_map_clamp_node_path)
-				set_camera_2d_limit_all_sides()
-		elif value is TileMap:
-			if is_instance_valid(value):
-				tile_map_clamp_node_path = value.get_path()
-				set_camera_2d_limit_all_sides()
-			
-		notify_property_list_changed()
-		queue_redraw()
-	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:
-		tile_map_clamp_margin = value
-		set_camera_2d_limit_all_sides()
 
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
@@ -217,6 +200,24 @@ func _set(property: StringName, value) -> bool:
 	if property == CAMERA_2D_LIMIT_BOTTOM:
 		camera_2d_limit_bottom = value
 		_set_camera_2d_limit(SIDE_BOTTOM, value)
+	
+	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:
+		if value is NodePath:
+			value = value as NodePath
+			tile_map_limit_node_path = value
+			if has_node(tile_map_limit_node_path):
+				tile_map_limit_node = get_node(tile_map_limit_node_path)
+				set_camera_2d_limit_all_sides()
+		elif value is TileMap:
+			if is_instance_valid(value):
+				tile_map_limit_node_path = value.get_path()
+				set_camera_2d_limit_all_sides()
+			
+		notify_property_list_changed()
+		queue_redraw()
+	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:
+		tile_map_limit_margin = value
+		set_camera_2d_limit_all_sides()
 	
 	if property == FRAME_PREVIEW:
 		if value == null:
@@ -252,8 +253,6 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:					return tile_map_clamp_node_path
-	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:					return tile_map_clamp_margin
 
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
 
@@ -265,6 +264,8 @@ func _get(property: StringName):
 	if property == CAMERA_2D_LIMIT_TOP:									return camera_2d_limit_top
 	if property == CAMERA_2D_LIMIT_RIGHT:								return camera_2d_limit_right
 	if property == CAMERA_2D_LIMIT_BOTTOM:								return camera_2d_limit_bottom
+	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:					return tile_map_limit_node_path
+	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:					return tile_map_limit_margin
 	
 	if property == FRAME_PREVIEW: 										return frame_preview
 
@@ -276,8 +277,8 @@ func _enter_tree() -> void:
 	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
-	if has_node(tile_map_clamp_node_path):
-		tile_map_clamp_node = get_node(tile_map_clamp_node_path)
+	if has_node(tile_map_limit_node_path):
+		tile_map_limit_node = get_node(tile_map_limit_node_path)
 
 
 func _exit_tree() -> void:
@@ -412,28 +413,30 @@ func set_camera_2d_limit_all_sides() -> void:
 	if not _has_valid_pcam_owner() or not is_active(): return
 	
 	var sides_limit: Vector4
-	if is_instance_valid(get_node(tile_map_clamp_node_path)):
-		var tile_map: TileMap = get_node(tile_map_clamp_node_path)
+	if tile_map_limit_node_path:
+		if not is_instance_valid(get_node(tile_map_limit_node_path)): return
+		
+		var tile_map: TileMap = get_node(tile_map_limit_node_path)
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.get_global_position() + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
 		## Calculates the Rect2 based on the Tile Map position and size
-		tile_map_clamp_rect_border = Rect2(tile_map_position, tile_map_size)
+		tile_map_limit_rect_border = Rect2(tile_map_position, tile_map_size)
 
 		## Calculates the Rect2 based on the Tile Map position and size + margin
-		tile_map_clamp_rect_zone = Rect2(
-			tile_map_clamp_rect_border.position + Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y),
-			tile_map_clamp_rect_border.size - Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y) - Vector2(tile_map_clamp_margin.z, tile_map_clamp_margin.w)
+		tile_map_limit_rect_zone = Rect2(
+			tile_map_limit_rect_border.position + Vector2(tile_map_limit_margin.x, tile_map_limit_margin.y),
+			tile_map_limit_rect_border.size - Vector2(tile_map_limit_margin.x, tile_map_limit_margin.y) - Vector2(tile_map_limit_margin.z, tile_map_limit_margin.w)
 		)
 		
 		# Left
-		sides_limit.x = tile_map_clamp_rect_zone.position.x
+		sides_limit.x = tile_map_limit_rect_zone.position.x
 		# Top
-		sides_limit.y = tile_map_clamp_rect_zone.position.y
+		sides_limit.y = tile_map_limit_rect_zone.position.y
 		# Right
-		sides_limit.z = tile_map_clamp_rect_zone.position.x + tile_map_clamp_rect_zone.size.x
+		sides_limit.z = tile_map_limit_rect_zone.position.x + tile_map_limit_rect_zone.size.x
 		# Bottom
-		sides_limit.w = tile_map_clamp_rect_zone.position.y + tile_map_clamp_rect_zone.size.y
+		sides_limit.w = tile_map_limit_rect_zone.position.y + tile_map_limit_rect_zone.size.y
 	else:
 		sides_limit.x = camera_2d_limit_left
 		sides_limit.y = camera_2d_limit_top
@@ -680,21 +683,21 @@ func get_camera_2d_limit(side: int) -> int:
 						return -1
 
 ## Set Tile Map Clamp Node.
-func set_tile_map_clamp_node(value: TileMap) -> void:
-	tile_map_clamp_node_path = value.get_path()
-	tile_map_clamp_node = get_node(tile_map_clamp_node_path)
+func set_tile_map_limit_node(value: TileMap) -> void:
+	tile_map_limit_node_path = value.get_path()
+	tile_map_limit_node = get_node(tile_map_limit_node_path)
 ## Get Tile Map Clamp Node
-func get_tile_map_clamp_node() -> TileMap:
-	if not get_node_or_null(tile_map_clamp_node_path):
+func get_tile_map_limit_node() -> TileMap:
+	if not get_node_or_null(tile_map_limit_node_path):
 		printerr("No Tile Map Clamp Node set")
-	return get_node(tile_map_clamp_node_path)
+	return get_node(tile_map_limit_node_path)
 
 ## Set Tile Map Clamp Margin.
-func set_tile_map_clamp_margin(value: Vector4) -> void:
-	tile_map_clamp_margin = value
+func set_tile_map_limit_margin(value: Vector4) -> void:
+	tile_map_limit_margin = value
 ## Get Tile Map Clamp Margin.
-func get_tile_map_clamp_margin() -> Vector4:
-	return tile_map_clamp_margin
+func get_tile_map_limit_margin() -> Vector4:
+	return tile_map_limit_margin
 
 
 ## Gets Interactive Update Mode property.
