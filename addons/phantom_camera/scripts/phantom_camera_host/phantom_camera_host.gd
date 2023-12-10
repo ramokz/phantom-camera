@@ -172,16 +172,18 @@ func _tween_pcam(delta: float) -> void:
 	tween_duration += delta
 
 	if _is_2D:
+		var root_node_pos: Vector2 = get_tree().root.get_child(0).global_position
 		camera_2D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
+			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin + root_node_pos, _active_pcam_2D_glob_transform.origin)
 		)
 
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
 	else:
+		var root_node_pos: Vector3 = get_tree().root.get_child(0).global_position
 		camera_3D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
+			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin + root_node_pos, _active_pcam_3D_glob_transform.origin)
 		)
 
 		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
