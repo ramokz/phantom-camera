@@ -134,6 +134,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
+		_active_pcam.set_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
@@ -160,6 +161,10 @@ func _tween_pcam(delta: float) -> void:
 	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
 		trigger_pcam_tween = false
 		_reset_tween_on_load()
+		if _is_2D:
+			camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+			camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+			camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
 		return
 	else:
 		_reset_tween_on_load()
