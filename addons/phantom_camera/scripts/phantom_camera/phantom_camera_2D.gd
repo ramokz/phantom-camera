@@ -36,7 +36,6 @@ var camera_2d_limit_smoothed: bool
 
 const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"  
 const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"  
-var tile_map_limit_node: TileMap
 var tile_map_limit_node_path: NodePath
 var tile_map_limit_margin: Vector4
 var tile_map_limit_rect_border: Rect2
@@ -214,9 +213,6 @@ func _set(property: StringName, value) -> bool:
 			value = value as NodePath
 			tile_map_limit_node_path = value
 			
-			if has_node(tile_map_limit_node_path):
-				tile_map_limit_node = get_node(tile_map_limit_node_path)
-			
 			set_camera_2d_limit_all_sides()
 		elif value is TileMap:
 			if is_instance_valid(value):
@@ -288,8 +284,6 @@ func _enter_tree() -> void:
 	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
-	if has_node(tile_map_limit_node_path):
-		tile_map_limit_node = get_node(tile_map_limit_node_path)
 
 
 func _exit_tree() -> void:
@@ -400,8 +394,8 @@ func _has_valid_pcam_owner() -> bool:
 	return true
 
 func _draw_camera_2d_limit() -> void:
-	_has_valid_pcam_owner()
-	get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(camera_2d_draw_limits)
+	if _has_valid_pcam_owner():
+		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(camera_2d_draw_limits)
 
 func _set_camera_2d_limit(side: int, limit: int) -> void:
 	_has_valid_pcam_owner()
@@ -684,7 +678,6 @@ func get_camera_2d_limit(side: int) -> int:
 ## Set Tile Map Clamp Node.
 func set_tile_map_limit_node(value: TileMap) -> void:
 	tile_map_limit_node_path = value.get_path()
-	tile_map_limit_node = get_node(tile_map_limit_node_path)
 ## Get Tile Map Clamp Node
 func get_tile_map_limit_node() -> TileMap:
 	if not get_node_or_null(tile_map_limit_node_path):
