@@ -22,10 +22,11 @@ var follow_group_zoom_margin: Vector4
 const CAMERA_2D_LIMIT: StringName = "limit/"
 
 const CAMERA_2D_DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"  
-const CAMERA_2D_LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "limit_left"  
-const CAMERA_2D_LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "limit_top"  
-const CAMERA_2D_LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "limit_right"  
-const CAMERA_2D_LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "limit_bottom"  
+const CAMERA_2D_LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "left"  
+const CAMERA_2D_LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"  
+const CAMERA_2D_LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
+const CAMERA_2D_LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
+const CAMERA_2D_LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
 static var camera_2d_draw_limits: bool
 var camera_2d_limit_left: int = -10000000
 var camera_2d_limit_top: int = -10000000
