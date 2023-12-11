@@ -284,8 +284,14 @@ func _process_pcam(delta: float) -> void:
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
-			if Engine.is_editor_hint() and _is_2D:
-				_active_pcam.queue_redraw()
+			
+			if _is_2D:
+				camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+				camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+				camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+			
+				if Engine.is_editor_hint():
+					_active_pcam.queue_redraw()
 
 
 func show_viewfinder_in_play() -> void:
