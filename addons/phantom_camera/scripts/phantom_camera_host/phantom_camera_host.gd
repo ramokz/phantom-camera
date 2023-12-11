@@ -172,7 +172,12 @@ func _tween_pcam(delta: float) -> void:
 	tween_duration += delta
 
 	if _is_2D:
-		var root_node_pos: Vector2 = get_tree().root.get_child(0).global_position
+		var root_node_pos: Vector2
+		
+		if is_instance_valid(get_tree().current_scene):
+			if get_tree().current_scene is Node2D:
+				root_node_pos = get_tree().current_scene.get_global_position()
+		
 		camera_2D.set_global_position(
 			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin + root_node_pos, _active_pcam_2D_glob_transform.origin)
 		)
@@ -181,7 +186,12 @@ func _tween_pcam(delta: float) -> void:
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
 	else:
-		var root_node_pos: Vector3 = get_tree().root.get_child(0).global_position
+		var root_node_pos: Vector3
+		
+		if is_instance_valid(get_tree().current_scene):
+			if get_tree().current_scene is Node3D:
+				root_node_pos = get_tree().current_scene.get_global_position()
+		
 		camera_3D.set_global_position(
 			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin + root_node_pos, _active_pcam_3D_glob_transform.origin)
 		)
