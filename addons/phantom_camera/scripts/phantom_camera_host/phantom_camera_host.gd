@@ -114,10 +114,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _active_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = camera_2D.get_transform()
+			_prev_active_pcam_2D_transform = camera_2D.get_global_transform()
 			_active_pcam.queue_redraw()
 		else:
-			_prev_active_pcam_3D_transform = camera_3D.get_transform()
+			_prev_active_pcam_3D_transform = camera_3D.get_global_transform()
 			_prev_camera_fov = camera_3D.get_fov()
 			_prev_camera_h_offset = camera_3D.get_h_offset()
 			_prev_camera_v_offset = camera_3D.get_v_offset()
@@ -141,9 +141,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = _active_pcam.get_transform()
+			_prev_active_pcam_2D_transform = _active_pcam.get_global_transform()
 		else:
-			_prev_active_pcam_3D_transform = _active_pcam.get_transform()
+			_prev_active_pcam_3D_transform = _active_pcam.get_global_transform()
 
 	tween_duration = 0
 	trigger_pcam_tween = true
@@ -172,28 +172,16 @@ func _tween_pcam(delta: float) -> void:
 	tween_duration += delta
 
 	if _is_2D:
-		var root_node_pos: Vector2
-		
-		if is_instance_valid(get_tree().current_scene):
-			if get_tree().current_scene is Node2D:
-				root_node_pos = get_tree().current_scene.get_global_position()
-		
 		camera_2D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin + root_node_pos, _active_pcam_2D_glob_transform.origin)
+			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 		)
 
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
 		)
 	else:
-		var root_node_pos: Vector3
-		
-		if is_instance_valid(get_tree().current_scene):
-			if get_tree().current_scene is Node3D:
-				root_node_pos = get_tree().current_scene.get_global_position()
-		
 		camera_3D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin + root_node_pos, _active_pcam_3D_glob_transform.origin)
+			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
 		)
 
 		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
