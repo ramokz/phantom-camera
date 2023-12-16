@@ -56,7 +56,7 @@ var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdat
 
 func camera_enter_tree(pcam: Node):
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
-	
+
 	if pcam.Properties.follow_target_path and \
 		not pcam.get_parent() is SpringArm3D and \
 		is_instance_valid(pcam.get_node(pcam.Properties.follow_target_path)):
@@ -76,7 +76,7 @@ func camera_enter_tree(pcam: Node):
 					follow_group_nodes_2D.append(pcam.get_node(path))
 				else:
 					follow_group_nodes_3D.append(pcam.get_node(path))
-	
+
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
@@ -104,7 +104,7 @@ func add_multiple_hosts_properties() -> Array:
 
 func add_priority_properties() -> Array:
 	var _property_list: Array
-	
+
 	_property_list.append({
 		"name": Constants.PRIORITY_OVERRIDE,
 		"type": TYPE_BOOL,
@@ -126,7 +126,7 @@ func add_follow_mode_property() -> Array:
 	var follow_mode_keys: Array = Constants.FollowMode.keys()
 	if is_2D:
 		follow_mode_keys.remove_at(Constants.FollowMode.THIRD_PERSON)
-	
+
 	_property_list.append({
 		"name": Constants.FOLLOW_MODE_PROPERTY_NAME,
 		"type": TYPE_INT,
@@ -291,7 +291,7 @@ func set_priority_property(property: StringName, value, pcam: Node):
 				priority_override = value
 				pcam_host_owner.pcam_priority_updated(pcam)
 				pcam_host_owner.pcam_priority_override_disabled()
-		
+
 	if property == Constants.PRIORITY_PROPERTY_NAME:
 		set_priority(value, pcam)
 

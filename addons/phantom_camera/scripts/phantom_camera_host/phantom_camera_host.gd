@@ -95,7 +95,7 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	if not is_instance_valid(_active_pcam): return
-	
+
 	if _is_2D:
 		_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
 	else:
@@ -114,9 +114,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _active_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = camera_2D.get_transform()
+			_prev_active_pcam_2D_transform = camera_2D.get_global_transform()
+			_active_pcam.queue_redraw()
 		else:
-			_prev_active_pcam_3D_transform = camera_3D.get_transform()
+			_prev_active_pcam_3D_transform = camera_3D.get_global_transform()
 			_prev_camera_fov = camera_3D.get_fov()
 			_prev_camera_h_offset = camera_3D.get_h_offset()
 			_prev_camera_v_offset = camera_3D.get_v_offset()
@@ -133,15 +134,16 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
+		_active_pcam.set_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
-			
+
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = _active_pcam.get_transform()
+			_prev_active_pcam_2D_transform = _active_pcam.get_global_transform()
 		else:
-			_prev_active_pcam_3D_transform = _active_pcam.get_transform()
+			_prev_active_pcam_3D_transform = _active_pcam.get_global_transform()
 
 	tween_duration = 0
 	trigger_pcam_tween = true
@@ -159,6 +161,10 @@ func _tween_pcam(delta: float) -> void:
 	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
 		trigger_pcam_tween = false
 		_reset_tween_on_load()
+		if _is_2D:
+			camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+			camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+			camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
 		return
 	else:
 		_reset_tween_on_load()
@@ -189,7 +195,7 @@ func _tween_pcam(delta: float) -> void:
 				_active_pcam.get_tween_ease(),
 			)
 		)
-	
+
 		if _prev_camera_fov != _active_pcam.get_camera_fov() and _active_pcam.get_camera_3D_resource():
 			camera_3D.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
@@ -220,7 +226,7 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 func _reset_tween_on_load() -> void:
 	for pcam in _get_pcam_node_group():
 		pcam.Properties.has_tweened_onload  = true
-	
+
 	if not _is_2D:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_fov(_active_pcam.get_camera_fov())
@@ -230,7 +236,7 @@ func _reset_tween_on_load() -> void:
 
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
-		
+
 	if _is_2D:
 		camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
 		if _active_pcam.Properties.has_follow_group:
@@ -260,7 +266,7 @@ func _process_pcam(delta: float) -> void:
 		if viewfinder_needed_check:
 			show_viewfinder_in_play()
 			viewfinder_needed_check = false
-			
+
 		if Engine.is_editor_hint():
 			if not _is_2D:
 				if _active_pcam.get_camera_3D_resource():
@@ -276,6 +282,14 @@ func _process_pcam(delta: float) -> void:
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
+			
+			if _is_2D:
+				camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+				camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+				camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+			
+				if Engine.is_editor_hint():
+					_active_pcam.queue_redraw()
 
 
 func show_viewfinder_in_play() -> void:
@@ -283,7 +297,7 @@ func show_viewfinder_in_play() -> void:
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
-			
+
 			viewfinder_node = viewfinder_scene.instantiate()
 			canvas_layer.add_child(viewfinder_node)
 	else:
@@ -301,14 +315,14 @@ func _get_pcam_host_group() -> Array[Node]:
 
 func _process(delta):
 	if not is_instance_valid(_active_pcam): return
-	
+
 	if _should_refresh_transform:
 #		_refresh_transform()
 		if _is_2D:
 			_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
 		else:
 			_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
-			
+
 		_should_refresh_transform = false
 
 	_process_pcam(delta)
@@ -336,9 +350,9 @@ func pcam_removed_from_scene(pcam) -> void:
 
 func pcam_priority_updated(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.Properties.priority_override: return
-	
+
 	if not is_instance_valid(pcam): return
-		
+
 	var current_pcam_priority: int = pcam.get_priority()
 
 	if current_pcam_priority >= _active_pcam_priority and pcam != _active_pcam:

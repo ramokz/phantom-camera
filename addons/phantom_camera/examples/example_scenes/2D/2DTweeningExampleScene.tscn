@@ -672,6 +672,7 @@ follow_target = NodePath("../CharacterBody2D")
 follow_parameters/target_offset = Vector2(0, -120)
 follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
+follow_parameters/tile_map_clamp = false
 tween_parameters = ExtResource("6_gu0o0")
 tween_on_load = false
 inactive_update_mode = 0

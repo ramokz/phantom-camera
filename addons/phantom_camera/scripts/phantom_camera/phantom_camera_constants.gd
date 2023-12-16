@@ -12,6 +12,7 @@ const PCAM_3D_NODE_NAME: StringName = "PhantomCamera3D"
 const COLOR_2D: Color = Color("8DA5F3")
 const COLOR_3D: Color = Color("FC7F7F")
 const COLOR_PCAM: Color = Color("3AB99A")
+const COLOR_PCAM_33: Color = Color("3ab99a33")
 const PCAM_HOST_COLOR: Color = Color("E0E0E0")
 
 # Primary

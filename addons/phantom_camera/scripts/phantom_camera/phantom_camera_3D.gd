@@ -74,7 +74,7 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
-	
+
 #	TODO - For https://github.com/MarcusSkov/phantom-camera/issues/26
 #	property_list.append_array(Properties.add_multiple_hosts_properties())
 
@@ -83,7 +83,7 @@ func _get_property_list() -> Array:
 
 	if Properties.follow_mode != Constants.FollowMode.NONE:
 		property_list.append_array(Properties.add_follow_target_property())
-		
+
 		if Properties.follow_mode == Constants.FollowMode.GROUP or \
 		Properties.follow_mode == Constants.FollowMode.FRAMED:
 				if not _follow_group_distance_auto:
@@ -124,7 +124,7 @@ func _get_property_list() -> Array:
 							"hint_string": "0.01, 100, 0.01,",
 							"usage": PROPERTY_USAGE_DEFAULT,
 						})
-			
+
 		if Properties.follow_mode == Constants.FollowMode.THIRD_PERSON:
 			property_list.append({
 				"name": FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME,
@@ -250,14 +250,14 @@ func _set(property: StringName, value) -> bool:
 	if property == LOOK_AT_MODE_PROPERTY_NAME:
 		if value == null:
 			value = LookAtMode.NONE
-		
+
 		look_at_mode_enum = value
 
 		if look_at_mode_enum == LookAtMode.NONE:
 			_should_look_at = false
 		else:
 			_should_look_at = true
-		
+
 		notify_property_list_changed()
 
 	if property == LOOK_AT_GROUP_PROPERTY_NAME:
@@ -305,7 +305,7 @@ func _set(property: StringName, value) -> bool:
 
 	if property == CAMERA_3D_RESOURCE_PROPERTY_NAME:
 		_camera_3D_resouce = value
-	
+
 	return false
 
 
@@ -447,9 +447,17 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.FRAMED:
 				if Properties.follow_target_node:
 					if not Engine.is_editor_hint():
+						if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
+							_interpolate_position(
+								_get_position_offset_distance(),
+								delta
+							)
+							return
+						
 						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
+						_current_rotation = get_global_rotation()
 
 						if _current_rotation != get_global_rotation():
 							_interpolate_position(
@@ -462,7 +470,7 @@ func _process(delta: float) -> void:
 							var dead_zone_width: float = Properties.follow_framed_dead_zone_width
 							var dead_zone_height: float = Properties.follow_framed_dead_zone_height
 							var glo_pos: Vector3
-							
+
 							if dead_zone_width == 0 || dead_zone_height == 0:
 								if dead_zone_width == 0 && dead_zone_height != 0:
 									glo_pos = _get_position_offset_distance()
@@ -489,15 +497,15 @@ func _process(delta: float) -> void:
 									glo_pos.y = _get_target_position_offset().y + opposite
 									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 									glo_pos.x = global_position.x
-									
+
 									_interpolate_position(
-										glo_pos, 
+										glo_pos,
 										delta
 									)
 									_current_rotation = get_global_rotation()
 								else:
 									_interpolate_position(
-										get_global_position() + target_position - global_position, 
+										get_global_position() + target_position - global_position,
 										delta
 									)
 						else:
@@ -541,9 +549,9 @@ func _process(delta: float) -> void:
 									if not is_tween_on_load():
 										Properties.has_tweened_onload = false
 									reparent(_follow_spring_arm_node)
-								
+
 								_interpolate_position(
-									_get_target_position_offset(), 
+									_get_target_position_offset(),
 									delta,
 									_follow_spring_arm_node
 								)
@@ -578,16 +586,16 @@ func _get_position_offset_distance() -> Vector3:
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
 
-func _interpolate_position(position: Vector3, delta: float, target: Node3D = self) -> void:
+func _interpolate_position(_global_position: Vector3, delta: float, target: Node3D = self) -> void:
 	if Properties.follow_has_damping:
 		target.set_global_position(
 			target.get_global_position().lerp(
-				position,
+				_global_position,
 				delta * Properties.follow_damping_value
 			)
 		)
 	else:
-		target.set_global_position(position)
+		target.set_global_position(_global_position)
 
 
 func _get_raw_unprojected_position() -> Vector2:
@@ -700,12 +708,12 @@ func get_tween_ease() -> int:
 
 
 ## Gets current active state of the PhantomCamera3D.
-## If it returns true, it means the PhantomCamera3D is what the Camera2D is currently following. 
+## If it returns true, it means the PhantomCamera3D is what the Camera2D is currently following.
 func is_active() -> bool:
 	return Properties.is_active
 
 
-## Enables or disables the Tween on Load. 
+## Enables or disables the Tween on Load.
 func set_tween_on_load(value: bool) -> void:
 	Properties.tween_onload = value
 ## Gets the current Tween On Load value.
@@ -802,7 +810,7 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 func erase_follow_group_node(value: Node3D) -> void:
 	Properties.follow_group_nodes_3D.erase(value)
 	if get_follow_group_nodes().size() < 1:
-		Properties.should_follow = false 
+		Properties.should_follow = false
 		Properties.has_follow_group = false
 ## Gets all Node3D from Follow Group array.
 func get_follow_group_nodes() -> Array[Node3D]:
@@ -852,6 +860,7 @@ func get_third_person_rotation_degrees() -> Vector3:
 ## Assigns a new Third Person SpringArm3D Length value.
 func set_spring_arm_spring_length(value: float) -> void:
 	follow_distance = value
+	_follow_spring_arm_node.set_length(value)
 ## Gets Third Person SpringArm3D Length value.
 func get_spring_arm_spring_length() -> float:
 	return follow_distance
@@ -923,7 +932,7 @@ func erase_look_at_group_node(value: Node3D) -> void:
 	_look_at_group_nodes.erase(value)
 	if _look_at_group_nodes.size() < 1:
 		_has_look_at_target_group = false
-## Gets all the Node3D in Look At Group array. 
+## Gets all the Node3D in Look At Group array.
 func get_look_at_group_nodes() -> Array[Node3D]:
 	return _look_at_group_nodes
 

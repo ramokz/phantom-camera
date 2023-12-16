@@ -1,4 +1,4 @@
-<img src="./.github/assets/banners/phantom-camera-banner.svg">
+<img width="850" alt="phantom-camera-readme-header" src="https://github.com/ramokz/phantom-camera/assets/5159399/8766f92e-cc43-4ff7-83fc-6ac864f8e3ff">
 
 # What is it?
 Phantom Camera is a Godot 4 plugin designed to provide and simplify common behaviors for the built-in `Camera2D` and `Camera3D` nodes - heavily inspired by a Unity package called Cinemachine.
@@ -9,13 +9,13 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
 
 <table>
   <tr>
-    <th>Guides</th>
+    <th>Documentation & Guides</th>
     <th>Roadmap</th>
   <tr>
   <tbody>
   <tr>
     <td width="1200" align="center" valign="top">
-      <a href="https://github.com/ramokz/phantom-camera/wiki"><img src=".github/assets/icons/Readme-Wiki.svg"></a>
+      <a href="https://phantom-camera.dev/"><img src=".github/assets/icons/Readme-Wiki.svg"></a>
     </td>
      <td width="1200" align="center" valign="top">
       <a href="https://github.com/ramokz/phantom-camera/milestones"><img src=".github/assets/icons/Readme-Roadmap.svg"></a>
@@ -25,11 +25,11 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
 
 # Features
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Priority-(2D-&-3D)">
+<a href="https://phantom-camera.dev/priority">
 <img src=".github/assets/icons/Icon-Priority.svg" width="100"/>
 </a>
 <h3>
-    <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Priority-(2D-&-3D)">Priority</a>
+    <a href="https://phantom-camera.dev/priority">Priority</a>
 </h3>
 <p>
 Determines which <code>PhantomCamera</code> should be active with the <code>Camera2D</code>/<code>Camera3D</code>.
@@ -40,33 +40,33 @@ When a new camera recieves a higher priority than currently active <code>Phantom
 
 <hr>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">
+<a href="https://phantom-camera.dev/follow-modes/overview">
 <img src=".github/assets/icons/Icon-Follow.svg" width="100"/>
 </a>
 <h3>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)">Follow Mode</a>
+<a href="https://phantom-camera.dev/follow-modes/overview">Follow Mode</a>
 </h3>
 <p>
 Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or reposition based on, its target(s).
 </p>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
+<a href="https://phantom-camera.dev/follow-modes/glued">
   <img src=".github/assets/icons/Follow-Glued.svg"/>
 </a>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#glued">
-  <h4>Glued</h4>
-</a>
+<h4>
+  <a href="https://phantom-camera.dev/follow-modes/glued">Glued</a>
+</h4>
 <p>
   Sticks to its target.
 </p>
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#simple">
+<a href="https://phantom-camera.dev/follow-modes/simple">
   <img src=".github/assets/icons/Follow-Simple.svg"/>
 </a>
 <h4>
-    <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#simple">Simple</a>
+    <a href="https://phantom-camera.dev/follow-modes/simple">Simple</a>
 </h4>
 <p>
   Follows the target with an optional offset and damping.
@@ -99,11 +99,11 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">
+<a href="https://phantom-camera.dev/follow-modes/group">
   <img src=".github/assets/icons/Follow-Group.svg"/>
 </a>
 
-<h4><a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#group">Group</a></h4>
+<h4><a href="https://phantom-camera.dev/follow-modes/group">Group</a></h4>
 <p>
   Follows the centre of a collection of targets.
 </p>
@@ -135,11 +135,11 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#path">
+<a href="https://phantom-camera.dev/follow-modes/path">
   <img src=".github/assets/icons/Follow-Path.svg"/>
 </a>
 <h4>
-    <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#path">Path</a>
+    <a href="https://phantom-camera.dev/follow-modes/path">Path</a>
 </h4>
 <p>
   Follows a target while being positionally confined to a <code>Path node</code>.
@@ -171,11 +171,11 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#framed">
+<a href="https://phantom-camera.dev/follow-modes/framed">
   <img src=".github/assets/icons/Follow-Framed.svg"/>
 </a>
 <h4>
-    <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#framed">Framed</a>
+    <a href="https://phantom-camera.dev/follow-modes/framed">Framed</a>
 </h4>
 <p>
   Enables dynamic framing of a given target using dead zones. Dead zones enable the camera to remain still until the target moves far enough away from the camera's view. This is determined by the horizontal and vertical dead zone size in their respective properties within the inspector.
@@ -207,11 +207,11 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#third-person">
+<a href="https://phantom-camera.dev/follow-modes/third-person">
   <img src=".github/assets/icons/Follow-Third-Person.svg"/>
 </a>
 <h4>
-    <a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Follow-(2D-&-3D)#third-person">Third Person</a>
+    <a href="https://phantom-camera.dev/follow-modes/third-person">Third Person</a>
 </h4>
 <p>
   As the name implies, this mode is meant to be used for third person camera experiences.<br>
@@ -244,11 +244,11 @@ It works by applying a <code>SpringArm3D</code> node as a parent, where its prop
 
 <hr>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">
+<a href="https://phantom-camera.dev/core-nodes/phantom-camera-2d#zoom">
 <img src=".github/assets/icons/Icon-Zoom.svg" width="100"/>
 </a>
 <h3>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Zoom-(2D)">Zoom (2D)</a>
+<a href="https://phantom-camera.dev/core-nodes/phantom-camera-2d#zoom">Zoom (2D)</a>
 </h3>
 <p>
 Define the Zoom level for the <code>Camera2D</code>.
@@ -281,36 +281,36 @@ Define the Zoom level for the <code>Camera2D</code>.
 
 <hr>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)">
+<a href="https://phantom-camera.dev/look-at-modes/overview">
 <img src=".github/assets/icons/Icon-Look-At.svg" width="100"/>
 </a>
 
 <h3>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)">Look At (3D)</a>
+<a href="https://phantom-camera.dev/look-at-modes/overview">Look At (3D)</a>
 </h3>
 <p>
 Defines where the <code>Camera3D</code> should be looking—adjusting its rotational value.
 </p>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#mimic">
+<a href="https://phantom-camera.dev/look-at-modes/mimic">
 <img src=".github/assets/icons/Icon-Look-At-Mimic.svg"/>
 </a>
 <br>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#mimic">
-<b>Mimic</b>
-</a>
+<h4>
+  <a href="https://phantom-camera.dev/look-at-modes/mimic">Mimic</a>
+</h4>
 <p>
 Copies the rotational value of its target.
 </p>
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#simple">
+<a href="https://phantom-camera.dev/look-at-modes/simple">
 <img src=".github/assets/icons/Icon-Look-At-Simple.svg"/>
 </a>
 <br>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#simple">
-<b>Simple</b>
-</a>
+<h4>
+  <a href="https://phantom-camera.dev/look-at-modes/simple">Simple</a>
+</h4>
 <p>
 Looks At the target with an optional offset.
 </p>
@@ -335,17 +335,18 @@ Looks At the target with an optional offset.
             Not available in 2D
         </td>
         <td align="center">
-            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/4bb74152-c549-4845-af03-f3edd73be645"/>
+            <video src="https://github.com/ramokz/phantom-camera/assets/5159399/9f740b3d-a244-4ada-88da-e7160cb7b0b0"/>
         </td>
     </tr>
 </table>
 
 <br>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Look-At-(3D)#group">
+<a href="https://phantom-camera.dev/look-at-modes/group">
  <img src=".github/assets/icons/Icon-Look-At-Group.svg"/>
- <br>
- <b>Group</b>
+  <h4> 
+   <a href="https://phantom-camera.dev/look-at-modes/group">Group</a>
+  </h4>
 </a>
 <p>
  Looks at the centre of a collection of targets.
@@ -378,11 +379,11 @@ Looks At the target with an optional offset.
 
 <hr>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">
+<a href="https://phantom-camera.dev/tween">
 <img src=".github/assets/icons/Icon-Tween.svg" width="100"/>
 </a>
 <h3>
-<a href="https://github.com/ramokz/phantom-camera/wiki/Properties:-Tween-(2D-&-3D)">Tween</a>
+<a href="https://phantom-camera.dev/tween">Tween</a>
 </h3>
 <p>
 Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly active <code>PhantomCamera</code>.
@@ -415,11 +416,11 @@ Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly acti
 
 <hr>
 
-<a href="https://github.com/ramokz/phantom-camera/wiki/Viewfinder">
+<a href="https://phantom-camera.dev/viewfinder">
     <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/main/.github/assets/icons/Icon-Viewfinder.svg" width="100" />
 </a>
 
-<h3><a href="https://github.com/ramokz/phantom-camera/wiki/Viewfinder">Viewfinder</a></h3>
+<h3><a href="https://phantom-camera.dev/viewfinder">Viewfinder</a></h3>
 
 https://github.com/ramokz/phantom-camera/assets/5159399/6c9d1653-b4c6-4b5d-8855-402776645689
 
@@ -429,7 +430,7 @@ Preview what the `Camera2D` / `Camera3D` sees when attached to a PhantomCamera. 
 
 ## 📔 Deep Dive & How to use
 
-See the [Phantom Camera - Wiki](https://github.com/ramokz/phantom-camera/wiki).
+See the [Phantom Camera - Wiki](https://phantom-camera.dev/)
 
 ### 🪀 Example Scenes
 A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples`.
@@ -439,17 +440,17 @@ A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/exam
 1. In Godot, open the `AssetLib` tab.
 2. Search for and select "Phantom Camera".
 3. Download then install the plugin (be sure to only select the `phantom_camera` directory).
-4. Enable the plugin inside `Project/Project Setttings/Plugins`.
+4. Enable the plugin inside `Project/Project Settings/Plugins`.
 
 ### Github Releases (Recommended - Stable)
 1. Download a [release build](https://github.com/ramokz/phantom-camera/releases/).
 2. Extract the zip file and move the `addons/phantom_camera` directory into the project root location.
-3. Enable the plugin inside `Project/Project Setttings/Plugins`.
+3. Enable the plugin inside `Project/Project Settings/Plugins`.
 
 ### Github Main (Latest - Unstable)
 1. Download the latest [`main branch`](https://github.com/ramokz/phantom-camera/archive/refs/heads/main.zip).
 2. Extract the zip file and move the `addons/phantom_camera` directory into project's root location.
-3. Enable the plugin inside `Project/Project Setttings/Plugins`.
+3. Enable the plugin inside `Project/Project Settings/Plugins`.
 
 For more help,
 see [Godot's official documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html)
