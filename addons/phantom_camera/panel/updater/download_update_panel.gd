@@ -13,7 +13,6 @@ signal updated(updated_to_version: String)
 
 const TEMP_FILE_NAME = "user://temp.zip"
 
-
 #@onready var logo: TextureRect = %Logo
 @onready var label: Label = %DownloadVersionLabel
 @onready var download_http_request: HTTPRequest = %DownloadHTTPRequest
@@ -21,25 +20,27 @@ const TEMP_FILE_NAME = "user://temp.zip"
 @onready var download_button_bg: NinePatchRect = %DownloadButtonBG
 @onready var download_label: Label = %UpdateLabel
 
+# Todo - For 4.2 upgrade - Shows current version
+#@onready var current_version_label: Label = %CurrentVersionLabel
 var _button_texture_default: Texture2D = load("res://addons/phantom_camera/assets/PhantomCameraBtnPrimaryDefault.png")
 var _button_texture_hover: Texture2D = load("res://addons/phantom_camera/assets/PhantomCameraBtnPrimaryHover.png")
 
 var next_version_release: Dictionary:
 	set(value):
 		next_version_release = value
-		label.text = "Update is available for download" % value.tag_name.substr(1)
+		label.text = "%s update is available for download" % value.tag_name.substr(1)
+		# Todo - For 4.2 upgrade
+		#current_version_label.text = "Current version is " + editor_plugin.get_version()
 	get:
 		return next_version_release
 
 
 func _ready() -> void:
-#	$VBox/Center/DownloadButton.text = "Update Download Update"
-	$VBox/Center2/NotesButton.text = "Update Release Notes"
-
 	download_http_request.request_completed.connect(_on_http_request_request_completed)
 	download_button.pressed.connect(_on_download_button_pressed)
 	download_button.mouse_entered.connect(_on_mouse_entered)
 	download_button.mouse_exited.connect(_on_mouse_exited)
+
 
 func _on_download_button_pressed() -> void:
 	# Safeguard the actual dialogue manager repo from accidentally updating itself
@@ -52,8 +53,10 @@ func _on_download_button_pressed() -> void:
 	download_button.disabled = true
 	download_label.text = "Update Downloading"
 
+
 func _on_mouse_entered() -> void:
 	download_button_bg.set_texture(_button_texture_hover)
+
 
 func _on_mouse_exited() -> void:
 	download_button_bg.set_texture(_button_texture_default)
@@ -69,7 +72,7 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	zip_file.store_buffer(body)
 	zip_file.close()
 
-	OS.move_to_trash(ProjectSettings.globalize_path("res://addons/dialogue_manager"))
+	OS.move_to_trash(ProjectSettings.globalize_path("res://addons/phantom_camera"))
 
 	var zip_reader: ZIPReader = ZIPReader.new()
 	zip_reader.open(TEMP_FILE_NAME)

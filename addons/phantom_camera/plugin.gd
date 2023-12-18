@@ -9,7 +9,6 @@ const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_
 var pcam_3D_gizmo_plugin = Pcam3DPlugin.new()
 
 const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
-#const ViewfinderPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 var editor_panel_instance
 #var viewfinder_panel_instance
 
@@ -36,6 +35,7 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	remove_custom_type(PCAM_2D)
 	remove_custom_type(PCAM_3D)
+	remove_custom_type(PCAM_HOST)
 
 	remove_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
 
@@ -56,6 +56,7 @@ func _make_visible(visible):
 
 func _scene_changed(scene_root: Node) -> void:
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
+
 
 func get_version() -> String:
 	var config: ConfigFile = ConfigFile.new()

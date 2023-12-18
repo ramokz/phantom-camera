@@ -17,6 +17,7 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g3tf0"]
 
 [node name="DownloadUpdatePanel" type="Control"]
+custom_minimum_size = Vector2(300, 250)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,7 +30,7 @@ script = ExtResource("1_sx5xq")
 [node name="DownloadHTTPRequest" type="HTTPRequest" parent="."]
 unique_name_in_owner = true
 
-[node name="@Timer@44962" type="Timer" parent="DownloadHTTPRequest"]
+[node name="Timer" type="Timer" parent="DownloadHTTPRequest"]
 one_shot = true
 
 [node name="VBox" type="VBoxContainer" parent="."]
@@ -37,10 +38,6 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -1.0
-offset_top = 9.0
-offset_right = -1.0
-offset_bottom = 9.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
@@ -59,7 +56,7 @@ stretch_mode = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBox/VBoxContainer2"]
 layout_mode = 2
-theme_override_constants/separation = -10
+theme_override_constants/separation = -5
 
 [node name="NameLabel" type="Label" parent="VBox/VBoxContainer2/VBoxContainer"]
 layout_mode = 2
@@ -72,14 +69,16 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_gwh4i")
-theme_override_font_sizes/font_size = 18
 text = "v1.2.3 is available for download."
 horizontal_alignment = 1
 
 [node name="Center" type="CenterContainer" parent="VBox"]
 layout_mode = 2
 
-[node name="DownloadButton" type="Button" parent="VBox/Center"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBox/Center"]
+layout_mode = 2
+
+[node name="DownloadButton" type="Button" parent="VBox/Center/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 40)
 layout_mode = 2
@@ -89,7 +88,7 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_o12j0")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_buptb")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_g3tf0")
 
-[node name="DownloadButtonBG" type="NinePatchRect" parent="VBox/Center/DownloadButton"]
+[node name="DownloadButtonBG" type="NinePatchRect" parent="VBox/Center/VBoxContainer/DownloadButton"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -109,7 +108,7 @@ patch_margin_top = 37
 patch_margin_right = 38
 patch_margin_bottom = 39
 
-[node name="UpdateLabel" type="Label" parent="VBox/Center/DownloadButton"]
+[node name="UpdateLabel" type="Label" parent="VBox/Center/VBoxContainer/DownloadButton"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -124,10 +123,19 @@ offset_bottom = 13.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.862745, 0.815686, 0.792157, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.756863)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_h8uk3")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "Update"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="CurrentVersionLabel_4_2UPGRADE" type="Label" parent="VBox/Center/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_gwh4i")
+text = "Current Version is 0.0.0"
 horizontal_alignment = 1
 
 [node name="Center2" type="CenterContainer" parent="VBox"]
@@ -137,4 +145,4 @@ layout_mode = 2
 layout_mode = 2
 text = "Update Release Notes"
 
-[connection signal="pressed" from="VBox/Center2/NotesButton" to="." method="_on_notes_button_pressed" flags=18]
+[connection signal="pressed" from="VBox/Center2/NotesButton" to="." method="_on_notes_button_pressed"]
