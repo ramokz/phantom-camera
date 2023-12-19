@@ -50,8 +50,7 @@ func _get_property_list() -> Array:
 	property_list.append({
 		"name": Constants.ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
+		"hint": PROPERTY_HINT_LINK
 	})
 
 	property_list.append_array(Properties.add_follow_mode_property())
