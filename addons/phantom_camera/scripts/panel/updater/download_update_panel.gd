@@ -51,7 +51,8 @@ func _on_download_button_pressed() -> void:
 
 	download_http_request.request(next_version_release.zipball_url)
 	download_button.disabled = true
-	download_label.text = "Update Downloading"
+	download_label.text = "Downloading..."
+	download_button_bg.hide()
 
 
 func _on_mouse_entered() -> void:

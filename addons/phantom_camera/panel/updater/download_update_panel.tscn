@@ -80,7 +80,7 @@ layout_mode = 2
 
 [node name="DownloadButton" type="Button" parent="VBox/Center/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 40)
+custom_minimum_size = Vector2(240, 90)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxEmpty_djsbc")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_xtrn6")
@@ -91,15 +91,9 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_g3tf0")
 [node name="DownloadButtonBG" type="NinePatchRect" parent="VBox/Center/VBoxContainer/DownloadButton"]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -80.0
-offset_top = -40.0
-offset_right = 80.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("5_bonti")
@@ -111,15 +105,12 @@ patch_margin_bottom = 39
 [node name="UpdateLabel" type="Label" parent="VBox/Center/VBoxContainer/DownloadButton"]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
+anchors_preset = 14
 anchor_top = 0.5
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -175.0
-offset_top = -13.0
-offset_right = 175.0
-offset_bottom = 13.0
+offset_top = -14.5
+offset_bottom = 14.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(0.862745, 0.815686, 0.792157, 1)
@@ -131,7 +122,6 @@ horizontal_alignment = 1
 uppercase = true
 
 [node name="CurrentVersionLabel_4_2UPGRADE" type="Label" parent="VBox/Center/VBoxContainer"]
-unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_gwh4i")
