@@ -7,7 +7,7 @@ const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/ph
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 const FRAME_PREVIEW: StringName = "frame_preview"
-var frame_preview: bool = true
+var _frame_preview: bool = true
 
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
@@ -50,8 +50,7 @@ func _get_property_list() -> Array:
 	property_list.append({
 		"name": Constants.ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
+		"hint": PROPERTY_HINT_LINK
 	})
 
 	property_list.append_array(Properties.add_follow_mode_property())
@@ -153,15 +152,8 @@ func _set(property: StringName, value) -> bool:
 
 	# ZOOM
 	if property == Constants.ZOOM_PROPERTY_NAME:
-		if value.x == 0:
-			Properties.zoom.x = 0.001
-		else:
-			Properties.zoom.x = value.x
-
-		if value.y == 0:
-			Properties.zoom.y = 0.001
-		else:
-			Properties.zoom.y = value.y
+		Properties.zoom = Vector2(absf(value.x), absf(value.y))
+		queue_redraw()
 
 	# ZOOM CLAMP
 	if property == FOLLOW_GROUP_ZOOM_AUTO:
@@ -220,15 +212,12 @@ func _set(property: StringName, value) -> bool:
 				set_camera_2d_limit_all_sides()
 			
 		notify_property_list_changed()
-		queue_redraw()
 	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:
 		tile_map_limit_margin = value
 		set_camera_2d_limit_all_sides()
 	
 	if property == FRAME_PREVIEW:
-		if value == null:
-			value = true
-		frame_preview = value
+		_frame_preview = true if value == null else value
 		queue_redraw()
 
 	return false
@@ -274,7 +263,7 @@ func _get(property: StringName):
 	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:					return tile_map_limit_node_path
 	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:					return tile_map_limit_margin
 	
-	if property == FRAME_PREVIEW: 										return frame_preview
+	if property == FRAME_PREVIEW: 										return _frame_preview
 
 
 ###################
@@ -373,7 +362,7 @@ func _draw():
 	if not OS.has_feature("editor"): return # Only appears in the editor
 	
 	if Engine.is_editor_hint():
-		if not frame_preview or Properties.is_active: return
+		if not _frame_preview or Properties.is_active: return
 		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
 		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
 		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
