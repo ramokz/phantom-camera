@@ -31,8 +31,8 @@ var _is_2D: bool
 
 signal update_editor_viewfinder
 
-var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
-var framed_viewfinder_node: Control
+var viewfinder_scene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+var viewfinder_node: Control
 var viewfinder_needed_check: bool = true
 
 var camera_zoom: Vector2
@@ -298,11 +298,11 @@ func show_viewfinder_in_play() -> void:
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
 
-			framed_viewfinder_node = framed_viewfinder_scene.instantiate()
-			canvas_layer.add_child(framed_viewfinder_node)
+			viewfinder_node = viewfinder_scene.instantiate()
+			canvas_layer.add_child(viewfinder_node)
 	else:
-		if framed_viewfinder_node:
-			framed_viewfinder_node.queue_free()
+		if viewfinder_node:
+			viewfinder_node.queue_free()
 
 
 func _get_pcam_node_group() -> Array[Node]:

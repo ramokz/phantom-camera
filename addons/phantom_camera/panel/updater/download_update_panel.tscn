@@ -1,0 +1,140 @@
+[gd_scene load_steps=11 format=3 uid="uid://b25fl4usw0nlp"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/updater/download_update_panel.gd" id="1_sx5xq"]
+[ext_resource type="Texture2D" uid="uid://cjli3p2b8mfyh" path="res://addons/phantom_camera/icons/PhantomCameraGlowLogo.png" id="2_a6hen"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_h8uk3"]
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="4_gwh4i"]
+[ext_resource type="Texture2D" uid="uid://censw3w53gldn" path="res://addons/phantom_camera/assets/PhantomCameraBtnPrimaryDefault.png" id="5_bonti"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_djsbc"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xtrn6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o12j0"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_buptb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g3tf0"]
+
+[node name="DownloadUpdatePanel" type="Control"]
+custom_minimum_size = Vector2(300, 250)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -61.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_sx5xq")
+
+[node name="DownloadHTTPRequest" type="HTTPRequest" parent="."]
+unique_name_in_owner = true
+
+[node name="Timer" type="Timer" parent="DownloadHTTPRequest"]
+one_shot = true
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = -20
+
+[node name="Logo" type="TextureRect" parent="VBox/VBoxContainer2"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(300, 80)
+layout_mode = 2
+texture = ExtResource("2_a6hen")
+stretch_mode = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBox/VBoxContainer2"]
+layout_mode = 2
+theme_override_constants/separation = -5
+
+[node name="NameLabel" type="Label" parent="VBox/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_fonts/font = ExtResource("3_h8uk3")
+theme_override_font_sizes/font_size = 32
+text = "Phantom Camera"
+horizontal_alignment = 1
+
+[node name="DownloadVersionLabel" type="Label" parent="VBox/VBoxContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_fonts/font = ExtResource("4_gwh4i")
+text = "v1.2.3 is available for download."
+horizontal_alignment = 1
+
+[node name="Center" type="CenterContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBox/Center"]
+layout_mode = 2
+
+[node name="DownloadButton" type="Button" parent="VBox/Center/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 90)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_djsbc")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_xtrn6")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_o12j0")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_buptb")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_g3tf0")
+
+[node name="DownloadButtonBG" type="NinePatchRect" parent="VBox/Center/VBoxContainer/DownloadButton"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_bonti")
+patch_margin_left = 38
+patch_margin_top = 37
+patch_margin_right = 38
+patch_margin_bottom = 39
+
+[node name="UpdateLabel" type="Label" parent="VBox/Center/VBoxContainer/DownloadButton"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -14.5
+offset_bottom = 14.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_h8uk3")
+theme_override_font_sizes/font_size = 20
+text = "Update"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="CurrentVersionLabel_4_2UPGRADE" type="Label" parent="VBox/Center/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_gwh4i")
+text = "Current Version is 0.0.0"
+horizontal_alignment = 1
+
+[node name="Center2" type="CenterContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="NotesButton" type="LinkButton" parent="VBox/Center2"]
+layout_mode = 2
+text = "Release Notes"
+
+[connection signal="pressed" from="VBox/Center2/NotesButton" to="." method="_on_notes_button_pressed"]
