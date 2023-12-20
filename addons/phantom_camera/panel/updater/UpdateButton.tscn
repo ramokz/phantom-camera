@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://cuqkqsp3ikv5u"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/updater/update_button.gd" id="1_xtaw5"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/updater/update_button.gd" id="1_xtaw5"]
 [ext_resource type="PackedScene" uid="uid://b25fl4usw0nlp" path="res://addons/phantom_camera/panel/updater/download_update_panel.tscn" id="2_vtgcx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c7fd1"]
