@@ -60,6 +60,7 @@ theme_override_constants/separation = -5
 
 [node name="NameLabel" type="Label" parent="VBox/VBoxContainer2/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_fonts/font = ExtResource("3_h8uk3")
 theme_override_font_sizes/font_size = 32
 text = "Phantom Camera"
@@ -68,6 +69,7 @@ horizontal_alignment = 1
 [node name="DownloadVersionLabel" type="Label" parent="VBox/VBoxContainer2/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_fonts/font = ExtResource("4_gwh4i")
 text = "v1.2.3 is available for download."
 horizontal_alignment = 1
@@ -133,6 +135,6 @@ layout_mode = 2
 
 [node name="NotesButton" type="LinkButton" parent="VBox/Center2"]
 layout_mode = 2
-text = "Update Release Notes"
+text = "Release Notes"
 
 [connection signal="pressed" from="VBox/Center2/NotesButton" to="." method="_on_notes_button_pressed"]
