@@ -32,6 +32,7 @@ func _ready() -> void:
 	pressed.connect(_on_update_button_pressed)
 	http_request.request_completed.connect(_request_request_completed)
 	download_update_panel.updated.connect(_on_download_update_panel_updated)
+	needs_reload_dialog.confirmed.connect(_on_needs_reload_dialog_confirmed)
 
 
 # Convert a version number to an actually comparable number
