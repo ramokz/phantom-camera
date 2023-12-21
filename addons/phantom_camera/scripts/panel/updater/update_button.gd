@@ -94,6 +94,7 @@ func _on_download_dialog_close_requested() -> void:
 func _on_download_update_panel_updated(updated_to_version: String) -> void:
 	download_dialog.hide()
 
+	needs_reload_dialog.show()
 	needs_reload_dialog.dialog_text = "update.needs_reload"
 	needs_reload_dialog.ok_button_text = "update.reload_ok_button"
 	needs_reload_dialog.cancel_button_text = "update.reload_cancel_button"

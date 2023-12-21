@@ -50,6 +50,7 @@ border_width_bottom = 2
 border_color = Color(0.227451, 0.72549, 0.603922, 1)
 
 [node name="UpdateButton" type="Button"]
+visible = false
 offset_left = 1.0
 offset_right = 149.0
 offset_bottom = 28.0
