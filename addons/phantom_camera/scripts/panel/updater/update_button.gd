@@ -31,6 +31,7 @@ func _ready() -> void:
 	
 	pressed.connect(_on_update_button_pressed)
 	http_request.request_completed.connect(_request_request_completed)
+	download_update_panel.updated.connect(_on_download_update_panel_updated)
 
 
 # Convert a version number to an actually comparable number
@@ -94,19 +95,18 @@ func _on_download_dialog_close_requested() -> void:
 func _on_download_update_panel_updated(updated_to_version: String) -> void:
 	download_dialog.hide()
 
-	needs_reload_dialog.show()
-	needs_reload_dialog.dialog_text = "update.needs_reload"
-	needs_reload_dialog.ok_button_text = "update.reload_ok_button"
-	needs_reload_dialog.cancel_button_text = "update.reload_cancel_button"
+	needs_reload_dialog.dialog_text = "Reload to finish update"
+	needs_reload_dialog.ok_button_text = "Reload"
+	needs_reload_dialog.cancel_button_text = "Cancel"
 	needs_reload_dialog.popup_centered()
 
 	needs_reload = true
-	text = "update.reload_project"
+	text = "Reload Project"
 
 
 func _on_download_update_panel_failed() -> void:
 	download_dialog.hide()
-	update_failed_dialog.dialog_text = "update.failed"
+	update_failed_dialog.dialog_text = "Updated Failed"
 	update_failed_dialog.popup_centered()
 
 
