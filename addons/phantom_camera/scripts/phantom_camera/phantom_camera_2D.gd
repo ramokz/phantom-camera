@@ -589,6 +589,13 @@ func set_follow_damping_value(value: float) -> void:
 func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
 
+## Enables or disables Pixel Perfect following.
+func set_follow_pixel_perfect(value: bool) -> void:
+	Properties.follow_pixel_perfect = value
+## Gets the currents Pixel Perfect.
+func get_follow_pixel_perfect() -> bool:
+	return Properties.follow_pixel_perfect
+
 
 ## Adds a single Node2D to Follow Group array.
 func append_follow_group_node(value: Node2D) -> void:
