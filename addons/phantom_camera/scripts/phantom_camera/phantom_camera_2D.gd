@@ -578,21 +578,21 @@ func get_follow_target_offset() -> Vector2:
 ## Enables or disables Follow Damping.
 func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
-## Gets the currents Follow Damping property.
+## Gets the current Follow Damping property.
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
 
 ## Assigns new Damping value.
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
-## Gets the currents Follow Damping value.
+## Gets the current Follow Damping value.
 func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
 
 ## Enables or disables Pixel Perfect following.
 func set_follow_pixel_perfect(value: bool) -> void:
 	Properties.follow_pixel_perfect = value
-## Gets the currents Pixel Perfect.
+## Gets the current Pixel Perfect property.
 func get_follow_pixel_perfect() -> bool:
 	return Properties.follow_pixel_perfect
 
