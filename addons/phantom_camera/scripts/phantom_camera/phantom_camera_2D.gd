@@ -245,6 +245,7 @@ func _get(property: StringName):
 	if property == FOLLOW_GROUP_ZOOM_MAX: 								return follow_group_zoom_max
 	if property == FOLLOW_GROUP_ZOOM_MARGIN:							return follow_group_zoom_margin
 
+	if property == Constants.FOLLOW_PIXEL_PERFECT_PROPERTY_NAME:        return Properties.follow_pixel_perfect
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 

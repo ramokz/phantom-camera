@@ -172,9 +172,12 @@ func _tween_pcam(delta: float) -> void:
 	tween_duration += delta
 
 	if _is_2D:
-		camera_2D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
-		)
+		var interpolation_destination := _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
+
+		if _active_pcam.Properties.follow_pixel_perfect:
+			camera_2D.set_global_position(Vector2i(interpolation_destination))
+		else:
+			camera_2D.set_global_position(interpolation_destination)
 
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
@@ -238,7 +241,12 @@ func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 
 	if _is_2D:
-		camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
+		if _active_pcam.Properties.follow_pixel_perfect:
+			var pixel_perfect_glob_transform := _active_pcam_2D_glob_transform
+			pixel_perfect_glob_transform.origin = Vector2(Vector2i(pixel_perfect_glob_transform.origin))
+			camera_2D.set_global_transform(pixel_perfect_glob_transform)
+		else:
+			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
 				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.Properties.zoom, delta * _active_pcam.Properties.follow_damping_value)
