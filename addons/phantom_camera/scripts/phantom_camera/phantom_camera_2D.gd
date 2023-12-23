@@ -40,7 +40,7 @@ var camera_2d_limit_smoothed: bool
 const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"  
 const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"  
 var tile_map_limit_node_path: NodePath
-var tile_map_limit_margin: Vector4
+var tile_map_limit_margin: Vector4i
 var tile_map_limit_rect_border: Rect2
 var tile_map_limit_rect_zone: Rect2
 
