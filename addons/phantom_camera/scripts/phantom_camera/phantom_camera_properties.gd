@@ -28,7 +28,6 @@ var follow_has_path_target: bool
 var follow_path_node: Node
 var follow_path_path: NodePath
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
-var follow_pixel_perfect : bool
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
@@ -206,12 +205,6 @@ func add_follow_properties() -> Array:
 				"hint_string": "0.01, 100, 0.01,",
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
-	_property_list.append({
-		"name": Constants.FOLLOW_PIXEL_PERFECT_PROPERTY_NAME,
-		"type": TYPE_BOOL,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
-	})
 
 	return _property_list
 
@@ -320,9 +313,6 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 #				set_process(pcam, false)
 #			_:
 #				set_process(pcam, true)
-
-	if property == Constants.FOLLOW_PIXEL_PERFECT_PROPERTY_NAME:
-		follow_pixel_perfect = value
 
 	if property == Constants.FOLLOW_TARGET_PROPERTY_NAME:
 		if follow_mode != Constants.FollowMode.NONE:

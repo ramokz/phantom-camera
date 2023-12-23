@@ -174,7 +174,7 @@ func _tween_pcam(delta: float) -> void:
 	if _is_2D:
 		var interpolation_destination := _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 
-		if _active_pcam.Properties.follow_pixel_perfect:
+		if _active_pcam.pixel_perfect:
 			camera_2D.set_global_position(interpolation_destination.round())
 		else:
 			camera_2D.set_global_position(interpolation_destination)
@@ -241,7 +241,7 @@ func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 
 	if _is_2D:
-		if _active_pcam.Properties.follow_pixel_perfect:
+		if _active_pcam.pixel_perfect:
 			var pixel_perfect_glob_transform := _active_pcam_2D_glob_transform
 			pixel_perfect_glob_transform.origin = pixel_perfect_glob_transform.origin.round()
 			camera_2D.set_global_transform(pixel_perfect_glob_transform)
