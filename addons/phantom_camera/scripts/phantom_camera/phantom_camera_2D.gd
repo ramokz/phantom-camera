@@ -148,6 +148,7 @@ func _get_property_list() -> Array:
 			"type": TYPE_VECTOR4,
 		})
 
+
 	property_list.append_array(Properties.add_tween_properties())
 
 	property_list.append_array(Properties.add_secondary_properties())
