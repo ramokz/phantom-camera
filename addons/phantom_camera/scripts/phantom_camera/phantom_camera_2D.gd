@@ -184,11 +184,10 @@ func _set(property: StringName, value) -> bool:
 	if property == FOLLOW_GROUP_ZOOM_MARGIN:
 		follow_group_zoom_margin = value
 
-	Properties.set_follow_properties(property, value, self)
-
 	if property == PIXEL_PERFECT_PROPERTY_NAME:
 		pixel_perfect = value
 
+	Properties.set_follow_properties(property, value, self)
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 	
