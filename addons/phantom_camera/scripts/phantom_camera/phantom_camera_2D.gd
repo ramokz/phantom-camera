@@ -9,6 +9,9 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 const FRAME_PREVIEW: StringName = "frame_preview"
 var _frame_preview: bool = true
 
+var pixel_perfect: bool
+
+const PIXEL_PERFECT_PROPERTY_NAME: StringName = "pixel_perfect"
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
 const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_zoom"
@@ -98,6 +101,12 @@ func _get_property_list() -> Array:
 		"name": FRAME_PREVIEW,
 		"type": TYPE_BOOL,
 	})
+	property_list.append({
+		"name": PIXEL_PERFECT_PROPERTY_NAME,
+		"type": TYPE_BOOL,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
 
 	property_list.append({
 		"name": CAMERA_2D_DRAW_LIMITS,
@@ -175,9 +184,10 @@ func _set(property: StringName, value) -> bool:
 	if property == FOLLOW_GROUP_ZOOM_MARGIN:
 		follow_group_zoom_margin = value
 
+	if property == PIXEL_PERFECT_PROPERTY_NAME:
+		pixel_perfect = value
+
 	Properties.set_follow_properties(property, value, self)
-
-
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 	
@@ -240,6 +250,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
 	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:					return Properties.show_viewfinder_in_play
 
+	if property == PIXEL_PERFECT_PROPERTY_NAME:        			return pixel_perfect
 	if property == FOLLOW_GROUP_ZOOM_AUTO:								return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 								return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 								return follow_group_zoom_max
@@ -577,16 +588,23 @@ func get_follow_target_offset() -> Vector2:
 ## Enables or disables Follow Damping.
 func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
-## Gets the currents Follow Damping property.
+## Gets the current Follow Damping property.
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
 
 ## Assigns new Damping value.
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
-## Gets the currents Follow Damping value.
+## Gets the current Follow Damping value.
 func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
+
+## Enables or disables Pixel Perfect following.
+func set_pixel_perfect(value: bool) -> void:
+	pixel_perfect = value
+## Gets the current Pixel Perfect property.
+func get_pixel_perfect() -> bool:
+	return pixel_perfect
 
 
 ## Adds a single Node2D to Follow Group array.
