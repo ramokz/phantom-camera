@@ -46,8 +46,6 @@ var follow_framed_initial_set: bool
 var show_viewfinder_in_play: bool
 var viewport_position: Vector2
 
-var zoom: Vector2 = Vector2.ONE
-
 var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 

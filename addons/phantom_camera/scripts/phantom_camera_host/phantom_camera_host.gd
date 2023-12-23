@@ -180,7 +180,7 @@ func _tween_pcam(delta: float) -> void:
 			camera_2D.set_global_position(interpolation_destination)
 
 		camera_2D.set_zoom(
-			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
+			_tween_interpolate_value(camera_zoom, _active_pcam.zoom)
 		)
 	else:
 		camera_3D.set_global_position(
@@ -249,11 +249,11 @@ func _pcam_follow(delta: float) -> void:
 			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
-				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.Properties.zoom, delta * _active_pcam.Properties.follow_damping_value)
+				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.Properties.follow_damping_value)
 			else:
 				camera_2D.set_zoom(_active_pcam.zoom)
 		else:
-			camera_2D.set_zoom(_active_pcam.Properties.zoom)
+			camera_2D.set_zoom(_active_pcam.zoom)
 	else:
 		camera_3D.set_global_transform(_active_pcam_3D_glob_transform)
 
