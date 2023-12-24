@@ -166,8 +166,14 @@ func _tween_pcam(delta: float) -> void:
 			camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
 			camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
 		return
-	else:
-		_reset_tween_on_load()
+
+	# Run at the first tween frame
+	if tween_duration == 0:
+		for pcam in _get_pcam_node_group():
+			pcam.Properties.has_tweened_onload = true
+		
+		if _is_2D:
+			camera_2D.set_position_smoothing_enabled(false)
 
 	tween_duration += delta
 
