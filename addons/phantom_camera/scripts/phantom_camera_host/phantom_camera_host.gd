@@ -158,13 +158,10 @@ func _find_pcam_with_highest_priority() -> void:
 
 
 func _tween_pcam(delta: float) -> void:
-	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
+	if not _active_pcam.Properties.tween_onload and not _active_pcam.Properties.has_tweened_onload:
 		trigger_pcam_tween = false
-		_reset_tween_on_load()
 		if _is_2D:
-			camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-			camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-			camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+			set_cam_2d_smoothing()
 		return
 
 	# Run at the first tween frame
@@ -232,17 +229,6 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 	)
 
 
-func _reset_tween_on_load() -> void:
-	for pcam in _get_pcam_node_group():
-		pcam.Properties.has_tweened_onload  = true
-
-	if not _is_2D:
-		if _active_pcam.get_camera_3D_resource():
-			camera_3D.set_fov(_active_pcam.get_camera_fov())
-			camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
-			camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
-
-
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 
@@ -274,6 +260,7 @@ func _refresh_transform() -> void:
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
+	# Follwoing a target
 	if not trigger_pcam_tween:
 		_pcam_follow(delta)
 
@@ -288,22 +275,27 @@ func _process_pcam(delta: float) -> void:
 					camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
 					camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
 
+	# When tweening
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
 			_tween_pcam(delta)
-		else:
+		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
 			
 			if _is_2D:
-				camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-				camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-				camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+				set_cam_2d_smoothing()
 			
 				if Engine.is_editor_hint():
 					_active_pcam.queue_redraw()
+
+
+func set_cam_2d_smoothing() -> void:
+	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+	camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
 
 
 func show_viewfinder_in_play() -> void:
