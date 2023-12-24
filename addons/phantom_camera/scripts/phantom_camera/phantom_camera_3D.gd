@@ -386,6 +386,10 @@ func _ready():
 			if not is_instance_valid(_follow_spring_arm_node):
 				_follow_spring_arm_node = SpringArm3D.new()
 				get_parent().add_child.call_deferred(_follow_spring_arm_node)
+	if Properties.follow_mode == Constants.FollowMode.FRAMED:
+		if not Engine.is_editor_hint():
+			_camera_offset = global_position - _get_target_position_offset()
+			_current_rotation = get_global_rotation()
 
 
 func _process(delta: float) -> void:
@@ -474,14 +478,14 @@ func _process(delta: float) -> void:
 							if dead_zone_width == 0 || dead_zone_height == 0:
 								if dead_zone_width == 0 && dead_zone_height != 0:
 									glo_pos = _get_position_offset_distance()
-									glo_pos.z = global_position.z + target_position.z - global_position.z
+									glo_pos.z = target_position.z
 									_interpolate_position(
 										glo_pos,
 										delta
 									)
 								elif dead_zone_width != 0 && dead_zone_height == 0:
 									glo_pos = _get_position_offset_distance()
-									glo_pos.x = global_position.x + target_position.x - global_position.x
+									glo_pos.x = target_position.x
 									_interpolate_position(
 										glo_pos,
 										delta
@@ -505,7 +509,7 @@ func _process(delta: float) -> void:
 									_current_rotation = get_global_rotation()
 								else:
 									_interpolate_position(
-										get_global_position() + target_position - global_position,
+										target_position,
 										delta
 									)
 						else:
