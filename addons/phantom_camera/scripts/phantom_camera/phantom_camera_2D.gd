@@ -6,8 +6,13 @@ extends Node2D
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
+var zoom: Vector2 = Vector2.ONE
+
 const FRAME_PREVIEW: StringName = "frame_preview"
-var frame_preview: bool = true
+var _frame_preview: bool = true
+
+const PIXEL_PERFECT_PROPERTY_NAME: StringName = "pixel_perfect"
+var pixel_perfect: bool
 
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
@@ -18,15 +23,28 @@ var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
-const TILE_MAP_CLAMP_NODE_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_target"
-const TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_preview"
-const TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME: StringName = Constants.FOLLOW_PARAMETERS_NAME + "tile_map_clamp_margin"
-var tile_map_clamp_node: TileMap
-var tile_map_clamp_node_path: NodePath
-var tile_map_clamp_preview: bool
-var tile_map_clamp_margin: Vector4
-var tile_map_clamp_rect_border: Rect2
-var tile_map_clamp_rect_zone: Rect2
+## Limit  
+const CAMERA_2D_LIMIT: StringName = "limit/"
+
+const CAMERA_2D_DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"  
+const CAMERA_2D_LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "left"  
+const CAMERA_2D_LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"  
+const CAMERA_2D_LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
+const CAMERA_2D_LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
+const CAMERA_2D_LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
+static var camera_2d_draw_limits: bool
+var camera_2d_limit_left: int = -10000000
+var camera_2d_limit_top: int = -10000000
+var camera_2d_limit_right: int = 10000000  
+var camera_2d_limit_bottom: int = 10000000
+var camera_2d_limit_smoothed: bool
+
+const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"  
+const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"  
+var tile_map_limit_node_path: NodePath
+var tile_map_limit_margin: Vector4i
+var tile_map_limit_rect_border: Rect2
+var tile_map_limit_rect_zone: Rect2
 
 var _camera_offset: Vector2
 
@@ -37,8 +55,7 @@ func _get_property_list() -> Array:
 	property_list.append({
 		"name": Constants.ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
-		"hint": PROPERTY_HINT_NONE,
-		"usage": PROPERTY_USAGE_DEFAULT,
+		"hint": PROPERTY_HINT_LINK
 	})
 
 	property_list.append_array(Properties.add_follow_mode_property())
@@ -82,33 +99,62 @@ func _get_property_list() -> Array:
 		property_list.append_array(Properties.add_follow_properties())
 		property_list.append_array(Properties.add_follow_framed())
 
+	property_list.append({
+		"name": FRAME_PREVIEW,
+		"type": TYPE_BOOL,
+	})
 
+	property_list.append({
+		"name": PIXEL_PERFECT_PROPERTY_NAME,
+		"type": TYPE_BOOL,
+		"hint": PROPERTY_HINT_NONE,
+		"usage": PROPERTY_USAGE_DEFAULT,
+	})
+
+	property_list.append({
+		"name": CAMERA_2D_DRAW_LIMITS,
+		"type": TYPE_BOOL
+	})
+
+	if not tile_map_limit_node_path:
 		property_list.append({
-			"name": TILE_MAP_CLAMP_NODE_PROPERTY_NAME,
-			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
-			"hint_string": "TileMap",
+			"name": CAMERA_2D_LIMIT_LEFT,
+			"type": TYPE_INT
 		})
-		if tile_map_clamp_node_path:
-			property_list.append({
-				"name": TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME,
-				"type": TYPE_VECTOR4,
-			})
+		property_list.append({
+			"name": CAMERA_2D_LIMIT_TOP,
+			"type": TYPE_INT
+		})
+		property_list.append({
+			"name": CAMERA_2D_LIMIT_RIGHT,
+			"type": TYPE_INT
+		})
+		property_list.append({
+			"name": CAMERA_2D_LIMIT_BOTTOM,
+			"type": TYPE_INT
+		})
+	property_list.append({
+		"name": CAMERA_2D_LIMIT_SMOOTHED,
+		"type": TYPE_BOOL
+	})
+		
 
-			property_list.append({
-				"name": TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME,
-				"type": TYPE_BOOL,
-			})
+	property_list.append({
+		"name": TILE_MAP_LIMIT_NODE_PROPERTY_NAME,
+		"type": TYPE_NODE_PATH,
+		"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
+		"hint_string": "TileMap",
+	})
+	if tile_map_limit_node_path:
+		property_list.append({
+			"name": TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME,
+			"type": TYPE_VECTOR4,
+		})
 
 
 	property_list.append_array(Properties.add_tween_properties())
 
 	property_list.append_array(Properties.add_secondary_properties())
-	
-	property_list.append({
-		"name": FRAME_PREVIEW,
-		"type": TYPE_BOOL,
-	})
 
 	return property_list
 
@@ -118,15 +164,8 @@ func _set(property: StringName, value) -> bool:
 
 	# ZOOM
 	if property == Constants.ZOOM_PROPERTY_NAME:
-		if value.x == 0:
-			Properties.zoom.x = 0.001
-		else:
-			Properties.zoom.x = value.x
-
-		if value.y == 0:
-			Properties.zoom.y = 0.001
-		else:
-			Properties.zoom.y = value.y
+		zoom = Vector2(absf(value.x), absf(value.y))
+		queue_redraw()
 
 	# ZOOM CLAMP
 	if property == FOLLOW_GROUP_ZOOM_AUTO:
@@ -148,33 +187,50 @@ func _set(property: StringName, value) -> bool:
 	if property == FOLLOW_GROUP_ZOOM_MARGIN:
 		follow_group_zoom_margin = value
 
+	if property == PIXEL_PERFECT_PROPERTY_NAME:
+		pixel_perfect = value
+
 	Properties.set_follow_properties(property, value, self)
-
-	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:
-		if value is NodePath:
-			tile_map_clamp_node_path = value
-		elif value is TileMap:
-			if is_instance_valid(value):
-				tile_map_clamp_node_path = value.get_path()
-		if has_node(tile_map_clamp_node_path):
-			tile_map_clamp_node = get_node(tile_map_clamp_node_path)
-
-		notify_property_list_changed()
-		queue_redraw()
-	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:
-		tile_map_clamp_margin = value
-		queue_redraw()
-	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:
-		tile_map_clamp_preview = value
-		queue_redraw()
-
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 	
+	if property == CAMERA_2D_DRAW_LIMITS:
+		camera_2d_draw_limits = value
+		if Engine.is_editor_hint():
+			_draw_camera_2d_limit()
+	if property == CAMERA_2D_LIMIT_LEFT:
+		camera_2d_limit_left = value
+		_set_camera_2d_limit(SIDE_LEFT, value)
+	if property == CAMERA_2D_LIMIT_TOP:
+		camera_2d_limit_top = value
+		_set_camera_2d_limit(SIDE_TOP, value)
+	if property == CAMERA_2D_LIMIT_RIGHT:
+		camera_2d_limit_right = value
+		_set_camera_2d_limit(SIDE_RIGHT, value)
+	if property == CAMERA_2D_LIMIT_BOTTOM:
+		camera_2d_limit_bottom = value
+		_set_camera_2d_limit(SIDE_BOTTOM, value)
+	if property == CAMERA_2D_LIMIT_SMOOTHED:
+		camera_2d_limit_smoothed = value
+	
+	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:
+		if value is NodePath:
+			value = value as NodePath
+			tile_map_limit_node_path = value
+			
+			set_camera_2d_limit_all_sides()
+		elif value is TileMap:
+			if is_instance_valid(value):
+				tile_map_limit_node_path = value.get_path()
+				set_camera_2d_limit_all_sides()
+			
+		notify_property_list_changed()
+	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:
+		tile_map_limit_margin = value
+		set_camera_2d_limit_all_sides()
+	
 	if property == FRAME_PREVIEW:
-		if value == null:
-			value = true
-		frame_preview = value
+		_frame_preview = true if value == null else value
 		queue_redraw()
 
 	return false
@@ -184,7 +240,7 @@ func _get(property: StringName):
 	if property == Constants.PRIORITY_OVERRIDE: 						return Properties.priority_override
 	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
-	if property == Constants.ZOOM_PROPERTY_NAME: 						return Properties.zoom
+	if property == Constants.ZOOM_PROPERTY_NAME: 						return zoom
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 				return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:		return Properties.follow_target_offset_2D
@@ -195,8 +251,9 @@ func _get(property: StringName):
 
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME:	return Properties.follow_framed_dead_zone_width
 	if property == Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME:		return Properties.follow_framed_dead_zone_height
-	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:					return Properties.show_viewfinder_in_play
+	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:			return Properties.show_viewfinder_in_play
 
+	if property == PIXEL_PERFECT_PROPERTY_NAME:        					return pixel_perfect
 	if property == FOLLOW_GROUP_ZOOM_AUTO:								return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 								return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 								return follow_group_zoom_max
@@ -205,15 +262,22 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-	if property == TILE_MAP_CLAMP_NODE_PROPERTY_NAME:					return tile_map_clamp_node_path
-	if property == TILE_MAP_CLAMP_MARGIN_PROPERTY_NAME:					return tile_map_clamp_margin
-	if property == TILE_MAP_CLAMP_PREVIEW_PROPERTY_NAME:				return tile_map_clamp_preview
 
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
-	if property == FRAME_PREVIEW: 										return frame_preview
+	
+	if property == CAMERA_2D_DRAW_LIMITS:								return camera_2d_draw_limits
+	if property == CAMERA_2D_LIMIT_LEFT:								return camera_2d_limit_left
+	if property == CAMERA_2D_LIMIT_TOP:									return camera_2d_limit_top
+	if property == CAMERA_2D_LIMIT_RIGHT:								return camera_2d_limit_right
+	if property == CAMERA_2D_LIMIT_BOTTOM:								return camera_2d_limit_bottom
+	if property == CAMERA_2D_LIMIT_SMOOTHED:							return camera_2d_limit_smoothed
+	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:					return tile_map_limit_node_path
+	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:					return tile_map_limit_margin
+	
+	if property == FRAME_PREVIEW: 										return _frame_preview
 
 
 ###################
@@ -223,8 +287,6 @@ func _enter_tree() -> void:
 	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
-	if has_node(tile_map_clamp_node_path):
-		tile_map_clamp_node = get_node(tile_map_clamp_node_path)
 
 
 func _exit_tree() -> void:
@@ -247,14 +309,14 @@ func _process(delta: float) -> void:
 	match Properties.follow_mode:
 		Constants.FollowMode.GLUED:
 			if Properties.follow_target_node:
-				_interpolate_position(Properties.follow_target_node.position, delta)
+				set_global_position(Properties.follow_target_node.get_global_position())
 		Constants.FollowMode.SIMPLE:
 			if Properties.follow_target_node:
-				_interpolate_position(_target_position_with_offset(), delta)
+				set_global_position(_target_position_with_offset())
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					_interpolate_position(Properties.follow_group_nodes_2D[0].get_global_position(), delta)
+					set_global_position(Properties.follow_group_nodes_2D[0].get_global_position())
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:
@@ -270,18 +332,17 @@ func _process(delta: float) -> void:
 					if follow_group_zoom_auto:
 						var screen_size: Vector2 = get_viewport_rect().size
 						if rect.size.x > rect.size.y * screen_size.aspect():
-							Properties.zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+							zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
-							Properties.zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-					_interpolate_position(rect.get_center(), delta)
+							zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+					set_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
-					_interpolate_position(
+					set_global_position(
 						Properties.follow_path_node.curve.get_closest_point(
 							Properties.follow_target_node.get_global_position() - path_position
-						) + path_position, \
-						delta)
+						) + path_position)
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
@@ -296,15 +357,15 @@ func _process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								_interpolate_position(_target_position_with_offset(), delta)
+								set_global_position(_target_position_with_offset())
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _target_position_with_offset()
 								glo_pos.x += target_position.x - global_position.x
-								_interpolate_position(glo_pos, delta)
+								set_global_position(glo_pos)
 							else:
-								_interpolate_position(_target_position_with_offset(), delta)
+								set_global_position(_target_position_with_offset())
 						else:
-							_interpolate_position(target_position, delta)
+							set_global_position(target_position)
 					else:
 						_camera_offset = get_global_position() - _target_position_with_offset()
 				else:
@@ -312,72 +373,76 @@ func _process(delta: float) -> void:
 
 
 func _draw():
-	if tile_map_clamp_preview and is_instance_valid(tile_map_clamp_node) and OS.has_feature("editor"): # Only appears in the editor
-		draw_rect(tile_map_clamp_rect_border, Constants.COLOR_PCAM, false, 2)
-		draw_rect(tile_map_clamp_rect_zone, Constants.COLOR_PCAM_33)
+	if not OS.has_feature("editor"): return # Only appears in the editor
 	
 	if Engine.is_editor_hint():
-		if not frame_preview or Properties.is_active: return
+		if not _frame_preview or Properties.is_active: return
 		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
 		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
 		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
 		
 		draw_rect(Rect2(-screen_size_zoom / 2, screen_size_zoom), Color("3ab99a"), false, 2)
-		
-#	print(get_viewport().size)
-#	print(get_viewport_rect().size)
-#	print(OS.get_windows_size)
-	
 
 
 func _target_position_with_offset() -> Vector2:
 	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
 
 
-func _interpolate_position(_global_position: Vector2, delta: float, target: Node2D = self) -> void:
-	if is_instance_valid(tile_map_clamp_node):
-		var tile_map_size: Vector2 = Vector2(tile_map_clamp_node.get_used_rect().size) * Vector2(tile_map_clamp_node.tile_set.tile_size) * tile_map_clamp_node.get_scale()
-		var tile_map_position: Vector2 = tile_map_clamp_node.get_global_position() + Vector2(tile_map_clamp_node.get_used_rect().position) * Vector2(tile_map_clamp_node.tile_set.tile_size) * tile_map_clamp_node.get_scale()
+func _has_valid_pcam_owner() -> bool:
+	if not is_instance_valid(get_pcam_host_owner()):
+		return false
+	if not is_instance_valid(get_pcam_host_owner().camera_2D):
+		return false
+	
+	return true
+
+func _draw_camera_2d_limit() -> void:
+	if _has_valid_pcam_owner():
+		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(camera_2d_draw_limits)
+
+func _set_camera_2d_limit(side: int, limit: int) -> void:
+	_has_valid_pcam_owner()
+	if not is_active(): return
+	get_pcam_host_owner().camera_2D.set_limit(side, limit)
+
+func set_camera_2d_limit_all_sides() -> void:
+	if not _has_valid_pcam_owner() or not is_active(): return
+	
+	var sides_limit: Vector4
+	if tile_map_limit_node_path:
+		if not is_instance_valid(get_node(tile_map_limit_node_path)): return
+		
+		var tile_map: TileMap = get_node(tile_map_limit_node_path)
+		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
+		var tile_map_position: Vector2 = tile_map.get_global_position() + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
 		## Calculates the Rect2 based on the Tile Map position and size
-		tile_map_clamp_rect_border = Rect2(tile_map_position, tile_map_size)
+		tile_map_limit_rect_border = Rect2(tile_map_position, tile_map_size)
 
 		## Calculates the Rect2 based on the Tile Map position and size + margin
-		tile_map_clamp_rect_zone = Rect2(
-			tile_map_clamp_rect_border.position + Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y),
-			tile_map_clamp_rect_border.size - Vector2(tile_map_clamp_margin.x, tile_map_clamp_margin.y) - Vector2(tile_map_clamp_margin.z, tile_map_clamp_margin.w)
+		tile_map_limit_rect_zone = Rect2(
+			tile_map_limit_rect_border.position + Vector2(tile_map_limit_margin.x, tile_map_limit_margin.y),
+			tile_map_limit_rect_border.size - Vector2(tile_map_limit_margin.x, tile_map_limit_margin.y) - Vector2(tile_map_limit_margin.z, tile_map_limit_margin.w)
 		)
-
-		# Clamps the movement to the margin'ed area of the clamp Rect2
-		var clamped_position: Vector2
-		clamped_position.x = clamp(
-			_global_position.x,
-			tile_map_clamp_rect_zone.position.x,
-			tile_map_clamp_rect_zone.position.x + tile_map_clamp_rect_zone.size.x
-		)
-		clamped_position.y = clamp(
-			_global_position.y,
-			tile_map_clamp_rect_zone.position.y,
-			tile_map_clamp_rect_zone.position.y + tile_map_clamp_rect_zone.size.y
-		)
-
-		_global_position = clamped_position
-
-		tile_map_clamp_rect_border.position -= get_global_position()
-		tile_map_clamp_rect_zone.position -= get_global_position()
-
-		if tile_map_clamp_preview and is_instance_valid(tile_map_clamp_node) and OS.has_feature("editor"): # Only appears in the editor
-			queue_redraw()
-
-	if Properties.follow_has_damping:
-		target.set_global_position(
-			target.get_global_position().lerp(
-				_global_position,
-				delta * Properties.follow_damping_value
-			)
-		)
+		
+		# Left
+		sides_limit.x = tile_map_limit_rect_zone.position.x
+		# Top
+		sides_limit.y = tile_map_limit_rect_zone.position.y
+		# Right
+		sides_limit.z = tile_map_limit_rect_zone.position.x + tile_map_limit_rect_zone.size.x
+		# Bottom
+		sides_limit.w = tile_map_limit_rect_zone.position.y + tile_map_limit_rect_zone.size.y
 	else:
-		target.set_global_position(_global_position)
+		sides_limit.x = camera_2d_limit_left
+		sides_limit.y = camera_2d_limit_top
+		sides_limit.z = camera_2d_limit_right
+		sides_limit.w = camera_2d_limit_bottom
+	
+	_set_camera_2d_limit(SIDE_LEFT, sides_limit.x)
+	_set_camera_2d_limit(SIDE_TOP, sides_limit.y)
+	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
+	_set_camera_2d_limit(SIDE_BOTTOM, sides_limit.w)
 
 ##################
 # Public Functions
@@ -392,10 +457,10 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
-	Properties.zoom = value
+	zoom = value
 ## Gets current Zoom value.
 func get_zoom() -> Vector2:
-	return Properties.zoom
+	return zoom
 
 
 ## Assigns new Priority value.
@@ -526,16 +591,23 @@ func get_follow_target_offset() -> Vector2:
 ## Enables or disables Follow Damping.
 func set_follow_has_damping(value: bool) -> void:
 	Properties.follow_has_damping = value
-## Gets the currents Follow Damping property.
+## Gets the current Follow Damping property.
 func get_follow_has_damping() -> bool:
 	return Properties.follow_has_damping
 
 ## Assigns new Damping value.
 func set_follow_damping_value(value: float) -> void:
 	Properties.follow_damping_value = value
-## Gets the currents Follow Damping value.
+## Gets the current Follow Damping value.
 func get_follow_damping_value() -> float:
 	return Properties.follow_damping_value
+
+## Enables or disables Pixel Perfect following.
+func set_pixel_perfect(value: bool) -> void:
+	pixel_perfect = value
+## Gets the current Pixel Perfect property.
+func get_pixel_perfect() -> bool:
+	return pixel_perfect
 
 
 ## Adds a single Node2D to Follow Group array.
@@ -594,23 +666,40 @@ func set_zoom_auto_margin(value: Vector4) -> void:
 func get_zoom_auto_margin() -> Vector4:
 	return follow_group_zoom_margin
 
+## Sets the Camera2D Limit value.
+func set_limit(side: int, value: int) -> void:
+	match side:
+		SIDE_LEFT: 		camera_2d_limit_left = value
+		SIDE_TOP: 		camera_2d_limit_top = value
+		SIDE_RIGHT: 	camera_2d_limit_right = value
+		SIDE_BOTTOM: 	camera_2d_limit_bottom = value
+		_:				printerr("Not a valid Side parameter.")
+## Gets the Camera2D Limit value.
+func get_camera_2d_limit(side: int) -> int:
+	match side:
+		SIDE_LEFT: 		return camera_2d_limit_left
+		SIDE_TOP: 		return camera_2d_limit_left
+		SIDE_RIGHT: 	return camera_2d_limit_left
+		SIDE_BOTTOM: 	return camera_2d_limit_left
+		_:
+						printerr("Not a valid Side parameter.")
+						return -1
 
-## Set Tile Map Clamp Node
-func set_tile_map_clamp_node(value: TileMap) -> void:
-	tile_map_clamp_node_path = value.get_path()
-	tile_map_clamp_node = get_node(tile_map_clamp_node_path)
+## Set Tile Map Clamp Node.
+func set_tile_map_limit_node(value: TileMap) -> void:
+	tile_map_limit_node_path = value.get_path()
 ## Get Tile Map Clamp Node
-func get_tile_map_clamp_node() -> TileMap:
-	if not get_node_or_null(tile_map_clamp_node_path):
+func get_tile_map_limit_node() -> TileMap:
+	if not get_node_or_null(tile_map_limit_node_path):
 		printerr("No Tile Map Clamp Node set")
-	return get_node(tile_map_clamp_node_path)
+	return get_node(tile_map_limit_node_path)
 
-## Set Tile Map Clamp Margin
-func set_tile_map_clamp_margin(value: Vector4) -> void:
-	tile_map_clamp_margin = value
-## Get Tile Map Clamp Margin
-func get_tile_map_clamp_margin() -> Vector4:
-	return tile_map_clamp_margin
+## Set Tile Map Clamp Margin.
+func set_tile_map_limit_margin(value: Vector4) -> void:
+	tile_map_limit_margin = value
+## Get Tile Map Clamp Margin.
+func get_tile_map_limit_margin() -> Vector4:
+	return tile_map_limit_margin
 
 
 ## Gets Interactive Update Mode property.

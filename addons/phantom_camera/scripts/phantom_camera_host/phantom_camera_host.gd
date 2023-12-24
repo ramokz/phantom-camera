@@ -31,8 +31,8 @@ var _is_2D: bool
 
 signal update_editor_viewfinder
 
-var framed_viewfinder_scene = load("res://addons/phantom_camera/framed_viewfinder/framed_viewfinder_panel.tscn")
-var framed_viewfinder_node: Control
+var viewfinder_scene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+var viewfinder_node: Control
 var viewfinder_needed_check: bool = true
 
 var camera_zoom: Vector2
@@ -114,10 +114,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _active_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = camera_2D.get_transform()
+			_prev_active_pcam_2D_transform = camera_2D.get_global_transform()
 			_active_pcam.queue_redraw()
 		else:
-			_prev_active_pcam_3D_transform = camera_3D.get_transform()
+			_prev_active_pcam_3D_transform = camera_3D.get_global_transform()
 			_prev_camera_fov = camera_3D.get_fov()
 			_prev_camera_h_offset = camera_3D.get_h_offset()
 			_prev_camera_v_offset = camera_3D.get_v_offset()
@@ -134,15 +134,16 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
+		_active_pcam.set_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
 
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = _active_pcam.get_transform()
+			_prev_active_pcam_2D_transform = _active_pcam.get_global_transform()
 		else:
-			_prev_active_pcam_3D_transform = _active_pcam.get_transform()
+			_prev_active_pcam_3D_transform = _active_pcam.get_global_transform()
 
 	tween_duration = 0
 	trigger_pcam_tween = true
@@ -157,28 +158,36 @@ func _find_pcam_with_highest_priority() -> void:
 
 
 func _tween_pcam(delta: float) -> void:
-	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
+	if not _active_pcam.Properties.tween_onload and not _active_pcam.Properties.has_tweened_onload:
 		trigger_pcam_tween = false
-		_reset_tween_on_load()
+		if _is_2D:
+			set_cam_2d_smoothing()
 		return
-	else:
-		_reset_tween_on_load()
+
+	# Run at the first tween frame
+	if tween_duration == 0:
+		for pcam in _get_pcam_node_group():
+			pcam.Properties.has_tweened_onload = true
+		
+		if _is_2D:
+			camera_2D.set_position_smoothing_enabled(false)
 
 	tween_duration += delta
 
 	if _is_2D:
-		var root_node_pos: Vector2 = get_tree().root.get_child(0).global_position
-		camera_2D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_2D_transform.origin + root_node_pos, _active_pcam_2D_glob_transform.origin)
-		)
+		var interpolation_destination := _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
+
+		if _active_pcam.pixel_perfect:
+			camera_2D.set_global_position(interpolation_destination.round())
+		else:
+			camera_2D.set_global_position(interpolation_destination)
 
 		camera_2D.set_zoom(
-			_tween_interpolate_value(camera_zoom, _active_pcam.Properties.zoom)
+			_tween_interpolate_value(camera_zoom, _active_pcam.zoom)
 		)
 	else:
-		var root_node_pos: Vector3 = get_tree().root.get_child(0).global_position
 		camera_3D.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin + root_node_pos, _active_pcam_3D_glob_transform.origin)
+			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
 		)
 
 		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
@@ -220,29 +229,23 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 	)
 
 
-func _reset_tween_on_load() -> void:
-	for pcam in _get_pcam_node_group():
-		pcam.Properties.has_tweened_onload  = true
-
-	if not _is_2D:
-		if _active_pcam.get_camera_3D_resource():
-			camera_3D.set_fov(_active_pcam.get_camera_fov())
-			camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
-			camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
-
-
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 
 	if _is_2D:
-		camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
+		if _active_pcam.pixel_perfect:
+			var pixel_perfect_glob_transform := _active_pcam_2D_glob_transform
+			pixel_perfect_glob_transform.origin = pixel_perfect_glob_transform.origin.round()
+			camera_2D.set_global_transform(pixel_perfect_glob_transform)
+		else:
+			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
 		if _active_pcam.Properties.has_follow_group:
 			if _active_pcam.Properties.follow_has_damping:
-				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.Properties.zoom, delta * _active_pcam.Properties.follow_damping_value)
+				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.Properties.follow_damping_value)
 			else:
 				camera_2D.set_zoom(_active_pcam.zoom)
 		else:
-			camera_2D.set_zoom(_active_pcam.Properties.zoom)
+			camera_2D.set_zoom(_active_pcam.zoom)
 	else:
 		camera_3D.set_global_transform(_active_pcam_3D_glob_transform)
 
@@ -257,6 +260,7 @@ func _refresh_transform() -> void:
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
+	# Follwoing a target
 	if not trigger_pcam_tween:
 		_pcam_follow(delta)
 
@@ -271,16 +275,27 @@ func _process_pcam(delta: float) -> void:
 					camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
 					camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
 
+	# When tweening
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
 			_tween_pcam(delta)
-		else:
+		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
-			if Engine.is_editor_hint() and _is_2D:
-				_active_pcam.queue_redraw()
+			
+			if _is_2D:
+				set_cam_2d_smoothing()
+			
+				if Engine.is_editor_hint():
+					_active_pcam.queue_redraw()
+
+
+func set_cam_2d_smoothing() -> void:
+	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+	camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
 
 
 func show_viewfinder_in_play() -> void:
@@ -289,11 +304,11 @@ func show_viewfinder_in_play() -> void:
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
 
-			framed_viewfinder_node = framed_viewfinder_scene.instantiate()
-			canvas_layer.add_child(framed_viewfinder_node)
+			viewfinder_node = viewfinder_scene.instantiate()
+			canvas_layer.add_child(viewfinder_node)
 	else:
-		if framed_viewfinder_node:
-			framed_viewfinder_node.queue_free()
+		if viewfinder_node:
+			viewfinder_node.queue_free()
 
 
 func _get_pcam_node_group() -> Array[Node]:

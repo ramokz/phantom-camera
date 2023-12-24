@@ -2,17 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dk7omm0x44suj"
-path="res://.godot/imported/SceneTypesIcon.svg-66e2255bd3398007bec03a5cbfa4d0aa.ctex"
+uid="uid://pvr8mbvl1onm"
+path="res://.godot/imported/PhantomCameraBtnPrimaryHover.png-3d2e4d225f6a86ce8a9c981ee7926a16.ctex"
 metadata={
-"has_editor_variant": true,
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg"
-dest_files=["res://.godot/imported/SceneTypesIcon.svg-66e2255bd3398007bec03a5cbfa4d0aa.ctex"]
+source_file="res://addons/phantom_camera/assets/PhantomCameraBtnPrimaryHover.png"
+dest_files=["res://.godot/imported/PhantomCameraBtnPrimaryHover.png-3d2e4d225f6a86ce8a9c981ee7926a16.ctex"]
 
 [params]
 
@@ -33,6 +32,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=true
-editor/convert_colors_with_editor_theme=false

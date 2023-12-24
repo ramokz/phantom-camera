@@ -864,6 +864,7 @@ func get_third_person_rotation_degrees() -> Vector3:
 ## Assigns a new Third Person SpringArm3D Length value.
 func set_spring_arm_spring_length(value: float) -> void:
 	follow_distance = value
+	_follow_spring_arm_node.set_length(value)
 ## Gets Third Person SpringArm3D Length value.
 func get_spring_arm_spring_length() -> float:
 	return follow_distance
