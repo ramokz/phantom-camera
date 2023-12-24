@@ -260,7 +260,7 @@ func _refresh_transform() -> void:
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
-	# Follwoing a target
+	# When following
 	if not trigger_pcam_tween:
 		_pcam_follow(delta)
 
