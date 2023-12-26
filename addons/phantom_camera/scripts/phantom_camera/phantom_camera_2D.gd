@@ -18,15 +18,19 @@ const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + 
 
 const CAMERA_2D_LIMIT: StringName = "limit/"
 
-const CAMERA_2D_DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"  
-const CAMERA_2D_LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "left"  
-const CAMERA_2D_LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"  
-const CAMERA_2D_LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
-const CAMERA_2D_LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
-const CAMERA_2D_LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
+const DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"  
+const LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "left"  
+const LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"  
+const LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
+const LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
+const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
+
+const LIMIT_TILE_MAP_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"
 
 const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"
 const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"
+
+const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "limit_margin"
 
 #endregion
 
@@ -64,19 +68,18 @@ var follow_group_zoom_min: float = 1
 var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
-static var camera_2d_draw_limits: bool
+static var draw_limits: bool
+var limit_default: int = 10000000
+var limit_left: int = -limit_default
+var limit_top: int = -limit_default
+var limit_right: int = limit_default  
+var limit_bottom: int = limit_default
+var limit_tile_map_node_path: NodePath
+var limit_margin: Vector4i
+var limit_tile_map_rect_border: Rect2
+var limit_tile_map_rect_zone: Rect2
+var limit_smoothed: bool
 
-var camera_2d_limit_default: int = 10000000
-var camera_2d_limit_left: int = -camera_2d_limit_default
-var camera_2d_limit_top: int = -camera_2d_limit_default
-var camera_2d_limit_right: int = camera_2d_limit_default  
-var camera_2d_limit_bottom: int = camera_2d_limit_default
-var camera_2d_limit_smoothed: bool
-
-var tile_map_limit_node_path: NodePath
-var tile_map_limit_margin: Vector4i
-var tile_map_limit_rect_border: Rect2
-var tile_map_limit_rect_zone: Rect2
 
 var _camera_offset: Vector2
 
@@ -149,43 +152,43 @@ func _get_property_list() -> Array:
 	})
 
 	property_list.append({
-		"name": CAMERA_2D_DRAW_LIMITS,
+		"name": DRAW_LIMITS,
 		"type": TYPE_BOOL
 	})
 
-	if not tile_map_limit_node_path:
+	if not limit_tile_map_node_path:
 		property_list.append({
-			"name": CAMERA_2D_LIMIT_LEFT,
+			"name": LIMIT_LEFT,
 			"type": TYPE_INT
 		})
 		property_list.append({
-			"name": CAMERA_2D_LIMIT_TOP,
+			"name": LIMIT_TOP,
 			"type": TYPE_INT
 		})
 		property_list.append({
-			"name": CAMERA_2D_LIMIT_RIGHT,
+			"name": LIMIT_RIGHT,
 			"type": TYPE_INT
 		})
 		property_list.append({
-			"name": CAMERA_2D_LIMIT_BOTTOM,
+			"name": LIMIT_BOTTOM,
 			"type": TYPE_INT
 		})
 	property_list.append({
-		"name": CAMERA_2D_LIMIT_SMOOTHED,
+		"name": LIMIT_SMOOTHED,
 		"type": TYPE_BOOL
 	})
 		
 
 	property_list.append({
-		"name": TILE_MAP_LIMIT_NODE_PROPERTY_NAME,
+		"name": LIMIT_TILE_MAP_NODE_PROPERTY_NAME,
 		"type": TYPE_NODE_PATH,
 		"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
 		"hint_string": "TileMap",
 	})
-	if tile_map_limit_node_path:
+	if limit_tile_map_node_path:
 		property_list.append({
-			"name": TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME,
-			"type": TYPE_VECTOR4,
+			"name": LIMIT_MARGIN_PROPERTY_NAME,
+			"type": TYPE_VECTOR4I,
 		})
 
 
@@ -231,39 +234,39 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
 	
-	if property == CAMERA_2D_DRAW_LIMITS:
-		camera_2d_draw_limits = value
+	if property == DRAW_LIMITS:
+		draw_limits = value
 		if Engine.is_editor_hint():
 			_draw_camera_2d_limit()
-	if property == CAMERA_2D_LIMIT_LEFT:
-		camera_2d_limit_left = value
-		_set_camera_2d_limit(SIDE_LEFT, value)
-	if property == CAMERA_2D_LIMIT_TOP:
-		camera_2d_limit_top = value
-		_set_camera_2d_limit(SIDE_TOP, value)
-	if property == CAMERA_2D_LIMIT_RIGHT:
-		camera_2d_limit_right = value
-		_set_camera_2d_limit(SIDE_RIGHT, value)
-	if property == CAMERA_2D_LIMIT_BOTTOM:
-		camera_2d_limit_bottom = value
-		_set_camera_2d_limit(SIDE_BOTTOM, value)
-	if property == CAMERA_2D_LIMIT_SMOOTHED:
-		camera_2d_limit_smoothed = value
+	if property == LIMIT_LEFT:
+		limit_left = value
+		_set_limit(SIDE_LEFT, value)
+	if property == LIMIT_TOP:
+		limit_top = value
+		_set_limit(SIDE_TOP, value)
+	if property == LIMIT_RIGHT:
+		limit_right = value
+		_set_limit(SIDE_RIGHT, value)
+	if property == LIMIT_BOTTOM:
+		limit_bottom = value
+		_set_limit(SIDE_BOTTOM, value)
+	if property == LIMIT_SMOOTHED:
+		limit_smoothed = value
 	
-	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:
+	if property == LIMIT_TILE_MAP_NODE_PROPERTY_NAME:
 		if value is NodePath:
 			value = value as NodePath
-			tile_map_limit_node_path = value
+			limit_tile_map_node_path = value
 			
 			update_camera_2d_limit_all_sides()
 		elif value is TileMap:
 			if is_instance_valid(value):
-				tile_map_limit_node_path = value.get_path()
+				limit_tile_map_node_path = value.get_path()
 				update_camera_2d_limit_all_sides()
 			
 		notify_property_list_changed()
-	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:
-		tile_map_limit_margin = value
+	if property == LIMIT_MARGIN_PROPERTY_NAME:
+		limit_margin = value
 		update_camera_2d_limit_all_sides()
 	
 	if property == FRAME_PREVIEW:
@@ -291,6 +294,7 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:			return Properties.show_viewfinder_in_play
 
 	if property == PIXEL_PERFECT_PROPERTY_NAME:        					return pixel_perfect
+	
 	if property == FOLLOW_GROUP_ZOOM_AUTO:								return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 								return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 								return follow_group_zoom_max
@@ -299,20 +303,19 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
-
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:				return Properties.tween_resource
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
 	
-	if property == CAMERA_2D_DRAW_LIMITS:								return camera_2d_draw_limits
-	if property == CAMERA_2D_LIMIT_LEFT:								return camera_2d_limit_left
-	if property == CAMERA_2D_LIMIT_TOP:									return camera_2d_limit_top
-	if property == CAMERA_2D_LIMIT_RIGHT:								return camera_2d_limit_right
-	if property == CAMERA_2D_LIMIT_BOTTOM:								return camera_2d_limit_bottom
-	if property == CAMERA_2D_LIMIT_SMOOTHED:							return camera_2d_limit_smoothed
-	if property == TILE_MAP_LIMIT_NODE_PROPERTY_NAME:					return tile_map_limit_node_path
-	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:					return tile_map_limit_margin
+	if property == DRAW_LIMITS:											return draw_limits
+	if property == LIMIT_LEFT:											return limit_left
+	if property == LIMIT_TOP:											return limit_top
+	if property == LIMIT_RIGHT:											return limit_right
+	if property == LIMIT_BOTTOM:										return limit_bottom
+	if property == LIMIT_TILE_MAP_NODE_PROPERTY_NAME:					return limit_tile_map_node_path
+	if property == LIMIT_MARGIN_PROPERTY_NAME:							return limit_margin
+	if property == LIMIT_SMOOTHED:										return limit_smoothed
 	
 	if property == FRAME_PREVIEW: 										return _frame_preview
 
@@ -437,13 +440,11 @@ func _has_valid_pcam_owner() -> bool:
 
 func _draw_camera_2d_limit() -> void:
 	if _has_valid_pcam_owner():
-		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(camera_2d_draw_limits)
+		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(draw_limits)
 
-func _set_camera_2d_limit(side: int, limit: int) -> void:
+func _set_limit(side: int, limit: int) -> void:
 	if not _has_valid_pcam_owner(): return
 	if not is_active(): return
-	print(side)
-	print(limit)
 	get_pcam_host_owner().camera_2D.set_limit(side, limit)
 
 #endregion
@@ -455,47 +456,47 @@ func update_camera_2d_limit_all_sides() -> void:
 	if not _has_valid_pcam_owner() or not is_active(): return
 	
 	var sides_limit: Vector4i
-	if tile_map_limit_node_path:
-		if not is_instance_valid(get_node(tile_map_limit_node_path)): return
+	if limit_tile_map_node_path:
+		if not is_instance_valid(get_node(limit_tile_map_node_path)): return
 		
-		var tile_map: TileMap = get_node(tile_map_limit_node_path)
+		var tile_map: TileMap = get_node(limit_tile_map_node_path)
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.get_global_position() + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
 		## Calculates the Rect2 based on the Tile Map position and size
-		tile_map_limit_rect_border = Rect2(tile_map_position, tile_map_size)
+		limit_tile_map_rect_border = Rect2(tile_map_position, tile_map_size)
 
 		## Calculates the Rect2 based on the Tile Map position and size + margin
-		tile_map_limit_rect_zone = Rect2(
-			tile_map_limit_rect_border.position + Vector2(tile_map_limit_margin.x, tile_map_limit_margin.y),
-			tile_map_limit_rect_border.size - Vector2(tile_map_limit_margin.x, tile_map_limit_margin.y) - Vector2(tile_map_limit_margin.z, tile_map_limit_margin.w)
+		limit_tile_map_rect_zone = Rect2(
+			limit_tile_map_rect_border.position + Vector2(limit_margin.x, limit_margin.y),
+			limit_tile_map_rect_border.size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
 		)
 		
 		# Left
-		sides_limit.x = roundi(tile_map_limit_rect_zone.position.x)
+		sides_limit.x = roundi(limit_tile_map_rect_zone.position.x)
 		# Top
-		sides_limit.y = roundi(tile_map_limit_rect_zone.position.y)
+		sides_limit.y = roundi(limit_tile_map_rect_zone.position.y)
 		# Right
-		sides_limit.z = roundi(tile_map_limit_rect_zone.position.x + tile_map_limit_rect_zone.size.x)
+		sides_limit.z = roundi(limit_tile_map_rect_zone.position.x + limit_tile_map_rect_zone.size.x)
 		# Bottom
-		sides_limit.w = roundi(tile_map_limit_rect_zone.position.y + tile_map_limit_rect_zone.size.y)
+		sides_limit.w = roundi(limit_tile_map_rect_zone.position.y + limit_tile_map_rect_zone.size.y)
 	else:
-		sides_limit.x = camera_2d_limit_left
-		sides_limit.y = camera_2d_limit_top
-		sides_limit.z = camera_2d_limit_right
-		sides_limit.w = camera_2d_limit_bottom
+		sides_limit.x = limit_left
+		sides_limit.y = limit_top
+		sides_limit.z = limit_right
+		sides_limit.w = limit_bottom
 	
-	_set_camera_2d_limit(SIDE_LEFT, sides_limit.x)
-	_set_camera_2d_limit(SIDE_TOP, sides_limit.y)
-	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
-	_set_camera_2d_limit(SIDE_BOTTOM, sides_limit.w)
+	_set_limit(SIDE_LEFT, sides_limit.x)
+	_set_limit(SIDE_TOP, sides_limit.y)
+	_set_limit(SIDE_RIGHT, sides_limit.z)
+	_set_limit(SIDE_BOTTOM, sides_limit.w)
 
 
-func reset_camera_2d_limit_all_sides() -> void:
-	_set_camera_2d_limit(SIDE_LEFT, -camera_2d_limit_default)
-	_set_camera_2d_limit(SIDE_TOP, -camera_2d_limit_default)
-	_set_camera_2d_limit(SIDE_RIGHT, camera_2d_limit_default)
-	_set_camera_2d_limit(SIDE_BOTTOM, camera_2d_limit_default)
+func reset_limit_all_sides() -> void:
+	_set_limit(SIDE_LEFT, -limit_default)
+	_set_limit(SIDE_TOP, -limit_default)
+	_set_limit(SIDE_RIGHT, limit_default)
+	_set_limit(SIDE_BOTTOM, limit_default)
 
 #endregion
 
@@ -723,40 +724,40 @@ func get_zoom_auto_margin() -> Vector4:
 ## Sets the Camera2D Limit value.
 func set_limit(side: int, value: int) -> void:
 	match side:
-		SIDE_LEFT: 		camera_2d_limit_left = value
-		SIDE_TOP: 		camera_2d_limit_top = value
-		SIDE_RIGHT: 	camera_2d_limit_right = value
-		SIDE_BOTTOM: 	camera_2d_limit_bottom = value
+		SIDE_LEFT: 		limit_left = value
+		SIDE_TOP: 		limit_top = value
+		SIDE_RIGHT: 	limit_right = value
+		SIDE_BOTTOM: 	limit_bottom = value
 		_:				printerr("Not a valid Side parameter.")
 	
 	update_camera_2d_limit_all_sides()
 ## Gets the Camera2D Limit value.
 func get_camera_2d_limit(side: int) -> int:
 	match side:
-		SIDE_LEFT: 		return camera_2d_limit_left
-		SIDE_TOP: 		return camera_2d_limit_left
-		SIDE_RIGHT: 	return camera_2d_limit_left
-		SIDE_BOTTOM: 	return camera_2d_limit_left
+		SIDE_LEFT: 		return limit_left
+		SIDE_TOP: 		return limit_left
+		SIDE_RIGHT: 	return limit_left
+		SIDE_BOTTOM: 	return limit_left
 		_:
 						printerr("Not a valid Side parameter.")
 						return -1
 
 ## Set Tile Map Clamp Node.
 func set_tile_map_limit_node(value: TileMap) -> void:
-	tile_map_limit_node_path = value.get_path()
+	limit_tile_map_node_path = value.get_path()
 	update_camera_2d_limit_all_sides()
 ## Get Tile Map Clamp Node
 func get_tile_map_limit_node() -> TileMap:
-	if not get_node_or_null(tile_map_limit_node_path):
+	if not get_node_or_null(limit_tile_map_node_path):
 		printerr("No Tile Map Clamp Node set")
-	return get_node(tile_map_limit_node_path)
+	return get_node(limit_tile_map_node_path)
 
 ## Set Tile Map Clamp Margin.
 func set_tile_map_limit_margin(value: Vector4) -> void:
-	tile_map_limit_margin = value
+	limit_margin = value
 ## Get Tile Map Clamp Margin.
 func get_tile_map_limit_margin() -> Vector4:
-	return tile_map_limit_margin
+	return limit_margin
 
 
 ## Gets Interactive Update Mode property.

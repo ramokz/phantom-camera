@@ -189,7 +189,7 @@ func _pcam_tween(delta: float) -> void:
 		
 		if _is_2D:
 			camera_2D.set_position_smoothing_enabled(false)
-			_active_pcam.reset_camera_2d_limit_all_sides()
+			_active_pcam.reset_limit_all_sides()
 
 	tween_duration += delta
 
@@ -347,7 +347,7 @@ func _physics_process(delta: float) -> void:
 func set_cam_2d_smoothing() -> void:
 	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
 	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-	camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+	camera_2D.set_limit_smoothing_enabled(_active_pcam.limit_smoothed)
 
 
 func show_viewfinder_in_play() -> void:
