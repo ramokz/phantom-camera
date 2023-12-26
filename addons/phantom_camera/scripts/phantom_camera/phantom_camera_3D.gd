@@ -32,14 +32,16 @@ const CAMERA_3D_RESOURCE_PROPERTY_NAME: StringName = "camera_3D_resource"
 
 #region Signals
 
-## Emitted when the PhantomCamera3D becomes active
+## Emitted when the PhantomCamera3D becomes active.
 signal became_active
-## Emitted when the PhantomCamera3D becomes inactive
+## Emitted when the PhantomCamera3D becomes inactive.
 signal became_inactive
 
-## Emitted when the Camera3D starts to tween to the PhantomCamera
+## Emitted when the Camera3D starts to tween to the PhantomCamera3D.
 signal tween_started
-## Emitted when the Camera3D completes its tween to the	 PhantomCamera
+## Emitted when the tween is interrupted due to another PhantomCamera3D becoming active.
+signal tween_interrupted
+## Emitted when the Camera3D completes its tween to the	 PhantomCamera3D.
 signal tween_completed
 
 #endregion
