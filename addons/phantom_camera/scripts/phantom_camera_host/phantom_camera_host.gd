@@ -3,7 +3,21 @@
 class_name PhantomCameraHost
 extends Node
 
+#region Constants
+
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+
+#endregion
+
+
+#region Signals
+
+signal update_editor_viewfinder
+
+#endregion
+
+
+#region Variables
 
 var camera_2D: Camera2D
 var camera_3D: Camera3D
@@ -25,7 +39,6 @@ var multiple_pcam_hosts: bool
 var is_child_of_camera: bool = false
 var _is_2D: bool
 
-signal update_editor_viewfinder
 
 var viewfinder_scene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 var viewfinder_node: Control
@@ -41,9 +54,11 @@ var _should_refresh_transform: bool
 var _active_pcam_2D_glob_transform: Transform2D
 var _active_pcam_3D_glob_transform: Transform3D
 
-###################
-# Private Functions
-###################
+#endregion
+
+
+#region Private Functions
+
 func _enter_tree() -> void:
 #	camera = get_parent()
 	var parent = get_parent()
@@ -295,25 +310,6 @@ func _process_pcam(delta: float) -> void:
 					_active_pcam.queue_redraw()
 
 
-func set_cam_2d_smoothing() -> void:
-	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-	camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
-
-
-func show_viewfinder_in_play() -> void:
-	if _active_pcam.Properties.show_viewfinder_in_play:
-		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
-			var canvas_layer: CanvasLayer = CanvasLayer.new()
-			get_tree().get_root().get_child(0).add_child(canvas_layer)
-
-			viewfinder_node = viewfinder_scene.instantiate()
-			canvas_layer.add_child(viewfinder_node)
-	else:
-		if viewfinder_node:
-			viewfinder_node.queue_free()
-
-
 func _get_pcam_node_group() -> Array[Node]:
 	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
 
@@ -339,11 +335,30 @@ func _process(delta):
 
 func _physics_process(delta: float) -> void:
 	_should_refresh_transform = true
+#endregion
 
 
-##################
-# Public Functions
-##################
+#region Public Functions
+
+func set_cam_2d_smoothing() -> void:
+	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+	camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+
+
+func show_viewfinder_in_play() -> void:
+	if _active_pcam.Properties.show_viewfinder_in_play:
+		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
+			var canvas_layer: CanvasLayer = CanvasLayer.new()
+			get_tree().get_root().get_child(0).add_child(canvas_layer)
+
+			viewfinder_node = viewfinder_scene.instantiate()
+			canvas_layer.add_child(viewfinder_node)
+	else:
+		if viewfinder_node:
+			viewfinder_node.queue_free()
+
+
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
 	_find_pcam_with_highest_priority()
@@ -387,3 +402,5 @@ func pcam_priority_override_disabled() -> void:
 
 func get_active_pcam() -> Node:
 	return _active_pcam
+
+#endregion
