@@ -151,7 +151,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
-		_active_pcam.reset_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
@@ -190,6 +189,7 @@ func _pcam_tween(delta: float) -> void:
 		
 		if _is_2D:
 			camera_2D.set_position_smoothing_enabled(false)
+			_active_pcam.reset_camera_2d_limit_all_sides()
 
 	tween_duration += delta
 
