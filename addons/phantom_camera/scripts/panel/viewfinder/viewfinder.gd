@@ -1,8 +1,24 @@
 @tool
 extends Control
 
+#region Constants
+
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+
+# TODO - Should be in a central location
+const _camera_2d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera2DIcon.svg")
+const _camera_3d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg")
+const _pcam_host_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
+const _pcam_2D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg")
+const _pcam_3D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon3D.svg")
+
+const _overlay_color_alpha: float = 0.3
+
+#endregion
+
+
+#region Variables
 
 var _selected_camera: Node
 var _active_pcam_camera
@@ -10,9 +26,11 @@ var pcam_host_group: Array[Node]
 
 var editor_interface: EditorInterface
 
-####################
-# Dead Zone Controls
-####################
+#endregion
+
+
+#region @onready
+
 @onready var dead_zone_center_hbox: VBoxContainer = %DeadZoneCenterHBoxContainer
 @onready var dead_zone_center_center_panel: Panel = %DeadZoneCenterCenterPanel
 @onready var dead_zone_left_center_panel: Panel = %DeadZoneLeftCenterPanel
@@ -26,31 +44,19 @@ var aspect_ratio_container: AspectRatioContainer
 @onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
 @onready var sub_viewport: SubViewport = %SubViewport
 
-###########################
-# Viewfinder Empty Controls
-###########################
 @onready var _empty_state_control: Control = %EmptyStateControl
 @onready var _empty_state_icon: Control = %EmptyStateIcon
 @onready var _empty_state_text: RichTextLabel = %EmptyStateText
 @onready var _add_node_button: Button = %AddNodeButton
 @onready var _add_node_button_text: RichTextLabel = %AddNodeTypeText
 
-
-###################
-# Priority Override
-###################
 @onready var _priority_override_button: Button = %PriorityOverrideButton
 @onready var _priority_override_name_label: Label = %PriorityOverrideNameLabel
 
+#endregion
 
-# TODO - Should be in a central location
-const _camera_2d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera2DIcon.svg")
-const _camera_3d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg")
-const _pcam_host_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
-const _pcam_2D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg")
-const _pcam_3D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon3D.svg")
 
-const _overlay_color_alpha: float = 0.3
+#region Variables
 
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
 var _no_open_scene_string: String = "[b]2D[/b] or [b]3D[/b] scene open"
@@ -65,6 +71,10 @@ var max_horizontal: float
 var min_vertical: float
 var max_vertical: float
 
+#endregion
+
+
+#region Private Functions
 
 func _ready():
 	visibility_changed.connect(_visibility_check)
@@ -129,34 +139,6 @@ func _process(_delta: float):
 func _node_added(node: Node) -> void:
 	if editor_interface == null: return
 	_visibility_check()
-
-
-func scene_changed(scene_root: Node) -> void:
-	if scene_root is Node2D:
-#		print("Is 2D node")
-		is_2D = true
-		is_scene = true
-
-		_add_node_button.set_visible(true)
-#		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
-		var camera: Camera2D = _get_camera_2D()
-
-		_check_camera(scene_root, camera, true)
-	elif scene_root is Node3D:
-#		print("Is 3D node")
-#		Is 3D scene
-		is_2D = false
-		is_scene = true
-
-		_add_node_button.set_visible(true)
-		var camera: Camera3D = scene_root.get_viewport().get_camera_3d()
-		_check_camera(scene_root, camera, false)
-	else:
-#		print("Not a 2D or 3D scene")
-		is_scene = false
-#		Is not a 2D or 3D scene
-		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
-		_add_node_button.set_visible(false)
 
 
 func _visibility_check():
@@ -399,6 +381,7 @@ func _set_viewfinder(root: Node, editor: bool):
 func _resized() -> void:
 	_on_dead_zone_changed()
 
+
 func _on_dead_zone_changed() -> void:
 	if not is_instance_valid(_active_pcam_camera): return
 	
@@ -437,3 +420,37 @@ func _on_update_editor_viewfinder(pcam_host: PhantomCameraHost) -> void:
 func _select_override_pcam() -> void:
 	editor_interface.get_selection().clear()
 	editor_interface.get_selection().add_node(_active_pcam_camera)
+
+#endregion
+
+
+#region Public Functions
+
+func scene_changed(scene_root: Node) -> void:
+	if scene_root is Node2D:
+#		print("Is 2D node")
+		is_2D = true
+		is_scene = true
+
+		_add_node_button.set_visible(true)
+#		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
+		var camera: Camera2D = _get_camera_2D()
+
+		_check_camera(scene_root, camera, true)
+	elif scene_root is Node3D:
+#		print("Is 3D node")
+#		Is 3D scene
+		is_2D = false
+		is_scene = true
+
+		_add_node_button.set_visible(true)
+		var camera: Camera3D = scene_root.get_viewport().get_camera_3d()
+		_check_camera(scene_root, camera, false)
+	else:
+#		print("Not a 2D or 3D scene")
+		is_scene = false
+#		Is not a 2D or 3D scene
+		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
+		_add_node_button.set_visible(false)
+
+#endregion
