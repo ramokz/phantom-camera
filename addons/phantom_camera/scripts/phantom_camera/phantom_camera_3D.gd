@@ -385,6 +385,79 @@ func _get(property: StringName):
 #endregion
 
 
+#region _property_can_revert
+
+func _property_can_revert(property: StringName) -> bool:
+	match property:
+		Constants.PRIORITY_OVERRIDE: 									return true
+		Constants.PRIORITY_PROPERTY_NAME: 								return true
+		
+		FOLLOW_DISTANCE_PROPERTY_NAME:				 					return true
+		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
+		
+		FOLLOW_GROUP_DISTANCE_AUTO_NAME:								return true
+		FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:							return true
+		FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:							return true
+		FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:								return true
+		
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return true
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: 				return true
+		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return true
+
+		FOLLOW_SPRING_ARM_COLLISION_MASK_NAME:							return true
+		FOLLOW_SPRING_ARM_SHAPE_NAME:									return true
+		FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME:							return true
+		FOLLOW_SPRING_ARM_MARGIN_NAME:									return true
+		
+		Constants.FOLLOW_DAMPING_NAME: 									return true
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return true
+		
+		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return true
+		Constants.TWEEN_ONLOAD_NAME: 									return true
+		
+		CAMERA_3D_RESOURCE_PROPERTY_NAME: 								return true
+		
+		_:
+			return false
+
+#endregion
+
+
+#region _property_get_revert
+
+func _property_get_revert(property: StringName):
+	match property:
+		Constants.PRIORITY_OVERRIDE: 									return false
+		Constants.PRIORITY_PROPERTY_NAME: 								return 0
+		
+		FOLLOW_DISTANCE_PROPERTY_NAME:				 					return 1
+		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector3.ZERO
+		
+		FOLLOW_GROUP_DISTANCE_AUTO_NAME:								return false
+		FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:							return 1
+		FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:							return 5
+		FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR:								return 10
+		
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return 0.5
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: 				return 0.5
+		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return false
+		
+		FOLLOW_SPRING_ARM_COLLISION_MASK_NAME:							return 1
+		FOLLOW_SPRING_ARM_SHAPE_NAME:									return null
+		FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME:							return 1
+		FOLLOW_SPRING_ARM_MARGIN_NAME:									return 0.01
+		
+		Constants.FOLLOW_DAMPING_NAME: 									return false
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10
+		
+		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return Constants.InactiveUpdateMode.ALWAYS
+		Constants.TWEEN_ONLOAD_NAME: 									return true
+		
+		CAMERA_3D_RESOURCE_PROPERTY_NAME: 								return null
+
+#endregion
+
+
 #region Private Functions
 
 func _enter_tree() -> void:

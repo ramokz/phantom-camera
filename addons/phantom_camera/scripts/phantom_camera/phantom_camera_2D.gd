@@ -364,6 +364,84 @@ func _get(property: StringName):
 
 #endregion
 
+#region _property_can_revert
+
+func _property_can_revert(property: StringName) -> bool:
+	match property:
+		Constants.PRIORITY_OVERRIDE: 									return true
+		Constants.PRIORITY_PROPERTY_NAME: 								return true
+		
+		Constants.ZOOM_PROPERTY_NAME: 									return true
+		
+		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
+		
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return true
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: 				return true
+		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return true
+		
+		Constants.FOLLOW_DAMPING_NAME: 									return true
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return true
+		
+		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return true
+		Constants.TWEEN_ONLOAD_NAME: 									return true
+		
+		PIXEL_PERFECT_PROPERTY_NAME: 									return true
+		
+		DRAW_LIMITS: 													return true
+		LIMIT_LEFT: 													return true
+		LIMIT_TOP:														return true
+		LIMIT_RIGHT: 													return true
+		LIMIT_BOTTOM: 													return true
+		LIMIT_TILE_MAP_NODE_PROPERTY_NAME: 								return true
+		LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: 								return true
+		LIMIT_MARGIN_PROPERTY_NAME: 									return true
+		LIMIT_SMOOTHED: 												return true
+		
+		FRAME_PREVIEW: 													return true
+		
+		_:
+			return false
+
+#endregion
+
+
+#region _property_get_revert
+
+func _property_get_revert(property: StringName):
+	match property:
+		Constants.PRIORITY_OVERRIDE: 									return false
+		Constants.PRIORITY_PROPERTY_NAME: 								return 0
+		
+		Constants.ZOOM_PROPERTY_NAME: 									return Vector2.ONE
+		
+		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector2.ZERO
+		
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return 0.5
+		Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: 				return 0.5
+		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return false
+		
+		Constants.FOLLOW_DAMPING_NAME: 									return false
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10
+		
+		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return Constants.InactiveUpdateMode.ALWAYS
+		Constants.TWEEN_ONLOAD_NAME: 									return true
+		
+		PIXEL_PERFECT_PROPERTY_NAME: 									return false
+		
+		DRAW_LIMITS: 													return true
+		LIMIT_LEFT: 													return -10000000
+		LIMIT_TOP: 														return -10000000
+		LIMIT_RIGHT: 													return 10000000
+		LIMIT_BOTTOM: 													return 10000000
+		LIMIT_TILE_MAP_NODE_PROPERTY_NAME: 								return NodePath()
+		LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: 								return NodePath()
+		LIMIT_MARGIN_PROPERTY_NAME: 									return Vector4i.ZERO
+		LIMIT_SMOOTHED: 												return false
+		
+		FRAME_PREVIEW: 													return true
+
+#endregion
+
 
 #region Private Functions
 
