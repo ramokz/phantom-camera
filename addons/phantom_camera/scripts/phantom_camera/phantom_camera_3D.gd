@@ -665,7 +665,7 @@ func _on_dead_zone_changed() -> void:
 	#return unprojected_position
 
 
-#region Public Functions
+#region Setter & Getter Functions
 
 ## Assigns the PhantomCamera3D to a new PhantomCameraHost.
 func assign_pcam_host() -> void:

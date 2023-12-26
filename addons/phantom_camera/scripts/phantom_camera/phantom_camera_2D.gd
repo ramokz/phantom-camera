@@ -65,10 +65,12 @@ var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
 static var camera_2d_draw_limits: bool
-var camera_2d_limit_left: int = -10000000
-var camera_2d_limit_top: int = -10000000
-var camera_2d_limit_right: int = 10000000  
-var camera_2d_limit_bottom: int = 10000000
+
+var camera_2d_limit_default: int = 10000000
+var camera_2d_limit_left: int = -camera_2d_limit_default
+var camera_2d_limit_top: int = -camera_2d_limit_default
+var camera_2d_limit_right: int = camera_2d_limit_default  
+var camera_2d_limit_bottom: int = camera_2d_limit_default
 var camera_2d_limit_smoothed: bool
 
 var tile_map_limit_node_path: NodePath
@@ -253,16 +255,16 @@ func _set(property: StringName, value) -> bool:
 			value = value as NodePath
 			tile_map_limit_node_path = value
 			
-			set_camera_2d_limit_all_sides()
+			update_camera_2d_limit_all_sides()
 		elif value is TileMap:
 			if is_instance_valid(value):
 				tile_map_limit_node_path = value.get_path()
-				set_camera_2d_limit_all_sides()
+				update_camera_2d_limit_all_sides()
 			
 		notify_property_list_changed()
 	if property == TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME:
 		tile_map_limit_margin = value
-		set_camera_2d_limit_all_sides()
+		update_camera_2d_limit_all_sides()
 	
 	if property == FRAME_PREVIEW:
 		_frame_preview = true if value == null else value
@@ -432,19 +434,27 @@ func _has_valid_pcam_owner() -> bool:
 	
 	return true
 
+
 func _draw_camera_2d_limit() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(camera_2d_draw_limits)
 
 func _set_camera_2d_limit(side: int, limit: int) -> void:
-	_has_valid_pcam_owner()
+	if not _has_valid_pcam_owner(): return
 	if not is_active(): return
+	print(side)
+	print(limit)
 	get_pcam_host_owner().camera_2D.set_limit(side, limit)
 
-func set_camera_2d_limit_all_sides() -> void:
+#endregion
+
+
+#region Public Functions
+
+func update_camera_2d_limit_all_sides() -> void:
 	if not _has_valid_pcam_owner() or not is_active(): return
 	
-	var sides_limit: Vector4
+	var sides_limit: Vector4i
 	if tile_map_limit_node_path:
 		if not is_instance_valid(get_node(tile_map_limit_node_path)): return
 		
@@ -462,13 +472,13 @@ func set_camera_2d_limit_all_sides() -> void:
 		)
 		
 		# Left
-		sides_limit.x = tile_map_limit_rect_zone.position.x
+		sides_limit.x = roundi(tile_map_limit_rect_zone.position.x)
 		# Top
-		sides_limit.y = tile_map_limit_rect_zone.position.y
+		sides_limit.y = roundi(tile_map_limit_rect_zone.position.y)
 		# Right
-		sides_limit.z = tile_map_limit_rect_zone.position.x + tile_map_limit_rect_zone.size.x
+		sides_limit.z = roundi(tile_map_limit_rect_zone.position.x + tile_map_limit_rect_zone.size.x)
 		# Bottom
-		sides_limit.w = tile_map_limit_rect_zone.position.y + tile_map_limit_rect_zone.size.y
+		sides_limit.w = roundi(tile_map_limit_rect_zone.position.y + tile_map_limit_rect_zone.size.y)
 	else:
 		sides_limit.x = camera_2d_limit_left
 		sides_limit.y = camera_2d_limit_top
@@ -480,10 +490,16 @@ func set_camera_2d_limit_all_sides() -> void:
 	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
 	_set_camera_2d_limit(SIDE_BOTTOM, sides_limit.w)
 
+
+func reset_camera_2d_limit_all_sides() -> void:
+	_set_camera_2d_limit(SIDE_LEFT, -camera_2d_limit_default)
+	_set_camera_2d_limit(SIDE_TOP, -camera_2d_limit_default)
+	_set_camera_2d_limit(SIDE_RIGHT, camera_2d_limit_default)
+	_set_camera_2d_limit(SIDE_BOTTOM, camera_2d_limit_default)
+
 #endregion
 
-
-#region Public Functions
+#region Setter & Getter Functions
 
 ## Assigns the PhantomCamera2D to a new PhantomCameraHost.
 func assign_pcam_host() -> void:
@@ -712,6 +728,8 @@ func set_limit(side: int, value: int) -> void:
 		SIDE_RIGHT: 	camera_2d_limit_right = value
 		SIDE_BOTTOM: 	camera_2d_limit_bottom = value
 		_:				printerr("Not a valid Side parameter.")
+	
+	update_camera_2d_limit_all_sides()
 ## Gets the Camera2D Limit value.
 func get_camera_2d_limit(side: int) -> int:
 	match side:
@@ -726,6 +744,7 @@ func get_camera_2d_limit(side: int) -> int:
 ## Set Tile Map Clamp Node.
 func set_tile_map_limit_node(value: TileMap) -> void:
 	tile_map_limit_node_path = value.get_path()
+	update_camera_2d_limit_all_sides()
 ## Get Tile Map Clamp Node
 func get_tile_map_limit_node() -> TileMap:
 	if not get_node_or_null(tile_map_limit_node_path):

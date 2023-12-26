@@ -151,7 +151,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
-		_active_pcam.set_camera_2d_limit_all_sides()
+		_active_pcam.reset_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
@@ -308,6 +308,7 @@ func _process_pcam(delta: float) -> void:
 			
 			if _is_2D:
 				set_cam_2d_smoothing()
+				_active_pcam.update_camera_2d_limit_all_sides()
 			
 				if Engine.is_editor_hint():
 					_active_pcam.queue_redraw()
