@@ -308,7 +308,7 @@ func _process_pcam(delta: float) -> void:
 			
 			if _is_2D:
 				set_cam_2d_smoothing()
-				_active_pcam.update_camera_2d_limit_all_sides()
+				_active_pcam.update_limit_all_sides()
 			
 				if Engine.is_editor_hint():
 					_active_pcam.queue_redraw()

@@ -27,8 +27,7 @@ const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"
 
 const LIMIT_TILE_MAP_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"
 
-const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"
-const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"
+const LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "shape_2d_limit_target"
 
 const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "limit_margin"
 
@@ -76,8 +75,6 @@ var limit_right: int = limit_default
 var limit_bottom: int = limit_default
 var limit_tile_map_node_path: NodePath
 var limit_margin: Vector4i
-var limit_tile_map_rect_border: Rect2
-var limit_tile_map_rect_zone: Rect2
 var limit_smoothed: bool
 
 
@@ -190,6 +187,10 @@ func _get_property_list() -> Array:
 			"name": LIMIT_MARGIN_PROPERTY_NAME,
 			"type": TYPE_VECTOR4I,
 		})
+	property_list.append({
+		"name": LIMIT_SMOOTHED,
+		"type": TYPE_BOOL
+	})
 
 
 	property_list.append_array(Properties.add_tween_properties())
@@ -258,16 +259,25 @@ func _set(property: StringName, value) -> bool:
 			value = value as NodePath
 			limit_tile_map_node_path = value
 			
-			update_camera_2d_limit_all_sides()
+			update_limit_all_sides()
 		elif value is TileMap:
 			if is_instance_valid(value):
 				limit_tile_map_node_path = value.get_path()
 				update_camera_2d_limit_all_sides()
 			
+				update_limit_all_sides()
+		
+		if not value.is_empty():
+			print(value)
+		else:
+			print("Empty")
+
+		notify_property_list_changed()
+
 		notify_property_list_changed()
 	if property == LIMIT_MARGIN_PROPERTY_NAME:
 		limit_margin = value
-		update_camera_2d_limit_all_sides()
+		update_limit_all_sides()
 	
 	if property == FRAME_PREVIEW:
 		_frame_preview = true if value == null else value
@@ -452,10 +462,11 @@ func _set_limit(side: int, limit: int) -> void:
 
 #region Public Functions
 
-func update_camera_2d_limit_all_sides() -> void:
+func update_limit_all_sides() -> void:
 	if not _has_valid_pcam_owner() or not is_active(): return
 	
 	var sides_limit: Vector4i
+	var limit_rect: Rect2
 	if limit_tile_map_node_path:
 		if not is_instance_valid(get_node(limit_tile_map_node_path)): return
 		
@@ -465,6 +476,22 @@ func update_camera_2d_limit_all_sides() -> void:
 
 		## Calculates the Rect2 based on the Tile Map position and size
 		limit_tile_map_rect_border = Rect2(tile_map_position, tile_map_size)
+		limit_rect = Rect2(tile_map_position, tile_map_size)
+
+		## Calculates the Rect2 based on the Tile Map position and size + margin
+		limit_rect = Rect2(
+			limit_rect.position + Vector2(limit_margin.x, limit_margin.y),
+			limit_rect.size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
+		)
+		
+		# Left
+		sides_limit.x = roundi(limit_rect.position.x)
+		# Top
+		sides_limit.y = roundi(limit_rect.position.y)
+		# Right
+		sides_limit.z = roundi(limit_rect.position.x + limit_rect.size.x)
+		# Bottom
+		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
 
 		## Calculates the Rect2 based on the Tile Map position and size + margin
 		limit_tile_map_rect_zone = Rect2(
@@ -730,7 +757,7 @@ func set_limit(side: int, value: int) -> void:
 		SIDE_BOTTOM: 	limit_bottom = value
 		_:				printerr("Not a valid Side parameter.")
 	
-	update_camera_2d_limit_all_sides()
+	update_limit_all_sides()
 ## Gets the Camera2D Limit value.
 func get_camera_2d_limit(side: int) -> int:
 	match side:
@@ -745,7 +772,7 @@ func get_camera_2d_limit(side: int) -> int:
 ## Set Tile Map Clamp Node.
 func set_tile_map_limit_node(value: TileMap) -> void:
 	limit_tile_map_node_path = value.get_path()
-	update_camera_2d_limit_all_sides()
+	update_limit_all_sides()
 ## Get Tile Map Clamp Node
 func get_tile_map_limit_node() -> TileMap:
 	if not get_node_or_null(limit_tile_map_node_path):
