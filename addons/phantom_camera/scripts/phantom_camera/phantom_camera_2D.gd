@@ -34,9 +34,9 @@ const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_
 
 #region Signals
 
-## Emitted when the PhanntomCamera2D becomes active
+## Emitted when the PhantomCamera2D becomes active
 signal became_active
-## Emitted when the PhanntomCamera2D becomes inactive
+## Emitted when the PhantomCamera2D becomes inactive
 signal became_inactive
 
 ## Emitted when the Camera2D starts to tween to the PhantomCamera
