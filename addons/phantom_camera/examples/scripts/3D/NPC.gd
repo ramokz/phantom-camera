@@ -43,8 +43,8 @@ func _on_became_inactive() -> void:
 func _on_tween_started() -> void:
 	print("NPC Tween started")
 
-func _on_tween_interrupted() -> void:
-	print("NPC Tween interrupted")
+func _on_tween_interrupted(pcam: PhantomCamera3D) -> void:
+	print("NPC Tween interrupted by: ", pcam)
 
 func _on_tween_completed() -> void:
 	print("NPC Tween completed")
