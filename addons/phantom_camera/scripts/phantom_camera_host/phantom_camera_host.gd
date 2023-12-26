@@ -5,10 +5,6 @@ extends Node
 
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-var _pcam_tween: Tween
-var _tween_default_ease: Tween.EaseType
-var _easing: Tween.TransitionType
-
 var camera_2D: Camera2D
 var camera_3D: Camera3D
 var _pcam_list: Array[Node]
@@ -157,7 +153,7 @@ func _find_pcam_with_highest_priority() -> void:
 		_active_pcam_missing = false
 
 
-func _tween_pcam(delta: float) -> void:
+func _pcam_tween(delta: float) -> void:
 	if not _active_pcam.Properties.tween_onload and not _active_pcam.Properties.has_tweened_onload:
 		trigger_pcam_tween = false
 		if _is_2D:
@@ -278,7 +274,7 @@ func _process_pcam(delta: float) -> void:
 	# When tweening
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
-			_tween_pcam(delta)
+			_pcam_tween(delta)
 		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
