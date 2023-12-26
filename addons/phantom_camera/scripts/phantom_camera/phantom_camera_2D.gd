@@ -3,7 +3,6 @@
 class_name PhantomCamera2D
 extends Node2D
 
-
 #region Constants
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
