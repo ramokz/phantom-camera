@@ -137,7 +137,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam.became_inactive.emit()
 		
 		if trigger_pcam_tween:
-			_active_pcam.tween_interrupted.emit()
+			_active_pcam.tween_interrupted.emit(pcam)
 		
 	else:
 		no_previous_pcam = true

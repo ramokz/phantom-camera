@@ -41,7 +41,8 @@ signal became_inactive
 ## Emitted when the Camera2D starts to tween to the PhantomCamera2D.
 signal tween_started
 ## Emitted when the tween is interrupted due to another PhantomCamera2D becoming active.
-signal tween_interrupted
+## The argument is the PhantomCamera2D that interrupted the tween.
+signal tween_interrupted(pcam_2d: PhantomCamera2D)
 ## Emitted when the Camera2D completes its tween to the PhantomCamera2D.
 signal tween_completed
 
