@@ -3,27 +3,20 @@
 class_name PhantomCamera2D
 extends Node2D
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
-var zoom: Vector2 = Vector2.ONE
+#region Constants
+
+const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 const FRAME_PREVIEW: StringName = "frame_preview"
-var _frame_preview: bool = true
 
 const PIXEL_PERFECT_PROPERTY_NAME: StringName = "pixel_perfect"
-var pixel_perfect: bool
 
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
 const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_zoom"
 const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "zoom_margin"
-var follow_group_zoom_auto: bool
-var follow_group_zoom_min: float = 1
-var follow_group_zoom_max: float = 5
-var follow_group_zoom_margin: Vector4
 
-## Limit  
 const CAMERA_2D_LIMIT: StringName = "limit/"
 
 const CAMERA_2D_DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"  
@@ -32,6 +25,43 @@ const CAMERA_2D_LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"
 const CAMERA_2D_LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
 const CAMERA_2D_LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
 const CAMERA_2D_LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
+
+const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"
+const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"
+
+#endregion
+
+
+#region Signals
+
+## Emitted when the PhanntomCamera becomes active
+signal became_active
+## Emitted when the PhanntomCamera becomes inactive
+signal became_inactive
+
+## Emitted when the Camera3D is tweening to this PhantomCamera
+signal tween_started
+## Emitted when the Camera3D completes its tween to this PhantomCamera
+signal tween_completed
+
+#endregion
+
+
+#region Variables
+
+var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
+
+var zoom: Vector2 = Vector2.ONE
+
+var _frame_preview: bool = true
+
+var pixel_perfect: bool
+
+var follow_group_zoom_auto: bool
+var follow_group_zoom_min: float = 1
+var follow_group_zoom_max: float = 5
+var follow_group_zoom_margin: Vector4
+
 static var camera_2d_draw_limits: bool
 var camera_2d_limit_left: int = -10000000
 var camera_2d_limit_top: int = -10000000
@@ -39,14 +69,17 @@ var camera_2d_limit_right: int = 10000000
 var camera_2d_limit_bottom: int = 10000000
 var camera_2d_limit_smoothed: bool
 
-const TILE_MAP_LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"  
-const TILE_MAP_LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_margin"  
 var tile_map_limit_node_path: NodePath
 var tile_map_limit_margin: Vector4i
 var tile_map_limit_rect_border: Rect2
 var tile_map_limit_rect_zone: Rect2
 
 var _camera_offset: Vector2
+
+#endregion
+
+
+#region Properties
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
@@ -279,10 +312,11 @@ func _get(property: StringName):
 	
 	if property == FRAME_PREVIEW: 										return _frame_preview
 
+#endregion
 
-###################
-# Private Functions
-###################
+
+#region Private Functions
+
 func _enter_tree() -> void:
 	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
@@ -444,9 +478,11 @@ func set_camera_2d_limit_all_sides() -> void:
 	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
 	_set_camera_2d_limit(SIDE_BOTTOM, sides_limit.w)
 
-##################
-# Public Functions
-##################
+#endregion
+
+
+#region Public Functions
+
 ## Assigns the PhantomCamera2D to a new PhantomCameraHost.
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
@@ -705,3 +741,5 @@ func get_tile_map_limit_margin() -> Vector4:
 ## Gets Interactive Update Mode property.
 func get_inactive_update_mode() -> String:
 	return Constants.InactiveUpdateMode.keys()[Properties.inactive_update_mode].capitalize()
+
+#endregion

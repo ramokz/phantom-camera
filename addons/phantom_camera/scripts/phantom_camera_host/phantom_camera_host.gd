@@ -119,6 +119,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_camera_v_offset = camera_3D.get_v_offset()
 
 		_active_pcam.Properties.is_active = false
+		_active_pcam.became_inactive.emit()
+		
 	else:
 		no_previous_pcam = true
 
@@ -127,6 +129,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam_has_damping = pcam.Properties.follow_has_damping
 
 	_active_pcam.Properties.is_active = true
+	_active_pcam.became_active.emit()
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
@@ -162,6 +165,8 @@ func _pcam_tween(delta: float) -> void:
 
 	# Run at the first tween frame
 	if tween_duration == 0:
+		_active_pcam.tween_started.emit()
+		
 		for pcam in _get_pcam_node_group():
 			pcam.Properties.has_tweened_onload = true
 		
@@ -278,6 +283,8 @@ func _process_pcam(delta: float) -> void:
 		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
+			
+			_active_pcam.tween_completed.emit()
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
 			

@@ -3,6 +3,8 @@
 class_name PhantomCamera3D
 extends Node3D
 
+#region Constants
+
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 const FOLLOW_DISTANCE_PROPERTY_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + "distance"
@@ -23,6 +25,28 @@ const LOOK_AT_GROUP_PROPERTY_NAME: 							StringName = "look_at_group"
 const LOOK_AT_PARAMETERS_NAME: 								StringName = "look_at_parameters/"
 const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 					StringName = LOOK_AT_PARAMETERS_NAME + "look_at_target_offset"
 
+const CAMERA_3D_RESOURCE_PROPERTY_NAME: StringName = "camera_3D_resource"
+
+#endregion
+
+
+#region Signals
+
+## Emitted when the PhanntomCamera becomes active
+signal became_active
+## Emitted when the PhanntomCamera becomes inactive
+signal became_inactive
+
+## Emitted when the Camera3D is tweening to this PhantomCamera
+signal tween_started
+## Emitted when the Camera3D completes its tween to this PhantomCamera
+signal tween_completed
+
+#endregion
+
+
+#region Variables
+
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 var follow_distance: float = 1:
@@ -33,10 +57,10 @@ var follow_distance: float = 1:
 	get:
 		return follow_distance
 
-var _follow_group_distance_auto: 			bool
-var _follow_group_distance_auto_min: 		float = 1
-var _follow_group_distance_auto_max: 		float = 5
-var _follow_group_distance_auto_divisor:	float = 10
+var _follow_group_distance_auto: bool
+var _follow_group_distance_auto_min: float = 1
+var _follow_group_distance_auto_max: float = 5
+var _follow_group_distance_auto_divisor: float = 10
 var _camera_offset: Vector3
 var _current_rotation: Vector3
 
@@ -59,18 +83,21 @@ var _look_at_target_path: NodePath
 var _look_at_group_nodes: Array[Node3D]
 var _look_at_group_paths: Array[NodePath]
 
-var _should_look_at: 			bool
-var _has_look_at_target: 		bool
-var _has_look_at_target_group: 	bool
+var _should_look_at: bool
+var _has_look_at_target: bool
+var _has_look_at_target_group: bool
 
 var look_at_mode_enum: LookAtMode = LookAtMode.NONE
 
 var look_at_target_offset: Vector3
 
-# Camera3D
-const CAMERA_3D_RESOURCE_PROPERTY_NAME: StringName = "camera_3D_resource"
 var _camera_3D_resouce: Camera3DResource
 var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
+
+#endregion
+
+
+#region Properties
 
 func _get_property_list() -> Array:
 	var property_list: Array[Dictionary]
@@ -352,10 +379,11 @@ func _get(property: StringName):
 
 	if property ==  CAMERA_3D_RESOURCE_PROPERTY_NAME:					return _camera_3D_resouce
 
+#endregion
 
-###################
-# Private Functions
-###################
+
+#region Private Functions
+
 func _enter_tree() -> void:
 	Properties.is_2D = false;
 	Properties.camera_enter_tree(self)
@@ -609,32 +637,33 @@ func _get_raw_unprojected_position() -> Vector2:
 func _on_dead_zone_changed() -> void:
 	set_global_position( _get_position_offset_distance() )
 
+#endregion
 
-func get_unprojected_position() -> Vector2:
-	var unprojected_position: Vector2 = _get_raw_unprojected_position()
-	var viewport_width: float = get_viewport().size.x
-	var viewport_height: float = get_viewport().size.y
-	var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-	var visible_rect_size: Vector2 = get_viewport().size
+# TBD
+#func get_unprojected_position() -> Vector2:
+	#var unprojected_position: Vector2 = _get_raw_unprojected_position()
+	#var viewport_width: float = get_viewport().size.x
+	#var viewport_height: float = get_viewport().size.y
+	#var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+	#var visible_rect_size: Vector2 = get_viewport().size
+#
+	#unprojected_position = unprojected_position - visible_rect_size / 2
+	#if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+##	print("Landscape View")
+		#var aspect_ratio_scale: float = viewport_width / viewport_height
+		#unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+		#unprojected_position.y = (unprojected_position.y + 1) / 2
+	#else:
+##	print("Portrait View")
+		#var aspect_ratio_scale: float = viewport_height / viewport_width
+		#unprojected_position.x = (unprojected_position.x + 1) / 2
+		#unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+#
+	#return unprojected_position
 
-	unprojected_position = unprojected_position - visible_rect_size / 2
-	if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#	print("Landscape View")
-		var aspect_ratio_scale: float = viewport_width / viewport_height
-		unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-		unprojected_position.y = (unprojected_position.y + 1) / 2
-	else:
-#	print("Portrait View")
-		var aspect_ratio_scale: float = viewport_height / viewport_width
-		unprojected_position.x = (unprojected_position.x + 1) / 2
-		unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
-	return unprojected_position
+#region Public Functions
 
-
-##################
-# Public Functions
-##################
 ## Assigns the PhantomCamera3D to a new PhantomCameraHost.
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
@@ -1025,3 +1054,5 @@ func get_camera_fov() -> float:
 		return _camera_3D_resouce.fov
 	else:
 		return _camera_3D_resouce_default.fov
+
+#endregion
