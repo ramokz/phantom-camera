@@ -68,8 +68,6 @@ var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdat
 #endregion
 
 
-#region Properties
-
 #region _property_list
 
 func add_multiple_hosts_properties() -> Array:
@@ -416,7 +414,6 @@ func set_priority(value: int, pcam: Node) -> void:
 
 #endregion
 
-#endregion
 
 #region Public Functions
 
