@@ -1,8 +1,22 @@
 @tool
 extends RefCounted
 
+#region Constants
+
 const Constants: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const PcamGroupNames: Script = preload("res://addons/phantom_camera/scripts/group_names.gd")
+
+#endregion
+
+
+#region Signals
+
+signal dead_zone_changed
+
+#endregion
+
+
+#region Variables
 
 var is_2D: bool
 
@@ -18,7 +32,7 @@ var priority: int = 0
 var tween_onload: bool = true
 var has_tweened_onload: bool = true
 
-# Follow
+
 var should_follow: bool
 var has_follow_group: bool
 var follow_target_node: Node
@@ -33,13 +47,12 @@ var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
-# Follow Group
+
 var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
 
-# Framed Follow
-signal dead_zone_changed
+
 var follow_framed_dead_zone_width: float
 var follow_framed_dead_zone_height: float
 var follow_framed_initial_set: bool
@@ -49,42 +62,16 @@ var viewport_position: Vector2
 var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
+
 var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
-
-func camera_enter_tree(pcam: Node):
-	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
-
-	if pcam.Properties.follow_target_path and \
-		not pcam.get_parent() is SpringArm3D and \
-		is_instance_valid(pcam.get_node(pcam.Properties.follow_target_path)):
-
-		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
-	elif follow_group_paths:
-		if is_2D:
-			follow_group_nodes_2D.clear()
-		else:
-			follow_group_nodes_3D.clear()
-
-		for path in follow_group_paths:
-			if not path.is_empty() and pcam.get_node(path):
-				should_follow = true
-				has_follow_group = true
-				if is_2D:
-					follow_group_nodes_2D.append(pcam.get_node(path))
-				else:
-					follow_group_nodes_3D.append(pcam.get_node(path))
-
-	if pcam.Properties.follow_path_path:
-		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
-
-func pcam_exit_tree(pcam: Node):
-	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
+#endregion
 
 
-#########################
-# Add Properties
-#########################
+#region Properties
+
+#region _property_list
+
 func add_multiple_hosts_properties() -> Array:
 	var _property_list: Array
 
@@ -268,10 +255,11 @@ func add_secondary_properties() -> Array:
 
 	return _property_list
 
+#endregion
 
-#########################
-# Set Properties
-#########################
+
+#region _set
+
 func set_phantom_host_property(property: StringName, value, pcam: Node):
 	if property == Constants.PCAM_HOST:
 		if value != null && value is int:
@@ -426,10 +414,42 @@ func set_priority(value: int, pcam: Node) -> void:
 #		printerr("Trying to change priority without a Phantom Camera Host - Please attached one to a Camera3D")
 #		pass
 
+#endregion
 
-#########################
-# Other Functions
-#########################
+#endregion
+
+#region Public Functions
+
+func camera_enter_tree(pcam: Node):
+	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
+
+	if pcam.Properties.follow_target_path and \
+		not pcam.get_parent() is SpringArm3D and \
+		is_instance_valid(pcam.get_node(pcam.Properties.follow_target_path)):
+
+		pcam.Properties.follow_target_node = pcam.get_node(pcam.Properties.follow_target_path)
+	elif follow_group_paths:
+		if is_2D:
+			follow_group_nodes_2D.clear()
+		else:
+			follow_group_nodes_3D.clear()
+
+		for path in follow_group_paths:
+			if not path.is_empty() and pcam.get_node(path):
+				should_follow = true
+				has_follow_group = true
+				if is_2D:
+					follow_group_nodes_2D.append(pcam.get_node(path))
+				else:
+					follow_group_nodes_3D.append(pcam.get_node(path))
+
+	if pcam.Properties.follow_path_path:
+		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
+
+func pcam_exit_tree(pcam: Node):
+	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
+
+
 func assign_pcam_host(pcam: Node) -> void:
 	pcam_host_group = pcam.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 
@@ -484,3 +504,5 @@ func get_framed_side_offset() -> Vector2:
 		frame_out_bounds.y = -1
 
 	return frame_out_bounds
+
+#endregion

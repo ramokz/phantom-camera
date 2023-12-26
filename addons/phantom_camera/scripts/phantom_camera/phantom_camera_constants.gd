@@ -1,33 +1,37 @@
 @tool
 extends RefCounted
 
+#region Constants
+
 const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
-# Values
+
 const CAMERA_2D_NODE_NAME: StringName = "Camera2D"
 const CAMERA_3D_NODE_NAME: StringName = "Camera3D"
 const PCAM_HOST_NODE_NAME: StringName = "PhantomCameraHost"
 const PCAM_2D_NODE_NAME: StringName = "PhantomCamera2D"
 const PCAM_3D_NODE_NAME: StringName = "PhantomCamera3D"
+
+
 const COLOR_2D: Color = Color("8DA5F3")
 const COLOR_3D: Color = Color("FC7F7F")
 const COLOR_PCAM: Color = Color("3AB99A")
 const COLOR_PCAM_33: Color = Color("3ab99a33")
 const PCAM_HOST_COLOR: Color = Color("E0E0E0")
 
-# Primary
+
 const PRIORITY_PROPERTY_NAME: StringName = "priority"
 const PRIORITY_OVERRIDE: StringName = "priority_override"
 const PCAM_HOST: StringName = "phantom_camera_host"
 
-# Follow
+
 const FOLLOW_MODE_PROPERTY_NAME: StringName = "follow_mode"
 const FOLLOW_TARGET_PROPERTY_NAME: StringName = "follow_target"
 const FOLLOW_GROUP_PROPERTY_NAME: StringName = "follow_group"
 const FOLLOW_PATH_PROPERTY_NAME: StringName = "follow_path"
 const FOLLOW_PARAMETERS_NAME: StringName = "follow_parameters/"
 
-# Follow Parameters
+
 const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "distance"
 const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping"
 const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping_value"
@@ -37,16 +41,20 @@ const FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: StringName = FOLLOW_PARAMETERS_NAME
 const FOLLOW_VIEWFINDER_IN_PLAY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "viewfinder_in_play"
 const DEAD_ZONE_CHANGED_SIGNAL: StringName = "dead_zone_changed"
 
-#Zoom
+
 const ZOOM_PROPERTY_NAME: StringName = "zoom"
 
-# Tween Resource
+
 const TWEEN_RESOURCE_PROPERTY_NAME: StringName = "tween_parameters"
 
-# Secondary
+
 const TWEEN_ONLOAD_NAME: StringName = "tween_on_load"
 const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "inactive_update_mode"
 
+#endregion
+
+
+#region Enums 
 
 enum FollowMode {
 	NONE 			= 0,
@@ -86,3 +94,5 @@ enum InactiveUpdateMode {
 	NEVER,
 #	EXPONENTIALLY,
 }
+
+#endregion
