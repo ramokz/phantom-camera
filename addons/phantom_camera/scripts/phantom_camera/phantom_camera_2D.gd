@@ -205,6 +205,10 @@ func _get_property_list() -> Array:
 
 	return property_list
 
+#endregion
+
+
+#region _set
 
 func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
@@ -317,6 +321,10 @@ func _set_limit_shape_2d_path(value) -> void:
 	update_limit_all_sides()
 	notify_property_list_changed()
 
+#endregion
+
+
+#region _get
 
 func _get(property: StringName):
 	if property == Constants.PRIORITY_OVERRIDE: 						return Properties.priority_override
@@ -363,6 +371,7 @@ func _get(property: StringName):
 	if property == FRAME_PREVIEW: 										return _frame_preview
 
 #endregion
+
 
 #region _property_can_revert
 
