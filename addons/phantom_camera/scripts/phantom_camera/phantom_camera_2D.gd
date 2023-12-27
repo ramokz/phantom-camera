@@ -25,11 +25,11 @@ const LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"
 const LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
 const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
 
-const LIMIT_TILE_MAP_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_limit_target"
+const LIMIT_TILE_MAP_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_target"
 
-const LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "shape_2d_limit_target"
+const LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "shape_2d_target"
 
-const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "limit_margin"
+const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "margin"
 
 #endregion
 
