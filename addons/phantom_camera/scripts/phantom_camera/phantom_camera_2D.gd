@@ -266,7 +266,7 @@ func _set(property: StringName, value) -> bool:
 		limit_smoothed = value
 	
 	if property == LIMIT_TILE_MAP_NODE_PROPERTY_NAME:
-		_set_limit_shape_2d_path(value)
+		_set_limit_tile_map_path(value)
 
 	if property == LIMIT_SHAPE_2D_NODE_PROPERTY_NAME:
 		_set_limit_shape_2d_path(value)
@@ -314,9 +314,16 @@ func _set_limit_shape_2d_path(value) -> void:
 		if is_instance_valid(get_node_or_null(value)):
 			# TBD Unsure if a check for when running the game will be needed here.
 			# Maybe an additional property to optionally allow for that?
-			set_notify_transform(true)
-	
-	limit_shape_2d_path = value
+			var col_shape: CollisionShape2D = get_node(value)
+
+			if col_shape.get_shape() == null:
+				printerr("No Shape2D in: ", col_shape.name)
+				limit_shape_2d_path = NodePath()
+			else:
+				set_notify_transform(true)
+				limit_shape_2d_path = value
+		else:
+			limit_shape_2d_path = value
 	
 	update_limit_all_sides()
 	notify_property_list_changed()
