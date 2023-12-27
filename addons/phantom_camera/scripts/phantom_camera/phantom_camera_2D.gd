@@ -928,6 +928,12 @@ func set_limit_margin(value: Vector4) -> void:
 func get_limit_margin() -> Vector4:
 	return limit_margin
 
+## Enables or disables the Limit Smoothing beaviour.
+func set_limit_smoothing_enabled(value: bool) -> void:
+	limit_smoothed = value
+## Returns the Limit Smoothing beaviour.
+func get_limit_smoothing_enabled() -> bool:
+	return limit_smoothed
 
 ## Gets Interactive Update Mode property.
 func get_inactive_update_mode() -> String:
