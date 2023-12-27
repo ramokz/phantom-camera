@@ -24,11 +24,7 @@ const LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"
 const LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
 const LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
 const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
-
-const LIMIT_TILE_MAP_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "tile_map_target"
-
-const LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "shape_2d_target"
-
+const LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "node_limit"
 const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "margin"
 
 #endregion
@@ -73,11 +69,9 @@ var limit_left: int = -limit_default
 var limit_top: int = -limit_default
 var limit_right: int = limit_default  
 var limit_bottom: int = limit_default
-var limit_tile_map_path: NodePath
-var limit_shape_2d_path: NodePath
+var limit_node_path: NodePath
 var limit_margin: Vector4i
 var limit_smoothed: bool
-
 
 var _camera_offset: Vector2
 
@@ -154,7 +148,7 @@ func _get_property_list() -> Array:
 		"type": TYPE_BOOL
 	})
 
-	if limit_tile_map_path.is_empty() and limit_shape_2d_path.is_empty():
+	if limit_node_path.is_empty():
 		property_list.append({
 			"name": LIMIT_LEFT,
 			"type": TYPE_INT
@@ -172,23 +166,14 @@ func _get_property_list() -> Array:
 			"type": TYPE_INT
 		})
 
-	if not limit_shape_2d_path:
-		property_list.append({
-			"name": LIMIT_TILE_MAP_NODE_PROPERTY_NAME,
-			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
-			"hint_string": "TileMap",
-		})
+	property_list.append({
+		"name": LIMIT_NODE_PROPERTY_NAME,
+		"type": TYPE_NODE_PATH,
+		"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
+		"hint_string": "TileMap" + "," + "CollisionShape2D",
+	})
 
-	if not limit_tile_map_path:
-		property_list.append({
-			"name": LIMIT_SHAPE_2D_NODE_PROPERTY_NAME,
-			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
-			"hint_string": "CollisionShape2D",
-		})
-
-	if limit_tile_map_path or limit_shape_2d_path:
+	if limit_node_path:
 		property_list.append({
 			"name": LIMIT_MARGIN_PROPERTY_NAME,
 			"type": TYPE_VECTOR4I,
@@ -252,24 +237,21 @@ func _set(property: StringName, value) -> bool:
 
 	if property == LIMIT_LEFT:
 		limit_left = value
-		_set_limit(SIDE_LEFT, value)
+		_set_camera_2d_limit(SIDE_LEFT, value)
 	if property == LIMIT_TOP:
 		limit_top = value
-		_set_limit(SIDE_TOP, value)
+		_set_camera_2d_limit(SIDE_TOP, value)
 	if property == LIMIT_RIGHT:
 		limit_right = value
-		_set_limit(SIDE_RIGHT, value)
+		_set_camera_2d_limit(SIDE_RIGHT, value)
 	if property == LIMIT_BOTTOM:
 		limit_bottom = value
-		_set_limit(SIDE_BOTTOM, value)
+		_set_camera_2d_limit(SIDE_BOTTOM, value)
 	if property == LIMIT_SMOOTHED:
 		limit_smoothed = value
 	
-	if property == LIMIT_TILE_MAP_NODE_PROPERTY_NAME:
-		_set_limit_tile_map_path(value)
-
-	if property == LIMIT_SHAPE_2D_NODE_PROPERTY_NAME:
-		_set_limit_shape_2d_path(value)
+	if property == LIMIT_NODE_PROPERTY_NAME:
+		_set_limit_node(value)
 
 	if property == LIMIT_MARGIN_PROPERTY_NAME:
 		limit_margin = value
@@ -282,51 +264,38 @@ func _set(property: StringName, value) -> bool:
 	return false
 
 
-func _set_limit_tile_map_path(value) -> void:
+func _set_limit_node(value: NodePath) -> void:
 	set_notify_transform(false)
-	var tile_map_node: TileMap
-	
-	if limit_tile_map_path:
-		if is_instance_valid(get_node_or_null(limit_tile_map_path)):
-			tile_map_node = get_node(limit_tile_map_path)
-			if tile_map_node.changed.is_connected(_on_tile_map_changed):
-				tile_map_node.changed.disconnect(_on_tile_map_changed)
-				
-	if value is NodePath:
-		value = value as NodePath
 		
-		if is_instance_valid(get_node_or_null(value)):
-			tile_map_node = get_node(value)
+	# Removes signal from existing TileMap node
+	if is_instance_valid(get_node_or_null(limit_node_path)):
+		var prev_limit_node: Node2D = get_node(limit_node_path)
+		if prev_limit_node is TileMap:
+			if prev_limit_node.changed.is_connected(_on_tile_map_changed):
+				prev_limit_node.changed.disconnect(_on_tile_map_changed)
+	
+	var limit_node: Node2D = get_node_or_null(value)
+	
+	# Applies value to the limit_node_path
+	if is_instance_valid(limit_node):
+		if limit_node is TileMap:
+			var tile_map_node: TileMap = get_node(value)
 			tile_map_node.changed.connect(_on_tile_map_changed)
-	
-	limit_tile_map_path = value
-	
-	update_limit_all_sides()
-	notify_property_list_changed()
 
-
-func _set_limit_shape_2d_path(value) -> void:
-	set_notify_transform(false)
-		
-	if value is NodePath:
-		value = value as NodePath
-		
-		if is_instance_valid(get_node_or_null(value)):
-			# TBD Unsure if a check for when running the game will be needed here.
-			# Maybe an additional property to optionally allow for that?
+		elif limit_node is CollisionShape2D:
 			var col_shape: CollisionShape2D = get_node(value)
 
 			if col_shape.get_shape() == null:
 				printerr("No Shape2D in: ", col_shape.name)
-				limit_shape_2d_path = NodePath()
+				value = NodePath()
 			else:
 				set_notify_transform(true)
-				limit_shape_2d_path = value
-		else:
-			limit_shape_2d_path = value
-	
-	update_limit_all_sides()
+
+	limit_node_path = value
+
 	notify_property_list_changed()
+	update_limit_all_sides()
+	
 
 #endregion
 
@@ -370,8 +339,7 @@ func _get(property: StringName):
 	if property == LIMIT_TOP:											return limit_top
 	if property == LIMIT_RIGHT:											return limit_right
 	if property == LIMIT_BOTTOM:										return limit_bottom
-	if property == LIMIT_TILE_MAP_NODE_PROPERTY_NAME:					return limit_tile_map_path
-	if property == LIMIT_SHAPE_2D_NODE_PROPERTY_NAME:					return limit_shape_2d_path
+	if property == LIMIT_NODE_PROPERTY_NAME:							return limit_node_path
 	if property == LIMIT_MARGIN_PROPERTY_NAME:							return limit_margin
 	if property == LIMIT_SMOOTHED:										return limit_smoothed
 	
@@ -408,8 +376,7 @@ func _property_can_revert(property: StringName) -> bool:
 		LIMIT_TOP:														return true
 		LIMIT_RIGHT: 													return true
 		LIMIT_BOTTOM: 													return true
-		LIMIT_TILE_MAP_NODE_PROPERTY_NAME: 								return true
-		LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: 								return true
+		LIMIT_NODE_PROPERTY_NAME: 										return true
 		LIMIT_MARGIN_PROPERTY_NAME: 									return true
 		LIMIT_SMOOTHED: 												return true
 		
@@ -449,8 +416,7 @@ func _property_get_revert(property: StringName):
 		LIMIT_TOP: 														return -10000000
 		LIMIT_RIGHT: 													return 10000000
 		LIMIT_BOTTOM: 													return 10000000
-		LIMIT_TILE_MAP_NODE_PROPERTY_NAME: 								return NodePath()
-		LIMIT_SHAPE_2D_NODE_PROPERTY_NAME: 								return NodePath()
+		LIMIT_NODE_PROPERTY_NAME: 										return NodePath()
 		LIMIT_MARGIN_PROPERTY_NAME: 									return Vector4i.ZERO
 		LIMIT_SMOOTHED: 												return false
 		
@@ -564,7 +530,8 @@ func _draw():
 
 func _notification(what):
 	if what == NOTIFICATION_TRANSFORM_CHANGED:
-		update_limit_all_sides()
+		if Engine.is_editor_hint(): # Used for updating Limit when a CollisionShape2D is applied
+			update_limit_all_sides()
 
 
 func _on_tile_map_changed() -> void:
@@ -589,7 +556,7 @@ func _draw_camera_2d_limit() -> void:
 		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(draw_limits)
 
 
-func _set_limit(side: int, limit: int) -> void:
+func _set_camera_2d_limit(side: int, limit: int) -> void:
 	if not _has_valid_pcam_owner(): return
 	if not is_active(): return
 	get_pcam_host_owner().camera_2D.set_limit(side, limit)
@@ -602,12 +569,18 @@ func _set_limit(side: int, limit: int) -> void:
 func update_limit_all_sides() -> void:
 	if not _has_valid_pcam_owner() or not is_active(): return
 	
+	var limit_node = get_node_or_null(limit_node_path)
+	
 	var sides_limit: Vector4i
 	var limit_rect: Rect2
-	if limit_tile_map_path:
-		if not is_instance_valid(get_node(limit_tile_map_path)): return
-		
-		var tile_map: TileMap = get_node(limit_tile_map_path)
+	
+	if not is_instance_valid(limit_node):
+		sides_limit.x = limit_left
+		sides_limit.y = limit_top
+		sides_limit.z = limit_right
+		sides_limit.w = limit_bottom
+	elif limit_node is TileMap:
+		var tile_map: TileMap = limit_node as TileMap
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.get_global_position() + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
@@ -628,9 +601,9 @@ func update_limit_all_sides() -> void:
 		sides_limit.z = roundi(limit_rect.position.x + limit_rect.size.x)
 		# Bottom
 		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
-	elif limit_shape_2d_path:
-		var collision_shape_2d: CollisionShape2D = get_node_or_null(limit_shape_2d_path)
-		if not collision_shape_2d: return
+	elif limit_node is CollisionShape2D:
+		var collision_shape_2d = limit_node as CollisionShape2D
+		
 		if not collision_shape_2d.get_shape(): return
 		
 		var shape_2d: Shape2D = collision_shape_2d.get_shape()
@@ -654,25 +627,21 @@ func update_limit_all_sides() -> void:
 		sides_limit.z = roundi(limit_rect.position.x + limit_rect.size.x)
 		# Bottom
 		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
-	else:
-		sides_limit.x = limit_left
-		sides_limit.y = limit_top
-		sides_limit.z = limit_right
-		sides_limit.w = limit_bottom
 	
-	_set_limit(SIDE_LEFT, sides_limit.x)
-	_set_limit(SIDE_TOP, sides_limit.y)
-	_set_limit(SIDE_RIGHT, sides_limit.z)
-	_set_limit(SIDE_BOTTOM, sides_limit.w)
+	_set_camera_2d_limit(SIDE_LEFT, sides_limit.x)
+	_set_camera_2d_limit(SIDE_TOP, sides_limit.y)
+	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
+	_set_camera_2d_limit(SIDE_BOTTOM, sides_limit.w)
 
 
 func reset_limit_all_sides() -> void:
-	_set_limit(SIDE_LEFT, -limit_default)
-	_set_limit(SIDE_TOP, -limit_default)
-	_set_limit(SIDE_RIGHT, limit_default)
-	_set_limit(SIDE_BOTTOM, limit_default)
+	_set_camera_2d_limit(SIDE_LEFT, -limit_default)
+	_set_camera_2d_limit(SIDE_TOP, -limit_default)
+	_set_camera_2d_limit(SIDE_RIGHT, limit_default)
+	_set_camera_2d_limit(SIDE_BOTTOM, limit_default)
 
 #endregion
+
 
 #region Setter & Getter Functions
 
@@ -895,16 +864,18 @@ func set_zoom_auto_margin(value: Vector4) -> void:
 func get_zoom_auto_margin() -> Vector4:
 	return follow_group_zoom_margin
 
-## Sets the Camera2D Limit value.
+## Assign a the Camera2D Limit Side value.
 func set_limit(side: int, value: int) -> void:
-	match side:
-		SIDE_LEFT: 		limit_left = value
-		SIDE_TOP: 		limit_top = value
-		SIDE_RIGHT: 	limit_right = value
-		SIDE_BOTTOM: 	limit_bottom = value
-		_:				printerr("Not a valid Side parameter.")
-	
-	update_limit_all_sides()
+	if not limit_node_path.is_empty():
+		printerr("Unable to set Limit Side due to Limit Node, ", get_node(limit_node_path).name,  ", being assigned")
+	else:
+		match side:
+			SIDE_LEFT: 		limit_left = value
+			SIDE_TOP: 		limit_top = value
+			SIDE_RIGHT: 	limit_right = value
+			SIDE_BOTTOM: 	limit_bottom = value
+			_:				printerr("Not a valid Side parameter.")
+		update_limit_all_sides()
 ## Gets the Camera2D Limit value.
 func get_limit(side: int) -> int:
 	match side:
@@ -916,26 +887,15 @@ func get_limit(side: int) -> int:
 						printerr("Not a valid Side parameter.")
 						return -1
 
-## Set Tile Map Limit Node.
-func set_limit_tile_map_node(value: TileMap) -> void:
-	_set_limit_tile_map_path(value.get_path())
+# Set Tile Map Limit Node.
+func set_limit_node(value: Node2D) -> void:
+	_set_limit_node(value.get_path())
 ## Get Tile Map Limit Node
-func get_limit_tile_map_node() -> TileMap:
-	if not get_node_or_null(limit_tile_map_path):
+func get_limit_node() -> Node2D:
+	if not get_node_or_null(limit_node_path):
 		printerr("No Tile Map Limit Node set")
 		return null
-	return get_node(limit_tile_map_path)
-
-## Set the CollisionShape2D node for the Camera2D Limit.
-func set_limit_collision_shape_2d_node(value: CollisionShape2D) -> void:
-	_set_limit_shape_2d_path(value.get_path())
-## Get the CollisionShape2D node used for the Camera2D Limit Node.
-func get_limit_collision_shape_2d_node() -> CollisionShape2D:
-	if not get_node_or_null(limit_shape_2d_path):
-		return null
-	else:
-		return get_node(limit_shape_2d_path)
-
+	return get_node(limit_node_path)
 
 ## Set Tile Map Limit Margin.
 func set_limit_margin(value: Vector4) -> void:
