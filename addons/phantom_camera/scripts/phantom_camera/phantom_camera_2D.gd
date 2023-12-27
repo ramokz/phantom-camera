@@ -262,10 +262,10 @@ func _set(property: StringName, value) -> bool:
 		limit_smoothed = value
 	
 	if property == LIMIT_TILE_MAP_NODE_PROPERTY_NAME:
-		_set_tile_map_limit_path(value)
+		_set_limit_shape_2d_path(value)
 
 	if property == LIMIT_SHAPE_2D_NODE_PROPERTY_NAME:
-		_set_shape_2d_limit_path(value)
+		_set_limit_shape_2d_path(value)
 
 	if property == LIMIT_MARGIN_PROPERTY_NAME:
 		limit_margin = value
@@ -278,7 +278,7 @@ func _set(property: StringName, value) -> bool:
 	return false
 
 
-func _set_tile_map_limit_path(value) -> void:
+func _set_limit_tile_map_path(value) -> void:
 	set_notify_transform(false)
 	var tile_map_node: TileMap
 	
@@ -301,7 +301,7 @@ func _set_tile_map_limit_path(value) -> void:
 	notify_property_list_changed()
 
 
-func _set_shape_2d_limit_path(value) -> void:
+func _set_limit_shape_2d_path(value) -> void:
 	set_notify_transform(false)
 		
 	if value is NodePath:
@@ -903,18 +903,20 @@ func get_camera_2d_limit(side: int) -> int:
 ## Set Tile Map Limit Node.
 func set_tile_map_limit_node(value: TileMap) -> void:
 	_set_tile_map_limit_path(value.get_path())
+func set_limit_tile_map_node(value: TileMap) -> void:
+	_set_limit_tile_map_path(value.get_path())
 ## Get Tile Map Limit Node
-func get_tile_map_limit_node() -> TileMap:
+func get_limit_tile_map_node() -> TileMap:
 	if not get_node_or_null(limit_tile_map_path):
 		printerr("No Tile Map Limit Node set")
 		return null
 	return get_node(limit_tile_map_path)
 
-## Set Shape2D Limit Node.
-func set_shape_2d_limit_node(value: CollisionShape2D) -> void:
-	_set_shape_2d_limit_path(value.get_path())
-## Get Shape2D Limit Node.
-func get_shape_2d_limit_node() -> CollisionShape2D:
+## Set the CollisionShape2D node for the Camera2D Limit.
+func set_limit_collision_shape_2d_node(value: CollisionShape2D) -> void:
+	_set_limit_shape_2d_path(value.get_path())
+## Get the CollisionShape2D node used for the Camera2D Limit Node.
+func get_limit_collision_shape_2d_node() -> CollisionShape2D:
 	if not get_node_or_null(limit_shape_2d_path):
 		return null
 	else:
@@ -925,7 +927,7 @@ func get_shape_2d_limit_node() -> CollisionShape2D:
 func set_limit_margin(value: Vector4) -> void:
 	limit_margin = value
 ## Get Tile Map Limit Margin.
-func get__limit_margin() -> Vector4:
+func get_limit_margin() -> Vector4:
 	return limit_margin
 
 
