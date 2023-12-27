@@ -6,13 +6,25 @@
 @tool
 extends Button
 
+#region Constants
+
 const REMOTE_RELEASE_URL: StringName = "https://api.github.com/repos/ramokz/phantom-camera/releases"
+
+#endregion
+
+
+#region @onready
 
 @onready var http_request: HTTPRequest = %HTTPRequest
 @onready var download_dialog: AcceptDialog = %DownloadDialog
 @onready var download_update_panel: Control = %DownloadUpdatePanel
 @onready var needs_reload_dialog: AcceptDialog = %NeedsReloadDialog
 @onready var update_failed_dialog: AcceptDialog = %UpdateFailedDialog
+
+#endregion
+
+
+#region Variables
 
 # The main editor plugin
 var editor_plugin: EditorPlugin
@@ -22,6 +34,10 @@ var needs_reload: bool = false
 # A lambda that gets called just before refreshing the plugin. Return false to stop the reload.
 var on_before_refresh: Callable = func(): return true
 
+#endregion
+
+
+#region Private Functions
 
 func _ready() -> void:
 	hide()
@@ -33,21 +49,6 @@ func _ready() -> void:
 	http_request.request_completed.connect(_request_request_completed)
 	download_update_panel.updated.connect(_on_download_update_panel_updated)
 	needs_reload_dialog.confirmed.connect(_on_needs_reload_dialog_confirmed)
-
-
-# Convert a version number to an actually comparable number
-func version_to_number(version: String) -> int:
-	var bits = version.split(".")
-	var version_bit: int
-	var multiplier: int = 10000
-	for i in bits.size():
-		version_bit += bits[i].to_int() * multiplier / (10 ** (i))
-
-	return version_bit
-
-
-func check_for_update() -> void:
-	http_request.request(REMOTE_RELEASE_URL)
 
 
 func _request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -118,3 +119,24 @@ func _on_needs_reload_dialog_confirmed() -> void:
 func _on_timer_timeout() -> void:
 	if not needs_reload:
 		check_for_update()
+
+#endregion
+
+
+#region Public Functions
+
+# Convert a version number to an actually comparable number
+func version_to_number(version: String) -> int:
+	var bits = version.split(".")
+	var version_bit: int
+	var multiplier: int = 10000
+	for i in bits.size():
+		version_bit += bits[i].to_int() * multiplier / (10 ** (i))
+
+	return version_bit
+
+
+func check_for_update() -> void:
+	http_request.request(REMOTE_RELEASE_URL)
+	
+#endregion

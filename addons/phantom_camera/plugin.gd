@@ -1,17 +1,30 @@
 @tool
 extends EditorPlugin
 
+#region Constants
+
 const PCAM_HOST: String = "PhantomCameraHost"
 const PCAM_2D: String = "PhantomCamera2D"
 const PCAM_3D: String = "PhantomCamera3D"
 
 const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_3D.gd")
-var pcam_3D_gizmo_plugin = Pcam3DPlugin.new()
 
 const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
+
+#endregion
+
+
+#region Variables
+
+var pcam_3D_gizmo_plugin = Pcam3DPlugin.new()
+
 var editor_panel_instance
 #var viewfinder_panel_instance
 
+#endregion
+
+
+#region Private Functions
 
 func _enter_tree() -> void:
 	# Phantom Camera Nodes
@@ -57,8 +70,14 @@ func _make_visible(visible):
 func _scene_changed(scene_root: Node) -> void:
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
 
+#endregion
+
+
+#region Public Functions
 
 func get_version() -> String:
 	var config: ConfigFile = ConfigFile.new()
 	config.load(get_script().resource_path.get_base_dir() + "/plugin.cfg")
 	return config.get_value("plugin", "version")
+
+#endregion

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://w20wokw3ohsq"]
+[gd_scene load_steps=16 format=3 uid="uid://w20wokw3ohsq"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_wmhqb"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_v5qg2"]
@@ -579,6 +579,9 @@ size = Vector2(64, 57)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
 size = Vector2(42, 57)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xmxri"]
+size = Vector2(714, 374)
+
 [node name="ExampleScene2D" type="Node2D"]
 
 [node name="Background" type="CanvasLayer" parent="."]
@@ -605,7 +608,7 @@ scale = Vector2(3, 3)
 tile_set = SubResource("TileSet_kf7eg")
 format = 2
 layer_0/name = "Background"
-layer_0/tile_data = PackedInt32Array(-458743, 851968, 6, -458744, 786432, 6, -458745, 786432, 6, -458746, 786432, 6, -458747, 786432, 6, -458748, 786432, 6, -458749, 786432, 6, -458750, 786432, 6, -458751, 786432, 6, -458752, 786432, 6, -393217, 786432, 6, -393218, 786432, 6, -393219, 786432, 6, -393220, 786432, 6, -393221, 720896, 6)
+layer_0/tile_data = PackedInt32Array(-458743, 851968, 6, -458744, 786432, 6, -458745, 786432, 6, -458746, 786432, 6, -458747, 786432, 6, -458748, 786432, 6, -458749, 786432, 6, -458750, 786432, 6, -458751, 786432, 6, -393218, 786432, 6, -393219, 786432, 6, -393220, 786432, 6, -393221, 720896, 6, -458752, 786432, 6, -393217, 786432, 6)
 layer_1/name = "Terrain"
 layer_1/z_index = 1
 layer_1/tile_data = PackedInt32Array(65531, 720896, 0, 65533, 720896, 0, 65534, 720896, 0, 65535, 720896, 0, 0, 720896, 0, 1, 720896, 0, 2, 720896, 0, 3, 720896, 0, 4, 720896, 0, 5, 720896, 0, 6, 720896, 0, 7, 720896, 0, 8, 720896, 0, 9, 720896, 0, 65532, 720896, 0)
@@ -647,9 +650,9 @@ follow_parameters/damping_value = 10.0
 frame_preview = true
 pixel_perfect = true
 limit/draw_limits = true
+limit/limit_node_target = NodePath("../../Area2D/CollisionShape2D")
+limit/margin = Vector4i(-20, 0, -20, -20)
 limit/smoothed = true
-limit/tile_map_limit_target = NodePath("../../TileMap")
-limit/tile_map_limit_margin = Vector4i(-200, -200, -200, -200)
 tween_parameters = ExtResource("5_c6aev")
 tween_on_load = false
 inactive_update_mode = 0
@@ -728,10 +731,10 @@ shape = SubResource("RectangleShape2D_18i13")
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(126, -148)
 zoom = Vector2(2, 2)
-limit_left = -440
-limit_top = -536
-limit_right = 680
-limit_bottom = 248
+limit_left = -259
+limit_top = -324
+limit_right = 495
+limit_bottom = 70
 limit_smoothed = true
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0
@@ -739,3 +742,10 @@ editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("9_thf62")
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(123, -152)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-5, 15)
+shape = SubResource("RectangleShape2D_xmxri")

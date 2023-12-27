@@ -3,11 +3,21 @@
 class_name PhantomCameraHost
 extends Node
 
+#region Constants
+
 const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 
-var _pcam_tween: Tween
-var _tween_default_ease: Tween.EaseType
-var _easing: Tween.TransitionType
+#endregion
+
+
+#region Signals
+
+signal update_editor_viewfinder
+
+#endregion
+
+
+#region Variables
 
 var camera_2D: Camera2D
 var camera_3D: Camera3D
@@ -29,7 +39,6 @@ var multiple_pcam_hosts: bool
 var is_child_of_camera: bool = false
 var _is_2D: bool
 
-signal update_editor_viewfinder
 
 var viewfinder_scene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 var viewfinder_node: Control
@@ -45,9 +54,11 @@ var _should_refresh_transform: bool
 var _active_pcam_2D_glob_transform: Transform2D
 var _active_pcam_3D_glob_transform: Transform3D
 
-###################
-# Private Functions
-###################
+#endregion
+
+
+#region Private Functions
+
 func _enter_tree() -> void:
 #	camera = get_parent()
 	var parent = get_parent()
@@ -123,6 +134,11 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_camera_v_offset = camera_3D.get_v_offset()
 
 		_active_pcam.Properties.is_active = false
+		_active_pcam.became_inactive.emit()
+		
+		if trigger_pcam_tween:
+			_active_pcam.tween_interrupted.emit(pcam)
+		
 	else:
 		no_previous_pcam = true
 
@@ -131,10 +147,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam_has_damping = pcam.Properties.follow_has_damping
 
 	_active_pcam.Properties.is_active = true
+	_active_pcam.became_active.emit()
 
 	if _is_2D:
 		camera_zoom = camera_2D.get_zoom()
-		_active_pcam.set_camera_2d_limit_all_sides()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
@@ -157,17 +173,23 @@ func _find_pcam_with_highest_priority() -> void:
 		_active_pcam_missing = false
 
 
-func _tween_pcam(delta: float) -> void:
-	if _active_pcam.Properties.tween_onload == false && _active_pcam.Properties.has_tweened_onload == false:
+func _pcam_tween(delta: float) -> void:
+	if not _active_pcam.Properties.tween_onload and not _active_pcam.Properties.has_tweened_onload:
 		trigger_pcam_tween = false
-		_reset_tween_on_load()
 		if _is_2D:
-			camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-			camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-			camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+			set_cam_2d_smoothing()
 		return
-	else:
-		_reset_tween_on_load()
+
+	# Run at the first tween frame
+	if tween_duration == 0:
+		_active_pcam.tween_started.emit()
+		
+		for pcam in _get_pcam_node_group():
+			pcam.Properties.has_tweened_onload = true
+		
+		if _is_2D:
+			camera_2D.set_position_smoothing_enabled(false)
+			_active_pcam.reset_limit_all_sides()
 
 	tween_duration += delta
 
@@ -226,17 +248,6 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 	)
 
 
-func _reset_tween_on_load() -> void:
-	for pcam in _get_pcam_node_group():
-		pcam.Properties.has_tweened_onload  = true
-
-	if not _is_2D:
-		if _active_pcam.get_camera_3D_resource():
-			camera_3D.set_fov(_active_pcam.get_camera_fov())
-			camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
-			camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
-
-
 func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 
@@ -268,6 +279,7 @@ func _refresh_transform() -> void:
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
 
+	# When following
 	if not trigger_pcam_tween:
 		_pcam_follow(delta)
 
@@ -282,35 +294,24 @@ func _process_pcam(delta: float) -> void:
 					camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
 					camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
 
+	# When tweening
 	else:
 		if tween_duration < _active_pcam.get_tween_duration():
-			_tween_pcam(delta)
-		else:
+			_pcam_tween(delta)
+		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
+			
+			_active_pcam.tween_completed.emit()
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
 			
 			if _is_2D:
-				camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-				camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-				camera_2D.set_limit_smoothing_enabled(_active_pcam.camera_2d_limit_smoothed)
+				set_cam_2d_smoothing()
+				_active_pcam.update_limit_all_sides()
 			
 				if Engine.is_editor_hint():
 					_active_pcam.queue_redraw()
-
-
-func show_viewfinder_in_play() -> void:
-	if _active_pcam.Properties.show_viewfinder_in_play:
-		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
-			var canvas_layer: CanvasLayer = CanvasLayer.new()
-			get_tree().get_root().get_child(0).add_child(canvas_layer)
-
-			viewfinder_node = viewfinder_scene.instantiate()
-			canvas_layer.add_child(viewfinder_node)
-	else:
-		if viewfinder_node:
-			viewfinder_node.queue_free()
 
 
 func _get_pcam_node_group() -> Array[Node]:
@@ -338,11 +339,30 @@ func _process(delta):
 
 func _physics_process(delta: float) -> void:
 	_should_refresh_transform = true
+#endregion
 
 
-##################
-# Public Functions
-##################
+#region Public Functions
+
+func set_cam_2d_smoothing() -> void:
+	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
+	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
+	camera_2D.set_limit_smoothing_enabled(_active_pcam.limit_smoothed)
+
+
+func show_viewfinder_in_play() -> void:
+	if _active_pcam.Properties.show_viewfinder_in_play:
+		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
+			var canvas_layer: CanvasLayer = CanvasLayer.new()
+			get_tree().get_root().get_child(0).add_child(canvas_layer)
+
+			viewfinder_node = viewfinder_scene.instantiate()
+			canvas_layer.add_child(viewfinder_node)
+	else:
+		if viewfinder_node:
+			viewfinder_node.queue_free()
+
+
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
 	_find_pcam_with_highest_priority()
@@ -386,3 +406,5 @@ func pcam_priority_override_disabled() -> void:
 
 func get_active_pcam() -> Node:
 	return _active_pcam
+
+#endregion

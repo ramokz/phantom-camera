@@ -6,12 +6,22 @@
 @tool
 extends Control
 
+#region Constants
+
+const TEMP_FILE_NAME = "user://temp.zip"
+
+#endregion
+
+
+#region Signals
 
 signal failed()
 signal updated(updated_to_version: String)
 
+#endregion
 
-const TEMP_FILE_NAME = "user://temp.zip"
+
+#region @onready
 
 #@onready var logo: TextureRect = %Logo
 @onready var label: Label = %DownloadVersionLabel
@@ -19,6 +29,11 @@ const TEMP_FILE_NAME = "user://temp.zip"
 @onready var download_button: Button = %DownloadButton
 @onready var download_button_bg: NinePatchRect = %DownloadButtonBG
 @onready var download_label: Label = %UpdateLabel
+
+#endregion
+
+
+#region Variables
 
 # Todo - For 4.2 upgrade - Shows current version
 #@onready var current_version_label: Label = %CurrentVersionLabel
@@ -34,6 +49,10 @@ var next_version_release: Dictionary:
 	get:
 		return next_version_release
 
+#endregion
+
+
+#region Private Functions
 
 func _ready() -> void:
 	download_http_request.request_completed.connect(_on_http_request_request_completed)
@@ -101,3 +120,5 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 
 func _on_notes_button_pressed() -> void:
 	OS.shell_open(next_version_release.html_url)
+
+#endregion

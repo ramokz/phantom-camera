@@ -26,6 +26,29 @@ func _ready() -> void:
 
 	dialogue_label_initial_position = dialogueLabel3D.get_global_position()
 	dialogue_label_initial_rotation = dialogueLabel3D.get_global_rotation()
+	
+	npc_pcam.became_active.connect(_on_became_active)
+	npc_pcam.became_inactive.connect(_on_became_inactive)
+	
+	npc_pcam.tween_started.connect(_on_tween_started)
+	npc_pcam.tween_interrupted.connect(_on_tween_interrupted)
+	npc_pcam.tween_completed.connect(_on_tween_completed)
+
+func _on_became_active() -> void:
+	print("NPC became active")
+	
+func _on_became_inactive() -> void:
+	print("NPC became inactive")
+	
+func _on_tween_started() -> void:
+	print("NPC Tween started")
+
+func _on_tween_interrupted(pcam: PhantomCamera3D) -> void:
+	print("NPC Tween interrupted by: ", pcam)
+
+func _on_tween_completed() -> void:
+	print("NPC Tween completed")
+	pass
 
 func _interactable(area_3D: Area3D) -> void:
 	if area_3D.get_parent() is CharacterBody3D:
