@@ -893,9 +893,9 @@ func set_limit(side: int, value: int) -> void:
 func get_camera_2d_limit(side: int) -> int:
 	match side:
 		SIDE_LEFT: 		return limit_left
-		SIDE_TOP: 		return limit_left
-		SIDE_RIGHT: 	return limit_left
-		SIDE_BOTTOM: 	return limit_left
+		SIDE_TOP: 		return limit_top
+		SIDE_RIGHT: 	return limit_right
+		SIDE_BOTTOM: 	return limit_bottom
 		_:
 						printerr("Not a valid Side parameter.")
 						return -1
