@@ -580,7 +580,7 @@ size = Vector2(64, 57)
 size = Vector2(42, 57)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xmxri"]
-size = Vector2(832, 387)
+size = Vector2(714, 374)
 
 [node name="ExampleScene2D" type="Node2D"]
 
@@ -651,7 +651,7 @@ follow_parameters/damping_value = 10.0
 frame_preview = true
 pixel_perfect = true
 limit/draw_limits = true
-limit/tile_map_target = NodePath("../../TileMap")
+limit/node_limit = NodePath("../../Area2D/CollisionShape2D")
 limit/margin = Vector4i(-20, 0, -20, -20)
 limit/smoothed = true
 tween_parameters = ExtResource("5_c6aev")
@@ -732,10 +732,10 @@ shape = SubResource("RectangleShape2D_18i13")
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(126, -148)
 zoom = Vector2(2, 2)
-limit_left = -260
-limit_top = -336
-limit_right = 500
-limit_bottom = 68
+limit_left = -259
+limit_top = -324
+limit_right = 495
+limit_bottom = 70
 limit_smoothed = true
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0
@@ -748,5 +748,5 @@ script = ExtResource("9_thf62")
 position = Vector2(123, -152)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(-5, 21.5)
+position = Vector2(-5, 15)
 shape = SubResource("RectangleShape2D_xmxri")
