@@ -890,7 +890,7 @@ func set_limit(side: int, value: int) -> void:
 	
 	update_limit_all_sides()
 ## Gets the Camera2D Limit value.
-func get_camera_2d_limit(side: int) -> int:
+func get_limit(side: int) -> int:
 	match side:
 		SIDE_LEFT: 		return limit_left
 		SIDE_TOP: 		return limit_top
@@ -901,8 +901,6 @@ func get_camera_2d_limit(side: int) -> int:
 						return -1
 
 ## Set Tile Map Limit Node.
-func set_tile_map_limit_node(value: TileMap) -> void:
-	_set_tile_map_limit_path(value.get_path())
 func set_limit_tile_map_node(value: TileMap) -> void:
 	_set_limit_tile_map_path(value.get_path())
 ## Get Tile Map Limit Node
