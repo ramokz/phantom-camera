@@ -24,7 +24,7 @@ const LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"
 const LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
 const LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
 const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
-const LIMIT_NODE_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "node_limit"
+const LIMIT_NODE_PATH_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "limit_node_target"
 const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "margin"
 
 #endregion
@@ -167,7 +167,7 @@ func _get_property_list() -> Array:
 		})
 
 	property_list.append({
-		"name": LIMIT_NODE_PROPERTY_NAME,
+		"name": LIMIT_NODE_PATH_PROPERTY_NAME,
 		"type": TYPE_NODE_PATH,
 		"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
 		"hint_string": "TileMap" + "," + "CollisionShape2D",
@@ -250,7 +250,7 @@ func _set(property: StringName, value) -> bool:
 	if property == LIMIT_SMOOTHED:
 		limit_smoothed = value
 	
-	if property == LIMIT_NODE_PROPERTY_NAME:
+	if property == LIMIT_NODE_PATH_PROPERTY_NAME:
 		_set_limit_node(value)
 
 	if property == LIMIT_MARGIN_PROPERTY_NAME:
@@ -339,7 +339,7 @@ func _get(property: StringName):
 	if property == LIMIT_TOP:											return limit_top
 	if property == LIMIT_RIGHT:											return limit_right
 	if property == LIMIT_BOTTOM:										return limit_bottom
-	if property == LIMIT_NODE_PROPERTY_NAME:							return limit_node_path
+	if property == LIMIT_NODE_PATH_PROPERTY_NAME:						return limit_node_path
 	if property == LIMIT_MARGIN_PROPERTY_NAME:							return limit_margin
 	if property == LIMIT_SMOOTHED:										return limit_smoothed
 	
@@ -376,7 +376,7 @@ func _property_can_revert(property: StringName) -> bool:
 		LIMIT_TOP:														return true
 		LIMIT_RIGHT: 													return true
 		LIMIT_BOTTOM: 													return true
-		LIMIT_NODE_PROPERTY_NAME: 										return true
+		LIMIT_NODE_PATH_PROPERTY_NAME: 									return true
 		LIMIT_MARGIN_PROPERTY_NAME: 									return true
 		LIMIT_SMOOTHED: 												return true
 		
@@ -416,7 +416,7 @@ func _property_get_revert(property: StringName):
 		LIMIT_TOP: 														return -10000000
 		LIMIT_RIGHT: 													return 10000000
 		LIMIT_BOTTOM: 													return 10000000
-		LIMIT_NODE_PROPERTY_NAME: 										return NodePath()
+		LIMIT_NODE_PATH_PROPERTY_NAME: 									return NodePath()
 		LIMIT_MARGIN_PROPERTY_NAME: 									return Vector4i.ZERO
 		LIMIT_SMOOTHED: 												return false
 		
