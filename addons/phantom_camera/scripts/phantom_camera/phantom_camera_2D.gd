@@ -18,12 +18,12 @@ const FOLLOW_GROUP_ZOOM_MARGIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + 
 
 const CAMERA_2D_LIMIT: StringName = "limit/"
 
-const DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"  
-const LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "left"  
-const LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"  
-const LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"  
-const LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"  
-const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"  
+const DRAW_LIMITS: StringName = CAMERA_2D_LIMIT + "draw_limits"
+const LIMIT_LEFT: StringName = CAMERA_2D_LIMIT + "left"
+const LIMIT_TOP: StringName = CAMERA_2D_LIMIT + "top"
+const LIMIT_RIGHT: StringName = CAMERA_2D_LIMIT + "right"
+const LIMIT_BOTTOM: StringName = CAMERA_2D_LIMIT + "bottom"
+const LIMIT_SMOOTHED: StringName = CAMERA_2D_LIMIT + "smoothed"
 const LIMIT_NODE_PATH_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "limit_node_target"
 const LIMIT_MARGIN_PROPERTY_NAME: StringName = CAMERA_2D_LIMIT + "margin"
 
@@ -67,13 +67,14 @@ static var draw_limits: bool
 var limit_default: int = 10000000
 var limit_left: int = -limit_default
 var limit_top: int = -limit_default
-var limit_right: int = limit_default  
+var limit_right: int = limit_default
 var limit_bottom: int = limit_default
 var limit_node_path: NodePath
 var limit_margin: Vector4i
 var limit_smoothed: bool
 
 var _camera_offset: Vector2
+var _prev_target_position: Vector2
 
 #endregion
 
@@ -229,7 +230,7 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_follow_properties(property, value, self)
 	Properties.set_tween_properties(property, value, self)
 	Properties.set_secondary_properties(property, value, self)
-	
+
 	if property == DRAW_LIMITS:
 		draw_limits = value
 		if Engine.is_editor_hint():
@@ -249,14 +250,14 @@ func _set(property: StringName, value) -> bool:
 		_set_camera_2d_limit(SIDE_BOTTOM, value)
 	if property == LIMIT_SMOOTHED:
 		limit_smoothed = value
-	
+
 	if property == LIMIT_NODE_PATH_PROPERTY_NAME:
 		_set_limit_node(value)
 
 	if property == LIMIT_MARGIN_PROPERTY_NAME:
 		limit_margin = value
 		update_limit_all_sides()
-	
+
 	if property == FRAME_PREVIEW:
 		_frame_preview = true if value == null else value
 		queue_redraw()
@@ -266,16 +267,16 @@ func _set(property: StringName, value) -> bool:
 
 func _set_limit_node(value: NodePath) -> void:
 	set_notify_transform(false)
-		
+
 	# Removes signal from existing TileMap node
 	if is_instance_valid(get_node_or_null(limit_node_path)):
 		var prev_limit_node: Node2D = get_node(limit_node_path)
 		if prev_limit_node is TileMap:
 			if prev_limit_node.changed.is_connected(_on_tile_map_changed):
 				prev_limit_node.changed.disconnect(_on_tile_map_changed)
-	
+
 	var limit_node: Node2D = get_node_or_null(value)
-	
+
 	# Applies value to the limit_node_path
 	if is_instance_valid(limit_node):
 		if limit_node is TileMap:
@@ -295,7 +296,7 @@ func _set_limit_node(value: NodePath) -> void:
 
 	notify_property_list_changed()
 	update_limit_all_sides()
-	
+
 
 #endregion
 
@@ -320,12 +321,15 @@ func _get(property: StringName):
 	if property == Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:			return Properties.show_viewfinder_in_play
 
 	if property == PIXEL_PERFECT_PROPERTY_NAME:        					return pixel_perfect
-	
+
 	if property == FOLLOW_GROUP_ZOOM_AUTO:								return follow_group_zoom_auto
 	if property == FOLLOW_GROUP_ZOOM_MIN: 								return follow_group_zoom_min
 	if property == FOLLOW_GROUP_ZOOM_MAX: 								return follow_group_zoom_max
 	if property == FOLLOW_GROUP_ZOOM_MARGIN:							return follow_group_zoom_margin
 
+	if property == Constants.FOLLOW_LOOKAHEAD_NAME:						return Properties.follow_has_lookahead
+	if property == Constants.FOLLOW_LOOKAHEAD_HORIZONTAL_NAME:			return Properties.follow_lookahead_horizontal
+	if property == Constants.FOLLOW_LOOKAHEAD_VERTICAL_NAME:			return Properties.follow_lookahead_vertical
 	if property == Constants.FOLLOW_DAMPING_NAME: 						return Properties.follow_has_damping
 	if property == Constants.FOLLOW_DAMPING_VALUE_NAME: 				return Properties.follow_damping_value
 
@@ -333,7 +337,7 @@ func _get(property: StringName):
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
 	if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
-	
+
 	if property == DRAW_LIMITS:											return draw_limits
 	if property == LIMIT_LEFT:											return limit_left
 	if property == LIMIT_TOP:											return limit_top
@@ -342,7 +346,7 @@ func _get(property: StringName):
 	if property == LIMIT_NODE_PATH_PROPERTY_NAME:						return limit_node_path
 	if property == LIMIT_MARGIN_PROPERTY_NAME:							return limit_margin
 	if property == LIMIT_SMOOTHED:										return limit_smoothed
-	
+
 	if property == FRAME_PREVIEW: 										return _frame_preview
 
 #endregion
@@ -354,23 +358,23 @@ func _property_can_revert(property: StringName) -> bool:
 	match property:
 		Constants.PRIORITY_OVERRIDE: 									return true
 		Constants.PRIORITY_PROPERTY_NAME: 								return true
-		
+
 		Constants.ZOOM_PROPERTY_NAME: 									return true
-		
+
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
-		
+
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return true
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: 				return true
 		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return true
-		
+
 		Constants.FOLLOW_DAMPING_NAME: 									return true
 		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return true
-		
+
 		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return true
 		Constants.TWEEN_ONLOAD_NAME: 									return true
-		
+
 		PIXEL_PERFECT_PROPERTY_NAME: 									return true
-		
+
 		DRAW_LIMITS: 													return true
 		LIMIT_LEFT: 													return true
 		LIMIT_TOP:														return true
@@ -379,9 +383,9 @@ func _property_can_revert(property: StringName) -> bool:
 		LIMIT_NODE_PATH_PROPERTY_NAME: 									return true
 		LIMIT_MARGIN_PROPERTY_NAME: 									return true
 		LIMIT_SMOOTHED: 												return true
-		
+
 		FRAME_PREVIEW: 													return true
-		
+
 		_:
 			return false
 
@@ -394,23 +398,23 @@ func _property_get_revert(property: StringName):
 	match property:
 		Constants.PRIORITY_OVERRIDE: 									return false
 		Constants.PRIORITY_PROPERTY_NAME: 								return 0
-		
+
 		Constants.ZOOM_PROPERTY_NAME: 									return Vector2.ONE
-		
+
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector2.ZERO
-		
+
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return 0.5
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: 				return 0.5
 		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return false
-		
+
 		Constants.FOLLOW_DAMPING_NAME: 									return false
 		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10
-		
+
 		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return Constants.InactiveUpdateMode.ALWAYS
 		Constants.TWEEN_ONLOAD_NAME: 									return true
-		
+
 		PIXEL_PERFECT_PROPERTY_NAME: 									return false
-		
+
 		DRAW_LIMITS: 													return true
 		LIMIT_LEFT: 													return -10000000
 		LIMIT_TOP: 														return -10000000
@@ -419,7 +423,7 @@ func _property_get_revert(property: StringName):
 		LIMIT_NODE_PATH_PROPERTY_NAME: 									return NodePath()
 		LIMIT_MARGIN_PROPERTY_NAME: 									return Vector4i.ZERO
 		LIMIT_SMOOTHED: 												return false
-		
+
 		FRAME_PREVIEW: 													return true
 
 #endregion
@@ -441,6 +445,7 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
+
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
@@ -515,16 +520,19 @@ func _process(delta: float) -> void:
 				else:
 					set_global_position(_target_position_with_offset())
 
+	if Properties.follow_target_node:
+		_prev_target_position = Properties.follow_target_node.get_global_position()
+
 
 func _draw():
 	if not OS.has_feature("editor"): return # Only appears in the editor
-	
+
 	if Engine.is_editor_hint():
 		if not _frame_preview or Properties.is_active: return
 		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
 		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
 		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
-		
+
 		draw_rect(Rect2(-screen_size_zoom / 2, screen_size_zoom), Color("3ab99a"), false, 2)
 
 
@@ -539,7 +547,11 @@ func _on_tile_map_changed() -> void:
 
 
 func _target_position_with_offset() -> Vector2:
-	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D
+	var position_difference: Vector2 = Properties.follow_target_node.get_global_position() - _prev_target_position
+	var lookahead_direction_x: int = signi(position_difference.x)
+	var lookahead_direction_y: int = signi(position_difference.y)
+	var lookahead: Vector2 = Vector2(lookahead_direction_x * Properties.follow_lookahead_horizontal, lookahead_direction_y * Properties.follow_lookahead_vertical)
+	return Properties.follow_target_node.get_global_position() + Properties.follow_target_offset_2D + (lookahead if Properties.follow_has_lookahead else Vector2.ZERO)
 
 
 func _has_valid_pcam_owner() -> bool:
@@ -547,7 +559,7 @@ func _has_valid_pcam_owner() -> bool:
 		return false
 	if not is_instance_valid(get_pcam_host_owner().camera_2D):
 		return false
-	
+
 	return true
 
 
@@ -568,12 +580,12 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 
 func update_limit_all_sides() -> void:
 	if not _has_valid_pcam_owner() or not is_active(): return
-	
+
 	var limit_node = get_node_or_null(limit_node_path)
-	
+
 	var sides_limit: Vector4i
 	var limit_rect: Rect2
-	
+
 	if not is_instance_valid(limit_node):
 		sides_limit.x = limit_left
 		sides_limit.y = limit_top
@@ -592,7 +604,7 @@ func update_limit_all_sides() -> void:
 			limit_rect.position + Vector2(limit_margin.x, limit_margin.y),
 			limit_rect.size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
 		)
-		
+
 		# Left
 		sides_limit.x = roundi(limit_rect.position.x)
 		# Top
@@ -603,9 +615,9 @@ func update_limit_all_sides() -> void:
 		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
 	elif limit_node is CollisionShape2D:
 		var collision_shape_2d = limit_node as CollisionShape2D
-		
+
 		if not collision_shape_2d.get_shape(): return
-		
+
 		var shape_2d: Shape2D = collision_shape_2d.get_shape()
 		var shape_2d_size: Vector2 = shape_2d.get_rect().size
 		var shape_2d_position: Vector2 = collision_shape_2d.get_global_position() + Vector2(shape_2d.get_rect().position)
@@ -618,7 +630,7 @@ func update_limit_all_sides() -> void:
 			limit_rect.position + Vector2(limit_margin.x, limit_margin.y),
 			limit_rect.size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
 		)
-		
+
 		# Left
 		sides_limit.x = roundi(limit_rect.position.x)
 		# Top
@@ -627,7 +639,7 @@ func update_limit_all_sides() -> void:
 		sides_limit.z = roundi(limit_rect.position.x + limit_rect.size.x)
 		# Bottom
 		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
-	
+
 	_set_camera_2d_limit(SIDE_LEFT, sides_limit.x)
 	_set_camera_2d_limit(SIDE_TOP, sides_limit.y)
 	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
