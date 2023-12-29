@@ -278,7 +278,6 @@ func _set_limit_node(value: NodePath) -> void:
 	
 	var limit_node: Node2D = get_node_or_null(value)
 	
-	# Applies value to the limit_node_path
 	if is_instance_valid(limit_node):
 		if limit_node is TileMap:
 			var tile_map_node: TileMap = get_node(value)
@@ -297,7 +296,6 @@ func _set_limit_node(value: NodePath) -> void:
 
 	notify_property_list_changed()
 	update_limit_all_sides()
-	
 
 #endregion
 
@@ -533,7 +531,8 @@ func _draw():
 func _notification(what):
 	if what == NOTIFICATION_TRANSFORM_CHANGED:
 		if Engine.is_editor_hint(): # Used for updating Limit when a CollisionShape2D is applied
-			update_limit_all_sides()
+			if not is_active():
+				update_limit_all_sides()
 
 
 func _on_tile_map_changed() -> void:
@@ -545,11 +544,8 @@ func _target_position_with_offset() -> Vector2:
 
 
 func _has_valid_pcam_owner() -> bool:
-	if not is_instance_valid(get_pcam_host_owner()):
-		return false
-	if not is_instance_valid(get_pcam_host_owner().camera_2D):
-		return false
-	
+	if not is_instance_valid(get_pcam_host_owner()): return false
+	if not is_instance_valid(get_pcam_host_owner().camera_2D): return false
 	return true
 
 
