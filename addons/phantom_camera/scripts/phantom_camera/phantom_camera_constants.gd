@@ -36,6 +36,9 @@ const FOLLOW_DISTANCE_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "dist
 const FOLLOW_DAMPING_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping"
 const FOLLOW_DAMPING_VALUE_NAME: StringName = FOLLOW_PARAMETERS_NAME + "damping_value"
 const FOLLOW_TARGET_OFFSET_PROPERTY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "target_offset"
+const FOLLOW_LOOKAHEAD_NAME: StringName = FOLLOW_PARAMETERS_NAME + "look_ahead"
+const FOLLOW_LOOKAHEAD_HORIZONTAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "look_ahead_horizontal_amount"
+const FOLLOW_LOOKAHEAD_VERTICAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "look_ahead_vertical_amount"
 const FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "dead_zone_horizontal"
 const FOLLOW_FRAMED_DEAD_ZONE_VERTICAL_NAME: StringName = FOLLOW_PARAMETERS_NAME + "dead_zone_vertical"
 const FOLLOW_VIEWFINDER_IN_PLAY_NAME: StringName = FOLLOW_PARAMETERS_NAME + "viewfinder_in_play"
@@ -54,7 +57,7 @@ const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "inactive_update_mode"
 #endregion
 
 
-#region Enums 
+#region Enums
 
 enum FollowMode {
 	NONE 			= 0,

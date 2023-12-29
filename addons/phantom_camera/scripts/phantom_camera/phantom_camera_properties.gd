@@ -44,6 +44,9 @@ var follow_path_path: NodePath
 var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE
 var follow_target_offset_2D: Vector2
 var follow_target_offset_3D: Vector3
+var follow_has_lookahead: bool
+var follow_lookahead_horizontal: float = 16
+var follow_lookahead_vertical: float = 16
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
@@ -172,7 +175,29 @@ func add_follow_properties() -> Array:
 					"usage": PROPERTY_USAGE_DEFAULT,
 				})
 
+	if follow_mode == Constants.FollowMode.SIMPLE:
+		if is_2D:
+			_property_list.append({
+				"name": Constants.FOLLOW_LOOKAHEAD_NAME,
+				"type": TYPE_BOOL,
+				"hint": PROPERTY_HINT_NONE,
+				"usage": PROPERTY_USAGE_DEFAULT
+			})
+			if follow_has_lookahead:
+				_property_list.append({
+					"name": Constants.FOLLOW_LOOKAHEAD_HORIZONTAL_NAME,
+					"type": TYPE_FLOAT,
+					"hint": PROPERTY_HINT_RANGE,
+					"hint_string": "0.0,999,0.1,or_greater,hide_slider"
+				})
+				_property_list.append({
+					"name": Constants.FOLLOW_LOOKAHEAD_VERTICAL_NAME,
+					"type": TYPE_FLOAT,
+					"hint": PROPERTY_HINT_RANGE,
+					"hint_string": "0.0,999,0.1,or_greater,hide_slider"
+				})
 	if follow_mode != Constants.FollowMode.NONE:
+
 		_property_list.append({
 			"name": Constants.FOLLOW_DAMPING_NAME,
 			"type": TYPE_BOOL,
@@ -372,6 +397,15 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 			follow_target_offset_3D = value
 		else:
 			follow_target_offset_2D = value
+
+	if property == Constants.FOLLOW_LOOKAHEAD_NAME:
+		follow_has_lookahead = value
+		pcam.notify_property_list_changed()
+
+	if property == Constants.FOLLOW_LOOKAHEAD_HORIZONTAL_NAME:
+		follow_lookahead_horizontal = value
+	if property == Constants.FOLLOW_LOOKAHEAD_VERTICAL_NAME:
+		follow_lookahead_vertical = value
 
 	if property == Constants.FOLLOW_DAMPING_NAME:
 		follow_has_damping = value
