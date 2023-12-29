@@ -258,14 +258,14 @@ func add_secondary_properties() -> Array:
 
 #region _set
 
-func set_phantom_host_property(property: StringName, value, pcam: Node):
+func set_phantom_host_property(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.PCAM_HOST:
 		if value != null && value is int:
 			var host_node = instance_from_id(value)
 			pcam_host_owner = host_node
 
 
-func set_priority_property(property: StringName, value, pcam: Node):
+func set_priority_property(property: StringName, value, pcam: Node) -> void:
 	if Engine.is_editor_hint() and is_instance_valid(pcam_host_owner):
 		if property == Constants.PRIORITY_OVERRIDE:
 			if value == true:
@@ -280,7 +280,7 @@ func set_priority_property(property: StringName, value, pcam: Node):
 		set_priority(value, pcam)
 
 
-func set_follow_properties(property: StringName, value, pcam: Node):
+func set_follow_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME:
 		follow_mode = value
 
@@ -381,12 +381,12 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 		follow_damping_value = value
 
 
-func set_tween_properties(property: StringName, value, pcam: Node):
+func set_tween_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:
 		tween_resource = value
 
 
-func set_secondary_properties(property: StringName, value, pcam: Node):
+func set_secondary_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.TWEEN_ONLOAD_NAME:
 		tween_onload = value
 		if value == false:
@@ -417,7 +417,7 @@ func set_priority(value: int, pcam: Node) -> void:
 
 #region Public Functions
 
-func camera_enter_tree(pcam: Node):
+func camera_enter_tree(pcam: Node) -> void:
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
 
 	if pcam.Properties.follow_target_path and \
@@ -443,7 +443,7 @@ func camera_enter_tree(pcam: Node):
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
-func pcam_exit_tree(pcam: Node):
+func pcam_exit_tree(pcam: Node) -> void:
 	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
 
 
