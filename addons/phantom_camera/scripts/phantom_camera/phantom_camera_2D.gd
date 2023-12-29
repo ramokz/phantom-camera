@@ -356,6 +356,7 @@ func _property_can_revert(property: StringName) -> bool:
 		
 		Constants.ZOOM_PROPERTY_NAME: 									return true
 		
+		Constants.FOLLOW_TARGET_PROPERTY_NAME: 							return true
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
 		
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return true
@@ -396,6 +397,7 @@ func _property_get_revert(property: StringName):
 		
 		Constants.ZOOM_PROPERTY_NAME: 									return Vector2.ONE
 		
+		Constants.FOLLOW_TARGET_PROPERTY_NAME:							return NodePath()
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector2.ZERO
 		
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return 0.5
