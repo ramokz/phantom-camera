@@ -183,9 +183,8 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 
-	if Properties.follow_has_target || Properties.has_follow_group:
-		property_list.append_array(Properties.add_follow_properties())
-		property_list.append_array(Properties.add_follow_framed())
+	property_list.append_array(Properties.add_follow_properties())
+	property_list.append_array(Properties.add_follow_framed())
 
 	property_list.append({
 		"name": LOOK_AT_MODE_PROPERTY_NAME,
