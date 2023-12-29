@@ -39,6 +39,8 @@ signal became_inactive
 
 ## Emitted when the Camera3D starts to tween to the PhantomCamera3D.
 signal tween_started
+## Emitted when the Camera3D is to tweening to the PhantomCamera3D.
+signal is_tweening
 ## Emitted when the tween is interrupted due to another PhantomCamera3D becoming active.
 ## The argument is the PhantomCamera3D that interrupted the tween.
 signal tween_interrupted(pcam_3d: PhantomCamera3D)

@@ -32,6 +32,7 @@ func _ready() -> void:
 	
 	npc_pcam.tween_started.connect(_on_tween_started)
 	npc_pcam.tween_interrupted.connect(_on_tween_interrupted)
+	npc_pcam.is_tweening.connect(_on_is_tweening)
 	npc_pcam.tween_completed.connect(_on_tween_completed)
 
 func _on_became_active() -> void:
@@ -39,6 +40,9 @@ func _on_became_active() -> void:
 	
 func _on_became_inactive() -> void:
 	print("NPC became inactive")
+	
+func _on_is_tweening() -> void:
+	print("Is tweening")
 	
 func _on_tween_started() -> void:
 	print("NPC Tween started")

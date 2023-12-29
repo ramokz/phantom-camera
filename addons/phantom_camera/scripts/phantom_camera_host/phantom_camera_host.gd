@@ -192,6 +192,7 @@ func _pcam_tween(delta: float) -> void:
 			_active_pcam.reset_limit_all_sides()
 
 	tween_duration += delta
+	_active_pcam.is_tweening.emit()
 
 	if _is_2D:
 		var interpolation_destination := _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
