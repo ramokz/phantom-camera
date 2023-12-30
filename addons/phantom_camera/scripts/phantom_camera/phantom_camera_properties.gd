@@ -30,8 +30,7 @@ var priority_override: bool
 var priority: int = 0
 
 var tween_onload: bool = true
-var has_tweened_onload: bool = true
-
+var has_tweened: bool
 
 var should_follow: bool
 var has_follow_group: bool
@@ -47,11 +46,9 @@ var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
-
 var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
-
 
 var follow_framed_dead_zone_width: float
 var follow_framed_dead_zone_height: float
@@ -61,7 +58,6 @@ var viewport_position: Vector2
 
 var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
-
 
 var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
@@ -389,10 +385,6 @@ func set_tween_properties(property: StringName, value, pcam: Node) -> void:
 func set_secondary_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.TWEEN_ONLOAD_NAME:
 		tween_onload = value
-		if value == false:
-			has_tweened_onload = false
-		else:
-			has_tweened_onload = true
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:
 		inactive_update_mode = value

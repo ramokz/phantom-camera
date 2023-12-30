@@ -659,7 +659,7 @@ func _process(delta: float) -> void:
 									_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
 
 									if not is_tween_on_load():
-										Properties.has_tweened_onload = false
+										Properties.has_tweened = true
 									reparent(_follow_spring_arm_node)
 
 								_interpolate_position(
