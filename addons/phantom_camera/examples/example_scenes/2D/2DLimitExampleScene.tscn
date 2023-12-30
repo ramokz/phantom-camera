@@ -582,7 +582,7 @@ size = Vector2(42, 57)
 
 [sub_resource type="Resource" id="Resource_q1k6t"]
 script = ExtResource("6_ayobb")
-duration = 2.0
+duration = 0.6
 transition = 3
 ease = 2
 
