@@ -276,7 +276,10 @@ func _set(property: StringName, value) -> bool:
 
 func _set_limit_node(value: NodePath) -> void:
 	set_notify_transform(false)
-
+	
+	# Waits for PCam2d's _ready() before trying to validate limit_node_path 
+	if not is_node_ready(): await ready
+	
 	# Removes signal from existing TileMap node
 	if is_instance_valid(get_node_or_null(limit_node_path)):
 		var prev_limit_node: Node2D = get_node(limit_node_path)
@@ -293,7 +296,6 @@ func _set_limit_node(value: NodePath) -> void:
 
 		elif limit_node is CollisionShape2D:
 			var col_shape: CollisionShape2D = get_node(value)
-
 			if col_shape.get_shape() == null:
 				printerr("No Shape2D in: ", col_shape.name)
 				value = NodePath()
