@@ -182,14 +182,13 @@ func _pcam_tween(delta: float) -> void:
 		_active_pcam.tween_started.emit()
 		
 		if _is_2D:
-			camera_2D.set_position_smoothing_enabled(false)
 			_active_pcam.reset_limit_all_sides()
 
 	tween_duration += delta
 	_active_pcam.is_tweening.emit()
 
 	if _is_2D:
-		var interpolation_destination := _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
+		var interpolation_destination: Vector2 = _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 
 		if _active_pcam.pixel_perfect:
 			camera_2D.set_global_position(interpolation_destination.round())
@@ -198,6 +197,10 @@ func _pcam_tween(delta: float) -> void:
 
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.zoom)
+		)
+		
+		camera_2D.set_position_smoothing_speed(
+			_tween_interpolate_value(camera_2D.get_position_smoothing_speed(), _active_pcam.Properties.follow_damping_value)
 		)
 	else:
 		camera_3D.set_global_position(
