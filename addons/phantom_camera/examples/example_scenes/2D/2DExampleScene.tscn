@@ -624,7 +624,6 @@ visible = false
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(243, -148)
 zoom = Vector2(1.5, 1.5)
-position_smoothing_enabled = true
 editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]

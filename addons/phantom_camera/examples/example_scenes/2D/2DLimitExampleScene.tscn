@@ -722,7 +722,7 @@ shape = SubResource("RectangleShape2D_18i13")
 
 [node name="RoomLeftPhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(72.9998, -108)
+position = Vector2(73, -108)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 5
@@ -817,7 +817,7 @@ tween_on_load = false
 inactive_update_mode = 0
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(72.9998, -108)
+position = Vector2(73, -108)
 zoom = Vector2(1.7, 1.7)
 limit_left = -397
 limit_top = -316
