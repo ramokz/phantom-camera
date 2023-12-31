@@ -56,7 +56,9 @@ signal tween_completed
 
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
-var camera_zoom: Vector2 = Vector2.ONE # BUG Unable to call it `Zoom` due to a bug where the setter doesn't properly register changes to it
+# BUG Unable to call the variable `Zoom`
+# due to a bug where the setter doesn't properly register changes to it
+var camera_zoom: Vector2 = Vector2.ONE
 
 var _frame_preview: bool = true
 
@@ -468,14 +470,14 @@ func _process(delta: float) -> void:
 	match Properties.follow_mode:
 		Constants.FollowMode.GLUED:
 			if Properties.follow_target_node:
-				_set_pcam_global_position(Properties.follow_target_node.get_global_position())
+				_set_pcam_global_position(Properties.follow_target_node.get_global_position(), delta)
 		Constants.FollowMode.SIMPLE:
 			if Properties.follow_target_node:
-				_set_pcam_global_position(_target_position_with_offset())
+				_set_pcam_global_position(_target_position_with_offset(), delta)
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					_set_pcam_global_position(Properties.follow_group_nodes_2D[0].get_global_position())
+					_set_pcam_global_position(Properties.follow_group_nodes_2D[0].get_global_position(), delta)
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:
@@ -494,14 +496,15 @@ func _process(delta: float) -> void:
 							camera_zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
 							camera_zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-					_set_pcam_global_position(rect.get_center())
+					_set_pcam_global_position(rect.get_center(), delta)
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
 					_set_pcam_global_position(
 						Properties.follow_path_node.curve.get_closest_point(
 							Properties.follow_target_node.get_global_position() - path_position
-						) + path_position)
+						) + path_position,
+						delta)
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
@@ -516,26 +519,34 @@ func _process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								_set_pcam_global_position(_target_position_with_offset())
+								_set_pcam_global_position(_target_position_with_offset(), delta)
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _target_position_with_offset()
 								glo_pos.x += target_position.x - global_position.x
-								_set_pcam_global_position(glo_pos)
+								_set_pcam_global_position(glo_pos, delta)
 							else:
-								_set_pcam_global_position(_target_position_with_offset())
+								_set_pcam_global_position(_target_position_with_offset(), delta)
 						else:
-							_set_pcam_global_position(target_position)
+							_set_pcam_global_position(target_position, delta)
 					else:
 						_camera_offset = get_global_position() - _target_position_with_offset()
 				else:
-					_set_pcam_global_position(_target_position_with_offset())
+					_set_pcam_global_position(_target_position_with_offset(), delta)
 
 
-func _set_pcam_global_position(value: Vector2) -> void:
+func _set_pcam_global_position(_global_position: Vector2, delta: float) -> void:
 	if limit_inactive_pcam and not Properties.has_tweened:
-		value = _set_limit_clamp_position(value)
+		_global_position = _set_limit_clamp_position(_global_position)
 
-	set_global_position(value)
+	if Properties.follow_has_damping:
+		set_global_position(
+			get_global_position().lerp(
+				_global_position,
+				delta * Properties.follow_damping_value
+			)
+		)
+	else:
+		set_global_position(_global_position)
 
 
 func _set_limit_clamp_position(value: Vector2) -> Vector2i:

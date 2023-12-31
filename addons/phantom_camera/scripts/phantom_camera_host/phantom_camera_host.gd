@@ -68,6 +68,9 @@ func _enter_tree() -> void:
 		if parent is Camera2D:
 			_is_2D = true
 			camera_2D = parent
+			# Force applies position smoothing to be disabled
+			# This is to prevent overlap with the interpolation of the PCam2D.
+			camera_2D.set_position_smoothing_enabled(false)
 		else:
 			_is_2D = false
 			camera_3D = parent
@@ -198,10 +201,6 @@ func _pcam_tween(delta: float) -> void:
 		camera_2D.set_zoom(
 			_tween_interpolate_value(camera_zoom, _active_pcam.zoom)
 		)
-		
-		camera_2D.set_position_smoothing_speed(
-			_tween_interpolate_value(camera_2D.get_position_smoothing_speed(), _active_pcam.Properties.follow_damping_value)
-		)
 	else:
 		camera_3D.set_global_position(
 			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
@@ -298,18 +297,13 @@ func _process_pcam(delta: float) -> void:
 		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
-			
+
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
 			_active_pcam.tween_completed.emit()
 			
 			if _is_2D:
-				camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-				camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-				camera_2D.set_limit_smoothing_enabled(_active_pcam.limit_smoothed)
-				
 				_active_pcam.update_limit_all_sides()
-				#_active_pcam.limit_tween_clamp = false
 			
 				if Engine.is_editor_hint():
 					_active_pcam.queue_redraw()
