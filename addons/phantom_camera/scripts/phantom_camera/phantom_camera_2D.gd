@@ -74,8 +74,9 @@ var limit_bottom: int = _limit_default
 var limit_node_path: NodePath
 var limit_margin: Vector4i
 var limit_smoothed: bool
-var limit_tween_clamp: bool
+var limit_inactive_pcam: bool
 var _limit_sides: Vector4i
+var _limit_sides_default: Vector4i = Vector4i(-_limit_default, -_limit_default, _limit_default, _limit_default) 
 
 var _camera_offset: Vector2
 
@@ -236,19 +237,22 @@ func _set(property: StringName, value) -> bool:
 		draw_limits = value
 		if Engine.is_editor_hint():
 			_draw_camera_2d_limit()
+	
+	# TODO - Move other properties to use this match (switch) statement
+	match property:
+		LIMIT_LEFT:
+			limit_left = value
+			update_limit_all_sides()
+		LIMIT_TOP:
+			limit_top = value
+			update_limit_all_sides()
+		LIMIT_RIGHT:
+			limit_right = value
+			update_limit_all_sides()
+		LIMIT_BOTTOM:
+			limit_bottom = value
+			update_limit_all_sides()
 
-	if property == LIMIT_LEFT:
-		limit_left = value
-		_set_camera_2d_limit(SIDE_LEFT, value)
-	if property == LIMIT_TOP:
-		limit_top = value
-		_set_camera_2d_limit(SIDE_TOP, value)
-	if property == LIMIT_RIGHT:
-		limit_right = value
-		_set_camera_2d_limit(SIDE_RIGHT, value)
-	if property == LIMIT_BOTTOM:
-		limit_bottom = value
-		_set_camera_2d_limit(SIDE_BOTTOM, value)
 	if property == LIMIT_SMOOTHED:
 		limit_smoothed = value
 	
@@ -268,7 +272,7 @@ func _set(property: StringName, value) -> bool:
 
 func _set_limit_node(value: NodePath) -> void:
 	set_notify_transform(false)
-		
+
 	# Removes signal from existing TileMap node
 	if is_instance_valid(get_node_or_null(limit_node_path)):
 		var prev_limit_node: Node2D = get_node(limit_node_path)
@@ -449,11 +453,11 @@ func _process(delta: float) -> void:
 			Constants.InactiveUpdateMode.NEVER:
 				return
 			Constants.InactiveUpdateMode.ALWAYS:
-				if limit_tween_clamp:
+				# Only triggers if limit isn't default
+				if limit_inactive_pcam:
 					set_global_position(
 						_set_limit_clamp_position(get_global_position())
 					)
-
 #			Constants.InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
@@ -526,7 +530,7 @@ func _process(delta: float) -> void:
 
 
 func _set_pcam_global_position(value: Vector2) -> void:
-	if limit_tween_clamp and not Properties.has_tweened:
+	if limit_inactive_pcam and not Properties.has_tweened:
 		value = _set_limit_clamp_position(value)
 
 	set_global_position(value)
@@ -582,6 +586,13 @@ func _has_valid_pcam_owner() -> bool:
 func _draw_camera_2d_limit() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(draw_limits)
+
+
+func _check_limit_is_not_default() -> void:
+	if _limit_sides == _limit_sides_default:
+		limit_inactive_pcam = false
+	else:
+		limit_inactive_pcam = true
 
 
 func _set_camera_2d_limit(side: int, limit: int) -> void:
@@ -652,6 +663,8 @@ func update_limit_all_sides() -> void:
 		_limit_sides.z = roundi(limit_rect.position.x + limit_rect.size.x)
 		# Bottom
 		_limit_sides.w = roundi(limit_rect.position.y + limit_rect.size.y)
+	
+	_check_limit_is_not_default()
 
 	if is_active() and _has_valid_pcam_owner():
 		_set_camera_2d_limit(SIDE_LEFT, _limit_sides.x)
