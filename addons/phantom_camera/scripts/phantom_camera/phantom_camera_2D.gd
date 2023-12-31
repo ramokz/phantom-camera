@@ -11,6 +11,8 @@ const FRAME_PREVIEW: StringName = "frame_preview"
 
 const PIXEL_PERFECT_PROPERTY_NAME: StringName = "pixel_perfect"
 
+const ZOOM_PROPERTY_NAME: StringName = "zoom"
+
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
 const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_zoom"
@@ -54,7 +56,7 @@ signal tween_completed
 
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
-var zoom: Vector2 = Vector2.ONE
+var camera_zoom: Vector2 = Vector2.ONE # BUG Unable to call it `Zoom` due to a bug where the setter doesn't properly register changes to it
 
 var _frame_preview: bool = true
 
@@ -67,6 +69,8 @@ var follow_group_zoom_margin: Vector4
 
 static var draw_limits: bool
 var _limit_default: int = 10000000
+var _limit_sides: Vector4i
+var _limit_sides_default: Vector4i = Vector4i(-_limit_default, -_limit_default, _limit_default, _limit_default)
 var limit_left: int = -_limit_default
 var limit_top: int = -_limit_default
 var limit_right: int = _limit_default  
@@ -75,8 +79,6 @@ var limit_node_path: NodePath
 var limit_margin: Vector4i
 var limit_smoothed: bool
 var limit_inactive_pcam: bool
-var _limit_sides: Vector4i
-var _limit_sides_default: Vector4i = Vector4i(-_limit_default, -_limit_default, _limit_default, _limit_default) 
 
 var _camera_offset: Vector2
 
@@ -90,7 +92,7 @@ func _get_property_list() -> Array:
 	property_list.append_array(Properties.add_priority_properties())
 
 	property_list.append({
-		"name": Constants.ZOOM_PROPERTY_NAME,
+		"name": ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
 		"hint": PROPERTY_HINT_LINK
 	})
@@ -202,8 +204,8 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
 
 	# ZOOM
-	if property == Constants.ZOOM_PROPERTY_NAME:
-		zoom = Vector2(absf(value.x), absf(value.y))
+	if property == ZOOM_PROPERTY_NAME:
+		camera_zoom = Vector2(absf(value.x), absf(value.y))
 		queue_redraw()
 
 	# ZOOM CLAMP
@@ -310,7 +312,7 @@ func _get(property: StringName):
 	if property == Constants.PRIORITY_OVERRIDE: 						return Properties.priority_override
 	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
-	if property == Constants.ZOOM_PROPERTY_NAME: 						return zoom
+	if property == ZOOM_PROPERTY_NAME: 									return camera_zoom
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 				return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:		return Properties.follow_target_offset_2D
@@ -359,7 +361,7 @@ func _property_can_revert(property: StringName) -> bool:
 		Constants.PRIORITY_OVERRIDE: 									return true
 		Constants.PRIORITY_PROPERTY_NAME: 								return true
 		
-		Constants.ZOOM_PROPERTY_NAME: 									return true
+		ZOOM_PROPERTY_NAME: 											return true
 		
 		Constants.FOLLOW_TARGET_PROPERTY_NAME: 							return true
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
@@ -400,7 +402,7 @@ func _property_get_revert(property: StringName):
 		Constants.PRIORITY_OVERRIDE: 									return false
 		Constants.PRIORITY_PROPERTY_NAME: 								return 0
 		
-		Constants.ZOOM_PROPERTY_NAME: 									return Vector2.ONE
+		ZOOM_PROPERTY_NAME:												return Vector2.ONE
 		
 		Constants.FOLLOW_TARGET_PROPERTY_NAME:							return NodePath()
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector2.ZERO
@@ -489,9 +491,9 @@ func _process(delta: float) -> void:
 					if follow_group_zoom_auto:
 						var screen_size: Vector2 = get_viewport_rect().size
 						if rect.size.x > rect.size.y * screen_size.aspect():
-							zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+							camera_zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
-							zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+							camera_zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 					_set_pcam_global_position(rect.get_center())
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
@@ -694,10 +696,10 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
-	zoom = value
+	camera_zoom = value
 ## Gets current Zoom value.
 func get_zoom() -> Vector2:
-	return zoom
+	return camera_zoom
 
 
 ## Assigns new Priority value.
