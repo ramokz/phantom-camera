@@ -590,10 +590,10 @@ ease = 2
 size = Vector2(742.5, 410)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wtfjw"]
-size = Vector2(685, 441)
+size = Vector2(736, 441)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_daeuh"]
-size = Vector2(846.5, 736)
+size = Vector2(803.25, 736)
 
 [node name="ExampleScene2D" type="Node2D"]
 script = ExtResource("1_ijqyv")
@@ -753,7 +753,7 @@ debug_color = Color(0, 0.6, 0.701961, 0.0313726)
 
 [node name="RoomCentrePhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(722, -132)
+position = Vector2(722, -138)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 0
@@ -761,15 +761,13 @@ zoom = Vector2(2, 2)
 follow_mode = 2
 follow_target = NodePath("")
 follow_parameters/target_offset = Vector2(0, 0)
-follow_parameters/damping = false
+follow_parameters/damping = true
+follow_parameters/damping_value = 5.0
 frame_preview = true
 pixel_perfect = false
 limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
+limit/limit_node_target = NodePath("../RoomCentreArea2D/CollisionShape2D")
+limit/margin = Vector4i(0, 0, 0, 0)
 limit/smoothed = true
 tween_parameters = SubResource("Resource_q1k6t")
 tween_on_load = false
@@ -780,7 +778,7 @@ unique_name_in_owner = true
 position = Vector2(755, -179)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RoomCentreArea2D"]
-position = Vector2(-21.5, -17.5)
+position = Vector2(-47, -17.5)
 shape = SubResource("RectangleShape2D_wtfjw")
 debug_color = Color(0, 0.6, 0.701961, 0)
 
@@ -789,13 +787,13 @@ unique_name_in_owner = true
 position = Vector2(1595, -193)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RoomRightArea2D"]
-position = Vector2(-91.25, 67)
+position = Vector2(-224.625, 67)
 shape = SubResource("RectangleShape2D_daeuh")
 debug_color = Color(0, 0.6, 0.701961, 0)
 
 [node name="RoomRightPhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1465, -134)
+position = Vector2(1353, -134)
 scale = Vector2(1.0024, 1)
 script = ExtResource("4_4b648")
 priority_override = false
