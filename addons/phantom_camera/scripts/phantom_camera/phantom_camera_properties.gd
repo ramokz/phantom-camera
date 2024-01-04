@@ -132,15 +132,16 @@ func add_follow_target_property() -> Array:
 		_property_list.append({
 			"name": Constants.FOLLOW_TARGET_PROPERTY_NAME,
 			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_NONE,
+			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
+			"hint_string": "Node2D" + ',' + "Node3D",
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
 		if follow_mode == Constants.FollowMode.PATH:
 			_property_list.append({
 				"name": Constants.FOLLOW_PATH_PROPERTY_NAME,
 				"type": TYPE_NODE_PATH,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT,
+				"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
+				"hint_string": "Path2D" + "," + "Path3D"
 			})
 
 	return _property_list
