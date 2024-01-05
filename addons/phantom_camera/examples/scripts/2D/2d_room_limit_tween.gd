@@ -27,7 +27,6 @@ func _ready():
 func _on_body_entered(body: Node2D, pcam: PhantomCamera2D) -> void:
 	if body == player:
 		pcam.set_follow_target_node(player)
-		pcam.set_follow_target_offset(Vector2(0, -80))
 		pcam.set_priority(20)
 
 
