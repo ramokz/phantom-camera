@@ -630,7 +630,6 @@ visible = false
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(374, -216)
 zoom = Vector2(1.5, 1.5)
-position_smoothing_enabled = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("4_yddet")

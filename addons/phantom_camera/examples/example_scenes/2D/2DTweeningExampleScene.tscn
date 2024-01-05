@@ -650,7 +650,6 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(243, -148)
-position_smoothing_enabled = true
 position_smoothing_speed = 10.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]

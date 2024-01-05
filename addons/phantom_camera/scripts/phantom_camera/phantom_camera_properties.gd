@@ -30,8 +30,7 @@ var priority_override: bool
 var priority: int = 0
 
 var tween_onload: bool = true
-var has_tweened_onload: bool = true
-
+var has_tweened: bool
 
 var should_follow: bool
 var has_follow_group: bool
@@ -47,11 +46,9 @@ var follow_target_offset_3D: Vector3
 var follow_has_damping: bool
 var follow_damping_value: float = 10
 
-
 var follow_group_nodes_2D: Array[Node2D]
 var follow_group_nodes_3D: Array[Node3D]
 var follow_group_paths: Array[NodePath]
-
 
 var follow_framed_dead_zone_width: float
 var follow_framed_dead_zone_height: float
@@ -61,7 +58,6 @@ var viewport_position: Vector2
 
 var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
-
 
 var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
@@ -136,15 +132,16 @@ func add_follow_target_property() -> Array:
 		_property_list.append({
 			"name": Constants.FOLLOW_TARGET_PROPERTY_NAME,
 			"type": TYPE_NODE_PATH,
-			"hint": PROPERTY_HINT_NONE,
+			"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
+			"hint_string": "Node2D" + ',' + "Node3D",
 			"usage": PROPERTY_USAGE_DEFAULT,
 		})
 		if follow_mode == Constants.FollowMode.PATH:
 			_property_list.append({
 				"name": Constants.FOLLOW_PATH_PROPERTY_NAME,
 				"type": TYPE_NODE_PATH,
-				"hint": PROPERTY_HINT_NONE,
-				"usage": PROPERTY_USAGE_DEFAULT,
+				"hint": PROPERTY_HINT_NODE_PATH_VALID_TYPES,
+				"hint_string": "Path2D" + "," + "Path3D"
 			})
 
 	return _property_list
@@ -258,14 +255,14 @@ func add_secondary_properties() -> Array:
 
 #region _set
 
-func set_phantom_host_property(property: StringName, value, pcam: Node):
+func set_phantom_host_property(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.PCAM_HOST:
 		if value != null && value is int:
 			var host_node = instance_from_id(value)
 			pcam_host_owner = host_node
 
 
-func set_priority_property(property: StringName, value, pcam: Node):
+func set_priority_property(property: StringName, value, pcam: Node) -> void:
 	if Engine.is_editor_hint() and is_instance_valid(pcam_host_owner):
 		if property == Constants.PRIORITY_OVERRIDE:
 			if value == true:
@@ -280,7 +277,7 @@ func set_priority_property(property: StringName, value, pcam: Node):
 		set_priority(value, pcam)
 
 
-func set_follow_properties(property: StringName, value, pcam: Node):
+func set_follow_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME:
 		follow_mode = value
 
@@ -381,18 +378,14 @@ func set_follow_properties(property: StringName, value, pcam: Node):
 		follow_damping_value = value
 
 
-func set_tween_properties(property: StringName, value, pcam: Node):
+func set_tween_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.TWEEN_RESOURCE_PROPERTY_NAME:
 		tween_resource = value
 
 
-func set_secondary_properties(property: StringName, value, pcam: Node):
+func set_secondary_properties(property: StringName, value, pcam: Node) -> void:
 	if property == Constants.TWEEN_ONLOAD_NAME:
 		tween_onload = value
-		if value == false:
-			has_tweened_onload = false
-		else:
-			has_tweened_onload = true
 
 	if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:
 		inactive_update_mode = value
@@ -417,7 +410,7 @@ func set_priority(value: int, pcam: Node) -> void:
 
 #region Public Functions
 
-func camera_enter_tree(pcam: Node):
+func camera_enter_tree(pcam: Node) -> void:
 	pcam.add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
 
 	if pcam.Properties.follow_target_path and \
@@ -443,7 +436,7 @@ func camera_enter_tree(pcam: Node):
 	if pcam.Properties.follow_path_path:
 		pcam.Properties.follow_path_node = pcam.get_node(pcam.Properties.follow_path_path)
 
-func pcam_exit_tree(pcam: Node):
+func pcam_exit_tree(pcam: Node) -> void:
 	pcam.remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
 
 

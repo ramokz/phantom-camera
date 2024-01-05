@@ -1,4 +1,4 @@
-<img width="850" alt="phantom-camera-readme-header" src="https://github.com/ramokz/phantom-camera/assets/5159399/8766f92e-cc43-4ff7-83fc-6ac864f8e3ff">
+<img width="850" alt="phantom-camera-readme-header" src="https://phantom-camera.dev/assets/github/readme-header.png">
 
 # What is it?
 Phantom Camera is a Godot 4 plugin designed to provide and simplify common behaviors for the built-in `Camera2D` and `Camera3D` nodes - heavily inspired by a Unity package called Cinemachine.
@@ -26,7 +26,7 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
 # Features
 
 <a href="https://phantom-camera.dev/priority">
-<img src=".github/assets/icons/Icon-Priority.svg" width="100"/>
+<img src="https://phantom-camera.dev/assets/icons/feature-priority.svg" width="100"/>
 </a>
 <h3>
     <a href="https://phantom-camera.dev/priority">Priority</a>
@@ -41,7 +41,7 @@ When a new camera recieves a higher priority than currently active <code>Phantom
 <hr>
 
 <a href="https://phantom-camera.dev/follow-modes/overview">
-<img src=".github/assets/icons/Icon-Follow.svg" width="100"/>
+<img src="https://phantom-camera.dev/assets/icons/feature-follow.svg" width="100"/>
 </a>
 <h3>
 <a href="https://phantom-camera.dev/follow-modes/overview">Follow Mode</a>
@@ -51,7 +51,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 </p>
 
 <a href="https://phantom-camera.dev/follow-modes/glued">
-  <img src=".github/assets/icons/Follow-Glued.svg"/>
+  <img src="https://phantom-camera.dev/assets/icons/follow-glued.svg"/>
 </a>
 <h4>
   <a href="https://phantom-camera.dev/follow-modes/glued">Glued</a>
@@ -63,7 +63,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://phantom-camera.dev/follow-modes/simple">
-  <img src=".github/assets/icons/Follow-Simple.svg"/>
+  <img src="https://phantom-camera.dev/assets/icons/follow-simple.svg"/>
 </a>
 <h4>
     <a href="https://phantom-camera.dev/follow-modes/simple">Simple</a>
@@ -76,14 +76,14 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -100,7 +100,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://phantom-camera.dev/follow-modes/group">
-  <img src=".github/assets/icons/Follow-Group.svg"/>
+  <img src="https://phantom-camera.dev/assets/icons/follow-group.svg"/>
 </a>
 
 <h4><a href="https://phantom-camera.dev/follow-modes/group">Group</a></h4>
@@ -111,14 +111,14 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -136,7 +136,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://phantom-camera.dev/follow-modes/path">
-  <img src=".github/assets/icons/Follow-Path.svg"/>
+  <img src="https://phantom-camera.dev/assets/icons/follow-path.svg"/>
 </a>
 <h4>
     <a href="https://phantom-camera.dev/follow-modes/path">Path</a>
@@ -148,14 +148,14 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -172,7 +172,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://phantom-camera.dev/follow-modes/framed">
-  <img src=".github/assets/icons/Follow-Framed.svg"/>
+  <img src="https://phantom-camera.dev/assets/icons/follow-framed.svg"/>
 </a>
 <h4>
     <a href="https://phantom-camera.dev/follow-modes/framed">Framed</a>
@@ -184,14 +184,14 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
     <thead>
         <tr>
             <th align="center" valign="top">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -208,7 +208,7 @@ Define how the <code>Camera2D</code>/<code>Camera3D</code> should follow, or rep
 <br>
 
 <a href="https://phantom-camera.dev/follow-modes/third-person">
-  <img src=".github/assets/icons/Follow-Third-Person.svg"/>
+  <img src="https://phantom-camera.dev/assets/icons/follow-third-person.svg"/>
 </a>
 <h4>
     <a href="https://phantom-camera.dev/follow-modes/third-person">Third Person</a>
@@ -221,14 +221,14 @@ It works by applying a <code>SpringArm3D</code> node as a parent, where its prop
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -245,7 +245,7 @@ It works by applying a <code>SpringArm3D</code> node as a parent, where its prop
 <hr>
 
 <a href="https://phantom-camera.dev/core-nodes/phantom-camera-2d#zoom">
-<img src=".github/assets/icons/Icon-Zoom.svg" width="100"/>
+<img src="https://phantom-camera.dev/assets/icons/feature-zoom.svg" width="100"/>
 </a>
 <h3>
 <a href="https://phantom-camera.dev/core-nodes/phantom-camera-2d#zoom">Zoom (2D)</a>
@@ -258,14 +258,14 @@ Define the Zoom level for the <code>Camera2D</code>.
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -282,7 +282,7 @@ Define the Zoom level for the <code>Camera2D</code>.
 <hr>
 
 <a href="https://phantom-camera.dev/look-at-modes/overview">
-<img src=".github/assets/icons/Icon-Look-At.svg" width="100"/>
+<img src="https://phantom-camera.dev/assets/icons/feature-look-at.svg" width="100"/>
 </a>
 
 <h3>
@@ -292,7 +292,7 @@ Define the Zoom level for the <code>Camera2D</code>.
 Defines where the <code>Camera3D</code> should be looking—adjusting its rotational value.
 </p>
 <a href="https://phantom-camera.dev/look-at-modes/mimic">
-<img src=".github/assets/icons/Icon-Look-At-Mimic.svg"/>
+<img src="https://phantom-camera.dev/assets/icons/look-at-mimic.svg"/>
 </a>
 <br>
 <h4>
@@ -305,7 +305,7 @@ Copies the rotational value of its target.
 <br>
 
 <a href="https://phantom-camera.dev/look-at-modes/simple">
-<img src=".github/assets/icons/Icon-Look-At-Simple.svg"/>
+<img src="https://phantom-camera.dev/assets/icons/look-at-simple.svg"/>
 </a>
 <br>
 <h4>
@@ -319,14 +319,14 @@ Looks At the target with an optional offset.
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -343,7 +343,7 @@ Looks At the target with an optional offset.
 <br>
 
 <a href="https://phantom-camera.dev/look-at-modes/group">
- <img src=".github/assets/icons/Icon-Look-At-Group.svg"/>
+ <img src="https://phantom-camera.dev/assets/icons/look-at-group.svg"/>
   <h4> 
    <a href="https://phantom-camera.dev/look-at-modes/group">Group</a>
   </h4>
@@ -356,14 +356,14 @@ Looks At the target with an optional offset.
     <thead>
         <tr>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top" width="2000">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -380,7 +380,7 @@ Looks At the target with an optional offset.
 <hr>
 
 <a href="https://phantom-camera.dev/tween">
-<img src=".github/assets/icons/Icon-Tween.svg" width="100"/>
+<img src="https://phantom-camera.dev/assets/icons/feature-tween.svg" width="100"/>
 </a>
 <h3>
 <a href="https://phantom-camera.dev/tween">Tween</a>
@@ -393,14 +393,14 @@ Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly acti
     <thead>
         <tr>
             <th align="center" valign="top">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/dea63fd6136e716f5840fde05fe5db4bcd1aae2b/.github/assets/PhantomCamera2D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-2D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera2D</b>
+              <b>2D</b>
             </th>
             <th align="center" valign="top">
-              <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/e0452e8c681ea51f9e678c903ad162a12037aa14/.github/assets/PhantomCamera3D.svg" width="32" height="32"/>
+              <img src="https://phantom-camera.dev/assets/icons/phantom-camera-3D.svg" width="32" height="32"/>
               <br/>
-              <b>PhantomCamera3D</b>
+              <b>3D</b>
             </th>
         </tr>
     </thead>
@@ -417,7 +417,7 @@ Tweak how the <code>Camera2d</code>/<code>Camera3D</code> tweens to a newly acti
 <hr>
 
 <a href="https://phantom-camera.dev/viewfinder">
-    <img src="https://raw.githubusercontent.com/ramokz/phantom-camera/main/.github/assets/icons/Icon-Viewfinder.svg" width="100" />
+    <img src="https://phantom-camera.dev/assets/icons/feature-viewfinder.svg" width="100" />
 </a>
 
 <h3><a href="https://phantom-camera.dev/viewfinder">Viewfinder</a></h3>

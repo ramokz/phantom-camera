@@ -11,6 +11,8 @@ const FRAME_PREVIEW: StringName = "frame_preview"
 
 const PIXEL_PERFECT_PROPERTY_NAME: StringName = "pixel_perfect"
 
+const ZOOM_PROPERTY_NAME: StringName = "zoom"
+
 const FOLLOW_GROUP_ZOOM_AUTO: StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_zoom"
 const FOLLOW_GROUP_ZOOM_MIN: StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_zoom"
 const FOLLOW_GROUP_ZOOM_MAX: StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_zoom"
@@ -39,6 +41,8 @@ signal became_inactive
 
 ## Emitted when the Camera2D starts to tween to the PhantomCamera2D.
 signal tween_started
+## Emitted when the Camera2D is to tweening to the PhantomCamera2D.
+signal is_tweening
 ## Emitted when the tween is interrupted due to another PhantomCamera2D becoming active.
 ## The argument is the PhantomCamera2D that interrupted the tween.
 signal tween_interrupted(pcam_2d: PhantomCamera2D)
@@ -52,7 +56,9 @@ signal tween_completed
 
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
-var zoom: Vector2 = Vector2.ONE
+# BUG Unable to call the variable `Zoom`
+# due to a bug where the setter doesn't properly register changes to it
+var camera_zoom: Vector2 = Vector2.ONE
 
 var _frame_preview: bool = true
 
@@ -64,14 +70,17 @@ var follow_group_zoom_max: float = 5
 var follow_group_zoom_margin: Vector4
 
 static var draw_limits: bool
-var limit_default: int = 10000000
-var limit_left: int = -limit_default
-var limit_top: int = -limit_default
-var limit_right: int = limit_default  
-var limit_bottom: int = limit_default
+var _limit_default: int = 10000000
+var _limit_sides: Vector4i
+var _limit_sides_default: Vector4i = Vector4i(-_limit_default, -_limit_default, _limit_default, _limit_default)
+var limit_left: int = -_limit_default
+var limit_top: int = -_limit_default
+var limit_right: int = _limit_default  
+var limit_bottom: int = _limit_default
 var limit_node_path: NodePath
 var limit_margin: Vector4i
 var limit_smoothed: bool
+var limit_inactive_pcam: bool
 
 var _camera_offset: Vector2
 
@@ -85,7 +94,7 @@ func _get_property_list() -> Array:
 	property_list.append_array(Properties.add_priority_properties())
 
 	property_list.append({
-		"name": Constants.ZOOM_PROPERTY_NAME,
+		"name": ZOOM_PROPERTY_NAME,
 		"type": TYPE_VECTOR2,
 		"hint": PROPERTY_HINT_LINK
 	})
@@ -127,9 +136,8 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 
-	if Properties.follow_has_target || Properties.has_follow_group:
-		property_list.append_array(Properties.add_follow_properties())
-		property_list.append_array(Properties.add_follow_framed())
+	property_list.append_array(Properties.add_follow_properties())
+	property_list.append_array(Properties.add_follow_framed())
 
 	property_list.append({
 		"name": FRAME_PREVIEW,
@@ -183,7 +191,6 @@ func _get_property_list() -> Array:
 		"type": TYPE_BOOL
 	})
 
-
 	property_list.append_array(Properties.add_tween_properties())
 
 	property_list.append_array(Properties.add_secondary_properties())
@@ -199,8 +206,8 @@ func _set(property: StringName, value) -> bool:
 	Properties.set_priority_property(property, value, self)
 
 	# ZOOM
-	if property == Constants.ZOOM_PROPERTY_NAME:
-		zoom = Vector2(absf(value.x), absf(value.y))
+	if property == ZOOM_PROPERTY_NAME:
+		camera_zoom = Vector2(absf(value.x), absf(value.y))
 		queue_redraw()
 
 	# ZOOM CLAMP
@@ -234,19 +241,22 @@ func _set(property: StringName, value) -> bool:
 		draw_limits = value
 		if Engine.is_editor_hint():
 			_draw_camera_2d_limit()
+	
+	# TODO - Move other properties to use this match (switch) statement
+	match property:
+		LIMIT_LEFT:
+			limit_left = value
+			update_limit_all_sides()
+		LIMIT_TOP:
+			limit_top = value
+			update_limit_all_sides()
+		LIMIT_RIGHT:
+			limit_right = value
+			update_limit_all_sides()
+		LIMIT_BOTTOM:
+			limit_bottom = value
+			update_limit_all_sides()
 
-	if property == LIMIT_LEFT:
-		limit_left = value
-		_set_camera_2d_limit(SIDE_LEFT, value)
-	if property == LIMIT_TOP:
-		limit_top = value
-		_set_camera_2d_limit(SIDE_TOP, value)
-	if property == LIMIT_RIGHT:
-		limit_right = value
-		_set_camera_2d_limit(SIDE_RIGHT, value)
-	if property == LIMIT_BOTTOM:
-		limit_bottom = value
-		_set_camera_2d_limit(SIDE_BOTTOM, value)
 	if property == LIMIT_SMOOTHED:
 		limit_smoothed = value
 	
@@ -256,7 +266,7 @@ func _set(property: StringName, value) -> bool:
 	if property == LIMIT_MARGIN_PROPERTY_NAME:
 		limit_margin = value
 		update_limit_all_sides()
-	
+
 	if property == FRAME_PREVIEW:
 		_frame_preview = true if value == null else value
 		queue_redraw()
@@ -266,7 +276,10 @@ func _set(property: StringName, value) -> bool:
 
 func _set_limit_node(value: NodePath) -> void:
 	set_notify_transform(false)
-		
+	
+	# Waits for PCam2d's _ready() before trying to validate limit_node_path 
+	if not is_node_ready(): await ready
+	
 	# Removes signal from existing TileMap node
 	if is_instance_valid(get_node_or_null(limit_node_path)):
 		var prev_limit_node: Node2D = get_node(limit_node_path)
@@ -276,7 +289,6 @@ func _set_limit_node(value: NodePath) -> void:
 	
 	var limit_node: Node2D = get_node_or_null(value)
 	
-	# Applies value to the limit_node_path
 	if is_instance_valid(limit_node):
 		if limit_node is TileMap:
 			var tile_map_node: TileMap = get_node(value)
@@ -284,7 +296,6 @@ func _set_limit_node(value: NodePath) -> void:
 
 		elif limit_node is CollisionShape2D:
 			var col_shape: CollisionShape2D = get_node(value)
-
 			if col_shape.get_shape() == null:
 				printerr("No Shape2D in: ", col_shape.name)
 				value = NodePath()
@@ -295,7 +306,6 @@ func _set_limit_node(value: NodePath) -> void:
 
 	notify_property_list_changed()
 	update_limit_all_sides()
-	
 
 #endregion
 
@@ -306,7 +316,7 @@ func _get(property: StringName):
 	if property == Constants.PRIORITY_OVERRIDE: 						return Properties.priority_override
 	if property == Constants.PRIORITY_PROPERTY_NAME: 					return Properties.priority
 
-	if property == Constants.ZOOM_PROPERTY_NAME: 						return zoom
+	if property == ZOOM_PROPERTY_NAME: 									return camera_zoom
 
 	if property == Constants.FOLLOW_MODE_PROPERTY_NAME: 				return Properties.follow_mode
 	if property == Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME:		return Properties.follow_target_offset_2D
@@ -355,8 +365,9 @@ func _property_can_revert(property: StringName) -> bool:
 		Constants.PRIORITY_OVERRIDE: 									return true
 		Constants.PRIORITY_PROPERTY_NAME: 								return true
 		
-		Constants.ZOOM_PROPERTY_NAME: 									return true
+		ZOOM_PROPERTY_NAME: 											return true
 		
+		Constants.FOLLOW_TARGET_PROPERTY_NAME: 							return true
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
 		
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return true
@@ -395,8 +406,9 @@ func _property_get_revert(property: StringName):
 		Constants.PRIORITY_OVERRIDE: 									return false
 		Constants.PRIORITY_PROPERTY_NAME: 								return 0
 		
-		Constants.ZOOM_PROPERTY_NAME: 									return Vector2.ONE
+		ZOOM_PROPERTY_NAME:												return Vector2.ONE
 		
+		Constants.FOLLOW_TARGET_PROPERTY_NAME:							return NodePath()
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector2.ZERO
 		
 		Constants.FOLLOW_FRAMED_DEAD_ZONE_HORIZONTAL_NAME: 				return 0.5
@@ -404,7 +416,7 @@ func _property_get_revert(property: StringName):
 		Constants.FOLLOW_VIEWFINDER_IN_PLAY_NAME:						return false
 		
 		Constants.FOLLOW_DAMPING_NAME: 									return false
-		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10
+		Constants.FOLLOW_DAMPING_VALUE_NAME: 							return 10.0
 		
 		Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME: 					return Constants.InactiveUpdateMode.ALWAYS
 		Constants.TWEEN_ONLOAD_NAME: 									return true
@@ -432,6 +444,7 @@ func _enter_tree() -> void:
 	Properties.camera_enter_tree(self)
 	Properties.assign_pcam_host(self)
 
+	update_limit_all_sides()
 
 func _exit_tree() -> void:
 	if Properties.pcam_host_owner:
@@ -445,6 +458,12 @@ func _process(delta: float) -> void:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
 				return
+			Constants.InactiveUpdateMode.ALWAYS:
+				# Only triggers if limit isn't default
+				if limit_inactive_pcam:
+					set_global_position(
+						_set_limit_clamp_position(get_global_position())
+					)
 #			Constants.InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
@@ -453,14 +472,14 @@ func _process(delta: float) -> void:
 	match Properties.follow_mode:
 		Constants.FollowMode.GLUED:
 			if Properties.follow_target_node:
-				set_global_position(Properties.follow_target_node.get_global_position())
+				_set_pcam_global_position(Properties.follow_target_node.get_global_position(), delta)
 		Constants.FollowMode.SIMPLE:
 			if Properties.follow_target_node:
-				set_global_position(_target_position_with_offset())
+				_set_pcam_global_position(_target_position_with_offset(), delta)
 		Constants.FollowMode.GROUP:
 			if Properties.has_follow_group:
 				if Properties.follow_group_nodes_2D.size() == 1:
-					set_global_position(Properties.follow_group_nodes_2D[0].get_global_position())
+					_set_pcam_global_position(Properties.follow_group_nodes_2D[0].get_global_position(), delta)
 				else:
 					var rect: Rect2 = Rect2(Properties.follow_group_nodes_2D[0].get_global_position(), Vector2.ZERO)
 					for node in Properties.follow_group_nodes_2D:
@@ -476,17 +495,18 @@ func _process(delta: float) -> void:
 					if follow_group_zoom_auto:
 						var screen_size: Vector2 = get_viewport_rect().size
 						if rect.size.x > rect.size.y * screen_size.aspect():
-							zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+							camera_zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
 						else:
-							zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-					set_global_position(rect.get_center())
+							camera_zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
+					_set_pcam_global_position(rect.get_center(), delta)
 		Constants.FollowMode.PATH:
 				if Properties.follow_target_node and Properties.follow_path_node:
 					var path_position: Vector2 = Properties.follow_path_node.get_global_position()
-					set_global_position(
+					_set_pcam_global_position(
 						Properties.follow_path_node.curve.get_closest_point(
 							Properties.follow_target_node.get_global_position() - path_position
-						) + path_position)
+						) + path_position,
+						delta)
 		Constants.FollowMode.FRAMED:
 			if Properties.follow_target_node:
 				if not Engine.is_editor_hint():
@@ -501,37 +521,67 @@ func _process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								set_global_position(_target_position_with_offset())
+								_set_pcam_global_position(_target_position_with_offset(), delta)
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _target_position_with_offset()
 								glo_pos.x += target_position.x - global_position.x
-								set_global_position(glo_pos)
+								_set_pcam_global_position(glo_pos, delta)
 							else:
-								set_global_position(_target_position_with_offset())
+								_set_pcam_global_position(_target_position_with_offset(), delta)
 						else:
-							set_global_position(target_position)
+							_set_pcam_global_position(target_position, delta)
 					else:
 						_camera_offset = get_global_position() - _target_position_with_offset()
 				else:
-					set_global_position(_target_position_with_offset())
+					_set_pcam_global_position(_target_position_with_offset(), delta)
+
+
+func _set_pcam_global_position(_global_position: Vector2, delta: float) -> void:
+	if limit_inactive_pcam and not Properties.has_tweened:
+		_global_position = _set_limit_clamp_position(_global_position)
+
+	if Properties.follow_has_damping:
+		set_global_position(
+			get_global_position().lerp(
+				_global_position,
+				delta * Properties.follow_damping_value
+			)
+		)
+	else:
+		set_global_position(_global_position)
+
+
+func _set_limit_clamp_position(value: Vector2) -> Vector2i:
+	var camera_frame_rect_size: Vector2 = _camera_frame_rect().size
+	value.x = clampf(value.x, _limit_sides.x + camera_frame_rect_size.x / 2, _limit_sides.z - camera_frame_rect_size.x / 2)
+	value.y = clampf(value.y, _limit_sides.y + camera_frame_rect_size.y / 2, _limit_sides.w - camera_frame_rect_size.y / 2)
+	return value
 
 
 func _draw():
-	if not OS.has_feature("editor"): return # Only appears in the editor
-	
-	if Engine.is_editor_hint():
-		if not _frame_preview or Properties.is_active: return
+	if not Engine.is_editor_hint(): return
+
+	if _frame_preview or not is_active():
 		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
 		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
 		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
 		
-		draw_rect(Rect2(-screen_size_zoom / 2, screen_size_zoom), Color("3ab99a"), false, 2)
+		draw_rect(_camera_frame_rect(), Color("3ab99a"), false, 2)
+
+
+func _camera_frame_rect() -> Rect2:
+	var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
+	
+	return Rect2(-screen_size_zoom / 2, screen_size_zoom)
 
 
 func _notification(what):
 	if what == NOTIFICATION_TRANSFORM_CHANGED:
 		if Engine.is_editor_hint(): # Used for updating Limit when a CollisionShape2D is applied
-			update_limit_all_sides()
+			if not is_active():
+				update_limit_all_sides()
 
 
 func _on_tile_map_changed() -> void:
@@ -543,17 +593,21 @@ func _target_position_with_offset() -> Vector2:
 
 
 func _has_valid_pcam_owner() -> bool:
-	if not is_instance_valid(get_pcam_host_owner()):
-		return false
-	if not is_instance_valid(get_pcam_host_owner().camera_2D):
-		return false
-	
+	if not is_instance_valid(get_pcam_host_owner()): return false
+	if not is_instance_valid(get_pcam_host_owner().camera_2D): return false
 	return true
 
 
 func _draw_camera_2d_limit() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(draw_limits)
+
+
+func _check_limit_is_not_default() -> void:
+	if _limit_sides == _limit_sides_default:
+		limit_inactive_pcam = false
+	else:
+		limit_inactive_pcam = true
 
 
 func _set_camera_2d_limit(side: int, limit: int) -> void:
@@ -567,18 +621,15 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 #region Public Functions
 
 func update_limit_all_sides() -> void:
-	if not _has_valid_pcam_owner() or not is_active(): return
-	
 	var limit_node = get_node_or_null(limit_node_path)
 	
-	var sides_limit: Vector4i
 	var limit_rect: Rect2
 	
 	if not is_instance_valid(limit_node):
-		sides_limit.x = limit_left
-		sides_limit.y = limit_top
-		sides_limit.z = limit_right
-		sides_limit.w = limit_bottom
+		_limit_sides.y = limit_top
+		_limit_sides.x = limit_left
+		_limit_sides.z = limit_right
+		_limit_sides.w = limit_bottom
 	elif limit_node is TileMap:
 		var tile_map: TileMap = limit_node as TileMap
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
@@ -594,13 +645,13 @@ func update_limit_all_sides() -> void:
 		)
 		
 		# Left
-		sides_limit.x = roundi(limit_rect.position.x)
+		_limit_sides.x = roundi(limit_rect.position.x)
 		# Top
-		sides_limit.y = roundi(limit_rect.position.y)
+		_limit_sides.y = roundi(limit_rect.position.y)
 		# Right
-		sides_limit.z = roundi(limit_rect.position.x + limit_rect.size.x)
+		_limit_sides.z = roundi(limit_rect.position.x + limit_rect.size.x)
 		# Bottom
-		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
+		_limit_sides.w = roundi(limit_rect.position.y + limit_rect.size.y)
 	elif limit_node is CollisionShape2D:
 		var collision_shape_2d = limit_node as CollisionShape2D
 		
@@ -618,27 +669,30 @@ func update_limit_all_sides() -> void:
 			limit_rect.position + Vector2(limit_margin.x, limit_margin.y),
 			limit_rect.size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
 		)
-		
+
 		# Left
-		sides_limit.x = roundi(limit_rect.position.x)
+		_limit_sides.x = roundi(limit_rect.position.x)
 		# Top
-		sides_limit.y = roundi(limit_rect.position.y)
+		_limit_sides.y = roundi(limit_rect.position.y)
 		# Right
-		sides_limit.z = roundi(limit_rect.position.x + limit_rect.size.x)
+		_limit_sides.z = roundi(limit_rect.position.x + limit_rect.size.x)
 		# Bottom
-		sides_limit.w = roundi(limit_rect.position.y + limit_rect.size.y)
+		_limit_sides.w = roundi(limit_rect.position.y + limit_rect.size.y)
 	
-	_set_camera_2d_limit(SIDE_LEFT, sides_limit.x)
-	_set_camera_2d_limit(SIDE_TOP, sides_limit.y)
-	_set_camera_2d_limit(SIDE_RIGHT, sides_limit.z)
-	_set_camera_2d_limit(SIDE_BOTTOM, sides_limit.w)
+	_check_limit_is_not_default()
+
+	if is_active() and _has_valid_pcam_owner():
+		_set_camera_2d_limit(SIDE_LEFT, _limit_sides.x)
+		_set_camera_2d_limit(SIDE_TOP, _limit_sides.y)
+		_set_camera_2d_limit(SIDE_RIGHT, _limit_sides.z)
+		_set_camera_2d_limit(SIDE_BOTTOM, _limit_sides.w)
 
 
 func reset_limit_all_sides() -> void:
-	_set_camera_2d_limit(SIDE_LEFT, -limit_default)
-	_set_camera_2d_limit(SIDE_TOP, -limit_default)
-	_set_camera_2d_limit(SIDE_RIGHT, limit_default)
-	_set_camera_2d_limit(SIDE_BOTTOM, limit_default)
+	_set_camera_2d_limit(SIDE_LEFT, -_limit_default)
+	_set_camera_2d_limit(SIDE_TOP, -_limit_default)
+	_set_camera_2d_limit(SIDE_RIGHT, _limit_default)
+	_set_camera_2d_limit(SIDE_BOTTOM, _limit_default)
 
 #endregion
 
@@ -655,10 +709,10 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
-	zoom = value
+	camera_zoom = value
 ## Gets current Zoom value.
 func get_zoom() -> Vector2:
-	return zoom
+	return camera_zoom
 
 
 ## Assigns new Priority value.
@@ -907,6 +961,8 @@ func get_limit_margin() -> Vector4:
 ## Enables or disables the Limit Smoothing beaviour.
 func set_limit_smoothing_enabled(value: bool) -> void:
 	limit_smoothed = value
+	if is_active() and _has_valid_pcam_owner():
+		get_pcam_host_owner().camera_2D.reset_smoothing()
 ## Returns the Limit Smoothing beaviour.
 func get_limit_smoothing_enabled() -> bool:
 	return limit_smoothed

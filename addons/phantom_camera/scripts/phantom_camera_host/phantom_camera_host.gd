@@ -68,6 +68,9 @@ func _enter_tree() -> void:
 		if parent is Camera2D:
 			_is_2D = true
 			camera_2D = parent
+			# Force applies position smoothing to be disabled
+			# This is to prevent overlap with the interpolation of the PCam2D.
+			camera_2D.set_position_smoothing_enabled(false)
 		else:
 			_is_2D = false
 			camera_3D = parent
@@ -113,7 +116,7 @@ func _ready() -> void:
 		_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
 
 
-func _check_camera_host_amount():
+func _check_camera_host_amount() -> void:
 	if _get_pcam_host_group().size() > 1:
 		multiple_pcam_hosts = true
 	else:
@@ -138,7 +141,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		
 		if trigger_pcam_tween:
 			_active_pcam.tween_interrupted.emit(pcam)
-		
 	else:
 		no_previous_pcam = true
 
@@ -162,7 +164,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_active_pcam_3D_transform = _active_pcam.get_global_transform()
 
 	tween_duration = 0
-	trigger_pcam_tween = true
+	
+	if pcam.Properties.tween_onload or not pcam.Properties.has_tweened:
+		trigger_pcam_tween = true
 
 
 func _find_pcam_with_highest_priority() -> void:
@@ -170,31 +174,24 @@ func _find_pcam_with_highest_priority() -> void:
 		if pcam.get_priority() > _active_pcam_priority:
 			_assign_new_active_pcam(pcam)
 
+		pcam.Properties.has_tweened = false
+
 		_active_pcam_missing = false
 
 
 func _pcam_tween(delta: float) -> void:
-	if not _active_pcam.Properties.tween_onload and not _active_pcam.Properties.has_tweened_onload:
-		trigger_pcam_tween = false
-		if _is_2D:
-			set_cam_2d_smoothing()
-		return
-
 	# Run at the first tween frame
 	if tween_duration == 0:
 		_active_pcam.tween_started.emit()
 		
-		for pcam in _get_pcam_node_group():
-			pcam.Properties.has_tweened_onload = true
-		
 		if _is_2D:
-			camera_2D.set_position_smoothing_enabled(false)
 			_active_pcam.reset_limit_all_sides()
 
 	tween_duration += delta
+	_active_pcam.is_tweening.emit()
 
 	if _is_2D:
-		var interpolation_destination := _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
+		var interpolation_destination: Vector2 = _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 
 		if _active_pcam.pixel_perfect:
 			camera_2D.set_global_position(interpolation_destination.round())
@@ -278,7 +275,6 @@ func _refresh_transform() -> void:
 
 func _process_pcam(delta: float) -> void:
 	if _active_pcam_missing or not is_child_of_camera: return
-
 	# When following
 	if not trigger_pcam_tween:
 		_pcam_follow(delta)
@@ -296,18 +292,17 @@ func _process_pcam(delta: float) -> void:
 
 	# When tweening
 	else:
-		if tween_duration < _active_pcam.get_tween_duration():
+		if tween_duration + delta <= _active_pcam.get_tween_duration():
 			_pcam_tween(delta)
 		else: # First frame when tweening completes
 			tween_duration = 0
 			trigger_pcam_tween = false
-			
-			_active_pcam.tween_completed.emit()
+
 			show_viewfinder_in_play()
 			_pcam_follow(delta)
+			_active_pcam.tween_completed.emit()
 			
 			if _is_2D:
-				set_cam_2d_smoothing()
 				_active_pcam.update_limit_all_sides()
 			
 				if Engine.is_editor_hint():
@@ -339,16 +334,11 @@ func _process(delta):
 
 func _physics_process(delta: float) -> void:
 	_should_refresh_transform = true
+
 #endregion
 
 
 #region Public Functions
-
-func set_cam_2d_smoothing() -> void:
-	camera_2D.set_position_smoothing_enabled(_active_pcam.Properties.follow_has_damping)
-	camera_2D.set_position_smoothing_speed(_active_pcam.Properties.follow_damping_value)
-	camera_2D.set_limit_smoothing_enabled(_active_pcam.limit_smoothed)
-
 
 func show_viewfinder_in_play() -> void:
 	if _active_pcam.Properties.show_viewfinder_in_play:
@@ -365,6 +355,10 @@ func show_viewfinder_in_play() -> void:
 
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
+	
+	if not pcam.Properties.tween_onload:
+		pcam.Properties.has_tweened = true # Skips its tween if it has the highest priority onload
+
 	_find_pcam_with_highest_priority()
 
 
