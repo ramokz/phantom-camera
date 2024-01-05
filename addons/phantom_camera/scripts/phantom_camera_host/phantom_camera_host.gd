@@ -292,7 +292,7 @@ func _process_pcam(delta: float) -> void:
 
 	# When tweening
 	else:
-		if tween_duration < _active_pcam.get_tween_duration():
+		if tween_duration + delta <= _active_pcam.get_tween_duration():
 			_pcam_tween(delta)
 		else: # First frame when tweening completes
 			tween_duration = 0
