@@ -650,7 +650,7 @@ visible = false
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(73, -28)
+position = Vector2(-151, -28)
 script = ExtResource("6_tahws")
 
 [node name="DarkOverlay" type="ColorRect" parent="CharacterBody2D"]
@@ -722,7 +722,7 @@ shape = SubResource("RectangleShape2D_18i13")
 
 [node name="RoomLeftPhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(49, -128)
+position = Vector2(-151, -128)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 5
@@ -753,7 +753,7 @@ debug_color = Color(0, 0.6, 0.701961, 0.0313726)
 
 [node name="RoomCentrePhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(904, -217)
+position = Vector2(1063, -181)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 0
@@ -815,7 +815,7 @@ tween_on_load = false
 inactive_update_mode = 0
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(49, -128)
+position = Vector2(-151, -128)
 zoom = Vector2(1.5, 1.5)
 limit_left = -537
 limit_top = -508
