@@ -722,14 +722,14 @@ shape = SubResource("RectangleShape2D_18i13")
 
 [node name="RoomLeftPhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(73, -148)
+position = Vector2(49, -128)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 5
-zoom = Vector2(2.7, 2.7)
+zoom = Vector2(1.5, 1.5)
 follow_mode = 2
 follow_target = NodePath("../CharacterBody2D")
-follow_parameters/target_offset = Vector2(0, -120)
+follow_parameters/target_offset = Vector2(0, -80)
 follow_parameters/damping = true
 follow_parameters/damping_value = 5.0
 frame_preview = true
@@ -753,11 +753,11 @@ debug_color = Color(0, 0.6, 0.701961, 0.0313726)
 
 [node name="RoomCentrePhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(892, -217)
+position = Vector2(904, -217)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 0
-zoom = Vector2(2, 2)
+zoom = Vector2(1, 1)
 follow_mode = 2
 follow_target = NodePath("")
 follow_parameters/target_offset = Vector2(0, 0)
@@ -798,10 +798,10 @@ scale = Vector2(1.0024, 1)
 script = ExtResource("4_4b648")
 priority_override = false
 priority = 0
-zoom = Vector2(2.5, 2.5)
+zoom = Vector2(2, 2)
 follow_mode = 2
 follow_target = NodePath("")
-follow_parameters/target_offset = Vector2(0, 0)
+follow_parameters/target_offset = Vector2(0, -80)
 follow_parameters/damping = true
 follow_parameters/damping_value = 10.0
 frame_preview = true
@@ -815,8 +815,8 @@ tween_on_load = false
 inactive_update_mode = 0
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(73, -148)
-zoom = Vector2(2.7, 2.7)
+position = Vector2(49, -128)
+zoom = Vector2(1.5, 1.5)
 limit_left = -537
 limit_top = -508
 limit_right = 433
