@@ -23,6 +23,23 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
   </tbody>
 </table>
 
+### Showcases
+
+<table>
+<tr>
+<td>
+<a href="https://www.youtube.com/watch?v=85K0e2Y0U3Q">
+<img src="https://phantom-camera.dev/assets/github/yt-bissash-00.png" width="320" alt="Bissash's Youtube Tutorial"/>
+</a>
+</td>
+</tr>
+<tr>
+<td align="center">
+<b>(Spanish)</b>
+</td>
+</tr>
+</table>
+
 # Features
 
 <a href="https://phantom-camera.dev/priority">
