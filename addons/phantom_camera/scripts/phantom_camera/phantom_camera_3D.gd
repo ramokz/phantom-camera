@@ -651,15 +651,16 @@ func _process(delta: float) -> void:
 							if is_instance_valid(_follow_spring_arm_node):
 								if not get_parent() == _follow_spring_arm_node:
 									var follow_target: Node3D = Properties.follow_target_node
-#									_follow_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
-									_follow_spring_arm_node.set_rotation_degrees(rotation_degrees)
+									_follow_spring_arm_node.set_rotation_degrees(get_rotation_degrees())
 									_follow_spring_arm_node.set_length(follow_distance)
 									_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
 									_follow_spring_arm_node.set_shape(_follow_spring_arm_shape)
 									_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
+									_follow_spring_arm_node.set_global_position(_get_target_position_offset()) # Ensure the PCam3D starts at the right position at runtime
 
 									if not is_tween_on_load():
 										Properties.has_tweened = true
+
 									reparent(_follow_spring_arm_node)
 
 								_interpolate_position(
