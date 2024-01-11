@@ -447,8 +447,8 @@ func _enter_tree() -> void:
 	update_limit_all_sides()
 
 func _exit_tree() -> void:
-	if Properties.pcam_host_owner:
-		Properties.pcam_host_owner.pcam_removed_from_scene(self)
+	if _has_valid_pcam_owner():
+		get_pcam_host_owner().pcam_removed_from_scene(self)
 
 	Properties.pcam_exit_tree(self)
 
