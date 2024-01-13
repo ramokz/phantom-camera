@@ -145,7 +145,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
-	_active_pcam_has_damping = pcam.Properties.follow_has_damping
+	_active_pcam_has_damping = pcam.follow_damping
 
 	_active_pcam.Properties.is_active = true
 	_active_pcam.became_active.emit()
@@ -164,7 +164,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	tween_duration = 0
 	
-	if pcam.Properties.tween_onload or not pcam.Properties.has_tweened:
+	if pcam.tween_onload or not pcam.Properties.has_tweened:
 		trigger_pcam_tween = true
 
 
@@ -258,8 +258,8 @@ func _pcam_follow(delta: float) -> void:
 			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
 
 		if _active_pcam.Properties.has_follow_group:
-			if _active_pcam.Properties.follow_has_damping:
-				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.Properties.follow_damping_value)
+			if _active_pcam.follow_damping:
+				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
 			else:
 				camera_2D.set_zoom(_active_pcam.zoom)
 		else:
@@ -362,7 +362,7 @@ func show_viewfinder_in_play() -> void:
 func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
 	
-	if not pcam.Properties.tween_onload:
+	if not pcam.tween_onload:
 		pcam.Properties.has_tweened = true # Skips its tween if it has the highest priority onload
 
 	_find_pcam_with_highest_priority()
@@ -377,7 +377,7 @@ func pcam_removed_from_scene(pcam) -> void:
 
 
 func pcam_priority_updated(pcam: Node) -> void:
-	if Engine.is_editor_hint() and _active_pcam.Properties.priority_override: return
+	if Engine.is_editor_hint() and _active_pcam.priority_override: return
 
 	if not is_instance_valid(pcam): return
 
@@ -394,8 +394,8 @@ func pcam_priority_updated(pcam: Node) -> void:
 
 
 func pcam_priority_override(pcam: Node) -> void:
-	if Engine.is_editor_hint() and _active_pcam.Properties.priority_override:
-		_active_pcam.Properties.priority_override = false
+	if Engine.is_editor_hint() and _active_pcam.priority_override:
+		_active_pcam.priority_override = false
 
 	_assign_new_active_pcam(pcam)
 	update_editor_viewfinder.emit()
