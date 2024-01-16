@@ -482,8 +482,8 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	if Properties.pcam_host_owner:
-		Properties.pcam_host_owner.pcam_removed_from_scene(self)
+	if _has_valid_pcam_owner():
+		get_pcam_host_owner().pcam_removed_from_scene(self)
 
 	Properties.pcam_exit_tree(self)
 
@@ -717,6 +717,12 @@ func _get_raw_unprojected_position() -> Vector2:
 
 func _on_dead_zone_changed() -> void:
 	set_global_position( _get_position_offset_distance() )
+
+
+func _has_valid_pcam_owner() -> bool:
+	if not is_instance_valid(get_pcam_host_owner()): return false
+	if not is_instance_valid(get_pcam_host_owner().camera_3D): return false
+	return true
 
 #endregion
 
