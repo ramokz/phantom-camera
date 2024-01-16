@@ -453,7 +453,7 @@ func _exit_tree() -> void:
 	Properties.pcam_exit_tree(self)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:

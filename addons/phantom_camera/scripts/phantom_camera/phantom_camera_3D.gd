@@ -500,7 +500,7 @@ func _ready():
 			_current_rotation = get_global_rotation()
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if not Properties.is_active:
 		match Properties.inactive_update_mode:
 			Constants.InactiveUpdateMode.NEVER:
