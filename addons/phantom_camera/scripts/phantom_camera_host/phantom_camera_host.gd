@@ -50,7 +50,6 @@ var _prev_camera_h_offset: float
 var _prev_camera_v_offset: float
 var _prev_camera_fov: float
 
-var _should_refresh_transform: bool
 var _active_pcam_2D_glob_transform: Transform2D
 var _active_pcam_3D_glob_transform: Transform3D
 
@@ -320,20 +319,12 @@ func _get_pcam_host_group() -> Array[Node]:
 func _process(delta):
 	if not is_instance_valid(_active_pcam): return
 
-	if _should_refresh_transform:
-#		_refresh_transform()
-		if _is_2D:
-			_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
-		else:
-			_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
-
-		_should_refresh_transform = false
+	if _is_2D:
+		_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
+	else:
+		_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
 
 	_process_pcam(delta)
-
-
-func _physics_process(delta: float) -> void:
-	_should_refresh_transform = true
 
 #endregion
 
