@@ -7,26 +7,6 @@ extends Node3D
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
-const FOLLOW_DISTANCE_PROPERTY_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + "distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME: 					StringName = Constants.FOLLOW_PARAMETERS_NAME + "min_distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME: 					StringName = Constants.FOLLOW_PARAMETERS_NAME + "max_distance"
-const FOLLOW_GROUP_DISTANCE_AUTO_DIVISOR: 					StringName = Constants.FOLLOW_PARAMETERS_NAME + "auto_distance_divisor"
-
-const SPRING_ARM_PROPERTY_NAME: 							StringName = "spring_arm/"
-const FOLLOW_SPRING_ARM_COLLISION_MASK_NAME: 				StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "collision_mask"
-const FOLLOW_SPRING_ARM_SHAPE_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "shape"
-const FOLLOW_SPRING_ARM_SPRING_LENGTH_NAME: 				StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "spring_length"
-const FOLLOW_SPRING_ARM_MARGIN_NAME: 						StringName = Constants.FOLLOW_PARAMETERS_NAME + SPRING_ARM_PROPERTY_NAME + "margin"
-
-const LOOK_AT_MODE_PROPERTY_NAME: 							StringName = "look_at_mode"
-const LOOK_AT_TARGET_PROPERTY_NAME: 						StringName = "look_at_target"
-const LOOK_AT_GROUP_PROPERTY_NAME: 							StringName = "look_at_group"
-const LOOK_AT_PARAMETERS_NAME: 								StringName = "look_at_parameters/"
-const LOOK_AT_TARGET_OFFSET_PROPERTY_NAME: 					StringName = LOOK_AT_PARAMETERS_NAME + "look_at_target_offset"
-
-const CAMERA_3D_RESOURCE_PROPERTY_NAME: StringName = "camera_3D_resource"
-
 #endregion
 
 
@@ -86,7 +66,7 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 @export var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE:
 	set(value):
 		follow_mode = value
-		
+
 		if value == Constants.FollowMode.FRAMED:
 			if Properties.follow_framed_initial_set and follow_target:
 				Properties.follow_framed_initial_set = false
@@ -100,19 +80,19 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 
 var _should_follow: bool = false
 
-var _follow_target_node: Node
 ## TODO Description
 @export var follow_target: Node3D = null:
 	set = set_follow_target,
 	get = get_follow_target
 
-var _follow_target_nodes: Array[Node3D]
 ## TODO Description
 @export var follow_targets: Array[Node3D] = [null]:
 	set = set_follow_targets,
 	get = get_follow_targets
-	
-var _follow_path_node: Path3D
+var _has_follow_targets: bool = false
+
+
+## TODO Description
 @export var follow_path: Path3D = null:
 	set = set_follow_path,
 	get = get_follow_path
@@ -126,37 +106,40 @@ enum LookAtMode {
 	SIMPLE 	= 2,
 	GROUP	= 3,
 }
-#var look_at_mode_enum: LookAtMode = LookAtMode.NONE
+
 
 ## TODO Description
 @export var look_at_mode: LookAtMode = LookAtMode.NONE:
 	set(value):
 		look_at_mode = value
 		notify_property_list_changed()
+	get:
+		return look_at_mode
 
-var _look_at_target_node: Node3D
 ## TODO Description
 @export var look_at_target: Node3D = null:
 	set = set_look_at_target,
 	get = get_look_at_target
 
-var _look_at_group_nodes: Array[Node3D]
+#var _look_at_group_nodes: Array[Node3D] # TODO - NO LONGER NEEDED
 ## TODO Description
 @export var look_at_targets: Array[Node3D] = [null]:
 	set = set_look_at_targets,
 	get = get_look_at_targets
+var _valid_look_at_targets: Array[Node3D] = [null]
 
 ## TODO Description
 @export var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
 ## TODO Description
+@export var tween_onload: bool = true
+
+## TODO Description
 @export var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
 var has_tweened: bool
 
-## TODO Description
-@export var tween_onload: bool = true
 
 
 ## TODO Description
@@ -186,9 +169,9 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 	get = get_follow_distance
 
 ## TODO Description
-@export var follow_group_distance_auto: bool = false:
-	set = set_auto_follow_distance,
-	get = get_auto_follow_distance
+@export var auto_follow_distance: bool = false:
+	set = set_is_auto_distance,
+	get = get_is_auto_distance
 
 ## TODO Description
 @export var follow_group_distance_auto_min: float = 1:
@@ -205,7 +188,23 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 	set = set_auto_follow_distance_divisor,
 	get = get_auto_follow_distance_divisor
 
-
+@export_subgroup("Dead Zones")
+## TODO Description
+@export_range(0, 1) var dead_zone_width: float = 0:
+	set(value):
+		dead_zone_width = value
+		Properties.dead_zone_changed.emit()
+	get:
+		return dead_zone_width
+## TODO Description
+@export_range(0, 1) var dead_zone_height: float = 0:
+	set(value):
+		dead_zone_height = value
+		Properties.dead_zone_changed.emit()
+	get:
+		return dead_zone_height
+## TODO Description
+@export var show_viewfinder_in_play: bool
 
 @export_subgroup("Spring Arm")
 var follow_spring_arm_node: SpringArm3D
@@ -214,7 +213,7 @@ var follow_spring_arm_node: SpringArm3D
 @export var spring_length: float = 1:
 	set = set_follow_distance,
 	get = get_follow_distance
-	
+
 ## TODO Description
 @export_flags_3d_physics var collision_mask: int = 1
 
@@ -231,7 +230,7 @@ var follow_spring_arm_node: SpringArm3D
 	set = set_look_at_target_offset,
 	get = get_look_at_target_offset
 
-var _camera_offset: Vector3
+var _follow_framed_offset: Vector3
 var _current_rotation: Vector3
 
 #endregion
@@ -240,56 +239,67 @@ var _current_rotation: Vector3
 #region Properties
 
 func _validate_property(property: Dictionary) -> void:
-	###############
+	################
 	## Follow Target
-	###############
+	################
 	if property.name == "follow_target":
 		if follow_mode == Constants.FollowMode.NONE or \
 		follow_mode == Constants.FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
-		
-	if property.name == "follow_targets":
-		if follow_mode != Constants.FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
-	
+
 	if property.name == "follow_path" and \
 	follow_mode != Constants.FollowMode.PATH:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-	
-	if property.name == "follow_offset" and \
-	(follow_mode == Constants.FollowMode.GLUED or follow_mode == Constants.FollowMode.PATH):
+
+
+	####################
+	## Follow Parameters
+	####################
+	if property.name == "follow_offset":
+		if not follow_mode == Constants.FollowMode.GLUED or \
+		 not follow_mode == Constants.FollowMode.PATH:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
-			
-	
+
 	if property.name == "follow_damping" and \
 	follow_mode == Constants.FollowMode.NONE:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-		
+
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
-		if follow_mode != Constants.FollowMode.GROUP or \
-		follow_mode != Constants.FollowMode.FRAMED:
+		if not follow_mode == Constants.FollowMode.FRAMED:
+			if not follow_mode == Constants.FollowMode.GROUP or \
+			auto_follow_distance: \
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "follow_group_distance_auto":
+
+	###############
+	## Follow Group
+	###############
+	if property.name == "follow_targets" and follow_mode != Constants.FollowMode.GROUP:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "auto_follow_distance":
 		if follow_mode == Constants.FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_EDITOR
 		else:
 			property.usage = PROPERTY_USAGE_NONE
 
-	if not follow_group_distance_auto:
+	if not auto_follow_distance:
 		match property.name:
 			"follow_group_distance_auto_max", \
-			"follow_group_distance_auto_min",\
+			"follow_group_distance_auto_min", \
 			"follow_group_distance_auto_divisor":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	#############
-	## Spring Arm
-	#############
-	
+	if not follow_mode == Constants.FollowMode.FRAMED:
+		match property.name:
+			"dead_zone_width", \
+			"dead_zone_height", \
+			"show_viewfinder_in_play":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
 	if not follow_mode == Constants.FollowMode.THIRD_PERSON:
 		match property.name:
 			"spring_length", \
@@ -297,31 +307,25 @@ func _validate_property(property: Dictionary) -> void:
 			"shape", \
 			"margin":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-	
-	
+
 	###############
 	## Look At
 	###############
-	if property.name == "look_at_target" and \
-	look_at_mode == LookAtMode.NONE:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
-	
-	
+	if property.name == "look_at_target":
+		if look_at_mode == LookAtMode.NONE or \
+		look_at_mode == LookAtMode.GROUP:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
+
 	if property.name == "look_at_targets" and \
-	look_at_mode != LookAtMode.GROUP:
+	not look_at_mode == LookAtMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-		
+
 	if property.name == "look_at_target_offset" and \
 	look_at_mode == LookAtMode.NONE:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-		
-	notify_property_list_changed()
-#
-	#if property == Constants.INACTIVE_UPDATE_MODE_PROPERTY_NAME:		return Properties.inactive_update_mode
-	#if property == Constants.TWEEN_ONLOAD_NAME: 						return Properties.tween_onload
-#
-	#if property ==  CAMERA_3D_RESOURCE_PROPERTY_NAME:					return _camera_3D_resouce
 
+	notify_property_list_changed()
+	#endregion
 #endregion
 
 #region Private Functions
@@ -335,7 +339,6 @@ func _enter_tree() -> void:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
 		#elif look_at_targets:
-			#print("Pringin")
 			#_look_at_group_nodes.clear()
 			#for path in look_at_targets:
 				#if not path.is_empty() and path:
@@ -359,7 +362,7 @@ func _ready():
 				get_parent().add_child.call_deferred(follow_spring_arm_node)
 	if follow_mode == Constants.FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
-			_camera_offset = global_position - _get_target_position_offset()
+			_follow_framed_offset = global_position - _get_target_position_offset()
 			_current_rotation = get_global_rotation()
 
 
@@ -370,7 +373,6 @@ func _process(delta: float) -> void:
 				return
 #			Constants.InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
-
 	if _should_follow:
 		match follow_mode:
 			Constants.FollowMode.GLUED:
@@ -386,7 +388,7 @@ func _process(delta: float) -> void:
 						delta
 					)
 			Constants.FollowMode.GROUP:
-				if Properties.has_follow_group:
+				if _has_follow_targets:
 					if follow_targets.size() == 1:
 						_interpolate_position(
 							follow_targets[0].get_global_position() +
@@ -397,10 +399,11 @@ func _process(delta: float) -> void:
 					elif follow_targets.size() > 1:
 						var bounds: AABB = AABB(follow_targets[0].get_global_position(), Vector3.ZERO)
 						for node in follow_targets:
-							bounds = bounds.expand(node.get_global_position())
+							if is_instance_valid(node):
+								bounds = bounds.expand(node.get_global_position())
 
 						var distance: float
-						if follow_group_distance_auto:
+						if auto_follow_distance:
 							distance = lerp(follow_group_distance_auto_min, follow_group_distance_auto_max, bounds.get_longest_axis_size() / follow_group_distance_auto_divisor)
 							distance = clamp(distance, follow_group_distance_auto_min, follow_group_distance_auto_max)
 						else:
@@ -420,7 +423,7 @@ func _process(delta: float) -> void:
 						delta
 					)
 			Constants.FollowMode.FRAMED:
-				if Properties.follow_target_node:
+				if follow_target:
 					if not Engine.is_editor_hint():
 						if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
 							_interpolate_position(
@@ -428,7 +431,7 @@ func _process(delta: float) -> void:
 								delta
 							)
 							return
-						
+
 						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
@@ -440,10 +443,10 @@ func _process(delta: float) -> void:
 								delta
 							)
 
-						if Properties.get_framed_side_offset() != Vector2.ZERO:
-							var target_position: Vector3 = _get_target_position_offset() + _camera_offset
-							var dead_zone_width: float = Properties.follow_framed_dead_zone_width
-							var dead_zone_height: float = Properties.follow_framed_dead_zone_height
+						if Properties.get_framed_side_offset(dead_zone_width, dead_zone_height) != Vector2.ZERO:
+							var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
+							#var dead_zone_width: float = dead_zone_width
+							#var dead_zone_height: float = dead_zone_height
 							var glo_pos: Vector3
 
 							if dead_zone_width == 0 || dead_zone_height == 0:
@@ -484,7 +487,7 @@ func _process(delta: float) -> void:
 										delta
 									)
 						else:
-							_camera_offset = global_position - _get_target_position_offset()
+							_follow_framed_offset = global_position - _get_target_position_offset()
 							_current_rotation = get_global_rotation()
 					else:
 						set_global_position(_get_position_offset_distance())
@@ -522,7 +525,7 @@ func _process(delta: float) -> void:
 									follow_spring_arm_node.set_global_position(_get_target_position_offset()) # Ensure the PCam3D starts at the right position at runtime
 
 									if not is_tween_on_load():
-										Properties.has_tweened = true
+										has_tweened = true
 
 									reparent(follow_spring_arm_node)
 
@@ -535,26 +538,36 @@ func _process(delta: float) -> void:
 						set_global_position(_get_position_offset_distance())
 
 	if _should_look_at:
+		if not _has_look_at_target: return
 		match look_at_mode:
 			LookAtMode.MIMIC:
-				if _has_look_at_target:
-					set_global_rotation(_look_at_target_node.get_global_rotation())
+				global_rotation = look_at_target.global_rotation
 			LookAtMode.SIMPLE:
-				if _has_look_at_target:
-					look_at(_look_at_target_node.get_global_position() + look_at_target_offset)
+				look_at(look_at_target.global_position + look_at_target_offset)
 			LookAtMode.GROUP:
-				if _has_look_at_targets:
-					if _look_at_group_nodes.size() == 1:
-						look_at(_look_at_group_nodes[0].get_global_position())
-					elif _look_at_group_nodes.size() > 1:
-						var bounds: AABB = AABB(_look_at_group_nodes[0].get_global_position(), Vector3.ZERO)
-						for node in _look_at_group_nodes:
-							bounds = bounds.expand(node.get_global_position())
-						look_at(bounds.get_center())
+				if not _has_look_at_targets:
+					#print("Single target")
+					look_at(look_at_targets[0].get_global_position())
+				else:
+					var bounds: AABB = AABB(look_at_targets[0].get_global_position(), Vector3.ZERO)
+					for node in look_at_targets:
+						bounds = bounds.expand(node.get_global_position())
+					look_at(bounds.get_center())
 
+
+func _physics_process(delta: float) -> void:
+	_refresh_transform()
+
+var trPrev: Vector3
+var trCurr: Vector3
+
+func _refresh_transform() -> void:
+	trPrev = trCurr
+	trCurr = _get_target_position_offset()
 
 func _get_target_position_offset() -> Vector3:
-	return follow_target.get_global_position() + follow_offset
+	return Vector3.ZERO
+	#return follow_target.get_global_position() + follow_offset
 
 
 func _get_position_offset_distance() -> Vector3:
@@ -563,15 +576,21 @@ func _get_position_offset_distance() -> Vector3:
 
 
 func _interpolate_position(_global_position: Vector3, delta: float, target: Node3D = self) -> void:
+	var f: float = Engine.get_physics_interpolation_fraction()
+	var tr: Vector3
+	
+	var diff = trCurr - trPrev
+	tr = trPrev + (diff * f)
+	#tr = lerp(trPrev, trCurr, f)
+	
 	if follow_damping:
-		target.set_global_position(
-			target.get_global_position().lerp(
+		target.global_position = \
+			target.global_position.lerp(
 				_global_position,
 				delta * follow_damping_value
 			)
-		)
 	else:
-		target.set_global_position(_global_position)
+		target.global_position = tr
 
 
 func _get_raw_unprojected_position() -> Vector2:
@@ -624,11 +643,7 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 
 ## Assigns new Priority value.
 func set_priority(value: int) -> void:
-	if value < 0:
-		printerr("Phantom Camera's priority cannot be less than 0")
-		priority = 0
-	else:
-		priority = value
+	priority = abs(value)
 
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_priority_updated(self)
@@ -720,25 +735,27 @@ func get_follow_mode() -> int:
 ## Assigns a new Node3D as the Follow Target.
 func set_follow_target(value: Node3D) -> void:
 	follow_target = value
-	_should_follow = true
+	if is_instance_valid(value):
+		_should_follow = true
+	else:
+		_should_follow = false
 ## Removes the current Node3D Follow Target.
 func erase_follow_target() -> void:
 	_should_follow = false
 	follow_target = null
 ## Gets the current Node3D target.
-func get_follow_target():
+func get_follow_target() -> Node3D:
 	return follow_target
 
 
 ## Assigns a new Path3D to the Follow Path property.
 func set_follow_path(value: Path3D) -> void:
 	follow_path = value
-	#_follow_path_node = value
-## Erases the current Path3D frp, the Follow Target
+## Erases the current Path3D Follow Target.
 func erase_follow_path() -> void:
-	_follow_path_node = null
+	follow_path = null
 ## Gets the current Path2D from the Follow Path property.
-func get_follow_path():
+func get_follow_path() -> Path3D:
 	return follow_path
 
 
@@ -775,14 +792,32 @@ func get_follow_distance() -> float:
 	return follow_distance
 
 func set_follow_targets(value: Array[Node3D]) -> void:
+	# TODO - This shouldn't be needed.
+	# Needs a fix to avoid triggering this setter when not in Group Follow
+	if not follow_mode == Constants.FollowMode.GROUP: return
+
 	follow_targets = value
+
+	if follow_targets.is_empty():
+		_should_follow = false
+		_has_follow_targets = false
+		return
+
+	for target in follow_targets:
+		if is_instance_valid(target):
+			_should_follow = true
+			_has_follow_targets = true
+			return
+		else:
+			_should_follow = false
+			_has_follow_targets = false
 
 ## Adds a single Node3D to Follow Group array.
 func append_follow_group_node(value: Node3D) -> void:
-	if not follow_targets.has(value):
+	if not follow_targets.has(value) and is_instance_valid(value):
 		follow_targets.append(value)
-		Properties.should_follow = true
-		Properties.has_follow_group = true
+		_should_follow = true
+		_has_follow_targets = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node3D to Follow Group array.
@@ -790,27 +825,27 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not follow_targets.has(val):
 			follow_targets.append(val)
-			Properties.should_follow = true
-			Properties.has_follow_group = true
+			_should_follow = true
+			_has_follow_targets = true
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes Node3D from Follow Group array.
 func erase_follow_group_node(value: Node3D) -> void:
 	follow_targets.erase(value)
 	if get_follow_targets().size() < 1:
-		Properties.should_follow = false
-		Properties.has_follow_group = false
+		_should_follow = false
+		_has_follow_targets = false
 ## Gets all Node3D from Follow Group array.
 func get_follow_targets() -> Array[Node3D]:
 	return follow_targets
 
 ## Enables or disables Auto Follow Distance when using Group Follow.
-func set_auto_follow_distance(value: bool) -> void:
-	follow_group_distance_auto = value
+func set_is_auto_distance(value: bool) -> void:
+	auto_follow_distance = value
 	notify_property_list_changed()
 ## Gets Auto Follow Distance state.
-func get_auto_follow_distance() -> bool:
-	return follow_group_distance_auto
+func get_is_auto_distance() -> bool:
+	return auto_follow_distance
 
 ## Assigns new Min Auto Follow Distance value.
 func set_min_auto_follow_distance(value: float) -> void:
@@ -885,7 +920,7 @@ func get_look_at_mode() -> int:
 func set_look_at_target(value: Node3D) -> void:
 	look_at_target = value
 	#_look_at_target_node = get_node_or_null(value)
-	if is_instance_valid(_look_at_target_node):
+	if is_instance_valid(look_at_target):
 		_should_look_at = true
 		_has_look_at_target = true
 	notify_property_list_changed()
@@ -903,30 +938,51 @@ func get_look_at_target_offset() -> Vector3:
 
 func set_look_at_targets(value: Array[Node3D]) -> void:
 	look_at_targets = value
-	#_look_at_group_nodes = []
-	#for val in value:
-		#_look_at_group_nodes.append(get_node_or_null(val))
+	
+	if look_at_targets.is_empty():
+		_should_look_at = false
+		_has_look_at_targets = false
+
+	var valid_instances: int = 0
+	for target in look_at_targets:
+		if is_instance_valid(target):
+			valid_instances += 1
+			_should_look_at = true
+			_valid_look_at_targets.append(target)
+		
+		if valid_instances > 1:
+			print("Larger than 1")
+			_has_look_at_targets = true
+			break
+		elif valid_instances == 0:
+			print("Invalid instances")
+			_should_look_at = false
+			_has_look_at_targets = false
+	
 	notify_property_list_changed()
 
 ## Appends Node3D to Look At Group array.
 func append_look_at_group_node(value: Node3D) -> void:
-	if not _look_at_group_nodes.has(value):
-		_look_at_group_nodes.append(value)
+	if not look_at_targets.has(value):
+		look_at_targets.append(value)
+		_valid_look_at_targets.append(value)
 		_has_look_at_targets = true
 	else:
 		printerr(value, " is already part of Look At Group")
 ## Appends array of type Node3D to Look At Group array.
 func append_look_at_group_node_array(value: Array[NodePath]) -> void:
 	for val in value:
-		if not _look_at_group_nodes.has(val):
-			_look_at_group_nodes.append(val)
+		if not look_at_targets.has(val):
+			look_at_targets.append(val)
+			_valid_look_at_targets.append(val)
 			_has_look_at_targets = true
 		else:
 			printerr(val, " is already part of Look At Group")
 ## Removes Node3D from Look At Group array.
 func erase_look_at_group_node(value: Node3D) -> void:
-	_look_at_group_nodes.erase(value)
-	if _look_at_group_nodes.size() < 1:
+	look_at_targets.erase(value)
+	_valid_look_at_targets.erase(value)
+	if look_at_targets.size() < 1:
 		_has_look_at_targets = false
 ## Gets all the Node3D in Look At Group array.
 func get_look_at_targets() -> Array[Node3D]:
