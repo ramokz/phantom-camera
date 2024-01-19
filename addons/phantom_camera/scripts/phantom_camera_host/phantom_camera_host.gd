@@ -218,17 +218,17 @@ func _pcam_tween(delta: float) -> void:
 			)
 		)
 
-		if _prev_camera_fov != _active_pcam.get_camera_fov() and _active_pcam.get_camera_3D_resource():
+		if _prev_camera_fov != _active_pcam.get_camera_fov():
 			camera_3D.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
 			)
 
-		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset() and _active_pcam.get_camera_3D_resource():
+		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset():
 			camera_3D.set_h_offset(
 				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_camera_h_offset())
 			)
 
-		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset() and _active_pcam.get_camera_3D_resource():
+		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset():
 			camera_3D.set_v_offset(
 				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_camera_v_offset())
 			)

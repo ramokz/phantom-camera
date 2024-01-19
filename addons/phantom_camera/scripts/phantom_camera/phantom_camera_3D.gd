@@ -315,6 +315,8 @@ func _set(property: StringName, value) -> bool:
 	if property == LOOK_AT_TARGET_PROPERTY_NAME:
 		_look_at_target_path = value
 		var value_node_path: NodePath = value as NodePath
+		if not is_node_ready(): await ready
+		
 		if not value_node_path.is_empty():
 			_should_look_at = true
 			if has_node(_look_at_target_path):
@@ -1081,6 +1083,7 @@ func set_camera_cull_mask(value: int) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.cull_mask = value
+	if is_active(): get_pcam_host_owner().camera_3D.cull_mask = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_cull_mask() -> int:
 	if get_camera_3D_resource():
@@ -1099,6 +1102,7 @@ func set_camera_h_offset(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.h_offset = value
+	if is_active(): get_pcam_host_owner().camera_3D.h_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_h_offset() -> float:
 	if get_camera_3D_resource():
@@ -1117,6 +1121,7 @@ func set_camera_v_offset(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.v_offset = value
+	if is_active(): get_pcam_host_owner().camera_3D.v_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_v_offset() -> float:
 	if get_camera_3D_resource():
@@ -1135,6 +1140,7 @@ func set_camera_fov(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.fov = value
+	if is_active(): get_pcam_host_owner().camera_3D.fov = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_fov() -> float:
 	if get_camera_3D_resource():
