@@ -2,7 +2,7 @@ extends "player_controller.gd"
 
 @onready var _player_pcam: PhantomCamera3D = %PlayerPhantomCamera3D
 @onready var _aim_pcam: PhantomCamera3D = %PlayerAimPhantomCamera3D
-@onready var _model: Node3D = $PlayerModel
+@onready var _model: Node3D = %PlayerMesh
 @onready var _ceiling_pcam: PhantomCamera3D = %CeilingPhantomCamera3D
 
 @export var mouse_sensitivity: float = 0.05
