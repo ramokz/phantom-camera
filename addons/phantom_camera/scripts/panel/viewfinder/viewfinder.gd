@@ -79,7 +79,7 @@ var max_vertical: float
 func _ready():
 	visibility_changed.connect(_visibility_check)
 	set_process(false)
-	
+
 	aspect_ratio_containers.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
 
 #	TODO - Don't think this is needed / does anything?
@@ -91,7 +91,7 @@ func _ready():
 			is_2D = true
 		else:
 			is_2D = false
-			
+
 		_set_viewfinder(root_node, false)
 
 	if Engine.is_editor_hint():
@@ -118,7 +118,7 @@ func _exit_tree() -> void:
 	if is_instance_valid(_active_pcam_camera):
 		if _active_pcam_camera.Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
 			_active_pcam_camera.Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
-	
+
 	if _priority_override_button.pressed.is_connected(_select_override_pcam):
 		_priority_override_button.pressed.disconnect(_select_override_pcam)
 
@@ -131,7 +131,7 @@ func _process(_delta: float):
 		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
 	)
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
-	
+
 	if not has_camera_viewport_panel_size:
 		_on_dead_zone_changed()
 
@@ -344,7 +344,7 @@ func _set_viewfinder(root: Node, editor: bool):
 				_active_pcam_camera = _selected_camera.get_child(0).get_active_pcam() as PhantomCamera2D
 				if editor:
 					var camera_2D_rid: RID = _selected_camera.get_canvas_item()
-					# TODO - Missing 2D viewport support - https://github.com/ramokz/phantom-camera/issues/105 
+					# TODO - Missing 2D viewport support - https://github.com/ramokz/phantom-camera/issues/105
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
 			else:
 				_selected_camera = pcam_host.camera_3D
@@ -384,32 +384,33 @@ func _resized() -> void:
 
 func _on_dead_zone_changed() -> void:
 	if not is_instance_valid(_active_pcam_camera): return
-	
+	if not _active_pcam_camera.follow_mode == Constants.FollowMode.FRAMED: return  
+
 	if camera_viewport_panel.size == Vector2.ZERO:
 		has_camera_viewport_panel_size = false
 		return
 	else:
 		has_camera_viewport_panel_size = true
 
-	var dead_zone_width: float = _active_pcam_camera.Properties.follow_framed_dead_zone_width * camera_viewport_panel.size.x
-	var dead_zone_height: float = _active_pcam_camera.Properties.follow_framed_dead_zone_height * camera_viewport_panel.size.y
+	var dead_zone_width: float = _active_pcam_camera.dead_zone_width * camera_viewport_panel.size.x
+	var dead_zone_height: float = _active_pcam_camera.dead_zone_height * camera_viewport_panel.size.y
 	dead_zone_center_hbox.set_custom_minimum_size(Vector2(dead_zone_width, 0))
 	dead_zone_center_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_left_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_right_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 
-	min_horizontal = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
-	max_horizontal = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
-	min_vertical = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
-	max_vertical = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
-	
+	min_horizontal = 0.5 - _active_pcam_camera.dead_zone_width / 2
+	max_horizontal = 0.5 + _active_pcam_camera.dead_zone_width / 2
+	min_vertical = 0.5 - _active_pcam_camera.dead_zone_height / 2
+	max_vertical = 0.5 + _active_pcam_camera.dead_zone_height / 2
+
 #	target_point.position = Vector2(viewport_width / 2, viewport_height /  2)
 
 ####################
 ## Priority Override
 ####################
 func _on_update_editor_viewfinder(pcam_host: PhantomCameraHost) -> void:
-	if pcam_host.get_active_pcam().Properties.priority_override:
+	if pcam_host.get_active_pcam().priority_override:
 		_active_pcam_camera = pcam_host.get_active_pcam()
 		_priority_override_button.set_visible(true)
 		_priority_override_name_label.set_text(_active_pcam_camera.name)
