@@ -315,6 +315,8 @@ func _set(property: StringName, value) -> bool:
 	if property == LOOK_AT_TARGET_PROPERTY_NAME:
 		_look_at_target_path = value
 		var value_node_path: NodePath = value as NodePath
+		if not is_node_ready(): await ready
+		
 		if not value_node_path.is_empty():
 			_should_look_at = true
 			if has_node(_look_at_target_path):
