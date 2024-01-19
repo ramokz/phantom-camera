@@ -555,19 +555,8 @@ func _process(delta: float) -> void:
 					look_at(bounds.get_center())
 
 
-func _physics_process(delta: float) -> void:
-	_refresh_transform()
-
-var trPrev: Vector3
-var trCurr: Vector3
-
-func _refresh_transform() -> void:
-	trPrev = trCurr
-	trCurr = _get_target_position_offset()
-
 func _get_target_position_offset() -> Vector3:
-	return Vector3.ZERO
-	#return follow_target.get_global_position() + follow_offset
+	return follow_target.global_position + follow_offset
 
 
 func _get_position_offset_distance() -> Vector3:
@@ -576,13 +565,6 @@ func _get_position_offset_distance() -> Vector3:
 
 
 func _interpolate_position(_global_position: Vector3, delta: float, target: Node3D = self) -> void:
-	var f: float = Engine.get_physics_interpolation_fraction()
-	var tr: Vector3
-	
-	var diff = trCurr - trPrev
-	tr = trPrev + (diff * f)
-	#tr = lerp(trPrev, trCurr, f)
-	
 	if follow_damping:
 		target.global_position = \
 			target.global_position.lerp(
