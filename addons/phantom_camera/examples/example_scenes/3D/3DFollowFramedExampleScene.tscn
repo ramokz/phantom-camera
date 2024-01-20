@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://c4llb3gsbfv1a"]
+[gd_scene load_steps=12 format=3 uid="uid://c4llb3gsbfv1a"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_7824u"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_g1bv4"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_6xt4f"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="3_420vh"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_t4fso"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_c0upu"]
 
@@ -37,25 +38,20 @@ metadata/_edit_lock_ = true
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
 script = ExtResource("2_g1bv4")
-priority_override = false
-priority = 0
 follow_mode = 5
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/distance = 4.0
-follow_parameters/target_offset = Vector3(0, 0, 0)
-follow_parameters/damping = false
-follow_parameters/dead_zone_horizontal = 0.294
-follow_parameters/dead_zone_vertical = 0.201
-follow_parameters/viewfinder_in_play = true
-look_at_mode = 0
-tween_parameters = null
-tween_on_load = false
-inactive_update_mode = 0
-camera_3D_resource = null
+tween_resource = ExtResource("3_420vh")
+tween_onload = false
+follow_damping = true
+follow_distance = 4.0
+dead_zone_width = 0.384
+dead_zone_height = 0.669
+show_viewfinder_in_play = true
+spring_length = 4.0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

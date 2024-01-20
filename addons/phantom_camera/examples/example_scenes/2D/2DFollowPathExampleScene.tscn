@@ -722,43 +722,17 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("5_x25dj")
-priority_override = false
-priority = 0
 zoom = Vector2(2, 2)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("10_mh1yw")
-tween_on_load = true
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = ExtResource("10_mh1yw")
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("5_x25dj")
-priority_override = false
-priority = 0
 zoom = Vector2(2.5, 2.5)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("11_apay3")
-tween_on_load = true
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = ExtResource("11_apay3")
 
 [node name="Label" type="Label" parent="Player"]
 visible = false
@@ -771,30 +745,16 @@ theme_override_fonts/font = ExtResource("8_6pcaf")
 text = "[WASD] to move
 [Space] to jump"
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="."]
+[node name="PlayerPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target", "follow_path")]
 unique_name_in_owner = true
 position = Vector2(374, -216)
 script = ExtResource("5_x25dj")
-priority_override = false
 priority = 5
-zoom = Vector2(1.5, 1.5)
 follow_mode = 4
 follow_target = NodePath("../Player/CharacterBody2D")
 follow_path = NodePath("../Path2D")
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("6_4vtmp")
-tween_on_load = false
-inactive_update_mode = 0
+zoom = Vector2(1.5, 1.5)
+tween_resource = ExtResource("6_4vtmp")
 
 [node name="Path2D" type="Path2D" parent="."]
 position = Vector2(152, -216)

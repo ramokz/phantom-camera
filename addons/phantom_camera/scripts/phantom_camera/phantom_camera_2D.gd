@@ -77,7 +77,7 @@ var _follow_framed_offset: Vector2
 @export var follow_targets: Array[Node2D] = [null]:
 	set = set_follow_targets,
 	get = get_follow_targets
-var _has_follow_targets: bool = false
+var _has_multiple_follow_targets: bool = false
 
 
 ## TODO Description
@@ -109,10 +109,6 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 ## TODO Description
 @export var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
-var follow_group_zoom_auto: bool
-var follow_group_zoom_min: float = 1
-var follow_group_zoom_max: float = 5
-var follow_group_zoom_margin: Vector4
 
 @export_group("Follow Parameters")
 ## TODO Description
@@ -129,6 +125,21 @@ var follow_group_zoom_margin: Vector4
 @export var follow_offset: Vector2 = Vector2.ZERO:
 	set = set_follow_target_offset,
 	get = get_follow_target_offset
+
+@export_subgroup("Follow Group")
+@export var auto_zoom: bool = false:
+	set = set_auto_zoom,
+	get = get_auto_zoom
+@export var auto_zoom_min: float = 1:
+	set = set_auto_zoom_min,
+	get = get_auto_zoom_min
+@export var auto_zoom_max: float = 5:
+	set = set_auto_zoom_max,
+	get = get_auto_zoom_max
+@export var auto_zoom_margin: Vector4 = Vector4.ZERO:
+	set = set_auto_zoom_margin,
+	get = get_auto_zoom_margin
+
 
 @export_subgroup("Dead Zones")
 ## TODO Description
@@ -214,19 +225,29 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "follow_targets" and follow_mode != Constants.FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "auto_follow_distance":
-		if follow_mode == Constants.FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_EDITOR
-		else:
-			property.usage = PROPERTY_USAGE_NONE
+	if not auto_zoom:
+		match property.name:
+			"auto_zoom_min", \
+			"auto_zoom_max", \
+			"auto_zoom_margin":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
 
+	################
+	## Follow Framed
+	################
 	if not follow_mode == Constants.FollowMode.FRAMED:
 		match property.name:
 			"dead_zone_width", \
 			"dead_zone_height", \
 			"show_viewfinder_in_play":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-				
+
+	#######
+	## Zoom
+	#######
+	if property.name == "zoom" and auto_zoom:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+		
 	########
 	## Limit
 	########
@@ -276,7 +297,6 @@ func _process(delta: float) -> void:
 #				TODO
 
 	if not _should_follow: return
-	#if not follow_target or follow_targets.size() == 0: return
 	
 	match follow_mode:
 		Constants.FollowMode.GLUED:
@@ -286,28 +306,27 @@ func _process(delta: float) -> void:
 			if follow_target:
 				_set_pcam_global_position(_target_position_with_offset(), delta)
 		Constants.FollowMode.GROUP:
-			if follow_targets:
-				if follow_targets.size() == 1:
-					_set_pcam_global_position(follow_targets[0].global_position, delta)
-				else:
-					var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
-					for node in follow_targets:
-						rect = rect.expand(node.global_position)
-						if follow_group_zoom_auto:
-							rect = rect.grow_individual(
-								follow_group_zoom_margin.x,
-								follow_group_zoom_margin.y,
-								follow_group_zoom_margin.z,
-								follow_group_zoom_margin.w)
+			if follow_targets.size() == 1:
+				_set_pcam_global_position(follow_targets[0].global_position, delta)
+			elif _has_multiple_follow_targets and follow_targets.size() > 1:
+				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
+				for node in follow_targets:
+					rect = rect.expand(node.global_position)
+					if auto_zoom:
+						rect = rect.grow_individual(
+							auto_zoom_margin.x, 
+							auto_zoom_margin.y,
+							auto_zoom_margin.z,
+							auto_zoom_margin.w)
 #						else:
 #							rect = rect.grow_individual(-80, 0, 0, 0)
-					if follow_group_zoom_auto:
-						var screen_size: Vector2 = get_viewport_rect().size
-						if rect.size.x > rect.size.y * screen_size.aspect():
-							zoom = clamp(screen_size.x / rect.size.x, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-						else:
-							zoom = clamp(screen_size.y / rect.size.y, follow_group_zoom_min, follow_group_zoom_max) * Vector2.ONE
-					_set_pcam_global_position(rect.get_center(), delta)
+				if auto_zoom:
+					var screen_size: Vector2 = get_viewport_rect().size
+					if rect.size.x > rect.size.y * screen_size.aspect():
+						zoom = clamp(screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
+					else:
+						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
+				_set_pcam_global_position(rect.get_center(), delta)
 		Constants.FollowMode.PATH:
 				if follow_targets and follow_path:
 					var path_position: Vector2 = follow_path.global_position
@@ -319,11 +338,10 @@ func _process(delta: float) -> void:
 		Constants.FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
-					Properties.viewport_position = (get_follow_target().get_global_transform_with_canvas().origin + follow_offset) / get_viewport_rect().size
+					Properties.viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
 
-					if Properties.get_framed_side_offset(0, 0) != Vector2.ZERO:
+					if Properties.get_framed_side_offset(dead_zone_width, dead_zone_height) != Vector2.ZERO:
 						var glo_pos: Vector2
-
 						var target_position: Vector2 = _target_position_with_offset() + _follow_framed_offset
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
@@ -696,40 +714,45 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 
 	if follow_targets.is_empty():
 		_should_follow = false
-		_has_follow_targets = false
+		_has_multiple_follow_targets = false
 		return
 
+	var valid_instances: int = 0
 	for target in follow_targets:
 		if is_instance_valid(target):
 			_should_follow = true
-			_has_follow_targets = true
-			return
-		else:
-			_should_follow = false
-			_has_follow_targets = false
+			valid_instances += 1
+			
+			if valid_instances > 1:
+				_has_multiple_follow_targets = true
 ## Adds a single Node2D to Follow Group array.
 func append_follow_group_node(value: Node2D) -> void:
+	if not is_instance_valid(value):
+		printerr(value, " is not a valid instance")
+		return
 	if not follow_targets.has(value):
 		follow_targets.append(value)
 		_should_follow = true
-		_has_follow_targets = true
+		_has_multiple_follow_targets = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node2D to Follow Group array.
 func append_follow_group_node_array(value: Array[Node2D]) -> void:
 	for val in value:
+		if not is_instance_valid(val): continue
 		if not follow_targets.has(val):
 			follow_targets.append(val)
 			_should_follow = true
-			_has_follow_targets = true
+			if follow_targets.size() > 1:
+				_has_multiple_follow_targets = true
 		else:
-			printerr(val, " is already part of Follow Group")
+			printerr(value, " is already part of Follow Group")
 ## Removes Node2D from Follow Group array.
 func erase_follow_group_node(value: Node2D) -> void:
 	follow_targets.erase(value)
 	if follow_targets.size() < 1:
 		_should_follow = false
-		_has_follow_targets = false
+		_has_multiple_follow_targets = false
 ## Gets all Node2D from Follow Group array.
 func get_follow_targets() -> Array[Node2D]:
 	return follow_targets
@@ -737,31 +760,32 @@ func get_follow_targets() -> Array[Node2D]:
 
 ## Enables or disables Auto zoom when using Group Follow.
 func set_auto_zoom(value: bool) -> void:
-	follow_group_zoom_auto = value
+	auto_zoom = value
+	notify_property_list_changed()
 ## Gets Auto Zoom state.
 func get_auto_zoom() -> bool:
-	return follow_group_zoom_auto
+	return auto_zoom
 
 ## Assigns new Min Auto Zoom value.
-func set_min_auto_zoom(value: float) -> void:
-	follow_group_zoom_min = value
+func set_auto_zoom_min(value: float) -> void:
+	auto_zoom_min = value
 ## Gets Min Auto Zoom value.
-func get_min_auto_zoom() -> float:
-	return follow_group_zoom_min
+func get_auto_zoom_min() -> float:
+	return auto_zoom_min
 
 ## Assigns new Max Auto Zoom value.
-func set_max_auto_zoom(value: float) -> void:
-	follow_group_zoom_max = value
+func set_auto_zoom_max(value: float) -> void:
+	auto_zoom_max = value
 ## Gets Max Auto Zoom value.
-func get_max_auto_zoom() -> float:
-	return follow_group_zoom_max
+func get_auto_zoom_max() -> float:
+	return auto_zoom_max
 
 ## Assigns new Zoom Auto Margin value.
-func set_zoom_auto_margin(value: Vector4) -> void:
-	follow_group_zoom_margin = value
+func set_auto_zoom_margin(value: Vector4) -> void:
+	auto_zoom_margin = value
 ## Gets Zoom Auto Margin value.
-func get_zoom_auto_margin() -> Vector4:
-	return follow_group_zoom_margin
+func get_auto_zoom_margin() -> Vector4:
+	return auto_zoom_margin
 
 ## Assign a the Camera2D Left Limit Side value.
 func set_limit_left(value: int) -> void:

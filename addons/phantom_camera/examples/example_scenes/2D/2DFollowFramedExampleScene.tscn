@@ -1,11 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://bxtsl6qlpq1ar"]
+[gd_scene load_steps=16 format=3 uid="uid://bxtsl6qlpq1ar"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_27o77"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_1tbys"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_1kfnp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_mylkx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_lwx5e"]
-[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_tu4q2"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="7_lgoyn"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_bo8m7"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="9_lv4it"]
@@ -630,33 +629,22 @@ script = ExtResource("4_mylkx")
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
+[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 position = Vector2(674, -132)
 script = ExtResource("5_lwx5e")
-priority_override = false
 priority = 5
-zoom = Vector2(2, 2)
 follow_mode = 5
 follow_target = NodePath("../CharacterBody2D")
-follow_parameters/target_offset = Vector2(0, 0)
-follow_parameters/damping = true
-follow_parameters/damping_value = 20.0
-follow_parameters/dead_zone_horizontal = 0.362
-follow_parameters/dead_zone_vertical = 1.0
-follow_parameters/viewfinder_in_play = true
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("6_tu4q2")
-tween_on_load = false
-inactive_update_mode = 0
+zoom = Vector2(2, 2)
+tween_onload = false
+auto_zoom = null
+auto_zoom_min = null
+auto_zoom_max = null
+auto_zoom_margin = null
+dead_zone_width = 0.362
+dead_zone_height = 1.0
+show_viewfinder_in_play = true
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(674, -132)
@@ -734,44 +722,24 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(100, -135)
 script = ExtResource("5_lwx5e")
-priority_override = false
-priority = 0
 zoom = Vector2(2, 2)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("10_uli1l")
-tween_on_load = true
-inactive_update_mode = 0
+tween_resource = ExtResource("10_uli1l")
+auto_zoom = null
+auto_zoom_min = null
+auto_zoom_max = null
+auto_zoom_margin = null
 metadata/_edit_lock_ = true
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("5_lwx5e")
-priority_override = false
-priority = 0
 zoom = Vector2(2.5, 2.5)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("11_rg2e5")
-tween_on_load = true
-inactive_update_mode = 0
+tween_resource = ExtResource("11_rg2e5")
+auto_zoom = null
+auto_zoom_min = null
+auto_zoom_max = null
+auto_zoom_margin = null
 metadata/_edit_lock_ = true
 
 [node name="Label" type="Label" parent="Player"]

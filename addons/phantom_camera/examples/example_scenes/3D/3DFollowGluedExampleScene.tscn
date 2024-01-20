@@ -41,21 +41,15 @@ metadata/_edit_lock_ = true
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -11.2101, 6.38964, 6.74731)
 script = ExtResource("2_q1ygp")
-priority_override = false
 priority = 5
 follow_mode = 1
 follow_target = NodePath("../PlayerCharacterBody3D")
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-look_at_mode = 0
-tween_parameters = null
-tween_on_load = false
-inactive_update_mode = 0
-camera_3D_resource = null
+follow_damping = true
+follow_damping_value = 2.0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true

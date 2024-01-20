@@ -5,10 +5,10 @@
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_v5qg2"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_oqmwp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="4_4b648"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_ayobb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_tahws"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_yh2um"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_h2jna"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_3pstx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="9_thf62"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
@@ -580,8 +580,8 @@ size = Vector2(64, 57)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
 size = Vector2(42, 57)
 
-[sub_resource type="Resource" id="Resource_q1k6t"]
-script = ExtResource("6_ayobb")
+[sub_resource type="Resource" id="Resource_c8q58"]
+script = ExtResource("9_3pstx")
 duration = 0.9
 transition = 2
 ease = 2
@@ -650,7 +650,7 @@ visible = false
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(-151, -28)
+position = Vector2(5, -28)
 script = ExtResource("6_tahws")
 
 [node name="DarkOverlay" type="ColorRect" parent="CharacterBody2D"]
@@ -720,27 +720,19 @@ collision_mask = 2
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_18i13")
 
-[node name="RoomLeftPhantomCamera2D" type="Node2D" parent="."]
+[node name="RoomLeftPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(-151, -128)
+position = Vector2(5, -91)
 script = ExtResource("4_4b648")
-priority_override = false
 priority = 5
-zoom = Vector2(1.5, 1.5)
 follow_mode = 2
 follow_target = NodePath("../CharacterBody2D")
-follow_parameters/target_offset = Vector2(0, -80)
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/limit_node_target = NodePath("../TileMap")
-limit/margin = Vector4i(-200, 20, -50, 200)
-limit/smoothed = false
-tween_parameters = SubResource("Resource_q1k6t")
-tween_on_load = false
-inactive_update_mode = 0
+zoom = Vector2(2, 2)
+tween_resource = SubResource("Resource_c8q58")
+tween_onload = false
+follow_damping = true
+follow_offset = Vector2(0, -63.205)
+limit_target = NodePath("../TileMap")
 
 [node name="RoomLeftArea2D" type="Area2D" parent="."]
 unique_name_in_owner = true
@@ -753,25 +745,14 @@ debug_color = Color(0, 0.6, 0.701961, 0.0313726)
 
 [node name="RoomCentrePhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1063, -181)
+position = Vector2(1026, -181)
 script = ExtResource("4_4b648")
-priority_override = false
-priority = 0
-zoom = Vector2(1, 1)
 follow_mode = 2
-follow_target = NodePath("")
-follow_parameters/target_offset = Vector2(0, 0)
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/limit_node_target = NodePath("../RoomCentreArea2D/CollisionShape2D")
-limit/margin = Vector4i(0, 0, 0, 0)
-limit/smoothed = true
-tween_parameters = SubResource("Resource_q1k6t")
-tween_on_load = false
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = SubResource("Resource_c8q58")
+tween_onload = false
+follow_damping = true
+limit_target = NodePath("../RoomCentreArea2D/CollisionShape2D")
 
 [node name="RoomCentreArea2D" type="Area2D" parent="."]
 unique_name_in_owner = true
@@ -796,31 +777,18 @@ unique_name_in_owner = true
 position = Vector2(2347, -156)
 scale = Vector2(1.0024, 1)
 script = ExtResource("4_4b648")
-priority_override = false
-priority = 0
-zoom = Vector2(2, 2)
 follow_mode = 2
-follow_target = NodePath("")
-follow_parameters/target_offset = Vector2(0, -80)
-follow_parameters/damping = true
-follow_parameters/damping_value = 10.0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/limit_node_target = NodePath("../RoomRightArea2D/CollisionShape2D")
-limit/margin = Vector4i(0, 0, 0, 0)
-limit/smoothed = true
-tween_parameters = SubResource("Resource_q1k6t")
-tween_on_load = false
-inactive_update_mode = 0
+zoom = Vector2(2, 2)
+tween_resource = SubResource("Resource_c8q58")
+tween_onload = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(-151, -128)
-zoom = Vector2(1.5, 1.5)
-limit_left = -537
-limit_top = -508
-limit_right = 433
-limit_bottom = 88
+position = Vector2(5, -91)
+zoom = Vector2(2, 2)
+limit_left = -337
+limit_top = -528
+limit_right = 383
+limit_bottom = 288
 position_smoothing_speed = 10.0
 editor_draw_limits = true
 
