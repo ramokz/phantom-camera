@@ -256,8 +256,9 @@ func _validate_property(property: Dictionary) -> void:
 	## Follow Parameters
 	####################
 	if property.name == "follow_offset":
-		if not follow_mode == Constants.FollowMode.GLUED or \
-		 not follow_mode == Constants.FollowMode.PATH:
+		if follow_mode == Constants.FollowMode.GLUED or \
+		follow_mode == Constants.FollowMode.PATH or \
+		follow_mode == Constants.FollowMode.NONE:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping" and \
@@ -277,14 +278,13 @@ func _validate_property(property: Dictionary) -> void:
 	###############
 	## Follow Group
 	###############
-	if property.name == "follow_targets" and follow_mode != Constants.FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
+	if property.name == "follow_targets" and \
+	not follow_mode == Constants.FollowMode.GROUP:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "auto_follow_distance":
-		if follow_mode == Constants.FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_EDITOR
-		else:
-			property.usage = PROPERTY_USAGE_NONE
+	if property.name == "auto_follow_distance" and \
+	not follow_mode == Constants.FollowMode.GROUP:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if not auto_follow_distance:
 		match property.name:
@@ -363,7 +363,7 @@ func _ready():
 	if follow_mode == Constants.FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
 			_follow_framed_offset = global_position - _get_target_position_offset()
-			_current_rotation = get_global_rotation()
+			_current_rotation = global_rotation
 
 
 func _process(delta: float) -> void:
@@ -378,7 +378,7 @@ func _process(delta: float) -> void:
 			Constants.FollowMode.GLUED:
 				if follow_target:
 					_interpolate_position(
-						follow_target.get_global_position(),
+						follow_target.global_position,
 						delta
 					)
 			Constants.FollowMode.SIMPLE:
@@ -391,16 +391,16 @@ func _process(delta: float) -> void:
 				if _has_follow_targets:
 					if follow_targets.size() == 1:
 						_interpolate_position(
-							follow_targets[0].get_global_position() +
+							follow_targets[0].global_position +
 							follow_offset +
 							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
 							delta
 						)
 					elif follow_targets.size() > 1:
-						var bounds: AABB = AABB(follow_targets[0].get_global_position(), Vector3.ZERO)
+						var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
 						for node in follow_targets:
 							if is_instance_valid(node):
-								bounds = bounds.expand(node.get_global_position())
+								bounds = bounds.expand(node.global_position)
 
 						var distance: float
 						if auto_follow_distance:
@@ -417,9 +417,9 @@ func _process(delta: float) -> void:
 						)
 			Constants.FollowMode.PATH:
 				if follow_target and follow_path:
-					var path_position: Vector3 = follow_path.get_global_position()
+					var path_position: Vector3 = follow_path.global_position
 					_interpolate_position(
-						follow_path.curve.get_closest_point(follow_target.get_global_position() - path_position) + path_position,
+						follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position,
 						delta
 					)
 			Constants.FollowMode.FRAMED:
@@ -435,9 +435,9 @@ func _process(delta: float) -> void:
 						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
 						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
 						Properties.viewport_position = Properties.viewport_position / visible_rect_size
-						_current_rotation = get_global_rotation()
+						_current_rotation = global_rotation
 
-						if _current_rotation != get_global_rotation():
+						if _current_rotation != global_rotation:
 							_interpolate_position(
 								_get_position_offset_distance(),
 								delta
@@ -470,8 +470,8 @@ func _process(delta: float) -> void:
 										delta
 									)
 							else:
-								if _current_rotation != get_global_rotation():
-									var opposite: float = sin(-get_global_rotation().x) * follow_distance + _get_target_position_offset().y
+								if _current_rotation != global_rotation:
+									var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
 									glo_pos.y = _get_target_position_offset().y + opposite
 									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 									glo_pos.x = global_position.x
@@ -480,7 +480,7 @@ func _process(delta: float) -> void:
 										glo_pos,
 										delta
 									)
-									_current_rotation = get_global_rotation()
+									_current_rotation = global_rotation
 								else:
 									_interpolate_position(
 										target_position,
@@ -488,7 +488,7 @@ func _process(delta: float) -> void:
 									)
 						else:
 							_follow_framed_offset = global_position - _get_target_position_offset()
-							_current_rotation = get_global_rotation()
+							_current_rotation = global_rotation
 					else:
 						set_global_position(_get_position_offset_distance())
 						var unprojected_position: Vector2 = _get_raw_unprojected_position()
@@ -547,11 +547,11 @@ func _process(delta: float) -> void:
 			LookAtMode.GROUP:
 				if not _has_look_at_targets:
 					#print("Single target")
-					look_at(look_at_targets[0].get_global_position())
+					look_at(look_at_targets[0].global_position)
 				else:
-					var bounds: AABB = AABB(look_at_targets[0].get_global_position(), Vector3.ZERO)
+					var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 					for node in look_at_targets:
-						bounds = bounds.expand(node.get_global_position())
+						bounds = bounds.expand(node.global_position)
 					look_at(bounds.get_center())
 
 
@@ -566,8 +566,7 @@ func _refresh_transform() -> void:
 	trCurr = _get_target_position_offset()
 
 func _get_target_position_offset() -> Vector3:
-	return Vector3.ZERO
-	#return follow_target.get_global_position() + follow_offset
+	return follow_target.global_position + follow_offset
 
 
 func _get_position_offset_distance() -> Vector3:
@@ -590,11 +589,11 @@ func _interpolate_position(_global_position: Vector3, delta: float, target: Node
 				delta * follow_damping_value
 			)
 	else:
-		target.global_position = tr
+		target.global_position = _global_position
 
 
 func _get_raw_unprojected_position() -> Vector2:
-	return get_viewport().get_camera_3d().unproject_position(follow_target.get_global_position() + follow_offset)
+	return get_viewport().get_camera_3d().unproject_position(follow_target.global_position + follow_offset)
 
 
 func _on_dead_zone_changed() -> void:
@@ -644,7 +643,6 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 ## Assigns new Priority value.
 func set_priority(value: int) -> void:
 	priority = abs(value)
-
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_priority_updated(self)
 ## Gets current Priority value.
