@@ -5,11 +5,11 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="6_e46ea"]
-[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gqov5"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="6_kqt1v"]
+[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_pxbym"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="7_fdx1s"]
-[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="10_0txyn"]
-[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="11_xakux"]
+[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="10_xq86s"]
+[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="11_l0uir"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="12_k4p0h"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
@@ -622,39 +622,35 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(243, -148)
+position = Vector2(243, -28)
 zoom = Vector2(1.5, 1.5)
+editor_draw_screen = false
 editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+process_priority = 100
 script = ExtResource("1_eayfa")
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
+[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(243, -148)
+process_priority = -1
+position = Vector2(243, -28)
 script = ExtResource("2_mgsut")
-priority_override = false
-priority = 5
-zoom = Vector2(1.5, 1.5)
+priority = 10
 follow_mode = 2
-follow_target = NodePath("../CharacterBody2D")
-follow_parameters/target_offset = Vector2(0, -120)
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("6_gqov5")
-tween_on_load = false
-inactive_update_mode = 0
+follow_target = NodePath("../CharacterBody2D/PlayerSprite")
+zoom = Vector2(1.5, 1.5)
+frame_preview = false
+tween_resource = ExtResource("6_pxbym")
+tween_onload = false
+follow_damping = true
+follow_damping_value = 5.0
+auto_zoom = null
+auto_zoom_min = null
+auto_zoom_max = null
+auto_zoom_margin = null
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -731,43 +727,25 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("2_mgsut")
-priority_override = false
-priority = 0
 zoom = Vector2(2, 2)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("10_0txyn")
-tween_on_load = true
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = ExtResource("10_xq86s")
+auto_zoom = null
+auto_zoom_min = null
+auto_zoom_max = null
+auto_zoom_margin = null
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("2_mgsut")
-priority_override = false
-priority = 0
 zoom = Vector2(2.5, 2.5)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("11_xakux")
-tween_on_load = true
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = ExtResource("11_l0uir")
+auto_zoom = null
+auto_zoom_min = null
+auto_zoom_max = null
+auto_zoom_margin = null
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0

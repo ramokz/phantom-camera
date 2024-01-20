@@ -30,9 +30,10 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999952, -0.00114636, 0.00116873, 0, 0.713788, 0.700216, -0.00163718, -0.700172, 0.713831, -12.3172, 5.78213, 6.64571)
+transform = Transform3D(0.982709, 0.10613, -0.151725, 0, 0.819429, 0.573181, 0.185159, -0.56327, 0.80526, -13.0179, 4.03222, 6.36446)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 100
 script = ExtResource("1_lldvu")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -40,20 +41,6 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 metadata/_edit_lock_ = true
 
 [node name="Player" type="Node" parent="."]
-
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
-unique_name_in_owner = true
-transform = Transform3D(0.999952, -0.00114636, 0.00116873, 0, 0.713788, 0.700216, -0.00163718, -0.700172, 0.713831, -12.3172, 5.78213, 6.64571)
-script = ExtResource("2_8md3q")
-priority_override = false
-priority = 5
-follow_mode = 0
-look_at_mode = 3
-look_at_group = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
-tween_parameters = null
-tween_on_load = false
-inactive_update_mode = 0
-camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
@@ -200,3 +187,10 @@ size = Vector3(4.03502, 1.27695, 5.2198)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.1236, 1.78638, -1.60318)
 use_collision = true
 size = Vector3(4.57784, 4.57276, 3.11285)
+
+[node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target", "look_at_targets")]
+transform = Transform3D(0.982709, 0.10613, -0.151725, 0, 0.819429, 0.573181, 0.185159, -0.56327, 0.80526, -13.0179, 4.03222, 6.36446)
+script = ExtResource("2_8md3q")
+look_at_mode = 2
+look_at_target = NodePath("../Player/PlayerCharacterBody3D2")
+look_at_targets = [NodePath("../Player/PlayerCharacterBody3D2"), NodePath("../NPCs/PlayerMeshInstance3D")]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://cpyb3ucwcqj8l"]
+[gd_scene load_steps=25 format=3 uid="uid://cpyb3ucwcqj8l"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_oo2bo"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
@@ -9,7 +9,9 @@
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gu0o0"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_oxdpf"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_ok3b7"]
+[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="9_3xq6h"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2D_trigger_area.gd" id="9_184pu"]
+[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="10_6i6qa"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_myq47"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
@@ -584,7 +586,7 @@ size = Vector2(42, 57)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tgk1y"]
 size = Vector2(140, 160)
 
-[sub_resource type="Resource" id="Resource_ujs6q"]
+[sub_resource type="Resource" id="Resource_mtp70"]
 script = ExtResource("6_8u8cj")
 duration = 0.6
 transition = 1
@@ -593,7 +595,7 @@ ease = 2
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_clm0y"]
 size = Vector2(104, 160)
 
-[sub_resource type="Resource" id="Resource_7xgkv"]
+[sub_resource type="Resource" id="Resource_8jg5c"]
 script = ExtResource("6_8u8cj")
 duration = 0.3
 transition = 8
@@ -602,9 +604,9 @@ ease = 2
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uka0w"]
 size = Vector2(560, 160)
 
-[sub_resource type="Resource" id="Resource_tse25"]
+[sub_resource type="Resource" id="Resource_e4e41"]
 script = ExtResource("6_8u8cj")
-duration = 1.0
+duration = 1.2
 transition = 10
 ease = 2
 
@@ -649,7 +651,7 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(243, -148)
+position = Vector2(243, -28)
 position_smoothing_speed = 10.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
@@ -657,30 +659,14 @@ script = ExtResource("4_bb7en")
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player"]
+[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(243, -148)
+position = Vector2(243, -28)
 script = ExtResource("5_kikl5")
-priority_override = false
 priority = 5
-zoom = Vector2(1, 1)
 follow_mode = 2
 follow_target = NodePath("../CharacterBody2D")
-follow_parameters/target_offset = Vector2(0, -120)
-follow_parameters/damping = true
-follow_parameters/damping_value = 10.0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = ExtResource("6_gu0o0")
-tween_on_load = false
-inactive_update_mode = 0
+tween_resource = ExtResource("6_gu0o0")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -755,43 +741,15 @@ shape = SubResource("RectangleShape2D_18i13")
 unique_name_in_owner = true
 position = Vector2(0, -122)
 script = ExtResource("5_kikl5")
-priority_override = false
-priority = 0
-zoom = Vector2(1, 1)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = null
-tween_on_load = true
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = ExtResource("9_3xq6h")
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("5_kikl5")
-priority_override = false
-priority = 0
-zoom = Vector2(1, 1)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = null
-tween_on_load = true
-inactive_update_mode = 0
+frame_preview = false
+tween_resource = ExtResource("10_6i6qa")
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0
@@ -838,22 +796,8 @@ horizontal_alignment = 1
 [node name="PhantomCamera2D" type="Node2D" parent="WideArea"]
 position = Vector2(4, -100)
 script = ExtResource("5_kikl5")
-priority_override = false
-priority = 0
 zoom = Vector2(0.8, 0.8)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = SubResource("Resource_ujs6q")
-tween_on_load = true
-inactive_update_mode = 0
+tween_resource = SubResource("Resource_mtp70")
 
 [node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(649, -135)
@@ -890,22 +834,8 @@ horizontal_alignment = 1
 [node name="PhantomCamera2D" type="Node2D" parent="UpperZoomArea"]
 position = Vector2(2, -83)
 script = ExtResource("5_kikl5")
-priority_override = false
-priority = 0
 zoom = Vector2(2, 2)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = SubResource("Resource_7xgkv")
-tween_on_load = true
-inactive_update_mode = 0
+tween_resource = SubResource("Resource_8jg5c")
 
 [node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(1136, -38)
@@ -942,19 +872,5 @@ horizontal_alignment = 1
 [node name="PhantomCamera2D" type="Node2D" parent="ForwardArea"]
 position = Vector2(344, -46)
 script = ExtResource("5_kikl5")
-priority_override = false
-priority = 0
 zoom = Vector2(0.9, 0.9)
-follow_mode = 0
-frame_preview = true
-pixel_perfect = false
-limit/draw_limits = true
-limit/left = -10000000
-limit/top = -10000000
-limit/right = 10000000
-limit/bottom = 10000000
-limit/limit_node_target = NodePath("")
-limit/smoothed = false
-tween_parameters = SubResource("Resource_tse25")
-tween_on_load = true
-inactive_update_mode = 0
+tween_resource = SubResource("Resource_e4e41")
