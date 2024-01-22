@@ -44,7 +44,7 @@ const INACTIVE_UPDATE_MODE_PROPERTY_NAME: StringName = "inactive_update_mode"
 #endregion
 
 
-#region Enums 
+#region Enums
 
 enum FollowMode {
 	NONE 			= 0,

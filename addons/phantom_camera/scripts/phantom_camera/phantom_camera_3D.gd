@@ -496,7 +496,7 @@ func _process(delta: float) -> void:
 						_follow_framed_offset = global_position - _get_target_position_offset()
 						_current_rotation = global_rotation
 				else:
-					set_global_position(_get_position_offset_distance())
+					global_position = _get_position_offset_distance()
 					var unprojected_position: Vector2 = _get_raw_unprojected_position()
 					var viewport_width: float = get_viewport().size.x
 					var viewport_height: float = get_viewport().size.y
@@ -523,12 +523,12 @@ func _process(delta: float) -> void:
 						if is_instance_valid(follow_spring_arm_node):
 							if not get_parent() == follow_spring_arm_node:
 								var follow_target: Node3D = follow_target
-								follow_spring_arm_node.set_rotation_degrees(get_rotation_degrees())
-								follow_spring_arm_node.set_length(follow_distance)
-								follow_spring_arm_node.set_collision_mask(collision_mask)
-								follow_spring_arm_node.set_shape(shape)
-								follow_spring_arm_node.set_margin(margin)
-								follow_spring_arm_node.set_global_position(_get_target_position_offset()) # Ensure the PCam3D starts at the right position at runtime
+								follow_spring_arm_node.rotation = rotation
+								follow_spring_arm_node.global_position = _get_target_position_offset() # Ensure the PCam3D starts at the right position at runtime
+								follow_spring_arm_node.spring_length = spring_length
+								follow_spring_arm_node.collision_mask = collision_mask
+								follow_spring_arm_node.shape = shape
+								follow_spring_arm_node.margin = margin
 
 								if not is_tween_on_load():
 									has_tweened = true
@@ -541,7 +541,7 @@ func _process(delta: float) -> void:
 								follow_spring_arm_node
 							)
 				else:
-					set_global_position(_get_position_offset_distance())
+					global_position = _get_position_offset_distance()
 
 	if _should_look_at:
 		if not _has_look_at_target: return
@@ -585,7 +585,7 @@ func _get_raw_unprojected_position() -> Vector2:
 
 
 func _on_dead_zone_changed() -> void:
-	set_global_position( _get_position_offset_distance() )
+	global_position = _get_position_offset_distance()
 
 
 func _has_valid_pcam_owner() -> bool:

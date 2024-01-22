@@ -181,7 +181,9 @@ var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10
 	set = set_limit_target,
 	get = get_limit_target
 var _limit_node: Node2D
-@export var limit_margin: Vector4i
+@export var limit_margin: Vector4i:
+	set = set_limit_margin,
+	get = get_limit_margin
 #@export var limit_smoothed: bool = false: # TODO - Needs proper support
 	#set = set_limit_smoothing,
 	#get = get_limit_smoothing
@@ -262,6 +264,11 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "limit_margin" and not _limit_node:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 	
+	################
+	## Frame Preview
+	################
+	if property.name == "frame_preview" and is_active():
+		property.usage |= PROPERTY_USAGE_READ_ONLY
 
 	notify_property_list_changed()
 
