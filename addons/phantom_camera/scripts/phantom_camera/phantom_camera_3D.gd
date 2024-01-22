@@ -30,6 +30,57 @@ signal tween_completed
 #endregion
 
 
+#region Enums
+
+enum FollowMode {
+	NONE 			= 0,
+	GLUED 			= 1,
+	SIMPLE 			= 2,
+	GROUP 			= 3,
+	PATH 			= 4,
+	FRAMED 			= 5,
+	THIRD_PERSON 	= 6,
+}
+
+enum LookAtMode {
+	NONE 	= 0,
+	MIMIC 	= 1,
+	SIMPLE 	= 2,
+	GROUP	= 3,
+}
+
+enum InactiveUpdateMode {
+	ALWAYS,
+	NEVER,
+#	EXPONENTIALLY,
+}
+
+enum TweenTransitions {
+	LINEAR 	= 0,
+	SINE 	= 1,
+	QUINT 	= 2,
+	QUART 	= 3,
+	QUAD 	= 4,
+	EXPO 	= 5,
+	ELASTIC = 6,
+	CUBIC 	= 7,
+	CIRC 	= 8,
+	BOUNCE 	= 9,
+	BACK 	= 10,
+#	CUSTOM 	= 11,
+#	NONE 	= 12,
+}
+
+enum TweenEases {
+	EASE_IN 	= 0,
+	EASE_OUT 	= 1,
+	EASE_IN_OUT = 2,
+	EASE_OUT_IN = 3,
+}
+
+#endregion
+
+
 #region Variables
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
@@ -63,11 +114,11 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 	get = get_priority
 
 ## TODO Description
-@export var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE:
+@export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
 
-		if value == Constants.FollowMode.FRAMED:
+		if value == FollowMode.FRAMED:
 			if Properties.follow_framed_initial_set and follow_target:
 				Properties.follow_framed_initial_set = false
 				Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
@@ -100,13 +151,6 @@ var _has_multiple_follow_targets: bool = false
 var _should_look_at: bool = false
 var _has_look_at_target: bool = false
 var _has_look_at_targets: bool = false
-enum LookAtMode {
-	NONE 	= 0,
-	MIMIC 	= 1,
-	SIMPLE 	= 2,
-	GROUP	= 3,
-}
-
 
 ## TODO Description
 @export var look_at_mode: LookAtMode = LookAtMode.NONE:
@@ -136,7 +180,7 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 @export var tween_onload: bool = true
 
 ## TODO Description
-@export var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
+@export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
 var has_tweened: bool
 
@@ -243,33 +287,33 @@ func _validate_property(property: Dictionary) -> void:
 	## Follow Target
 	################
 	if property.name == "follow_target":
-		if follow_mode == Constants.FollowMode.NONE or \
-		follow_mode == Constants.FollowMode.GROUP:
+		if follow_mode == FollowMode.NONE or \
+		follow_mode == FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_path" and \
-	follow_mode != Constants.FollowMode.PATH:
+	follow_mode != FollowMode.PATH:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	####################
 	## Follow Parameters
 	####################
 	if property.name == "follow_offset":
-		if follow_mode == Constants.FollowMode.GLUED or \
-		follow_mode == Constants.FollowMode.PATH or \
-		follow_mode == Constants.FollowMode.NONE:
+		if follow_mode == FollowMode.GLUED or \
+		follow_mode == FollowMode.PATH or \
+		follow_mode == FollowMode.NONE:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping" and \
-	follow_mode == Constants.FollowMode.NONE:
+	follow_mode == FollowMode.NONE:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
-		if not follow_mode == Constants.FollowMode.FRAMED:
-			if not follow_mode == Constants.FollowMode.GROUP or \
+		if not follow_mode == FollowMode.FRAMED:
+			if not follow_mode == FollowMode.GROUP or \
 			auto_follow_distance: \
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
@@ -277,11 +321,11 @@ func _validate_property(property: Dictionary) -> void:
 	## Group Follow
 	###############
 	if property.name == "follow_targets" and \
-	not follow_mode == Constants.FollowMode.GROUP:
+	not follow_mode == FollowMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "auto_follow_distance" and \
-	not follow_mode == Constants.FollowMode.GROUP:
+	not follow_mode == FollowMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if not auto_follow_distance:
@@ -294,7 +338,7 @@ func _validate_property(property: Dictionary) -> void:
 	###############
 	## Framed Follow
 	###############
-	if not follow_mode == Constants.FollowMode.FRAMED:
+	if not follow_mode == FollowMode.FRAMED:
 		match property.name:
 			"dead_zone_width", \
 			"dead_zone_height", \
@@ -304,7 +348,7 @@ func _validate_property(property: Dictionary) -> void:
 	###############
 	## Third Person Follow
 	###############
-	if not follow_mode == Constants.FollowMode.THIRD_PERSON:
+	if not follow_mode == FollowMode.THIRD_PERSON:
 		match property.name:
 			"spring_length", \
 			"collision_mask", \
@@ -359,12 +403,12 @@ func _exit_tree() -> void:
 
 
 func _ready():
-	if follow_mode == Constants.FollowMode.THIRD_PERSON:
+	if follow_mode == FollowMode.THIRD_PERSON:
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(follow_spring_arm_node):
 				follow_spring_arm_node = SpringArm3D.new()
 				get_parent().add_child.call_deferred(follow_spring_arm_node)
-	if follow_mode == Constants.FollowMode.FRAMED:
+	if follow_mode == FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
 			_follow_framed_offset = global_position - _get_target_position_offset()
 			_current_rotation = global_rotation
@@ -373,27 +417,27 @@ func _ready():
 func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match inactive_update_mode:
-			Constants.InactiveUpdateMode.NEVER:
+			InactiveUpdateMode.NEVER:
 				return
-#			Constants.InactiveUpdateMode.EXPONENTIALLY:
+#			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
 	if not _should_follow: return
 	
 	match follow_mode:
-		Constants.FollowMode.GLUED:
+		FollowMode.GLUED:
 			if follow_target:
 				_interpolate_position(
 					follow_target.global_position,
 					delta
 				)
-		Constants.FollowMode.SIMPLE:
+		FollowMode.SIMPLE:
 			if follow_target:
 				_interpolate_position(
 					_get_target_position_offset(),
 					delta
 				)
-		Constants.FollowMode.GROUP:
+		FollowMode.GROUP:
 			if follow_targets:
 				if follow_targets.size() == 1:
 					_interpolate_position(
@@ -421,14 +465,14 @@ func _process(delta: float) -> void:
 						get_transform().basis.z * Vector3(distance, distance, distance),
 						delta
 					)
-		Constants.FollowMode.PATH:
+		FollowMode.PATH:
 			if follow_target and follow_path:
 				var path_position: Vector3 = follow_path.global_position
 				_interpolate_position(
 					follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position,
 					delta
 				)
-		Constants.FollowMode.FRAMED:
+		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
 					if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
@@ -516,7 +560,7 @@ func _process(delta: float) -> void:
 						unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 					Properties.viewport_position = unprojected_position
-		Constants.FollowMode.THIRD_PERSON:
+		FollowMode.THIRD_PERSON:
 			if follow_target:
 				if not Engine.is_editor_hint():
 					if is_instance_valid(follow_target):
@@ -631,7 +675,7 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 
 ## Assigns new Priority value.
 func set_priority(value: int) -> void:
-	priority = abs(value)
+	priority = abs(value) # TODO - Make any minus values be 0
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_priority_updated(self)
 ## Gets current Priority value.
@@ -667,6 +711,7 @@ func get_tween_duration() -> float:
 ## Assigns a new Tween Transition value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_transition(value: Constants.TweenTransitions) -> void:
+func set_tween_transition(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
 		tween_resource_default.transition = value
@@ -684,6 +729,7 @@ func get_tween_transition() -> int:
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_ease(value: Constants.TweenEases) -> void:
+func set_tween_ease(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
 		tween_resource_default.transition = tween_resource.transition
@@ -781,7 +827,7 @@ func get_follow_distance() -> float:
 func set_follow_targets(value: Array[Node3D]) -> void:
 	# TODO - This shouldn't be needed.
 	# Needs a fix to avoid triggering this setter when not in Group Follow
-	if not follow_mode == Constants.FollowMode.GROUP: return
+	if not follow_mode == FollowMode.GROUP: return
 
 	follow_targets = value
 
