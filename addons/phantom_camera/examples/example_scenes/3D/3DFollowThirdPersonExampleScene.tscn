@@ -8,6 +8,16 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="5_p60kr"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_kg7u1"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mv4do"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
+size = Vector3(0.5, 0.5, 0.3)
+
 [sub_resource type="Resource" id="Resource_6x70v"]
 script = ExtResource("3_oisgy")
 duration = 0.3
@@ -34,16 +44,6 @@ h_offset = 1.0
 v_offset = 0.0
 fov = 75.0
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mv4do"]
-albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
-
-[sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
-size = Vector3(0.5, 0.5, 0.3)
-
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 10, 20)
 
@@ -58,10 +58,42 @@ ease = 2
 
 [node name="Root" type="Node3D"]
 
+[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, -0.0163251)
+collision_layer = 2
+script = ExtResource("5_p60kr")
+metadata/_edit_group_ = true
+
+[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_s61dn")
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
+shape = SubResource("CapsuleShape3D_s61dn")
+
+[node name="PlayerModel" type="Node3D" parent="PlayerCharacterBody3D"]
+unique_name_in_owner = true
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D/PlayerModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 4.65661e-10, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_47f0o")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
+
+[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="PlayerCharacterBody3D/PlayerModel"]
+transform = Transform3D(1, 0, 0, -9.31323e-10, 1, 4.65661e-10, 2.98023e-08, 0, 1, -0.0156226, 1.08631, 0)
+mesh = SubResource("PrismMesh_wg1x3")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
+
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
 current = true
+
+[node name="Node3D" type="Node3D" parent="MainCamera3D"]
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_b4nxi")
@@ -96,36 +128,6 @@ follow_damping_value = 30.0
 follow_offset = Vector3(0, 0.8, 0)
 follow_distance = 1.5
 spring_length = 1.5
-
-[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, -0.0163251)
-collision_layer = 2
-script = ExtResource("5_p60kr")
-metadata/_edit_group_ = true
-
-[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D"]
-shape = SubResource("CapsuleShape3D_s61dn")
-
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
-shape = SubResource("CapsuleShape3D_s61dn")
-
-[node name="PlayerModel" type="Node3D" parent="PlayerCharacterBody3D"]
-unique_name_in_owner = true
-
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D/PlayerModel"]
-transform = Transform3D(1, 0, 0, 0, 1, 4.65661e-10, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("CapsuleMesh_47f0o")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
-
-[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="PlayerCharacterBody3D/PlayerModel"]
-transform = Transform3D(1, 0, 0, -9.31323e-10, 1, 4.65661e-10, 2.98023e-08, 0, 1, -0.0156226, 1.08631, 0)
-mesh = SubResource("PrismMesh_wg1x3")
-skeleton = NodePath("../..")
-surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
 
 [node name="Environment" type="Node" parent="."]
 
