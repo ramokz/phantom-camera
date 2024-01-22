@@ -1,0 +1,75 @@
+[gd_scene load_steps=9 format=3 uid="uid://ctqdyuxek2ere"]
+
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_7n673"]
+[ext_resource type="Script" path="res://test_scenes/3d/dev_scene_3d_script.gd" id="1_gnrfx"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_4sdb7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_yhkrs"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2cfaw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ldp"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8efyg"]
+
+[sub_resource type="Environment" id="Environment_0s7cr"]
+ssil_intensity = 3.25
+sdfgi_use_occlusion = true
+fog_enabled = true
+fog_light_color = Color(0.388235, 0.388235, 0.388235, 1)
+fog_density = 0.0392
+adjustment_enabled = true
+adjustment_contrast = 1.19
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_gnrfx")
+
+[node name="Floor" parent="." instance=ExtResource("1_7n673")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.507, 2)
+
+[node name="PhantomCamera3D2" type="Node3D" parent="." node_paths=PackedStringArray("look_at_targets")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.438371, 0.898794, 0, -0.898794, 0.438371, 0, 4.507, 2)
+script = ExtResource("3_4sdb7")
+look_at_targets = []
+
+[node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
+script = ExtResource("3_4sdb7")
+priority = 10
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D2")
+look_at_targets = []
+follow_offset = Vector3(0, 2, 2)
+
+[node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, 0, 0.507, 0)
+script = ExtResource("4_yhkrs")
+metadata/_edit_group_ = true
+
+[node name="PlayerMesh" type="MeshInstance3D" parent="PlayerCharacterBody3D2"]
+unique_name_in_owner = true
+mesh = SubResource("CapsuleMesh_2cfaw")
+surface_material_override/0 = SubResource("StandardMaterial3D_r3ldp")
+
+[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D2/PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_8efyg")
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D2"]
+shape = SubResource("CapsuleShape3D_8efyg")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_0s7cr")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, -2.58262, 0)
+metadata/_edit_lock_ = true

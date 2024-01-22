@@ -53,7 +53,7 @@ func _ready() -> void:
 
 func _request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS: return
-
+	
 	if not editor_plugin: return
 	var current_version: String = editor_plugin.get_version()
 
@@ -70,6 +70,20 @@ func _request_request_completed(result: int, response_code: int, headers: Packed
 	if versions.size() > 0:
 		download_update_panel.next_version_release = versions[0]
 		_set_scale()
+		
+		print("                                                                     
+			   ********             
+			 ************           
+			**************          
+			******  ***  *          
+			******  ***             
+			**********      *****          There is a new Phantom Camer version available
+			********   ***********         But you need Godot 4.2+ to use it
+			********  ***********  **
+			*********  **************      If you don't  message can be disabled in a script
+			**********  *************       
+			**  **  **   *******   **
+		")
 
 		download_dialog.show()
 		show()
