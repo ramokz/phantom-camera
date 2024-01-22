@@ -875,6 +875,12 @@ func set_third_person_rotation_degrees(value: Vector3) -> void:
 ## Gets the rotation value (in degrees) from the SpringArm for Third Person Follow mode.
 func get_third_person_rotation_degrees() -> Vector3:
 	return follow_spring_arm_node.rotation_degrees
+## Assigns new quaternion value to SpringArm for Third Person Follow mode.
+func set_third_person_quaternion(value: Quaternion) -> void:
+	follow_spring_arm_node.quaternion = value
+## Gets the quaternion value of the SpringArm for Third Person Follow mode.
+func get_third_person_quaternion() -> Quaternion:
+	return follow_spring_arm_node.quaternion
 
 ## Assigns a new Third Person SpringArm3D Length value.
 func set_spring_arm_spring_length(value: float) -> void:
