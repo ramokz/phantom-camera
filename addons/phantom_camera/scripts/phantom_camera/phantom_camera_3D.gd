@@ -32,6 +32,8 @@ signal tween_completed
 
 #region Enums
 
+## Defines the current [code]Follow Mode[/code] of the
+## [code]PhantomCamera3D[/code] based on FOLLOW_MODE enum.
 enum FollowMode {
 	NONE 			= 0,
 	GLUED 			= 1,
@@ -42,6 +44,8 @@ enum FollowMode {
 	THIRD_PERSON 	= 6,
 }
 
+## Gets [code]Look At Mode[/code]. Value is based on [code]LookAtMode[/code]
+## enum.
 enum LookAtMode {
 	NONE 	= 0,
 	MIMIC 	= 1,
@@ -49,6 +53,7 @@ enum LookAtMode {
 	GROUP	= 3,
 }
 
+## Determines how often an inactive [code]PhantomCamera3D[/code] should update its positional and rotational values. This is meant to reduce the amount of calculations inactive PCams are doing when idling to improve performance. The value is based on the enum type Constants.InactiveUpdateMode.
 enum InactiveUpdateMode {
 	ALWAYS,
 	NEVER,
@@ -136,14 +141,16 @@ var _should_follow: bool = false
 	set = set_follow_target,
 	get = get_follow_target
 
-## TODO Description
 @export var follow_targets: Array[Node3D] = [null]:
 	set = set_follow_targets,
 	get = get_follow_targets
 var _has_multiple_follow_targets: bool = false
 
 
-## TODO Description
+## Determines the [code]Path[/code] node the [code]PhantomCamera3D[/code]
+## should be bound to.
+## The [code]PhantomCamera3D[/code] will follow the position of the
+## [code]Follow Target[/code] while sticking to the closest point on this path.
 @export var follow_path: Path3D = null:
 	set = set_follow_path,
 	get = get_follow_path
@@ -253,23 +260,23 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 @export_subgroup("Spring Arm")
 var follow_spring_arm_node: SpringArm3D
 
-## TODO Description
+## Defines the [code]SpringArm3D[/code] node's spring length.
 @export var spring_length: float = 1:
 	set = set_follow_distance,
 	get = get_follow_distance
 
-## TODO Description
+## Defines the [code]SpringArm3D[/code] node's Collision Mask.
 @export_flags_3d_physics var collision_mask: int = 1
 
-## TODO Description
+## Defines the [code]SpringArm3D[/code] node's Shape3D.
 @export var shape: Shape3D = null
 
-## TODO Description
+## Defines the [code]SpringArm3D[/code] node's Margin.
 @export var margin: float = 0.01
 
 @export_group("Look At Parameters")
 
-## TODO Description
+## Offsets the target's [code]Vector3[/code] position that the [code]PhantomCamera3D[/code] is looking at.
 @export var look_at_target_offset: Vector3 = Vector3.ZERO:
 	set = set_look_at_target_offset,
 	get = get_look_at_target_offset
@@ -665,33 +672,33 @@ func _has_valid_pcam_owner() -> bool:
 
 #region Setter & Getter Functions
 
-## Assigns the PhantomCamera3D to a new PhantomCameraHost.
+## Assigns the [code]PhantomCamera3D[/code] to a new [code]PhantomCameraHost[/code].
 func assign_pcam_host() -> void:
 	Properties.assign_pcam_host(self)
-## Gets the current PhantomCameraHost this PhantomCamera3D is assigned to.
+## Gets the current [code]PhantomCameraHost[/code] this [code]PhantomCamera3D[/code] is assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return Properties.pcam_host_owner
 
 
-## Assigns new Priority value.
+## Assigns new [code]Priority[/code] value.
 func set_priority(value: int) -> void:
 	priority = abs(value) # TODO - Make any minus values be 0
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_priority_updated(self)
-## Gets current Priority value.
+## Gets current [code]Priority[/code] value.
 func get_priority() -> int:
 	return priority
 
 
-## Assigns a new PhantomCameraTween resource to the PhantomCamera3D
+## Assigns a new [code]PhantomCameraTween[/code] resource to the [code]PhantomCamera3D[/code].
 func set_tween_resource(value: PhantomCameraTween) -> void:
 	tween_resource = value
-## Gets the PhantomCameraTween resource assigned to the PhantomCamera3D
+## Gets the [code]PhantomCameraTween[/code] resource assigned to the [code]PhantomCamera3D[/code].
 ## Returns null if there's nothing assigned to it.
 func get_tween_resource() -> PhantomCameraTween:
 	return tween_resource
 
-## Assigns a new Tween Duration value. The duration value is in seconds.
+## Assigns a new [code]Tween[/code] Duration value. The duration value is in [b]seconds[/b].
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_duration(value: float) -> void:
 	if get_tween_resource():
@@ -701,7 +708,7 @@ func set_tween_duration(value: float) -> void:
 		set_tween_resource(null) # Clears resource from PCam instance
 	else:
 		tween_resource_default.duration = value
-## Gets the current Tween Duration value. The duration value is in seconds.
+## Gets the current [code]Tween[/code] Duration value. The duration value is in [b]seconds[/b].
 func get_tween_duration() -> float:
 	if tween_resource:
 		return tween_resource.duration
@@ -709,8 +716,7 @@ func get_tween_duration() -> float:
 		return tween_resource_default.duration
 
 ## Assigns a new Tween Transition value.
-## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
-func set_tween_transition(value: Constants.TweenTransitions) -> void:
+## Note: This will override and make the Tween Resource unique to this [code]PhantomCamera3D[/code].
 func set_tween_transition(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
@@ -727,8 +733,7 @@ func get_tween_transition() -> int:
 		return tween_resource_default.transition
 
 ## Assigns a new Tween Ease value.
-## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
-func set_tween_ease(value: Constants.TweenEases) -> void:
+## Note: This will override and make the Tween Resource unique to this [code]PhantomCamera3D[/code].
 func set_tween_ease(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
@@ -745,8 +750,8 @@ func get_tween_ease() -> int:
 		return tween_resource_default.ease
 
 
-## Gets current active state of the PhantomCamera3D.
-## If it returns true, it means the PhantomCamera3D is what the Camera2D is currently following.
+## Gets current active state of the [code]PhantomCamera3D[/code].
+## If it returns true, it means the [code]PhantomCamera3D[/code] is what the [code]Camera2D[/code] is currently following.
 func is_active() -> bool:
 	return Properties.is_active
 
@@ -759,8 +764,8 @@ func is_tween_on_load() -> bool:
 	return tween_onload
 
 
-## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
-## Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+## Gets the current follow mode as an enum int based on FOLLOW_MODE enum.
+## Note: Setting Follow Mode purposely not added. A separate [code]PCam[/code] should be used instead.
 func get_follow_mode() -> int:
 	return follow_mode
 
@@ -792,38 +797,39 @@ func get_follow_path() -> Path3D:
 	return follow_path
 
 
-## Assigns a new Vector3 for the Follow Target Offset property.
+## Assigns a new [code]Vector3[/code] for the [code]Follow Target Offset[/code] property.
 func set_follow_target_offset(value: Vector3) -> void:
 	follow_offset = value
-## Gets the current Vector3 for the Follow Target Offset property.
+## Gets the current [code]Vector3[/code] for the [code]Follow Target Offset[/code] property.
 func get_follow_target_offset() -> Vector3:
 	return follow_offset
 
 
-## Enables or disables Follow Damping.
+## Enables or disables [code]Follow Damping[/code].
 func set_follow_has_damping(value: bool) -> void:
 	follow_damping = value
 	notify_property_list_changed()
-## Gets the currents Follow Damping property.
+## Gets the currents [code]Follow Damping[/code] property.
 func get_follow_has_damping() -> bool:
 	return follow_damping
 
 
-## Assigns new Damping value.
+## Assigns new [code]Damping[/code] value.
 func set_follow_damping_value(value: float) -> void:
 	follow_damping_value = value
-## Gets the currents Follow Damping value.
+## Gets the currents [code]Follow Damping[/code] value.
 func get_follow_damping_value() -> float:
 	return follow_damping_value
 
 
-## Assigns a new Follow Distance value.
+## Assigns a new [code]Follow Distance[/code] value.
 func set_follow_distance(value: float) -> void:
 	follow_distance = value
-## Gets Follow Distance value.
+## Gets [code]Follow Distance[/code] value.
 func get_follow_distance() -> float:
 	return follow_distance
 
+## Assigns a new [code]Follow Targets[/code] array value.
 func set_follow_targets(value: Array[Node3D]) -> void:
 	# TODO - This shouldn't be needed.
 	# Needs a fix to avoid triggering this setter when not in Group Follow
@@ -846,7 +852,7 @@ func set_follow_targets(value: Array[Node3D]) -> void:
 			_should_follow = false
 			_has_multiple_follow_targets = false
 
-## Adds a single Node3D to Follow Group array.
+## Adds a single [code]Node3D[code] to [code]Follow Targets[/code] array.
 func append_follow_group_node(value: Node3D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, " is not a valid instance")
@@ -858,7 +864,7 @@ func append_follow_group_node(value: Node3D) -> void:
 		_has_multiple_follow_targets = true
 	else:
 		printerr(value, " is already part of Follow Group")
-## Adds an Array of type Node3D to Follow Group array.
+## Adds an Array of type [code]Node3D[/code] to [code]Follow Targets[/code] array.
 func append_follow_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not is_instance_valid(val): continue
@@ -1040,7 +1046,8 @@ func get_look_at_targets() -> Array[Node3D]:
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
-## Assogms a new Camera3D Resource to this PhantomCamera3D
+## Assigns a new [code]Camera3D[/code] Resource to this
+## [code]PhantomCamera3D[/code].
 func set_camera_3D_resource(value: Camera3DResource) -> void:
 	camera_3d_resource = value
 ## Gets the Camera3D resource assigned to the PhantomCamera3D
