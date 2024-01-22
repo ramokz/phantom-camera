@@ -30,6 +30,57 @@ signal tween_completed
 #endregion
 
 
+#region Enums
+
+enum FollowMode {
+	NONE 			= 0,
+	GLUED 			= 1,
+	SIMPLE 			= 2,
+	GROUP 			= 3,
+	PATH 			= 4,
+	FRAMED 			= 5,
+	THIRD_PERSON 	= 6,
+}
+
+enum LookAtMode {
+	NONE 	= 0,
+	MIMIC 	= 1,
+	SIMPLE 	= 2,
+	GROUP	= 3,
+}
+
+enum InactiveUpdateMode {
+	ALWAYS,
+	NEVER,
+#	EXPONENTIALLY,
+}
+
+enum TweenTransitions {
+	LINEAR 	= 0,
+	SINE 	= 1,
+	QUINT 	= 2,
+	QUART 	= 3,
+	QUAD 	= 4,
+	EXPO 	= 5,
+	ELASTIC = 6,
+	CUBIC 	= 7,
+	CIRC 	= 8,
+	BOUNCE 	= 9,
+	BACK 	= 10,
+#	CUSTOM 	= 11,
+#	NONE 	= 12,
+}
+
+enum TweenEases {
+	EASE_IN 	= 0,
+	EASE_OUT 	= 1,
+	EASE_IN_OUT = 2,
+	EASE_OUT_IN = 3,
+}
+
+#endregion
+
+
 #region Variables
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
@@ -63,11 +114,11 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 	get = get_priority
 
 ## TODO Description
-@export var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE:
+@export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
 
-		if value == Constants.FollowMode.FRAMED:
+		if value == FollowMode.FRAMED:
 			if Properties.follow_framed_initial_set and follow_target:
 				Properties.follow_framed_initial_set = false
 				Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
@@ -89,7 +140,7 @@ var _should_follow: bool = false
 @export var follow_targets: Array[Node3D] = [null]:
 	set = set_follow_targets,
 	get = get_follow_targets
-var _has_follow_targets: bool = false
+var _has_multiple_follow_targets: bool = false
 
 
 ## TODO Description
@@ -100,13 +151,6 @@ var _has_follow_targets: bool = false
 var _should_look_at: bool = false
 var _has_look_at_target: bool = false
 var _has_look_at_targets: bool = false
-enum LookAtMode {
-	NONE 	= 0,
-	MIMIC 	= 1,
-	SIMPLE 	= 2,
-	GROUP	= 3,
-}
-
 
 ## TODO Description
 @export var look_at_mode: LookAtMode = LookAtMode.NONE:
@@ -136,7 +180,7 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 @export var tween_onload: bool = true
 
 ## TODO Description
-@export var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
+@export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
 var has_tweened: bool
 
@@ -243,48 +287,46 @@ func _validate_property(property: Dictionary) -> void:
 	## Follow Target
 	################
 	if property.name == "follow_target":
-		if follow_mode == Constants.FollowMode.NONE or \
-		follow_mode == Constants.FollowMode.GROUP:
+		if follow_mode == FollowMode.NONE or \
+		follow_mode == FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_path" and \
-	follow_mode != Constants.FollowMode.PATH:
+	follow_mode != FollowMode.PATH:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-
 
 	####################
 	## Follow Parameters
 	####################
 	if property.name == "follow_offset":
-		if not follow_mode == Constants.FollowMode.GLUED or \
-		 not follow_mode == Constants.FollowMode.PATH:
+		if follow_mode == FollowMode.GLUED or \
+		follow_mode == FollowMode.PATH or \
+		follow_mode == FollowMode.NONE:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping" and \
-	follow_mode == Constants.FollowMode.NONE:
+	follow_mode == FollowMode.NONE:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
-		if not follow_mode == Constants.FollowMode.FRAMED:
-			if not follow_mode == Constants.FollowMode.GROUP or \
+		if not follow_mode == FollowMode.FRAMED:
+			if not follow_mode == FollowMode.GROUP or \
 			auto_follow_distance: \
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-
 	###############
-	## Follow Group
+	## Group Follow
 	###############
-	if property.name == "follow_targets" and follow_mode != Constants.FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
+	if property.name == "follow_targets" and \
+	not follow_mode == FollowMode.GROUP:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "auto_follow_distance":
-		if follow_mode == Constants.FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_EDITOR
-		else:
-			property.usage = PROPERTY_USAGE_NONE
+	if property.name == "auto_follow_distance" and \
+	not follow_mode == FollowMode.GROUP:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if not auto_follow_distance:
 		match property.name:
@@ -293,14 +335,20 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_group_distance_auto_divisor":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if not follow_mode == Constants.FollowMode.FRAMED:
+	###############
+	## Framed Follow
+	###############
+	if not follow_mode == FollowMode.FRAMED:
 		match property.name:
 			"dead_zone_width", \
 			"dead_zone_height", \
 			"show_viewfinder_in_play":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if not follow_mode == Constants.FollowMode.THIRD_PERSON:
+	###############
+	## Third Person Follow
+	###############
+	if not follow_mode == FollowMode.THIRD_PERSON:
 		match property.name:
 			"spring_length", \
 			"collision_mask", \
@@ -355,187 +403,189 @@ func _exit_tree() -> void:
 
 
 func _ready():
-	if follow_mode == Constants.FollowMode.THIRD_PERSON:
+	if follow_mode == FollowMode.THIRD_PERSON:
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(follow_spring_arm_node):
 				follow_spring_arm_node = SpringArm3D.new()
 				get_parent().add_child.call_deferred(follow_spring_arm_node)
-	if follow_mode == Constants.FollowMode.FRAMED:
+	if follow_mode == FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
 			_follow_framed_offset = global_position - _get_target_position_offset()
-			_current_rotation = get_global_rotation()
+			_current_rotation = global_rotation
 
 
 func _process(delta: float) -> void:
 	if not Properties.is_active:
 		match inactive_update_mode:
-			Constants.InactiveUpdateMode.NEVER:
+			InactiveUpdateMode.NEVER:
 				return
-#			Constants.InactiveUpdateMode.EXPONENTIALLY:
+#			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
-	if _should_follow:
-		match follow_mode:
-			Constants.FollowMode.GLUED:
-				if follow_target:
+
+	if not _should_follow: return
+	
+	match follow_mode:
+		FollowMode.GLUED:
+			if follow_target:
+				_interpolate_position(
+					follow_target.global_position,
+					delta
+				)
+		FollowMode.SIMPLE:
+			if follow_target:
+				_interpolate_position(
+					_get_target_position_offset(),
+					delta
+				)
+		FollowMode.GROUP:
+			if follow_targets:
+				if follow_targets.size() == 1:
 					_interpolate_position(
-						follow_target.get_global_position(),
+						follow_targets[0].global_position +
+						follow_offset +
+						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
 						delta
 					)
-			Constants.FollowMode.SIMPLE:
-				if follow_target:
-					_interpolate_position(
-						_get_target_position_offset(),
-						delta
-					)
-			Constants.FollowMode.GROUP:
-				if _has_follow_targets:
-					if follow_targets.size() == 1:
-						_interpolate_position(
-							follow_targets[0].get_global_position() +
-							follow_offset +
-							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
-							delta
-						)
-					elif follow_targets.size() > 1:
-						var bounds: AABB = AABB(follow_targets[0].get_global_position(), Vector3.ZERO)
-						for node in follow_targets:
-							if is_instance_valid(node):
-								bounds = bounds.expand(node.get_global_position())
+				elif follow_targets.size() > 1:
+					var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
+					for node in follow_targets:
+						if is_instance_valid(node):
+							bounds = bounds.expand(node.global_position)
 
-						var distance: float
-						if auto_follow_distance:
-							distance = lerp(follow_group_distance_auto_min, follow_group_distance_auto_max, bounds.get_longest_axis_size() / follow_group_distance_auto_divisor)
-							distance = clamp(distance, follow_group_distance_auto_min, follow_group_distance_auto_max)
-						else:
-							distance = follow_distance
-
-						_interpolate_position(
-							bounds.get_center() +
-							follow_offset +
-							get_transform().basis.z * Vector3(distance, distance, distance),
-							delta
-						)
-			Constants.FollowMode.PATH:
-				if follow_target and follow_path:
-					var path_position: Vector3 = follow_path.get_global_position()
-					_interpolate_position(
-						follow_path.curve.get_closest_point(follow_target.get_global_position() - path_position) + path_position,
-						delta
-					)
-			Constants.FollowMode.FRAMED:
-				if follow_target:
-					if not Engine.is_editor_hint():
-						if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
-							_interpolate_position(
-								_get_position_offset_distance(),
-								delta
-							)
-							return
-
-						Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
-						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-						Properties.viewport_position = Properties.viewport_position / visible_rect_size
-						_current_rotation = get_global_rotation()
-
-						if _current_rotation != get_global_rotation():
-							_interpolate_position(
-								_get_position_offset_distance(),
-								delta
-							)
-
-						if Properties.get_framed_side_offset(dead_zone_width, dead_zone_height) != Vector2.ZERO:
-							var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
-							#var dead_zone_width: float = dead_zone_width
-							#var dead_zone_height: float = dead_zone_height
-							var glo_pos: Vector3
-
-							if dead_zone_width == 0 || dead_zone_height == 0:
-								if dead_zone_width == 0 && dead_zone_height != 0:
-									glo_pos = _get_position_offset_distance()
-									glo_pos.z = target_position.z
-									_interpolate_position(
-										glo_pos,
-										delta
-									)
-								elif dead_zone_width != 0 && dead_zone_height == 0:
-									glo_pos = _get_position_offset_distance()
-									glo_pos.x = target_position.x
-									_interpolate_position(
-										glo_pos,
-										delta
-									)
-								else:
-									_interpolate_position(
-										_get_position_offset_distance(),
-										delta
-									)
-							else:
-								if _current_rotation != get_global_rotation():
-									var opposite: float = sin(-get_global_rotation().x) * follow_distance + _get_target_position_offset().y
-									glo_pos.y = _get_target_position_offset().y + opposite
-									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
-									glo_pos.x = global_position.x
-
-									_interpolate_position(
-										glo_pos,
-										delta
-									)
-									_current_rotation = get_global_rotation()
-								else:
-									_interpolate_position(
-										target_position,
-										delta
-									)
-						else:
-							_follow_framed_offset = global_position - _get_target_position_offset()
-							_current_rotation = get_global_rotation()
+					var distance: float
+					if auto_follow_distance:
+						distance = lerp(follow_group_distance_auto_min, follow_group_distance_auto_max, bounds.get_longest_axis_size() / follow_group_distance_auto_divisor)
+						distance = clamp(distance, follow_group_distance_auto_min, follow_group_distance_auto_max)
 					else:
-						set_global_position(_get_position_offset_distance())
-						var unprojected_position: Vector2 = _get_raw_unprojected_position()
-						var viewport_width: float = get_viewport().size.x
-						var viewport_height: float = get_viewport().size.y
-						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+						distance = follow_distance
 
-						unprojected_position = unprojected_position - visible_rect_size / 2
-						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#							Landscape View
-							var aspect_ratio_scale: float = viewport_width / viewport_height
-							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-							unprojected_position.y = (unprojected_position.y + 1) / 2
+					_interpolate_position(
+						bounds.get_center() +
+						follow_offset +
+						get_transform().basis.z * Vector3(distance, distance, distance),
+						delta
+					)
+		FollowMode.PATH:
+			if follow_target and follow_path:
+				var path_position: Vector3 = follow_path.global_position
+				_interpolate_position(
+					follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position,
+					delta
+				)
+		FollowMode.FRAMED:
+			if follow_target:
+				if not Engine.is_editor_hint():
+					if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
+						_interpolate_position(
+							_get_position_offset_distance(),
+							delta
+						)
+						return
+
+					Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
+					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+					Properties.viewport_position = Properties.viewport_position / visible_rect_size
+					_current_rotation = global_rotation
+
+					if _current_rotation != global_rotation:
+						_interpolate_position(
+							_get_position_offset_distance(),
+							delta
+						)
+
+					if Properties.get_framed_side_offset(dead_zone_width, dead_zone_height) != Vector2.ZERO:
+						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
+						#var dead_zone_width: float = dead_zone_width
+						#var dead_zone_height: float = dead_zone_height
+						var glo_pos: Vector3
+
+						if dead_zone_width == 0 || dead_zone_height == 0:
+							if dead_zone_width == 0 && dead_zone_height != 0:
+								glo_pos = _get_position_offset_distance()
+								glo_pos.z = target_position.z
+								_interpolate_position(
+									glo_pos,
+									delta
+								)
+							elif dead_zone_width != 0 && dead_zone_height == 0:
+								glo_pos = _get_position_offset_distance()
+								glo_pos.x = target_position.x
+								_interpolate_position(
+									glo_pos,
+									delta
+								)
+							else:
+								_interpolate_position(
+									_get_position_offset_distance(),
+									delta
+								)
 						else:
-#							Portrait View
-							var aspect_ratio_scale: float = viewport_height / viewport_width
-							unprojected_position.x = (unprojected_position.x + 1) / 2
-							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-
-						Properties.viewport_position = unprojected_position
-			Constants.FollowMode.THIRD_PERSON:
-				if follow_target:
-					if not Engine.is_editor_hint():
-						if is_instance_valid(follow_target):
-							if is_instance_valid(follow_spring_arm_node):
-								if not get_parent() == follow_spring_arm_node:
-									var follow_target: Node3D = follow_target
-									follow_spring_arm_node.set_rotation_degrees(get_rotation_degrees())
-									follow_spring_arm_node.set_length(follow_distance)
-									follow_spring_arm_node.set_collision_mask(collision_mask)
-									follow_spring_arm_node.set_shape(shape)
-									follow_spring_arm_node.set_margin(margin)
-									follow_spring_arm_node.set_global_position(_get_target_position_offset()) # Ensure the PCam3D starts at the right position at runtime
-
-									if not is_tween_on_load():
-										has_tweened = true
-
-									reparent(follow_spring_arm_node)
+							if _current_rotation != global_rotation:
+								var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
+								glo_pos.y = _get_target_position_offset().y + opposite
+								glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
+								glo_pos.x = global_position.x
 
 								_interpolate_position(
-									_get_target_position_offset(),
-									delta,
-									follow_spring_arm_node
+									glo_pos,
+									delta
+								)
+								_current_rotation = global_rotation
+							else:
+								_interpolate_position(
+									target_position,
+									delta
 								)
 					else:
-						set_global_position(_get_position_offset_distance())
+						_follow_framed_offset = global_position - _get_target_position_offset()
+						_current_rotation = global_rotation
+				else:
+					global_position = _get_position_offset_distance()
+					var unprojected_position: Vector2 = _get_raw_unprojected_position()
+					var viewport_width: float = get_viewport().size.x
+					var viewport_height: float = get_viewport().size.y
+					var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+
+					unprojected_position = unprojected_position - visible_rect_size / 2
+					if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+#							Landscape View
+						var aspect_ratio_scale: float = viewport_width / viewport_height
+						unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+						unprojected_position.y = (unprojected_position.y + 1) / 2
+					else:
+#							Portrait View
+						var aspect_ratio_scale: float = viewport_height / viewport_width
+						unprojected_position.x = (unprojected_position.x + 1) / 2
+						unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+					Properties.viewport_position = unprojected_position
+		FollowMode.THIRD_PERSON:
+			if follow_target:
+				if not Engine.is_editor_hint():
+					if is_instance_valid(follow_target):
+						if is_instance_valid(follow_spring_arm_node):
+							if not get_parent() == follow_spring_arm_node:
+								var follow_target: Node3D = follow_target
+								follow_spring_arm_node.rotation = rotation
+								follow_spring_arm_node.global_position = _get_target_position_offset() # Ensure the PCam3D starts at the right position at runtime
+								follow_spring_arm_node.spring_length = spring_length
+								follow_spring_arm_node.collision_mask = collision_mask
+								follow_spring_arm_node.shape = shape
+								follow_spring_arm_node.margin = margin
+
+								if not is_tween_on_load():
+									has_tweened = true
+
+								reparent(follow_spring_arm_node)
+
+							_interpolate_position(
+								_get_target_position_offset(),
+								delta,
+								follow_spring_arm_node
+							)
+				else:
+					global_position = _get_position_offset_distance()
 
 	if _should_look_at:
 		if not _has_look_at_target: return
@@ -547,11 +597,11 @@ func _process(delta: float) -> void:
 			LookAtMode.GROUP:
 				if not _has_look_at_targets:
 					#print("Single target")
-					look_at(look_at_targets[0].get_global_position())
+					look_at(look_at_targets[0].global_position)
 				else:
-					var bounds: AABB = AABB(look_at_targets[0].get_global_position(), Vector3.ZERO)
+					var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 					for node in look_at_targets:
-						bounds = bounds.expand(node.get_global_position())
+						bounds = bounds.expand(node.global_position)
 					look_at(bounds.get_center())
 
 
@@ -572,15 +622,15 @@ func _interpolate_position(_global_position: Vector3, delta: float, target: Node
 				delta * follow_damping_value
 			)
 	else:
-		target.global_position = tr
+		target.global_position = _global_position
 
 
 func _get_raw_unprojected_position() -> Vector2:
-	return get_viewport().get_camera_3d().unproject_position(follow_target.get_global_position() + follow_offset)
+	return get_viewport().get_camera_3d().unproject_position(follow_target.global_position + follow_offset)
 
 
 func _on_dead_zone_changed() -> void:
-	set_global_position( _get_position_offset_distance() )
+	global_position = _get_position_offset_distance()
 
 
 func _has_valid_pcam_owner() -> bool:
@@ -625,8 +675,7 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 
 ## Assigns new Priority value.
 func set_priority(value: int) -> void:
-	priority = abs(value)
-
+	priority = abs(value) # TODO - Make any minus values be 0
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_priority_updated(self)
 ## Gets current Priority value.
@@ -662,6 +711,7 @@ func get_tween_duration() -> float:
 ## Assigns a new Tween Transition value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_transition(value: Constants.TweenTransitions) -> void:
+func set_tween_transition(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
 		tween_resource_default.transition = value
@@ -679,6 +729,7 @@ func get_tween_transition() -> int:
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera3D.
 func set_tween_ease(value: Constants.TweenEases) -> void:
+func set_tween_ease(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
 		tween_resource_default.transition = tween_resource.transition
@@ -776,47 +827,55 @@ func get_follow_distance() -> float:
 func set_follow_targets(value: Array[Node3D]) -> void:
 	# TODO - This shouldn't be needed.
 	# Needs a fix to avoid triggering this setter when not in Group Follow
-	if not follow_mode == Constants.FollowMode.GROUP: return
+	if not follow_mode == FollowMode.GROUP: return
 
 	follow_targets = value
 
 	if follow_targets.is_empty():
 		_should_follow = false
-		_has_follow_targets = false
+		_has_multiple_follow_targets = false
 		return
-
+	
+	var valid_instances: int
 	for target in follow_targets:
 		if is_instance_valid(target):
 			_should_follow = true
-			_has_follow_targets = true
+			_has_multiple_follow_targets = true
 			return
 		else:
 			_should_follow = false
-			_has_follow_targets = false
+			_has_multiple_follow_targets = false
 
 ## Adds a single Node3D to Follow Group array.
 func append_follow_group_node(value: Node3D) -> void:
-	if not follow_targets.has(value) and is_instance_valid(value):
+	if not is_instance_valid(value):
+		printerr(value, " is not a valid instance")
+		return
+	
+	if not follow_targets.has(value):
 		follow_targets.append(value)
 		_should_follow = true
-		_has_follow_targets = true
+		_has_multiple_follow_targets = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node3D to Follow Group array.
 func append_follow_group_node_array(value: Array[Node3D]) -> void:
 	for val in value:
+		if not is_instance_valid(val): continue
 		if not follow_targets.has(val):
 			follow_targets.append(val)
 			_should_follow = true
-			_has_follow_targets = true
+			if follow_targets.size() > 1:
+				_has_multiple_follow_targets = true
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes Node3D from Follow Group array.
 func erase_follow_group_node(value: Node3D) -> void:
 	follow_targets.erase(value)
-	if get_follow_targets().size() < 1:
+	if follow_targets.size() < 2:
+		_has_multiple_follow_targets = false
+	if follow_targets.size() < 1:
 		_should_follow = false
-		_has_follow_targets = false
 ## Gets all Node3D from Follow Group array.
 func get_follow_targets() -> Array[Node3D]:
 	return follow_targets
@@ -1000,6 +1059,7 @@ func set_camera_cull_mask(value: int) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.cull_mask = value
+	if is_active(): get_pcam_host_owner().camera_3D.cull_mask = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_cull_mask() -> int:
 	if get_camera_3D_resource():
@@ -1018,6 +1078,7 @@ func set_camera_h_offset(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.h_offset = value
+	if is_active(): get_pcam_host_owner().camera_3D.h_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_h_offset() -> float:
 	if get_camera_3D_resource():
@@ -1036,6 +1097,7 @@ func set_camera_v_offset(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.v_offset = value
+	if is_active(): get_pcam_host_owner().camera_3D.v_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_v_offset() -> float:
 	if get_camera_3D_resource():
@@ -1054,6 +1116,7 @@ func set_camera_fov(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.fov = value
+	if is_active(): get_pcam_host_owner().camera_3D.fov = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_fov() -> float:
 	if get_camera_3D_resource():
