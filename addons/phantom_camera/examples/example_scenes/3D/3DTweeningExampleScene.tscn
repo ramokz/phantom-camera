@@ -85,7 +85,6 @@ follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_d76g4")
 tween_onload = false
-follow_damping = true
 follow_offset = Vector3(0, 2, 2)
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
@@ -94,7 +93,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0548701, 0.5, 3.82771)
 script = ExtResource("4_68dqc")
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+[node name="PlayerModel" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_qde4k")
 surface_material_override/0 = SubResource("StandardMaterial3D_ks21f")
 

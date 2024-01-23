@@ -6,7 +6,7 @@ extends CharacterBody3D
 
 @onready var _camera: Camera3D = %MainCamera3D
 
-@onready var _player_mesh: Node3D = %PlayerMesh
+@onready var _player_model: Node3D = %PlayerModel
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = 9.8
@@ -88,7 +88,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _process(delta) -> void:
-	_player_mesh.global_transform = _physics_body_trans_last.interpolate_with(
+	_player_model.global_transform = _physics_body_trans_last.interpolate_with(
 		_physics_body_trans_current,
 		Engine.get_physics_interpolation_fraction()
 	)

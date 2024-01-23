@@ -8,16 +8,6 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="5_p60kr"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_kg7u1"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mv4do"]
-albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
-
-[sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
-size = Vector3(0.5, 0.5, 0.3)
-
 [sub_resource type="Resource" id="Resource_6x70v"]
 script = ExtResource("3_oisgy")
 duration = 0.3
@@ -44,6 +34,16 @@ h_offset = 1.0
 v_offset = 0.0
 fov = 75.0
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mv4do"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
+size = Vector3(0.5, 0.5, 0.3)
+
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 10, 20)
 
@@ -57,6 +57,36 @@ transition = 7
 ease = 2
 
 [node name="Root" type="Node3D"]
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
+script = ExtResource("2_whx47")
+priority = 10
+follow_mode = 6
+follow_target = NodePath("../PlayerCharacterBody3D")
+look_at_targets = []
+tween_resource = SubResource("Resource_6x70v")
+tween_onload = false
+camera_3d_resource = SubResource("Resource_7m0fv")
+follow_distance = 3.5
+spring_length = 3.5
+
+[node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
+unique_name_in_owner = true
+transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35923, 1.41338)
+script = ExtResource("2_whx47")
+follow_mode = 6
+follow_target = NodePath("../PlayerCharacterBody3D")
+look_at_targets = []
+tween_resource = SubResource("Resource_847it")
+tween_onload = false
+camera_3d_resource = SubResource("Resource_jogxh")
+follow_damping = true
+follow_damping_value = 30.0
+follow_offset = Vector3(0, 0.8, 0)
+follow_distance = 1.5
+spring_length = 1.5
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
@@ -82,7 +112,8 @@ mesh = SubResource("CapsuleMesh_47f0o")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
 
-[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="PlayerCharacterBody3D/PlayerModel"]
+[node name="PlayerDirection" type="MeshInstance3D" parent="PlayerCharacterBody3D/PlayerModel"]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, -9.31323e-10, 1, 4.65661e-10, 2.98023e-08, 0, 1, -0.0156226, 1.08631, 0)
 mesh = SubResource("PrismMesh_wg1x3")
 skeleton = NodePath("../..")
@@ -97,37 +128,6 @@ current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_b4nxi")
-
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
-script = ExtResource("2_whx47")
-priority = 10
-follow_mode = 6
-follow_target = NodePath("../PlayerCharacterBody3D")
-look_at_targets = []
-tween_resource = SubResource("Resource_6x70v")
-tween_onload = false
-camera_3d_resource = SubResource("Resource_7m0fv")
-follow_damping = true
-follow_distance = 3.5
-spring_length = 3.5
-
-[node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
-unique_name_in_owner = true
-transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35923, 1.41338)
-script = ExtResource("2_whx47")
-follow_mode = 6
-follow_target = NodePath("../PlayerCharacterBody3D")
-look_at_targets = []
-tween_resource = SubResource("Resource_847it")
-tween_onload = false
-camera_3d_resource = SubResource("Resource_jogxh")
-follow_damping = true
-follow_damping_value = 30.0
-follow_offset = Vector3(0, 0.8, 0)
-follow_distance = 1.5
-spring_length = 1.5
 
 [node name="Environment" type="Node" parent="."]
 

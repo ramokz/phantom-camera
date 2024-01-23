@@ -31,6 +31,7 @@ uv1_world_triplanar = true
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -11.2101, 6.38964, 6.74731)
+fov = 66.2701
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_pmeux")
@@ -48,6 +49,7 @@ script = ExtResource("2_q1ygp")
 priority = 5
 follow_mode = 1
 follow_target = NodePath("../PlayerCharacterBody3D")
+tween_onload = false
 follow_damping = true
 follow_damping_value = 2.0
 
@@ -58,7 +60,8 @@ script = ExtResource("3_tk586")
 enable_gravity = false
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
+[node name="PlayerModel" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
+unique_name_in_owner = true
 visible = false
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
