@@ -860,8 +860,11 @@ func set_follow_target_node(value: Node3D) -> void:
 	follow_target_changed.emit()
 ## Removes the current Node3D Follow Target.
 func erase_follow_target_node() -> void:
-	Properties.should_follow = false
+	if Properties.follow_target_node == null:
+		return
 	Properties.follow_target_node = null
+	Properties.should_follow = false
+	follow_target_changed.emit()
 ## Gets the current Node3D target.
 func get_follow_target_node():
 	if Properties.follow_target_node:
