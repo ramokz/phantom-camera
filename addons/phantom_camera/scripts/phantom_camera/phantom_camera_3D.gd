@@ -868,6 +868,9 @@ func get_follow_target_node():
 		return Properties.follow_target_node
 	else:
 		printerr("No Follow Target Node assigned")
+## Similar to get_follow_target_node, but does not log an error if Properties.follow_target_node is not a valid Node.
+func get_follow_target_node_or_null():
+	return Properties.follow_target_node
 
 
 ## Assigns a new Path3D to the Follow Path property.
