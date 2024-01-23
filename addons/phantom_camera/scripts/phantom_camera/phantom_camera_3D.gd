@@ -17,6 +17,9 @@ signal became_active
 ## Emitted when the PhantomCamera3D becomes inactive.
 signal became_inactive
 
+## Emitted when follow_target changes
+signal follow_target_changed
+
 ## Emitted when the Camera3D starts to tween to the PhantomCamera3D.
 signal tween_started
 ## Emitted when the Camera3D is to tweening to the PhantomCamera3D.
@@ -772,15 +775,19 @@ func get_follow_mode() -> int:
 
 ## Assigns a new Node3D as the Follow Target.
 func set_follow_target(value: Node3D) -> void:
+	if follow_target == value: return
 	follow_target = value
 	if is_instance_valid(value):
 		_should_follow = true
 	else:
 		_should_follow = false
+	follow_target_changed.emit()
 ## Removes the current Node3D Follow Target.
 func erase_follow_target() -> void:
+	if follow_target == null: return
 	_should_follow = false
 	follow_target = null
+	follow_target_changed.emit()
 ## Gets the current Node3D target.
 func get_follow_target() -> Node3D:
 	return follow_target
