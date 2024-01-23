@@ -59,7 +59,8 @@ transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1
 script = ExtResource("3_6xt4f")
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
+[node name="PlayerModel" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
+unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 

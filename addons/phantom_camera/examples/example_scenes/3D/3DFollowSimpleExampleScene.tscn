@@ -1,5 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://buglvjwpn85ny"]
+[gd_scene load_steps=10 format=3 uid="uid://buglvjwpn85ny"]
 
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_3tok8"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_grjck"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_uymu2"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_4u2y6"]
@@ -22,6 +23,10 @@ uv1_world_triplanar = true
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -13.1946, 2.34415, 10.4086)
+fov = 74.9793
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+script = ExtResource("1_3tok8")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
@@ -31,11 +36,14 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target", "look_at_targets")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, 0, 0, 0)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -13.1946, 2.34415, 10.4086)
 script = ExtResource("2_grjck")
+priority = 10
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D2")
 look_at_targets = []
+tween_onload = false
+follow_offset = Vector3(0, 2, 2)
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
@@ -43,7 +51,8 @@ transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1
 script = ExtResource("3_uymu2")
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
+[node name="PlayerModel" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
+unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 

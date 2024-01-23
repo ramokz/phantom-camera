@@ -64,7 +64,7 @@ albedo_color = Color(0.568403, 0.988235, 0.762724, 0.0901961)
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 4.00185, 2.49999, -2.01096)
-fov = 90.0
+fov = 74.9977
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_lm5n8")
@@ -80,6 +80,7 @@ script = ExtResource("3_bd7x3")
 priority = 10
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
+tween_onload = false
 follow_offset = Vector3(0, 2, 1.5)
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
@@ -89,7 +90,8 @@ script = ExtResource("2_tsk60")
 SPEED = 3.5
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+[node name="PlayerModel" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_vr5ym")
 surface_material_override/0 = SubResource("StandardMaterial3D_mjpjo")
 

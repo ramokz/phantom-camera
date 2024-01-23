@@ -10,12 +10,12 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_fcnh0"]
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flw6w"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_7tjw4"]
 size = Vector3(2, 0.5, 4)
@@ -119,9 +119,9 @@ transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 
 script = ExtResource("2_y3dy8")
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D")
+follow_target = NodePath("../PlayerCharacterBody3D/PlayerModel")
 tween_resource = ExtResource("4_a27nb")
-follow_damping = true
+tween_onload = false
 follow_offset = Vector3(0, 1.5, 2)
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
@@ -131,10 +131,6 @@ script = ExtResource("5_c85ys")
 SPEED = 3.5
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerGroup/PlayerCharacterBody3D"]
-mesh = SubResource("CapsuleMesh_g0eml")
-surface_material_override/0 = SubResource("StandardMaterial3D_flw6w")
-
 [node name="PlayerArea3D" type="Area3D" parent="PlayerGroup/PlayerCharacterBody3D"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D/PlayerArea3D"]
@@ -142,6 +138,11 @@ shape = SubResource("CapsuleShape3D_dy1i7")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_dy1i7")
+
+[node name="PlayerModel" type="MeshInstance3D" parent="PlayerGroup/PlayerCharacterBody3D"]
+unique_name_in_owner = true
+mesh = SubResource("CapsuleMesh_g0eml")
+surface_material_override/0 = SubResource("StandardMaterial3D_flw6w")
 
 [node name="NPCGroup" type="Node" parent="."]
 
