@@ -17,6 +17,9 @@ signal became_active
 ## Emitted when the PhantomCamera2D becomes inactive.
 signal became_inactive
 
+## Emitted when follow_target changes
+signal follow_target_changed
+
 ## Emitted when the Camera2D starts to tween to the PhantomCamera2D.
 signal tween_started
 ## Emitted when the Camera2D is to tweening to the PhantomCamera2D.
@@ -656,15 +659,19 @@ func get_follow_mode() -> int:
 
 ## Assigns a new Node2D as the Follow Target property.
 func set_follow_target(value: Node2D) -> void:
+	if follow_target == value: return
 	follow_target = value
 	if is_instance_valid(value):
 		_should_follow = true
 	else:
 		_should_follow = false
+	follow_target_changed.emit()
 ## Erases the current Node2D from the Follow Target property.
 func erase_follow_target() -> void:
+	if follow_target == null: return
 	_should_follow = false
 	follow_target = null
+	follow_target_changed.emit()
 ## Gets the current Node2D target property.
 func get_follow_target() -> Node2D:
 	return follow_target
