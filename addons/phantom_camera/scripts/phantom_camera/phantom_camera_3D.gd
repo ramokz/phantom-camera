@@ -36,6 +36,8 @@ const CAMERA_3D_RESOURCE_PROPERTY_NAME: StringName = "camera_3D_resource"
 signal became_active
 ## Emitted when the PhantomCamera3D becomes inactive.
 signal became_inactive
+## Emitted when follow_target changes
+signal follow_target_changed
 
 ## Emitted when the Camera3D starts to tween to the PhantomCamera3D.
 signal tween_started
@@ -851,18 +853,21 @@ func get_follow_mode() -> int:
 
 ## Assigns a new Node3D as the Follow Target.
 func set_follow_target_node(value: Node3D) -> void:
+	if Properties.follow_target_node == value:
+		return
 	Properties.follow_target_node = value
-	Properties.should_follow = true
+	Properties.should_follow = Properties.follow_target_node != null
+	follow_target_changed.emit()
 ## Removes the current Node3D Follow Target.
 func erase_follow_target_node() -> void:
-	Properties.should_follow = false
+	if Properties.follow_target_node == null:
+		return
 	Properties.follow_target_node = null
+	Properties.should_follow = false
+	follow_target_changed.emit()
 ## Gets the current Node3D target.
 func get_follow_target_node():
-	if Properties.follow_target_node:
-		return Properties.follow_target_node
-	else:
-		printerr("No Follow Target Node assigned")
+	return Properties.follow_target_node
 
 
 ## Assigns a new Path3D to the Follow Path property.
