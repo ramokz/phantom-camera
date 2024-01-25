@@ -163,7 +163,18 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 @export var show_viewfinder_in_play: bool
 
 @export_group("Limit")
-static var draw_limits: bool = false
+
+## Shows the [param Camera2D]'s built-in limit border.[br]
+## The [param PhantomCamera2D] and [param Camera2D] can move around anywhere within it.
+@export var draw_limits: bool = false:
+	set(value):
+		_draw_limits = value
+		if Engine.is_editor_hint():
+			_draw_camera_2d_limit()
+	get:
+		return _draw_limits
+static var _draw_limits: bool
+
 var _limit_sides: Vector4i
 var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10000000)
 @export var limit_left: int = -10000000:
