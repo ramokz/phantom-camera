@@ -3,6 +3,13 @@
 class_name PhantomCamera2D
 extends Node2D
 
+## Enables a 2D scene's [param Camera2D] to follow the behavior defined here.
+##
+## The scene's [param Camera2D] will follow the position of the
+## [param PhantomCamera2D] with the highest priority.
+## Each instance can have different positional and rotational logic applied
+## to them.
+
 #region Constants
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
@@ -12,31 +19,64 @@ const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/ph
 
 #region Signals
 
-## Emitted when the PhantomCamera2D becomes active.
+## Emitted when the [param PhantomCamera2D] becomes active.
 signal became_active
-## Emitted when the PhantomCamera2D becomes inactive.
+## Emitted when the [param PhantomCamera2D] becomes inactive.
 signal became_inactive
 
-## Emitted when follow_target changes
+## Emitted when follow_target changes.
 signal follow_target_changed
 
-## Emitted when the Camera2D starts to tween to the PhantomCamera2D.
+## Emitted when the Camera2D starts to tween to the [param PhantomCamera2D].
 signal tween_started
-## Emitted when the Camera2D is to tweening to the PhantomCamera2D.
+## Emitted when the Camera2D is to tweening to the [param PhantomCamera2D].
 signal is_tweening
-## Emitted when the tween is interrupted due to another PhantomCamera2D becoming active.
-## The argument is the PhantomCamera2D that interrupted the tween.
+## Emitted when the tween is interrupted due to another PhantomCamera2D
+## becoming active. The argument is the [param PhantomCamera2D] that interrupted
+## the tween.
 signal tween_interrupted(pcam_2d: PhantomCamera2D)
-## Emitted when the Camera2D completes its tween to the PhantomCamera2D.
+## Emitted when the [param Camera2D] completes its tween to the
+## [param PhantomCamera2D].
 signal tween_completed
 
 #endregion
 
+#region Enums
+
+## Determines the positional logic for a given [param PCamPhantomCamera2D]
+## [br][br]
+## The different modes have different functionalities and purposes, so choosing
+## the correct one depends on what each [param PhantomCamera2D] is meant to do.
+enum FollowMode {
+	NONE 			= 0, ## Default.
+	GLUED 			= 1, ## Sticks to its target.
+	SIMPLE 			= 2, ## Follows its target with an optional offset.
+	GROUP 			= 3, ## Follows multiple targets with option to dynamically reframe itself.
+	PATH 			= 4, ## Follows a target while being positionally confined to a [Path2D] node.
+	FRAMED 			= 5, ## Applies a dead zone on the frame and only follows its target when it tries to leave it.
+}
+
+## Determines how often an inactive [param PhantomCamera2D] should update
+## its positional and rotational values. This is meant to reduce the amount
+## of calculations inactive PCams are doing when idling to improve performance.
+## The value is based on the enum type [enum InactiveUpdateMode].
+enum InactiveUpdateMode {
+	ALWAYS, ## Always updates the [param PhantomCamera2D], even when it's inactive.
+	NEVER, ## Never updates the [param PhantomCamera2D] when it's inactive. Reduces the amount of computational resources when inactive.
+#	EXPONENTIALLY,
+}
+
+#endregion
 
 #region Variables
 
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
+## To quickly preview a [param PhantomCamera2D] without adjusting its
+## [member priority], this property allows the selected PCam to ignore the
+## Priority system altogether and forcefully become the active one. It's
+## partly designed to work within the Viewfinder, and will be disabled when
+## running a build export of the game.
 @export var priority_override: bool = false:
 	set(value):
 		if Engine.is_editor_hint() and _has_valid_pcam_owner():
@@ -47,12 +87,26 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 				priority_override = value
 				get_pcam_host_owner().pcam_priority_updated(self)
 				get_pcam_host_owner().pcam_priority_override_disabled()
+	get:
+		return priority_override
 
+## It defines which [param PhantomCamera2D] a scene's [param Camera2D] should
+## be corresponding with and be attached to. This is decided by the PCam with
+## the highest [param Priority].
+## [br][br]
+## Changing [param Priority] will send an event to the scene's
+## [PhantomCameraHost], which will then determine whether if the
+## [param Priority] value is greater than or equal to the currently
+## highest [param PhantomCamera2D]'s in the scene. The [param PhantomCamera2D]
+## with the highest value will then reattach the [param Camera2D] accordingly.
 @export var priority: int = 0:
 	set = set_priority,
 	get = get_priority
 
-## TODO Description
+## Determines the positional logic for a given [param PhantomCamera2D].
+## The different modes have different functionalities and purposes, so 
+## choosing the correct one depends on what each [param PhantomCamera2D]
+## is meant to do.
 @export var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE:
 	set(value):
 		follow_mode = value
@@ -69,32 +123,48 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 		return follow_mode
 
 
-## TODO Description
+## Determines which target should be followed.
+## The [param Camera2D] will follow the position of the Follow Target
+## based on the [member follow_mode] type and its parameters.
 @export var follow_target: Node2D = null:
 	set = set_follow_target,
 	get = get_follow_target
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2
 
-## TODO Description
+### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = [null]:
 	set = set_follow_targets,
 	get = get_follow_targets
 var _has_multiple_follow_targets: bool = false
 
 
-## TODO Description
+## Determines the [Path2D] the [param PhantomCamera2D]
+## should be bound to.
+## The [param PhantomCamera2D] will follow the position of the
+## [member follow_target] while sticking to the closest point on this path.
 @export var follow_path: Path2D = null:
 	set = set_follow_path,
 	get = get_follow_path
 var _has_follow_path: bool = false
 
+## Applies a zoom level to the [param PhantomCamera2D], which effectively
+## overrides the [member zoom] property of the [Camera2D] node.
 @export var zoom: Vector2 = Vector2.ONE:
 	set = set_zoom,
 	get = get_zoom
+	
+## If enabled, will snap the [param Camera2D] to whole pixels as it moves
+## [br][br]
+## This should be particularly useful in pixel art projects,
+## where assets should always be aligned to the monitor's pixels to avoid
+## unintended stretching.
 @export var pixel_perfect: bool = false
 
-## TODO Description
+## Enables a preview of what the [PhantomCamera2D] will see in the
+## scene. It works identically to how a [Camera2D] shows which area
+## will be visible during runtime. Likewise, this too will be affected by the
+## [member zoom] property and the Viewport Width and Viewport Height defined in the Project Settings.
 @export var frame_preview: bool = true:
 	set(value):
 		frame_preview = value
@@ -102,64 +172,112 @@ var _has_follow_path: bool = false
 	get:
 		return frame_preview
 
-## TODO Description
+## Defines how the [param PhantomCamera2D] transition between one another.
+## Changing the tween values for a given [PhantomCamera2D]
+## determines how transitioning to that instance will look like.
+## This is a resource type that can be either used for one
+## [param PhantomCamera] or reused across multiple - both 2D and 3D.
+## By default, all [param PhantomCameras] will use a [param linear]
+## transition, [param easeInOut] ease with a [param 1s] duration.
 @export var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 
-## TODO Description
+## By default, the moment a [param PhantomCamera2D] is instantiated into
+## a scene, and has the highest priority, it will perform its tween transition.
+## This is most obvious if a PCam has a long duration and is attached to a
+## playable character that can be moved the moment a scene is loaded.
+## Disabling the [param tween_on_load] property will disable this
+## behaviour and skip the tweening entirely when instantiated.
 @export var tween_onload: bool = true
 
-## TODO Description
+## Determines how often an inactive [param PhantomCamera2D] should update
+## its positional and rotational values. This is meant to reduce the amount
+## of calculations inactive [param PhantomCamera2Ds] are doing when idling
+## to improve performance.
 @export var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
 
-
 @export_group("Follow Parameters")
-## TODO Description
+## Applies a damping effect on the [param Camera2D]'s movement.
+## Leading to heavier / slower camera movement as the targeted node moves around.
+## This is useful to avoid sharp and rapid camera movement.
 @export var follow_damping: bool = false:
 	set = set_follow_has_damping,
 	get = get_follow_has_damping
 
-## TODO Description
+## Defines the damping amount.[br][br]
+## [b]Lower value[/b] = slower / heavier camera movement.[br][br]
+## [b]Higher value[/b] = faster / sharper camera movement.
 @export var follow_damping_value: float = 10:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 
-## TODO Description
+## Offsets the follow target's position.
 @export var follow_offset: Vector2 = Vector2.ZERO:
 	set = set_follow_target_offset,
 	get = get_follow_target_offset
 
 @export_subgroup("Follow Group")
+## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
+## the targets' distances between each other.
+## Once enabled, the [param Camera2D] will stay as zoomed in as possible,
+## limited by the [member auto_zoom_max] and start zooming out as the targets
+## move further apart, limited by the [member auto_zoom_min].
+## Note: Enabling this property hides and disables the [member zoom] property
+## as this effectively overrides that value.
 @export var auto_zoom: bool = false:
 	set = set_auto_zoom,
 	get = get_auto_zoom
+## Sets the param minimum zoom amount, in other words how far away the
+## [param Camera2D] can be from scene.[br][br]
+## This only works when [member auto_zoom] is enabled.
 @export var auto_zoom_min: float = 1:
 	set = set_auto_zoom_min,
 	get = get_auto_zoom_min
+
+## Sets the maximum zoom amount, in other words how close the [param Camera2D]
+## can move towards the scene.[br][br]
+## This only works when [member auto_zoom] is enabled.
 @export var auto_zoom_max: float = 5:
 	set = set_auto_zoom_max,
 	get = get_auto_zoom_max
+## Determines how close to the edges the targets are allowed to be.
+## This is useful to avoid targets being cut off at the edges of the screen.
+## [br][br]
+
+## The Vector4 parameter order goes: [param Left] - [param Top] - [param Right]
+## - [param Bottom].
 @export var auto_zoom_margin: Vector4 = Vector4.ZERO:
 	set = set_auto_zoom_margin,
 	get = get_auto_zoom_margin
 
-
 @export_subgroup("Dead Zones")
-## TODO Description
+## Defines the horizontal dead zone area. While the target is within it, the
+## [param PhantomCamera2D] will not move in the horizontal axis.
+## If the targeted node leaves the horizontal bounds, the
+## [param PhantomCamera2D] will follow the target horizontally to keep
+## it within bounds.
 @export_range(0, 1) var dead_zone_width: float = 0:
 	set(value):
 		dead_zone_width = value
 		Properties.dead_zone_changed.emit()
 	get:
 		return dead_zone_width
-## TODO Description
+
+## Defines the vertical dead zone area. While the target is within it, the
+## [param PhantomCamera2D] will not move in the vertical axis.
+## If the targeted node leaves the vertical bounds, the
+## [param PhantomCamera2D] will follow the target horizontally to keep
+## it within bounds.
 @export_range(0, 1) var dead_zone_height: float = 0:
 	set(value):
 		dead_zone_height = value
 		Properties.dead_zone_changed.emit()
 	get:
 		return dead_zone_height
-## TODO Description
+
+## Enables the [param dead zones] to be visible when running the game from the editor.
+## [br]
+## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool
 
 @export_group("Limit")
@@ -177,24 +295,41 @@ static var _draw_limits: bool
 
 var _limit_sides: Vector4i
 var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10000000)
+## Defines the left side of the [param Camera2D] limit.
+## The camera will not be able to move past this point.
 @export var limit_left: int = -10000000:
 	set = set_limit_left,
 	get = get_limit_left
+## Defines the top side of the [param Camera2D] limit.
+## The camera will not be able to move past this point.
 @export var limit_top: int = -10000000:
 	set = set_limit_top,
 	get = get_limit_top
+## Defines the right side of the [param Camera2D] limit.
+## The camera will not be able to move past this point.
 @export var limit_right: int = 10000000:
 	set = set_limit_right,
 	get = get_limit_right
+## Defines the bottom side of the [param Camera2D] limit.
+## The camera will not be able to move past this point.
 @export var limit_bottom: int = 10000000:
 	set = set_limit_bottom,
 	get = get_limit_bottom
 
-
+## Allows for setting either a [TileMap] or [CollisionShape2D] node to automatically apply a limit size instead of manually adjusting the Left, Top, Right and Left properties.
+## [b]TileMap[/b][br]
+## The Limit will update after the [TileSet] of the [TileMap] has changed.
+## Note: The limit size will only update after closing the TileMap editor bottom panel.
+## [param CollisionShape2D][br]
+## The limit will update in realtime as the Shape2D changes its size.
+## Note: For performance reasons, resizing the [Shape2D] during runtime will not change the Limits sides.
 @export_node_path("TileMap", "CollisionShape2D") var limit_target = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 var _limit_node: Node2D
+## Applies an offset to the [param TileMap] Limit or [param Shape2D] Limit.
+## The values goes from [param Left], [param Top], [param Right]
+## and [param Bottom].
 @export var limit_margin: Vector4i:
 	set = set_limit_margin,
 	get = get_limit_margin
@@ -615,7 +750,7 @@ func get_tween_duration() -> float:
 
 ## Assigns a new Tween Transition value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
-func set_tween_transition(value: Constants.TweenTransitions) -> void:
+func set_tween_transition(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
 		tween_resource_default.transition = value
@@ -632,7 +767,7 @@ func get_tween_transition() -> int:
 
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
-func set_tween_ease(value: Constants.TweenEases) -> void:
+func set_tween_ease(value: int) -> void:
 	if get_tween_resource():
 		tween_resource_default.duration = tween_resource.duration
 		tween_resource_default.transition = tween_resource.transition
