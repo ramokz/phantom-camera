@@ -59,7 +59,7 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 var follow_distance: float = 1:
 	set(value):
 		follow_distance = value
-		if is_instance_valid(Properties.follow_target_node):
+		if is_instance_valid(Properties.follow_target_node) and Properties.follow_mode != Constants.FollowMode.THIRD_PERSON:
 			set_global_position(_get_target_position_offset())
 	get:
 		return follow_distance
