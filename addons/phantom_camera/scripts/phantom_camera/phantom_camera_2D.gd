@@ -27,6 +27,10 @@ signal became_inactive
 ## Emitted when follow_target changes.
 signal follow_target_changed
 
+## Emitted when dead zones changes. [br]
+## [b]Note:[/b] Only applicable in Framed Follow mode.
+signal dead_zone_changed
+
 ## Emitted when the Camera2D starts to tween to the [param PhantomCamera2D].
 signal tween_started
 ## Emitted when the Camera2D is to tweening to the [param PhantomCamera2D].
@@ -72,6 +76,10 @@ enum InactiveUpdateMode {
 
 var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
+var _pcam_host_owner: PhantomCameraHost
+
+var _is_active: bool = false
+
 ## To quickly preview a [param PhantomCamera2D] without adjusting its
 ## [member priority], this property allows the selected PCam to ignore the
 ## Priority system altogether and forcefully become the active one. It's
@@ -107,17 +115,17 @@ var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/pha
 ## The different modes have different functionalities and purposes, so 
 ## choosing the correct one depends on what each [param PhantomCamera2D]
 ## is meant to do.
-@export var follow_mode: Constants.FollowMode = Constants.FollowMode.NONE:
+@export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
 
-		if value == Constants.FollowMode.FRAMED:
-			if Properties.follow_framed_initial_set and follow_target:
-				Properties.follow_framed_initial_set = false
-				Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+		if value == FollowMode.FRAMED:
+			if _follow_framed_initial_set and follow_target:
+				_follow_framed_initial_set = false
+				dead_zone_changed.connect(_on_dead_zone_changed)
 		else:
-			if Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-				Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+			if dead_zone_changed.is_connected(_on_dead_zone_changed):
+				dead_zone_changed.disconnect(_on_dead_zone_changed)
 		notify_property_list_changed()
 	get:
 		return follow_mode
@@ -194,7 +202,7 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 ## its positional and rotational values. This is meant to reduce the amount
 ## of calculations inactive [param PhantomCamera2Ds] are doing when idling
 ## to improve performance.
-@export var inactive_update_mode: Constants.InactiveUpdateMode = Constants.InactiveUpdateMode.ALWAYS
+@export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
 @export_group("Follow Parameters")
 ## Applies a damping effect on the [param Camera2D]'s movement.
@@ -259,7 +267,7 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 @export_range(0, 1) var dead_zone_width: float = 0:
 	set(value):
 		dead_zone_width = value
-		Properties.dead_zone_changed.emit()
+		dead_zone_changed.emit()
 	get:
 		return dead_zone_width
 
@@ -271,7 +279,7 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 @export_range(0, 1) var dead_zone_height: float = 0:
 	set(value):
 		dead_zone_height = value
-		Properties.dead_zone_changed.emit()
+		dead_zone_changed.emit()
 	get:
 		return dead_zone_height
 
@@ -279,6 +287,8 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 ## [br]
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool
+
+var _follow_framed_initial_set: bool = false
 
 @export_group("Limit")
 
@@ -346,12 +356,12 @@ func _validate_property(property: Dictionary) -> void:
 	## Follow Target
 	################
 	if property.name == "follow_target":
-		if follow_mode == Constants.FollowMode.NONE or \
-		follow_mode == Constants.FollowMode.GROUP:
+		if follow_mode == FollowMode.NONE or \
+		follow_mode == FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	elif property.name == "follow_path" and \
-	follow_mode != Constants.FollowMode.PATH:
+	follow_mode != FollowMode.PATH:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
@@ -359,12 +369,12 @@ func _validate_property(property: Dictionary) -> void:
 	## Follow Parameters
 	####################
 	elif property.name == "follow_offset":
-		if follow_mode == Constants.FollowMode.GLUED or \
-		follow_mode == Constants.FollowMode.NONE:
+		if follow_mode == FollowMode.GLUED or \
+		follow_mode == FollowMode.NONE:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	elif property.name == "follow_damping" and \
-	follow_mode == Constants.FollowMode.NONE:
+	follow_mode == FollowMode.NONE:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
@@ -373,7 +383,7 @@ func _validate_property(property: Dictionary) -> void:
 	###############
 	## Follow Group
 	###############
-	if property.name == "follow_targets" and follow_mode != Constants.FollowMode.GROUP:
+	if property.name == "follow_targets" and follow_mode != FollowMode.GROUP:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if not auto_zoom:
@@ -386,7 +396,7 @@ func _validate_property(property: Dictionary) -> void:
 	################
 	## Follow Framed
 	################
-	if not follow_mode == Constants.FollowMode.FRAMED:
+	if not follow_mode == FollowMode.FRAMED:
 		match property.name:
 			"dead_zone_width", \
 			"dead_zone_height", \
@@ -416,7 +426,7 @@ func _validate_property(property: Dictionary) -> void:
 	################
 	## Frame Preview
 	################
-	if property.name == "frame_preview" and is_active():
+	if property.name == "frame_preview" and _is_active:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
 	notify_property_list_changed()
@@ -426,7 +436,7 @@ func _validate_property(property: Dictionary) -> void:
 func _enter_tree() -> void:
 	Properties.is_2D = true
 	Properties.camera_enter_tree(self)
-	Properties.assign_pcam_host(self)
+	set_pcam_host()
 
 	update_limit_all_sides()
 
@@ -439,29 +449,29 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
-	if not Properties.is_active:
+	if not _is_active:
 		match inactive_update_mode:
-			Constants.InactiveUpdateMode.NEVER:
+			InactiveUpdateMode.NEVER:
 				return
-			Constants.InactiveUpdateMode.ALWAYS:
+			InactiveUpdateMode.ALWAYS:
 				# Only triggers if limit isn't default
 				if _limit_inactive_pcam:
 					set_global_position(
 						_set_limit_clamp_position(global_position)
 					)
-#			Constants.InactiveUpdateMode.EXPONENTIALLY:
+#			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
 	if not _should_follow: return
 	
 	match follow_mode:
-		Constants.FollowMode.GLUED:
+		FollowMode.GLUED:
 			if follow_target:
 				_set_pcam_global_position(follow_target.global_position, delta)
-		Constants.FollowMode.SIMPLE:
+		FollowMode.SIMPLE:
 			if follow_target:
 				_set_pcam_global_position(_target_position_with_offset(), delta)
-		Constants.FollowMode.GROUP:
+		FollowMode.GROUP:
 			if follow_targets.size() == 1:
 				_set_pcam_global_position(follow_targets[0].global_position, delta)
 			elif _has_multiple_follow_targets and follow_targets.size() > 1:
@@ -483,7 +493,7 @@ func _process(delta: float) -> void:
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 				_set_pcam_global_position(rect.get_center(), delta)
-		Constants.FollowMode.PATH:
+		FollowMode.PATH:
 				if follow_targets and follow_path:
 					var path_position: Vector2 = follow_path.global_position
 					_set_pcam_global_position(
@@ -491,7 +501,7 @@ func _process(delta: float) -> void:
 							_target_position_with_offset() - path_position
 						) + path_position,
 						delta)
-		Constants.FollowMode.FRAMED:
+		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
 					Properties.viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
@@ -542,7 +552,7 @@ func _set_limit_clamp_position(value: Vector2) -> Vector2i:
 func _draw():
 	if not Engine.is_editor_hint(): return
 	
-	if frame_preview and not is_active():
+	if frame_preview and not _is_active:
 		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
 		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
 		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
@@ -560,7 +570,7 @@ func _camera_frame_rect() -> Rect2:
 func _notification(what):
 	if what == NOTIFICATION_TRANSFORM_CHANGED:
 		if Engine.is_editor_hint(): # Used for updating Limit when a CollisionShape2D is applied
-			if not is_active():
+			if not _is_active:
 				update_limit_all_sides()
 
 
@@ -596,7 +606,7 @@ func _check_limit_is_not_default() -> void:
 
 func _set_camera_2d_limit(side: int, limit: int) -> void:
 	if not _has_valid_pcam_owner(): return
-	if not is_active(): return
+	if not _is_active: return
 	get_pcam_host_owner().camera_2D.set_limit(side, limit)
 
 
@@ -664,7 +674,7 @@ func update_limit_all_sides() -> void:
 
 	_check_limit_is_not_default()
 
-	if is_active() and _has_valid_pcam_owner():
+	if _is_active and _has_valid_pcam_owner():
 		_set_camera_2d_limit(SIDE_LEFT, _limit_sides.x)
 		_set_camera_2d_limit(SIDE_TOP, _limit_sides.y)
 		_set_camera_2d_limit(SIDE_RIGHT, _limit_sides.z)
@@ -678,7 +688,7 @@ func reset_limit_all_sides() -> void:
 	limit_bottom = _limit_sides_default.w
 	
 	if not _has_valid_pcam_owner(): return
-	if not is_active(): return
+	if not _is_active: return
 	get_pcam_host_owner().camera_2D.set_limit(SIDE_LEFT, limit_left)
 	get_pcam_host_owner().camera_2D.set_limit(SIDE_TOP, limit_top)
 	get_pcam_host_owner().camera_2D.set_limit(SIDE_RIGHT, limit_right)
@@ -696,12 +706,23 @@ func reset_limit_all_sides() -> void:
 
 #region Setter & Getter Functions
 
-## Assigns the PhantomCamera2D to a new PhantomCameraHost.
-func assign_pcam_host() -> void:
-	Properties.assign_pcam_host(self)
+## Assigns the [param PhantomCamera2D] to a new [param PhantomCameraHost].
+func set_pcam_host() -> void:
+	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
+
+	if pcam_host_group.size() == 1:
+		_pcam_host_owner = pcam_host_group[0]
+		_pcam_host_owner.pcam_added_to_scene(self)
+#	else:
+#		for camera_host in camera_host_group:
+#			print("Multiple PhantomCameraBases in scene")
+#			print(pcam_host_group)
+#			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
+#			multiple_pcam_host_group.append(camera_host)
+#			return nullfunc assign_pcam_host() -> void:
 ## Gets the current PhantomCameraHost this PhantomCamera2D is assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
-	return Properties.pcam_host_owner
+	return _pcam_host_owner
 
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
@@ -782,11 +803,18 @@ func get_tween_ease() -> int:
 	else:
 		return tween_resource_default.ease
 
-
+## Sets the [param PhantomCamera2D] active state[br][br]
+## [b][color=yellow]Important:[/color][/b] This value can only be changed
+## from the [PhantomCameraHost] script.
+func set_is_active(node, value) -> void:
+	if is_instance_of(node, PhantomCameraHost):
+		_is_active = value
+	else:
+		printerr("PCam can only be set from the PhantomCameraHost")
 ## Gets current active state of the PhantomCamera2D.
 ## If it returns true, it means the PhantomCamera2D is what the Camera2D is currently following.
 func is_active() -> bool:
-	return Properties.is_active
+	return _is_active
 
 
 ## Enables or disables the Tween on Load.
@@ -797,7 +825,7 @@ func is_tween_on_load() -> bool:
 	return tween_onload
 
 
-## Gets the current follow mode as an enum int based on Constants.FOLLOW_MODE enum.
+## Gets the current follow mode as an enum int based on FOLLOW_MODE enum.
 ## Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
 func get_follow_mode() -> int:
 	return follow_mode
@@ -868,7 +896,7 @@ func get_pixel_perfect() -> bool:
 func set_follow_targets(value: Array[Node2D]) -> void:
 	# TODO - This shouldn't be needed.
 	# Needs a fix to avoid triggering this setter when not in Group Follow
-	if not follow_mode == Constants.FollowMode.GROUP: return
+	if not follow_mode == FollowMode.GROUP: return
 
 	follow_targets = value
 

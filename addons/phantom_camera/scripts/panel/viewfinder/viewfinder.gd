@@ -116,8 +116,8 @@ func _exit_tree() -> void:
 		_add_node_button.pressed.disconnect(_add_node)
 
 	if is_instance_valid(_active_pcam_camera):
-		if _active_pcam_camera.Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-			_active_pcam_camera.Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+		if _active_pcam_camera.dead_zone_changed.is_connected(_on_dead_zone_changed):
+			_active_pcam_camera.dead_zone_changed.disconnect(_on_dead_zone_changed)
 
 	if _priority_override_button.pressed.is_connected(_select_override_pcam):
 		_priority_override_button.pressed.disconnect(_select_override_pcam)
@@ -367,8 +367,8 @@ func _set_viewfinder(root: Node, editor: bool):
 			if not aspect_ratio_containers.resized.is_connected(_resized):
 				aspect_ratio_containers.resized.connect(_resized)
 
-			if not _active_pcam_camera.Properties.is_connected(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-				_active_pcam_camera.Properties.connect(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+			if not _active_pcam_camera.dead_zone_changed.is_connected(_on_dead_zone_changed):
+				_active_pcam_camera.dead_zone_changed.connect(_on_dead_zone_changed)
 
 				#			aspect_ratio_container
 				#			TODO - Might not be needed

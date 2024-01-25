@@ -135,7 +135,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_camera_h_offset = camera_3D.get_h_offset()
 			_prev_camera_v_offset = camera_3D.get_v_offset()
 
-		_active_pcam.Properties.is_active = false
+		_active_pcam.set_is_active(self, false)
 		_active_pcam.became_inactive.emit()
 
 		if trigger_pcam_tween:
@@ -147,7 +147,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.follow_damping
 
-	_active_pcam.Properties.is_active = true
+	_active_pcam.set_is_active(self, true)
 	_active_pcam.became_active.emit()
 
 	if _is_2D:

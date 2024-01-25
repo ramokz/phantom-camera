@@ -26,6 +26,10 @@ signal became_inactive
 ## Emitted when follow_target changes
 signal follow_target_changed
 
+## Emitted when dead zones changes. [br]
+## [b]Note:[/b] Only applicable in Framed Follow mode.
+signal dead_zone_changed
+
 ## Emitted when the [param Camera3D] starts to tween to the
 ## [param PhantomCamera3D].
 signal tween_started
@@ -88,6 +92,10 @@ enum InactiveUpdateMode {
 
 var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
+var _pcam_host_owner: PhantomCameraHost
+
+var _is_active: bool = false
+
 ## To quickly preview a [param PhantomCamera3D] without adjusting its
 ## [param Priority], this property allows the selected [param PhantomCamera3D]
 ## to ignore the Priority system altogether and forcefully become the active
@@ -129,12 +137,12 @@ var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_ca
 		follow_mode = value
 
 		if value == FollowMode.FRAMED:
-			if Properties.follow_framed_initial_set and follow_target:
-				Properties.follow_framed_initial_set = false
-				Properties.connect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+			if _follow_framed_initial_set and follow_target:
+				_follow_framed_initial_set = false
+				dead_zone_changed.connect(_on_dead_zone_changed)
 		else:
-			if Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-				Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
+			if  dead_zone_changed.is_connected(_on_dead_zone_changed):
+				dead_zone_changed.disconnect(_on_dead_zone_changed)
 		notify_property_list_changed()
 	get:
 		return follow_mode
@@ -296,7 +304,7 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 @export_range(0, 1) var dead_zone_width: float = 0:
 	set(value):
 		dead_zone_width = value
-		Properties.dead_zone_changed.emit()
+		dead_zone_changed.emit()
 	get:
 		return dead_zone_width
 
@@ -308,13 +316,15 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 @export_range(0, 1) var dead_zone_height: float = 0:
 	set(value):
 		dead_zone_height = value
-		Properties.dead_zone_changed.emit()
+		dead_zone_changed.emit()
 	get:
 		return dead_zone_height
 
 ## Enables the dead zones to be visible when running the game from the editor.
 ## Dead zones will never be visible in build exports.
-@export var show_viewfinder_in_play: bool
+@export var show_viewfinder_in_play: bool = false
+
+var _follow_framed_initial_set: bool = false
 
 @export_subgroup("Spring Arm")
 var _follow_spring_arm: SpringArm3D
@@ -447,7 +457,7 @@ func _validate_property(property: Dictionary) -> void:
 func _enter_tree() -> void:
 	Properties.is_2D = false;
 	Properties.camera_enter_tree(self)
-	Properties.assign_pcam_host(self)
+	assign_pcam_host()
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
@@ -481,7 +491,7 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	if not Properties.is_active:
+	if not _is_active:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER:
 				return
@@ -541,7 +551,7 @@ func _process(delta: float) -> void:
 		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
-					if !is_active() || get_pcam_host_owner().trigger_pcam_tween:
+					if not _is_active || get_pcam_host_owner().trigger_pcam_tween:
 						_interpolate_position(
 							_get_position_offset_distance(),
 							delta
@@ -733,11 +743,22 @@ func _has_valid_pcam_owner() -> bool:
 
 ## Assigns the [param PhantomCamera3D] to a new [param PhantomCameraHost].
 func assign_pcam_host() -> void:
-	Properties.assign_pcam_host(self)
+	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
+
+	if pcam_host_group.size() == 1:
+		_pcam_host_owner = pcam_host_group[0]
+		_pcam_host_owner.pcam_added_to_scene(self)
+#	else:
+#		for camera_host in camera_host_group:
+#			print("Multiple PhantomCameraBases in scene")
+#			print(pcam_host_group)
+#			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
+#			multiple_pcam_host_group.append(camera_host)
+#			return null
 ## Gets the current [param PhantomCameraHost] this [param PhantomCamera3D] is
 ## assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
-	return Properties.pcam_host_owner
+	return _pcam_host_owner
 
 
 ## Assigns new [member priority] value.
@@ -814,12 +835,19 @@ func get_tween_ease() -> int:
 	else:
 		return tween_resource_default.ease
 
-
+## Sets the [param PhantomCamera3D] active state[br][br]
+## [b][color=yellow]Important:[/color][/b] This value can only be changed
+## from the [PhantomCameraHost] script.
+func set_is_active(node: Node, value: bool) -> void:
+	if is_instance_of(node, PhantomCameraHost):
+		_is_active = value
+	else:
+		printerr("PCam can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
 ## If it returns true, it means the [param PhantomCamera3D] is what the
 ## [param Camera3D] is currently following.
 func is_active() -> bool:
-	return Properties.is_active
+	return _is_active
 
 
 ## Enables or disables the Tween on Load.
@@ -1139,7 +1167,7 @@ func set_camera_cull_mask(value: int) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.cull_mask = value
-	if is_active(): get_pcam_host_owner().camera_3D.cull_mask = value
+	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = value
 ## Gets the [member Camera3D.cull_mask] value assigned this [param PhantomCamera].
 ## The duration value is in seconds.
 func get_camera_cull_mask() -> int:
@@ -1160,7 +1188,7 @@ func set_camera_h_offset(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.h_offset = value
-	if is_active(): get_pcam_host_owner().camera_3D.h_offset = value
+	if _is_active: get_pcam_host_owner().camera_3D.h_offset = value
 ## Gets the [member Camera3D.h_offset] value assigned this
 ## [param PhantomCamera3D]. The duration value is in [param seconds].
 func get_camera_h_offset() -> float:
@@ -1181,7 +1209,7 @@ func set_camera_v_offset(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.v_offset = value
-	if is_active(): get_pcam_host_owner().camera_3D.v_offset = value
+	if _is_active: get_pcam_host_owner().camera_3D.v_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_v_offset() -> float:
 	if get_camera_3D_resource():
@@ -1201,7 +1229,7 @@ func set_camera_fov(value: float) -> void:
 		set_camera_3D_resource(null) # Clears resource from PCam instance
 	else:
 		_camera_3D_resouce_default.fov = value
-	if is_active(): get_pcam_host_owner().camera_3D.fov = value
+	if _is_active: get_pcam_host_owner().camera_3D.fov = value
 ## Gets the [member Camera3D.fov] value assigned this [param PhantomCamera3D].
 ## The duration value is in [param seconds].
 func get_camera_fov() -> float:
