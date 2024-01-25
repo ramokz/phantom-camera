@@ -457,7 +457,7 @@ func _validate_property(property: Dictionary) -> void:
 func _enter_tree() -> void:
 	Properties.is_2D = false;
 	Properties.camera_enter_tree(self)
-	assign_pcam_host()
+	set_pcam_host()
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
@@ -742,7 +742,7 @@ func _has_valid_pcam_owner() -> bool:
 #region Setter & Getter Functions
 
 ## Assigns the [param PhantomCamera3D] to a new [param PhantomCameraHost].
-func assign_pcam_host() -> void:
+func set_pcam_host() -> void:
 	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 
 	if pcam_host_group.size() == 1:

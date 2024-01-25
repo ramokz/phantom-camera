@@ -90,7 +90,7 @@ func _enter_tree() -> void:
 		for pcam in _get_pcam_node_group():
 			if not multiple_pcam_hosts:
 				pcam_added_to_scene(pcam)
-				pcam.assign_pcam_host()
+				pcam.set_pcam_host()
 #			else:
 #				pcam.Properties.check_multiple_pcam_host_property(pcam, pca,_host_group, true)
 	else:
