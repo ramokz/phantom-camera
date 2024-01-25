@@ -213,7 +213,7 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 		if _should_look_at:
-			if look_at_mode_enum == LookAtMode.SIMPLE:
+			if look_at_mode_enum == LookAtMode.SIMPLE or look_at_mode_enum == LookAtMode.GROUP:
 				property_list.append({
 					"name": LOOK_AT_TARGET_OFFSET_PROPERTY_NAME,
 					"type": TYPE_VECTOR3,
@@ -686,12 +686,12 @@ func _process(delta: float) -> void:
 			LookAtMode.GROUP:
 				if _has_look_at_target_group:
 					if _look_at_group_nodes.size() == 1:
-						look_at(_look_at_group_nodes[0].get_global_position())
+						look_at(_look_at_group_nodes[0].get_global_position() + look_at_target_offset)
 					elif _look_at_group_nodes.size() > 1:
 						var bounds: AABB = AABB(_look_at_group_nodes[0].get_global_position(), Vector3.ZERO)
 						for node in _look_at_group_nodes:
 							bounds = bounds.expand(node.get_global_position())
-						look_at(bounds.get_center())
+						look_at(bounds.get_center() + look_at_target_offset)
 
 
 func _get_target_position_offset() -> Vector3:
@@ -1054,6 +1054,11 @@ func append_look_at_group_node_array(value: Array[Node3D]) -> void:
 			_has_look_at_target_group = true
 		else:
 			printerr(val, " is already part of Look At Group")
+## Sets array of type Node3D to Look At Group array.
+func set_look_at_group_node_array(value: Array[Node3D]) -> void:
+	_look_at_group_nodes.clear()
+	_look_at_group_nodes.append_array(value)
+	_has_look_at_target_group = _look_at_group_nodes.size() > 0
 ## Removes Node3D from Look At Group array.
 func erase_look_at_group_node(value: Node3D) -> void:
 	_look_at_group_nodes.erase(value)
