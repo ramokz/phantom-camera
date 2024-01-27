@@ -628,13 +628,10 @@ func update_limit_all_sides() -> void:
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.global_position + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
-		## Calculates the Rect2 based on the Tile Map position and size
-		limit_rect = Rect2(tile_map_position, tile_map_size)
-
 		## Calculates the Rect2 based on the Tile Map position and size + margin
 		limit_rect = Rect2(
-			limit_rect.position + Vector2(limit_margin.x, limit_margin.y),
-			limit_rect.size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
+			tile_map_position + Vector2(limit_margin.x, limit_margin.y),
+			tile_map_size - Vector2(limit_margin.x, limit_margin.y) - Vector2(limit_margin.z, limit_margin.w)
 		)
 
 		# Left
@@ -1007,7 +1004,7 @@ func set_limit_bottom(value: int) -> void:
 func get_limit_bottom() -> int:
 	return limit_bottom
 
-# Set Tile Map Limit Node.
+# Set Limit Target.
 func set_limit_target(value: NodePath) -> void:
 	limit_target = value
 	
@@ -1038,9 +1035,7 @@ func set_limit_target(value: NodePath) -> void:
 
 	notify_property_list_changed()
 	update_limit_all_sides()
-	
-	
-## Get Tile Map Limit Node
+## Get Limit Target
 func get_limit_target() -> NodePath:
 	if not limit_target: # TODO - Fixes an spam error if if limit_taret is empty
 		return NodePath("")
@@ -1048,11 +1043,11 @@ func get_limit_target() -> NodePath:
 		return limit_target
 
 ## Set Tile Map Limit Margin.
-func set_limit_margin(value: Vector4) -> void:
+func set_limit_margin(value: Vector4i) -> void:
 	limit_margin = value
 	update_limit_all_sides()
 ## Get Tile Map Limit Margin.
-func get_limit_margin() -> Vector4:
+func get_limit_margin() -> Vector4i:
 	return limit_margin
 
 ### Enables or disables the Limit Smoothing beaviour.
