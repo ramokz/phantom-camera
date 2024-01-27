@@ -1,6 +1,5 @@
-[gd_scene load_steps=19 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=18 format=3 uid="uid://4i5csj0s34nb"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_b4nxi"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_whx47"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_oisgy"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_lii5s"]
@@ -125,9 +124,6 @@ transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.01
 current = true
 
 [node name="Node3D" type="Node3D" parent="MainCamera3D"]
-
-[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
-script = ExtResource("1_b4nxi")
 
 [node name="Environment" type="Node" parent="."]
 
