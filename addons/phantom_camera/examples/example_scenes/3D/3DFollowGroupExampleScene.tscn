@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://dbfiy6svpcqap"]
+[gd_scene load_steps=14 format=3 uid="uid://dbfiy6svpcqap"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_r00ve"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_pi7mp"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="3_1eb12"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="3_a5igg"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_wr1tj"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_hehj7"]
@@ -30,7 +31,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 2.62244, 5.29648)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 1.70286, 3.32442)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("3_wr1tj")
@@ -43,16 +44,16 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_targets")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 2.62244, 5.29648)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 1.70286, 3.32442)
 script = ExtResource("2_pi7mp")
 priority = 5
 follow_mode = 3
 follow_targets = [NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")]
+tween_resource = ExtResource("3_1eb12")
 tween_onload = false
 follow_damping = true
 follow_distance = 5.0
-follow_group_distance_auto_min = 3.0
-follow_group_distance_auto_max = 10.0
+auto_distance = true
 spring_length = 5.0
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]

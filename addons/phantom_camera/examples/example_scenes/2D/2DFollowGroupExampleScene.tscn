@@ -623,7 +623,7 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(325, -222)
-zoom = Vector2(1.4949, 1.4949)
+zoom = Vector2(1.53571, 1.53571)
 position_smoothing_speed = 8.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
@@ -654,7 +654,7 @@ script = ExtResource("6_diuy4")
 priority = 6
 follow_mode = 3
 follow_targets = [NodePath("../CharacterBody2D"), NodePath("../../GroupNPCSprite")]
-zoom = Vector2(1.4949, 1.4949)
+zoom = Vector2(1.53571, 1.53571)
 tween_resource = ExtResource("8_cx6vg")
 tween_onload = false
 follow_damping = true
@@ -662,6 +662,8 @@ auto_zoom = true
 auto_zoom_min = 0.7
 auto_zoom_max = 3.0
 auto_zoom_margin = Vector4(100, 200, 200, 50)
+draw_limits = true
+limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -742,10 +744,8 @@ zoom = Vector2(2, 2)
 frame_preview = false
 tween_resource = ExtResource("10_ar2rk")
 tween_onload = false
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
+limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -755,10 +755,8 @@ zoom = Vector2(2.5, 2.5)
 frame_preview = false
 tween_resource = ExtResource("11_5hu46")
 tween_onload = false
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
+limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="StaysInViewLabel" type="Label" parent="Player"]
 offset_left = 49.0
