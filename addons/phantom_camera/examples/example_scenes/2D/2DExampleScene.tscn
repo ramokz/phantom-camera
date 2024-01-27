@@ -640,17 +640,15 @@ position = Vector2(243, -28)
 script = ExtResource("2_mgsut")
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../CharacterBody2D/PlayerSprite")
+follow_target = NodePath("../CharacterBody2D")
 zoom = Vector2(1.5, 1.5)
 frame_preview = false
 tween_resource = ExtResource("6_pxbym")
 tween_onload = false
 follow_damping = true
 follow_damping_value = 5.0
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
+limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -730,10 +728,8 @@ script = ExtResource("2_mgsut")
 zoom = Vector2(2, 2)
 frame_preview = false
 tween_resource = ExtResource("10_xq86s")
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
+limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -742,10 +738,8 @@ script = ExtResource("2_mgsut")
 zoom = Vector2(2.5, 2.5)
 frame_preview = false
 tween_resource = ExtResource("11_l0uir")
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
+limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0
