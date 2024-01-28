@@ -1,9 +1,7 @@
 class_name PhantomCameraTween
 extends Resource
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-
-enum TweenTransitions {
+enum TransitionType {
 	LINEAR 	= 0, ## The animation is interpolated linearly.
 	SINE 	= 1, ## The animation is interpolated using a sine function.
 	QUINT 	= 2, ## The animation is interpolated with a quintic (to the power of 5) function.
@@ -19,7 +17,7 @@ enum TweenTransitions {
 #	NONE 	= 12,
 }
 
-enum TweenEases {
+enum EaseType {
 	EASE_IN 	= 0, ## The interpolation starts slowly and speeds up towards the end.
 	EASE_OUT 	= 1, ## The interpolation starts quickly and slows down towards the end.
 	EASE_IN_OUT = 2, ## A combination of EASE_IN and EASE_OUT. The interpolation is slowest at both ends.
@@ -29,8 +27,8 @@ enum TweenEases {
 ## The time it takes to tween to this PhantomCamera in [param seconds].
 @export var duration: float = 1
 
-## The transition bezier type for the tween. The options are defined in the [enum TweenTransition].
-@export var transition: TweenTransitions = TweenTransitions.LINEAR
+## The transition bezier type for the tween. The options are defined in the [enum TransitionType].
+@export var transition: TransitionType = TransitionType.LINEAR
 
-## The ease type for the tween. The options are defined in the [enum TweenEases].
-@export var ease: TweenEases = TweenEases.EASE_IN_OUT
+## The ease type for the tween. The options are defined in the [enum EaseType].
+@export var ease: EaseType = EaseType.EASE_IN_OUT
