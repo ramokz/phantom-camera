@@ -12,7 +12,6 @@ extends Node3D
 #region Constants
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const PcamGroupNames := preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 #endregion
 
@@ -455,7 +454,7 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
+	add_to_group(Constants.PCAM_GROUP_NAME)
 	set_pcam_host()
 
 	#if not get_parent() is SpringArm3D:
@@ -474,7 +473,7 @@ func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
-	remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
+	remove_from_group(Constants.PCAM_GROUP_NAME)
 
 
 func _ready():

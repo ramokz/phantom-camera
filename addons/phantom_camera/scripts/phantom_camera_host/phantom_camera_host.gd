@@ -5,7 +5,7 @@ extends Node
 
 #region Constants
 
-const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
+const Constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 #endregion
 
@@ -74,7 +74,7 @@ func _enter_tree() -> void:
 			_is_2D = false
 			camera_3D = parent
 
-		add_to_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
+		add_to_group(Constants.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
 
 		_check_camera_host_amount()
@@ -96,7 +96,7 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	remove_from_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
+	remove_from_group(Constants.PCAM_HOST_GROUP_NAME)
 	_check_camera_host_amount()
 
 
@@ -296,11 +296,11 @@ func _process_pcam(delta: float) -> void:
 
 
 func _get_pcam_node_group() -> Array[Node]:
-	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME)
+	return get_tree().get_nodes_in_group(Constants.PCAM_GROUP_NAME)
 
 
 func _get_pcam_host_group() -> Array[Node]:
-	return get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
+	return get_tree().get_nodes_in_group(Constants.PCAM_HOST_GROUP_NAME)
 
 
 func _process(delta):
