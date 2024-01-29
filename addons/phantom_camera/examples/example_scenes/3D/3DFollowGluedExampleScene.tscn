@@ -1,10 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://dw2yflu7up2rr"]
+[gd_scene load_steps=15 format=3 uid="uid://dw2yflu7up2rr"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_pmeux"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_q1ygp"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_hpix1"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_tk586"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_8qqha"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_wr3bq"]
+
+[sub_resource type="Resource" id="Resource_ucp3e"]
+script = ExtResource("3_hpix1")
+duration = 1.0
+transition = 0
+ease = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pda7a"]
 
@@ -49,14 +56,16 @@ script = ExtResource("2_q1ygp")
 priority = 5
 follow_mode = 1
 follow_target = NodePath("../PlayerCharacterBody3D")
+tween_resource = SubResource("Resource_ucp3e")
 tween_onload = false
 follow_damping = true
-follow_damping_value = 2.0
+follow_damping_value = 5.0
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
 transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -11.2101, 6.38964, 6.74731)
 script = ExtResource("3_tk586")
+SPEED = 15.0
 enable_gravity = false
 metadata/_edit_group_ = true
 
