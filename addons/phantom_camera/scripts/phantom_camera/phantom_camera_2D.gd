@@ -12,7 +12,8 @@ extends Node2D
 
 #region Constants
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const Constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const PcamGroupNames := preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 #endregion
 
@@ -73,8 +74,6 @@ enum InactiveUpdateMode {
 #endregion
 
 #region Variables
-
-var Properties = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 var _pcam_host_owner: PhantomCameraHost
 
@@ -144,7 +143,7 @@ var _follow_framed_offset: Vector2
 @export var follow_targets: Array[Node2D] = [null]:
 	set = set_follow_targets,
 	get = get_follow_targets
-var _has_multiple_follow_targets: bool = false
+var has_multiple_follow_targets: bool = false
 
 
 ## Determines the [Path2D] the [param PhantomCamera2D]
@@ -189,6 +188,7 @@ var _has_follow_path: bool = false
 ## transition, [param easeInOut] ease with a [param 1s] duration.
 @export var tween_resource: PhantomCameraTween
 var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
+var has_tweened: bool
 
 ## By default, the moment a [param PhantomCamera2D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -288,6 +288,7 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool
 
+var viewport_position: Vector2
 var _follow_framed_initial_set: bool = false
 
 @export_group("Limit")
@@ -434,8 +435,7 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	Properties.is_2D = true
-	Properties.camera_enter_tree(self)
+	add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
 	set_pcam_host()
 
 	update_limit_all_sides()
@@ -444,8 +444,8 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
-
-	Properties.pcam_exit_tree(self)
+	
+	remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
 
 
 func _process(delta: float) -> void:
@@ -474,7 +474,7 @@ func _process(delta: float) -> void:
 		FollowMode.GROUP:
 			if follow_targets.size() == 1:
 				_set_pcam_global_position(follow_targets[0].global_position, delta)
-			elif _has_multiple_follow_targets and follow_targets.size() > 1:
+			elif has_multiple_follow_targets and follow_targets.size() > 1:
 				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
 				for node in follow_targets:
 					rect = rect.expand(node.global_position)
@@ -504,9 +504,9 @@ func _process(delta: float) -> void:
 		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
-					Properties.viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
+					viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
 
-					if Properties.get_framed_side_offset(dead_zone_width, dead_zone_height) != Vector2.ZERO:
+					if _get_framed_side_offset() != Vector2.ZERO:
 						var glo_pos: Vector2
 						var target_position: Vector2 = _target_position_with_offset() + _follow_framed_offset
 
@@ -528,7 +528,7 @@ func _process(delta: float) -> void:
 
 
 func _set_pcam_global_position(_global_position: Vector2, delta: float) -> void:
-	if _limit_inactive_pcam and not Properties.has_tweened:
+	if _limit_inactive_pcam and not has_tweened:
 		_global_position = _set_limit_clamp_position(_global_position)
 
 	if get_follow_has_damping():
@@ -590,6 +590,28 @@ func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
 	if not is_instance_valid(get_pcam_host_owner().camera_2D): return false
 	return true
+
+
+func _get_framed_side_offset() -> Vector2:
+	var frame_out_bounds: Vector2
+
+	if viewport_position.x < 0.5 - dead_zone_width / 2:
+		# Is outside left edge
+		frame_out_bounds.x = -1
+
+	if viewport_position.y < 0.5 - dead_zone_height / 2:
+		# Is outside top edge
+		frame_out_bounds.y = 1
+
+	if viewport_position.x > 0.5 + dead_zone_width / 2:
+		# Is outside right edge
+		frame_out_bounds.x = 1
+
+	if viewport_position.y > 0.5001 + dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
+		# Is outside bottom edge
+		frame_out_bounds.y = -1
+
+	return frame_out_bounds
 
 
 func _draw_camera_2d_limit() -> void:
@@ -899,7 +921,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 
 	if follow_targets.is_empty():
 		_should_follow = false
-		_has_multiple_follow_targets = false
+		has_multiple_follow_targets = false
 		return
 
 	var valid_instances: int = 0
@@ -909,7 +931,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 			valid_instances += 1
 			
 			if valid_instances > 1:
-				_has_multiple_follow_targets = true
+				has_multiple_follow_targets = true
 ## Adds a single Node2D to Follow Group array.
 func append_follow_group_node(value: Node2D) -> void:
 	if not is_instance_valid(value):
@@ -918,7 +940,7 @@ func append_follow_group_node(value: Node2D) -> void:
 	if not follow_targets.has(value):
 		follow_targets.append(value)
 		_should_follow = true
-		_has_multiple_follow_targets = true
+		has_multiple_follow_targets = true
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type Node2D to Follow Group array.
@@ -929,7 +951,7 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 			follow_targets.append(val)
 			_should_follow = true
 			if follow_targets.size() > 1:
-				_has_multiple_follow_targets = true
+				has_multiple_follow_targets = true
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes Node2D from Follow Group array.
@@ -937,7 +959,7 @@ func erase_follow_group_node(value: Node2D) -> void:
 	follow_targets.erase(value)
 	if follow_targets.size() < 1:
 		_should_follow = false
-		_has_multiple_follow_targets = false
+		has_multiple_follow_targets = false
 ## Gets all Node2D from Follow Group array.
 func get_follow_targets() -> Array[Node2D]:
 	return follow_targets
