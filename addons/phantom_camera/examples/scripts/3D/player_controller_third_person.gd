@@ -17,7 +17,7 @@ extends "player_controller.gd"
 
 func _ready() -> void:
 	super()
-	if _player_pcam.get_follow_mode() == _player_pcam.Constants.FollowMode.THIRD_PERSON:
+	if _player_pcam.get_follow_mode() == _player_pcam.FollowMode.THIRD_PERSON:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
@@ -30,7 +30,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _player_pcam.get_follow_mode() == _player_pcam.Constants.FollowMode.THIRD_PERSON:
+	if _player_pcam.get_follow_mode() == _player_pcam.FollowMode.THIRD_PERSON:
 		var active_pcam: PhantomCamera3D
 
 		if is_instance_valid(_aim_pcam):
