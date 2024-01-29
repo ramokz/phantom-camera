@@ -12,6 +12,7 @@ extends Node3D
 #region Constants
 
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const PcamGroupNames := preload("res://addons/phantom_camera/scripts/group_names.gd")
 
 #endregion
 
@@ -89,8 +90,6 @@ enum InactiveUpdateMode {
 
 
 #region Variables
-
-var Properties: Object = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_properties.gd").new()
 
 var _pcam_host_owner: PhantomCameraHost
 
@@ -324,6 +323,7 @@ var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
 ## Dead zones will never be visible in build exports.
 @export var show_viewfinder_in_play: bool = false
 
+var viewport_position: Vector2
 var _follow_framed_initial_set: bool = false
 
 @export_subgroup("Spring Arm")
@@ -455,8 +455,7 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	Properties.is_2D = false;
-	Properties.camera_enter_tree(self)
+	add_to_group(PcamGroupNames.PCAM_GROUP_NAME)
 	set_pcam_host()
 
 	#if not get_parent() is SpringArm3D:
@@ -475,7 +474,7 @@ func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
-	Properties.pcam_exit_tree(self)
+	remove_from_group(PcamGroupNames.PCAM_GROUP_NAME)
 
 
 func _ready():
@@ -558,9 +557,9 @@ func _process(delta: float) -> void:
 						)
 						return
 
-					Properties.viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
+					viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
 					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-					Properties.viewport_position = Properties.viewport_position / visible_rect_size
+					viewport_position = viewport_position / visible_rect_size
 					_current_rotation = global_rotation
 
 					if _current_rotation != global_rotation:
@@ -569,10 +568,8 @@ func _process(delta: float) -> void:
 							delta
 						)
 
-					if Properties.get_framed_side_offset(dead_zone_width, dead_zone_height) != Vector2.ZERO:
+					if _get_framed_side_offset() != Vector2.ZERO:
 						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
-						#var dead_zone_width: float = dead_zone_width
-						#var dead_zone_height: float = dead_zone_height
 						var glo_pos: Vector3
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
@@ -635,7 +632,7 @@ func _process(delta: float) -> void:
 						unprojected_position.x = (unprojected_position.x + 1) / 2
 						unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
-					Properties.viewport_position = unprojected_position
+					viewport_position = unprojected_position
 		FollowMode.THIRD_PERSON:
 			if follow_target:
 				if not Engine.is_editor_hint():
@@ -707,6 +704,28 @@ func _get_raw_unprojected_position() -> Vector2:
 
 func _on_dead_zone_changed() -> void:
 	global_position = _get_position_offset_distance()
+
+
+func _get_framed_side_offset() -> Vector2:
+	var frame_out_bounds: Vector2
+
+	if viewport_position.x < 0.5 - dead_zone_width / 2:
+		# Is outside left edge
+		frame_out_bounds.x = -1
+
+	if viewport_position.y < 0.5 - dead_zone_height / 2:
+		# Is outside top edge
+		frame_out_bounds.y = 1
+
+	if viewport_position.x > 0.5 + dead_zone_width / 2:
+		# Is outside right edge
+		frame_out_bounds.x = 1
+
+	if viewport_position.y > 0.5001 + dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
+		# Is outside bottom edge
+		frame_out_bounds.y = -1
+
+	return frame_out_bounds
 
 
 func _has_valid_pcam_owner() -> bool:

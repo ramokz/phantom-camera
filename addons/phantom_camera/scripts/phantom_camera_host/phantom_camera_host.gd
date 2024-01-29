@@ -91,8 +91,6 @@ func _enter_tree() -> void:
 			if not multiple_pcam_hosts:
 				pcam_added_to_scene(pcam)
 				pcam.set_pcam_host()
-#			else:
-#				pcam.Properties.check_multiple_pcam_host_property(pcam, pca,_host_group, true)
 	else:
 		printerr(name, " is not a child of a Camera2D or Camera3D")
 
@@ -100,10 +98,6 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	remove_from_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
 	_check_camera_host_amount()
-
-	for pcam in _get_pcam_node_group():
-		if not multiple_pcam_hosts:
-			pcam.Properties.check_multiple_pcam_host_property(pcam)
 
 
 func _ready() -> void:
@@ -164,7 +158,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	tween_duration = 0
 
-	if pcam.tween_onload or not pcam.Properties.has_tweened:
+	if pcam.tween_onload or not pcam.has_tweened:
 		trigger_pcam_tween = true
 
 
@@ -173,7 +167,7 @@ func _find_pcam_with_highest_priority() -> void:
 		if pcam.get_priority() > _active_pcam_priority:
 			_assign_new_active_pcam(pcam)
 
-		pcam.Properties.has_tweened = false
+		pcam.has_tweened = false
 
 		_active_pcam_missing = false
 
@@ -254,7 +248,7 @@ func _pcam_follow(delta: float) -> void:
 			camera_2D.set_global_transform(pixel_perfect_glob_transform)
 		else:
 			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
-		if _active_pcam.Properties.has_follow_group:
+		if _active_pcam.has_multiple_follow_targets:
 			if _active_pcam.follow_damping:
 				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
 			else:
@@ -341,7 +335,7 @@ func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
 
 	if not pcam.tween_onload:
-		pcam.Properties.has_tweened = true # Skips its tween if it has the highest priority onload
+		pcam.has_tweened = true # Skips its tween if it has the highest priority onload
 
 	_find_pcam_with_highest_priority()
 

@@ -127,8 +127,8 @@ func _process(_delta: float):
 	if not visible or not is_instance_valid(_active_pcam_camera): return
 
 	var unprojected_position_clamped: Vector2 = Vector2(
-		clamp(_active_pcam_camera.Properties.viewport_position.x, min_horizontal, max_horizontal),
-		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
+		clamp(_active_pcam_camera.viewport_position.x, min_horizontal, max_horizontal),
+		clamp(_active_pcam_camera.viewport_position.y, min_vertical, max_vertical)
 	)
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
 
@@ -369,10 +369,6 @@ func _set_viewfinder(root: Node, editor: bool):
 
 			if not _active_pcam_camera.dead_zone_changed.is_connected(_on_dead_zone_changed):
 				_active_pcam_camera.dead_zone_changed.connect(_on_dead_zone_changed)
-
-				#			aspect_ratio_container
-				#			TODO - Might not be needed
-				#			_active_pcam_camera.Properties.disconnect(_on_dead_zone_changed)
 		else:
 			for pcam_host in pcam_host_group:
 				print(pcam_host, " is in a scene")
@@ -404,7 +400,6 @@ func _on_dead_zone_changed() -> void:
 	min_vertical = 0.5 - _active_pcam_camera.dead_zone_height / 2
 	max_vertical = 0.5 + _active_pcam_camera.dead_zone_height / 2
 
-#	target_point.position = Vector2(viewport_width / 2, viewport_height /  2)
 
 ####################
 ## Priority Override
