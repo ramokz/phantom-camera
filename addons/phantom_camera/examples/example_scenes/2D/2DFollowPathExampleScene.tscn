@@ -725,6 +725,7 @@ script = ExtResource("5_x25dj")
 zoom = Vector2(2, 2)
 frame_preview = false
 tween_resource = ExtResource("10_mh1yw")
+draw_limits = true
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -733,6 +734,7 @@ script = ExtResource("5_x25dj")
 zoom = Vector2(2.5, 2.5)
 frame_preview = false
 tween_resource = ExtResource("11_apay3")
+draw_limits = true
 
 [node name="Label" type="Label" parent="Player"]
 visible = false
@@ -755,6 +757,7 @@ follow_target = NodePath("../Player/CharacterBody2D")
 follow_path = NodePath("../Path2D")
 zoom = Vector2(1.5, 1.5)
 tween_resource = ExtResource("6_4vtmp")
+draw_limits = true
 
 [node name="Path2D" type="Path2D" parent="."]
 position = Vector2(152, -216)

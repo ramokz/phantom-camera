@@ -1,10 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://bdhrdhbux7sjg"]
+[gd_scene load_steps=15 format=3 uid="uid://bdhrdhbux7sjg"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_lldvu"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_8md3q"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_dqss1"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_odwso"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_2i811"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_u5qhp"]
+
+[sub_resource type="Resource" id="Resource_pwcgo"]
+script = ExtResource("3_dqss1")
+duration = 1.0
+transition = 0
+ease = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pda7a"]
 
@@ -48,6 +55,7 @@ priority = 10
 look_at_mode = 2
 look_at_target = NodePath("../Player/PlayerCharacterBody3D2")
 look_at_targets = [NodePath("../Player/PlayerCharacterBody3D2"), NodePath("../NPCs/PlayerMeshInstance3D")]
+tween_resource = SubResource("Resource_pwcgo")
 tween_onload = false
 
 [node name="Player" type="Node" parent="."]

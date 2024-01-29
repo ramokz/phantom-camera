@@ -1,6 +1,6 @@
 [gd_scene load_steps=36 format=3 uid="uid://ci12ytew5vwty"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_ry0dd"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_wn7ww"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_e7gxt"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_a27nb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_fcnh0"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_jitt8"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
 
@@ -32,27 +32,27 @@ size = Vector3(2, 0.5, 4)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v5iy7"]
 albedo_color = Color(0.988235, 0.478431, 0.905882, 1)
 
-[sub_resource type="Resource" id="Resource_36307"]
-script = ExtResource("7_fcnh0")
-duration = 0.0
+[sub_resource type="Resource" id="Resource_tpvee"]
+script = ExtResource("7_jitt8")
+duration = 1.0
 transition = 0
 ease = 2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wcrbb"]
 size = Vector3(6.8, 0.1, 5.4)
 
-[sub_resource type="Resource" id="Resource_mdwog"]
-script = ExtResource("7_fcnh0")
-duration = 0.0
+[sub_resource type="Resource" id="Resource_7ih0k"]
+script = ExtResource("7_jitt8")
+duration = 1.0
 transition = 0
 ease = 2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ctyr8"]
 size = Vector3(7.4, 0.1, 3.6)
 
-[sub_resource type="Resource" id="Resource_ij6o1"]
-script = ExtResource("7_fcnh0")
-duration = 0.0
+[sub_resource type="Resource" id="Resource_x5y0u"]
+script = ExtResource("7_jitt8")
+duration = 1.0
 transition = 0
 ease = 2
 
@@ -102,7 +102,7 @@ unique_name_in_owner = true
 transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -4.632, 2, 9.011)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
-script = ExtResource("1_ry0dd")
+script = ExtResource("1_wn7ww")
 
 [node name="PlayerGroup" type="Node" parent="."]
 
@@ -122,6 +122,7 @@ follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerModel")
 tween_resource = ExtResource("4_a27nb")
 tween_onload = false
+follow_damping = true
 follow_offset = Vector3(0, 1.5, 2)
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
@@ -210,7 +211,7 @@ font = ExtResource("2_e7gxt")
 [node name="NorthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89638, 4.73986, 0.115512)
 script = ExtResource("2_y3dy8")
-tween_resource = SubResource("Resource_36307")
+tween_resource = SubResource("Resource_tpvee")
 
 [node name="NorthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, -0.9)
@@ -226,7 +227,7 @@ shape = SubResource("BoxShape3D_wcrbb")
 [node name="EntryRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(0.258818, -0.482963, 0.836515, 1.3027e-15, 0.866025, 0.499999, -0.965924, -0.129409, 0.224143, 6.69741, 4.73364, 4.02374)
 script = ExtResource("2_y3dy8")
-tween_resource = SubResource("Resource_mdwog")
+tween_resource = SubResource("Resource_7ih0k")
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.00003, -0.454982, 3.00572)
@@ -242,7 +243,7 @@ shape = SubResource("BoxShape3D_ctyr8")
 [node name="SouthRoomPhantomCamera3D" type="Node3D" parent="FixedCameraTriggerZone"]
 transform = Transform3D(-0.766043, -0.492403, 0.413175, 0, 0.642787, 0.766043, -0.642786, 0.586825, -0.492403, 6.89741, 4.73364, 5.62374)
 script = ExtResource("2_y3dy8")
-tween_resource = SubResource("Resource_ij6o1")
+tween_resource = SubResource("Resource_x5y0u")
 
 [node name="SouthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 6.7)

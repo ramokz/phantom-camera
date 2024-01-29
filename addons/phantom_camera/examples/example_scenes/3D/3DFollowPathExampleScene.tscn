@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dxx7ngi0emt8h"]
+[gd_scene load_steps=23 format=3 uid="uid://dxx7ngi0emt8h"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_lm5n8"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="2_tsk60"]
@@ -7,6 +7,12 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_lfwkm"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/path_follow.gd" id="5_vdqkm"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="6_obo83"]
+
+[sub_resource type="Resource" id="Resource_cm1s0"]
+script = ExtResource("4_lfwkm")
+duration = 1.0
+transition = 0
+ease = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_vr5ym"]
 
@@ -80,6 +86,7 @@ script = ExtResource("3_bd7x3")
 priority = 10
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
+tween_resource = SubResource("Resource_cm1s0")
 tween_onload = false
 follow_offset = Vector3(0, 2, 1.5)
 

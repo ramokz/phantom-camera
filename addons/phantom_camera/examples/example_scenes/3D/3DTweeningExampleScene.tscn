@@ -85,6 +85,7 @@ follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_d76g4")
 tween_onload = false
+follow_damping = true
 follow_offset = Vector3(0, 2, 2)
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]

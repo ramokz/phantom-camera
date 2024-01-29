@@ -638,13 +638,10 @@ follow_mode = 5
 follow_target = NodePath("../CharacterBody2D")
 zoom = Vector2(2, 2)
 tween_onload = false
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
 dead_zone_width = 0.362
 dead_zone_height = 1.0
 show_viewfinder_in_play = true
+draw_limits = true
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(674, -132)
@@ -724,10 +721,7 @@ position = Vector2(100, -135)
 script = ExtResource("5_lwx5e")
 zoom = Vector2(2, 2)
 tween_resource = ExtResource("10_uli1l")
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
 metadata/_edit_lock_ = true
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
@@ -736,10 +730,7 @@ position = Vector2(-183, -5)
 script = ExtResource("5_lwx5e")
 zoom = Vector2(2.5, 2.5)
 tween_resource = ExtResource("11_rg2e5")
-auto_zoom = null
-auto_zoom_min = null
-auto_zoom_max = null
-auto_zoom_margin = null
+draw_limits = true
 metadata/_edit_lock_ = true
 
 [node name="Label" type="Label" parent="Player"]

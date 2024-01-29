@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://w20wokw3ohsq"]
+[gd_scene load_steps=21 format=3 uid="uid://w20wokw3ohsq"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2d_room_limit_tween.gd" id="1_ijqyv"]
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_wmhqb"]
@@ -8,8 +8,8 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_tahws"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_yh2um"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_h2jna"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_3pstx"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="9_thf62"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_twplb"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="9_w5e16"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_wmhqb")
@@ -580,14 +580,20 @@ size = Vector2(64, 57)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
 size = Vector2(42, 57)
 
-[sub_resource type="Resource" id="Resource_c8q58"]
-script = ExtResource("9_3pstx")
+[sub_resource type="Resource" id="Resource_ct1eh"]
+script = ExtResource("9_twplb")
 duration = 0.9
 transition = 2
 ease = 2
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xmxri"]
-size = Vector2(742.5, 410)
+size = Vector2(790, 410)
+
+[sub_resource type="Resource" id="Resource_exr3j"]
+script = ExtResource("9_twplb")
+duration = 0.9
+transition = 2
+ease = 2
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wtfjw"]
 size = Vector2(1530, 700)
@@ -728,18 +734,20 @@ priority = 5
 follow_mode = 2
 follow_target = NodePath("../CharacterBody2D")
 zoom = Vector2(2, 2)
-tween_resource = SubResource("Resource_c8q58")
+tween_resource = SubResource("Resource_ct1eh")
 tween_onload = false
 follow_damping = true
 follow_offset = Vector2(0, -63.205)
+draw_limits = true
 limit_target = NodePath("../TileMap")
+limit_margin = Vector4i(-50, 0, -50, 0)
 
 [node name="RoomLeftArea2D" type="Area2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(117, -174)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RoomLeftArea2D"]
-position = Vector2(-102.75, 43)
+position = Vector2(-79, 43)
 shape = SubResource("RectangleShape2D_xmxri")
 debug_color = Color(0, 0.6, 0.701961, 0.0313726)
 
@@ -749,9 +757,10 @@ position = Vector2(1026, -181)
 script = ExtResource("4_4b648")
 follow_mode = 2
 frame_preview = false
-tween_resource = SubResource("Resource_c8q58")
+tween_resource = SubResource("Resource_exr3j")
 tween_onload = false
 follow_damping = true
+draw_limits = true
 limit_target = NodePath("../RoomCentreArea2D/CollisionShape2D")
 
 [node name="RoomCentreArea2D" type="Area2D" parent="."]
@@ -779,18 +788,19 @@ scale = Vector2(1.0024, 1)
 script = ExtResource("4_4b648")
 follow_mode = 2
 zoom = Vector2(2, 2)
-tween_resource = SubResource("Resource_c8q58")
+tween_resource = SubResource("Resource_exr3j")
 tween_onload = false
+draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(5, -91)
 zoom = Vector2(2, 2)
-limit_left = -337
+limit_left = -387
 limit_top = -528
-limit_right = 383
+limit_right = 433
 limit_bottom = 288
 position_smoothing_speed = 10.0
 editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
-script = ExtResource("9_thf62")
+script = ExtResource("9_w5e16")

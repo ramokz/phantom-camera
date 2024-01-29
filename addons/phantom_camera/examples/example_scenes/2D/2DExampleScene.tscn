@@ -648,7 +648,6 @@ tween_onload = false
 follow_damping = true
 follow_damping_value = 5.0
 draw_limits = true
-limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
 position = Vector2(243, -28)
@@ -729,7 +728,6 @@ zoom = Vector2(2, 2)
 frame_preview = false
 tween_resource = ExtResource("10_xq86s")
 draw_limits = true
-limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
 unique_name_in_owner = true
@@ -739,7 +737,6 @@ zoom = Vector2(2.5, 2.5)
 frame_preview = false
 tween_resource = ExtResource("11_l0uir")
 draw_limits = true
-limit_margin = Vector4(0, 0, 0, 0)
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0
