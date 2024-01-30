@@ -148,7 +148,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		camera_zoom = camera_2D.get_zoom()
 	else:
 		if _active_pcam.get_camera_3D_resource():
-			camera_3D.set_cull_mask(_active_pcam.get_camera_cull_mask())
+			camera_3D.cull_mask = _active_pcam.get_cull_mask()
 
 	if no_previous_pcam:
 		if _is_2D:
@@ -211,19 +211,19 @@ func _pcam_tween(delta: float) -> void:
 			)
 		)
 
-		if _prev_camera_fov != _active_pcam.get_camera_fov():
+		if _prev_camera_fov != _active_pcam.get_fov():
 			camera_3D.set_fov(
-				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_camera_fov())
+				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_fov())
 			)
 
-		if _prev_camera_h_offset != _active_pcam.get_camera_h_offset():
+		if _prev_camera_h_offset != _active_pcam.get_h_offset():
 			camera_3D.set_h_offset(
-				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_camera_h_offset())
+				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_h_offset())
 			)
 
-		if _prev_camera_v_offset != _active_pcam.get_camera_v_offset():
+		if _prev_camera_v_offset != _active_pcam.get_v_offset():
 			camera_3D.set_v_offset(
-				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_camera_v_offset())
+				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_v_offset())
 			)
 
 
@@ -268,13 +268,15 @@ func _process_pcam(delta: float) -> void:
 		if viewfinder_needed_check:
 			show_viewfinder_in_play()
 			viewfinder_needed_check = false
-
+			
+		# TODO - Should be able to find a more efficient way
 		if Engine.is_editor_hint():
 			if not _is_2D:
 				if _active_pcam.get_camera_3D_resource():
-					camera_3D.set_fov(_active_pcam.get_camera_fov())
-					camera_3D.set_h_offset(_active_pcam.get_camera_h_offset())
-					camera_3D.set_v_offset(_active_pcam.get_camera_v_offset())
+					camera_3D.cull_mask = _active_pcam.get_cull_mask()
+					camera_3D.fov = _active_pcam.get_fov()
+					camera_3D.h_offset =_active_pcam.get_h_offset()
+					camera_3D.v_offset = _active_pcam.get_v_offset()
 
 	# When tweening
 	else:
