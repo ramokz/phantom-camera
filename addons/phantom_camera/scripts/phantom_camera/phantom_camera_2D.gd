@@ -699,12 +699,15 @@ func update_limit_all_sides() -> void:
 		_set_camera_2d_limit(SIDE_BOTTOM, _limit_sides.w)
 
 
-func reset_limit_all_sides() -> void:
+## Resets the limit size to the default values and removes the
+## [param limit_target].
+func reset_limit() -> void:
 	limit_left = _limit_sides_default.x
 	limit_top = _limit_sides_default.y
 	limit_right = _limit_sides_default.z
 	limit_bottom = _limit_sides_default.w
-	
+	limit_target = NodePath("")
+	_limit_node = null
 	if not _has_valid_pcam_owner(): return
 	if not _is_active: return
 	get_pcam_host_owner().camera_2D.set_limit(SIDE_LEFT, limit_left)
@@ -724,7 +727,9 @@ func reset_limit_all_sides() -> void:
 
 #region Setter & Getter Functions
 
-## Assigns the [param PhantomCamera2D] to a new [param PhantomCameraHost].
+## Assigns the [param PhantomCamera2D] to a new [PhantomCameraHost].[br]
+## [b][color=yellow]Important:[/color][/b] This is currently restricted to
+## plugin internals. Proper support will be added in issue #26.
 func set_pcam_host() -> void:
 	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 
@@ -738,7 +743,8 @@ func set_pcam_host() -> void:
 #			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
 #			multiple_pcam_host_group.append(camera_host)
 #			return nullfunc assign_pcam_host() -> void:
-## Gets the current PhantomCameraHost this PhantomCamera2D is assigned to.
+## Gets the current [PhantomCameraHost] this [param PhantomCamera2D] is
+## assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return _pcam_host_owner
 
@@ -825,10 +831,10 @@ func get_tween_ease() -> int:
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
 func set_is_active(node, value) -> void:
-	if is_instance_of(node, PhantomCameraHost):
+	if node is PhantomCameraHost:
 		_is_active = value
 	else:
-		printerr("PCam can only be set from the PhantomCameraHost")
+		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the PhantomCamera2D.
 ## If it returns true, it means the PhantomCamera2D is what the Camera2D is currently following.
 func is_active() -> bool:
