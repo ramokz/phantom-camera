@@ -178,7 +178,7 @@ func _pcam_tween(delta: float) -> void:
 		_active_pcam.tween_started.emit()
 
 		if _is_2D:
-			_active_pcam.reset_limit_all_sides()
+			_active_pcam.reset_limit()
 
 	tween_duration += delta
 	_active_pcam.is_tweening.emit()
