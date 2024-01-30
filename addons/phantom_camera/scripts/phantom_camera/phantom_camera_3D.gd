@@ -117,7 +117,7 @@ var _is_active: bool = false
 ## [param PhantomCamera3D] with the highest [param priority].
 ## [br][br]
 ## Changing [param priority] will send an event to the scene's
-## [param PhantomCameraHost], which will then determine whether if the
+## [PhantomCameraHost], which will then determine whether if the
 ## [param priority] value is greater than or equal to the currently
 ## highest [param PhantomCamera3D]'s in the scene. The
 ## [param PhantomCamera3D] with the highest value will then reattach the
@@ -337,10 +337,14 @@ var _follow_spring_arm: SpringArm3D
 @export_flags_3d_physics var collision_mask: int = 1
 
 ## Defines the [member SpringArm3D.shape] node's Shape3D.
-@export var shape: Shape3D = null
+@export var shape: Shape3D = null:
+	set = set_spring_arm_shape,
+	get = get_spring_arm_shape
 
 ## Defines the [member SpringArm3D.margin] node's Margin.
-@export var margin: float = 0.01
+@export var margin: float = 0.01:
+	set = set_spring_arm_margin,
+	get = get_spring_arm_margin
 
 @export_group("Look At Parameters")
 
@@ -726,6 +730,19 @@ func _get_framed_side_offset() -> Vector2:
 
 	return frame_out_bounds
 
+func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
+	var mask: int = current_layers
+	
+	# From https://github.com/godotengine/godot/blob/51991e20143a39e9ef0107163eaf283ca0a761ea/scene/3d/camera_3d.cpp#L638
+	if layer_number < 1 or layer_number > 20:
+		printerr("Render layer must be between 1 and 20.")
+	else:
+		if value:
+			mask |= 1 << (layer_number - 1)
+		else:
+			mask &= ~(1 << (layer_number - 1))
+
+	return mask
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
@@ -759,7 +776,9 @@ func _has_valid_pcam_owner() -> bool:
 
 #region Setter & Getter Functions
 
-## Assigns the [param PhantomCamera3D] to a new [param PhantomCameraHost].
+## Assigns the [param PhantomCamera3D] to a new [PhantomCameraHost].[br]
+## [b][color=yellow]Important:[/color][/b] This is currently restricted to
+## plugin internals. Proper support will be added in issue #26.
 func set_pcam_host() -> void:
 	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 
@@ -773,7 +792,7 @@ func set_pcam_host() -> void:
 #			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
 #			multiple_pcam_host_group.append(camera_host)
 #			return null
-## Gets the current [param PhantomCameraHost] this [param PhantomCamera3D] is
+## Gets the current [PhantomCameraHost] this [param PhantomCamera3D] is
 ## assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return _pcam_host_owner
@@ -857,10 +876,10 @@ func get_tween_ease() -> int:
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
 func set_is_active(node: Node, value: bool) -> void:
-	if is_instance_of(node, PhantomCameraHost):
+	if node is PhantomCameraHost:
 		_is_active = value
 	else:
-		printerr("PCam can only be set from the PhantomCameraHost")
+		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
 ## If it returns true, it means the [param PhantomCamera3D] is what the
 ## [param Camera3D] is currently following.
@@ -1164,6 +1183,7 @@ func get_look_at_targets() -> Array[Node3D]:
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
+
 ## Assigns a new [param Camera3D] Resource to this
 ## [param PhantomCamera3D].
 func set_camera_3D_resource(value: Camera3DResource) -> void:
@@ -1176,7 +1196,19 @@ func get_camera_3D_resource() -> Camera3DResource:
 ## Assigns a new [member Camera3D.cull_mask] value.
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
-func set_camera_cull_mask(value: int) -> void:
+func set_cull_mask_value(layer_number: int, value: bool) -> void:
+	var mask: int = _set_layer(get_cull_mask(), layer_number, value)
+
+	if get_camera_3D_resource():
+		_camera_3D_resouce_default.cull_mask = mask
+		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
+		_camera_3D_resouce_default.v_offset = camera_3d_resource.v_offset
+		_camera_3D_resouce_default.fov = camera_3d_resource.fov
+		set_camera_3D_resource(null) # Clears resource from PCam instance
+	else:
+		_camera_3D_resouce_default.cull_mask = mask
+	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = mask
+func set_cull_mask(value: int) -> void:
 	if get_camera_3D_resource():
 		_camera_3D_resouce_default.cull_mask = value
 		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
@@ -1188,7 +1220,7 @@ func set_camera_cull_mask(value: int) -> void:
 	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = value
 ## Gets the [member Camera3D.cull_mask] value assigned this [param PhantomCamera].
 ## The duration value is in seconds.
-func get_camera_cull_mask() -> int:
+func get_cull_mask() -> int:
 	if get_camera_3D_resource():
 		return camera_3d_resource.cull_mask
 	else:
@@ -1197,7 +1229,7 @@ func get_camera_cull_mask() -> int:
 ## Assigns a new [member Camera3D.h_offset] value.[br]
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
-func set_camera_h_offset(value: float) -> void:
+func set_h_offset(value: float) -> void:
 	if get_camera_3D_resource():
 		_camera_3D_resouce_default.cull_mask = camera_3d_resource.cull_mask
 		_camera_3D_resouce_default.h_offset = value
@@ -1209,7 +1241,7 @@ func set_camera_h_offset(value: float) -> void:
 	if _is_active: get_pcam_host_owner().camera_3D.h_offset = value
 ## Gets the [member Camera3D.h_offset] value assigned this
 ## [param PhantomCamera3D]. The duration value is in [param seconds].
-func get_camera_h_offset() -> float:
+func get_h_offset() -> float:
 	if get_camera_3D_resource():
 		return camera_3d_resource.h_offset
 	else:
@@ -1218,7 +1250,7 @@ func get_camera_h_offset() -> float:
 ## Assigns a new [Camera3D.v_offset] value.[br]
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
-func set_camera_v_offset(value: float) -> void:
+func set_v_offset(value: float) -> void:
 	if get_camera_3D_resource():
 		_camera_3D_resouce_default.cull_mask = camera_3d_resource.cull_mask
 		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
@@ -1229,7 +1261,7 @@ func set_camera_v_offset(value: float) -> void:
 		_camera_3D_resouce_default.v_offset = value
 	if _is_active: get_pcam_host_owner().camera_3D.v_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
-func get_camera_v_offset() -> float:
+func get_v_offset() -> float:
 	if get_camera_3D_resource():
 		return camera_3d_resource.v_offset
 	else:
@@ -1238,7 +1270,7 @@ func get_camera_v_offset() -> float:
 ## Assigns a new [member Camera3D.fov] value.[br]
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
-func set_camera_fov(value: float) -> void:
+func set_fov(value: float) -> void:
 	if get_camera_3D_resource():
 		_camera_3D_resouce_default.cull_mask = camera_3d_resource.cull_mask
 		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
@@ -1250,7 +1282,7 @@ func set_camera_fov(value: float) -> void:
 	if _is_active: get_pcam_host_owner().camera_3D.fov = value
 ## Gets the [member Camera3D.fov] value assigned this [param PhantomCamera3D].
 ## The duration value is in [param seconds].
-func get_camera_fov() -> float:
+func get_fov() -> float:
 	if get_camera_3D_resource():
 		return camera_3d_resource.fov
 	else:
