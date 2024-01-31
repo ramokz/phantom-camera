@@ -23,12 +23,11 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -410.0
-offset_top = 108.0
-offset_right = 137.135
-offset_bottom = 474.0
+offset_left = -273.568
+offset_top = 47.0
+offset_right = 273.568
+offset_bottom = 413.0
 grow_horizontal = 2
-scale = Vector2(1.5, 1.5)
 texture = ExtResource("1_tftrk")
 metadata/_edit_group_ = true
 

@@ -16,12 +16,11 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 136.0
+offset_left = 28.0
 offset_top = -255.0
-offset_right = 1016.0
+offset_right = 908.0
 offset_bottom = 183.0
 grow_vertical = 2
-scale = Vector2(1.2, 1.2)
 texture = ExtResource("1_pi2dp")
 
 [node name="Label" type="Label" parent="TextureRect"]
