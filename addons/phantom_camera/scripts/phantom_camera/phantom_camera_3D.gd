@@ -722,6 +722,19 @@ func _get_raw_unprojected_position() -> Vector2:
 func _on_dead_zone_changed() -> void:
 	set_global_position( _get_position_offset_distance() )
 
+func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
+	var mask: int = current_layers
+	
+	# From https://github.com/godotengine/godot/blob/51991e20143a39e9ef0107163eaf283ca0a761ea/scene/3d/camera_3d.cpp#L638
+	if layer_number < 1 or layer_number > 20:
+		printerr("Render layer must be between 1 and 20.")
+	else:
+		if value:
+			mask |= 1 << (layer_number - 1)
+		else:
+			mask &= ~(1 << (layer_number - 1))
+
+	return mask
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
@@ -995,6 +1008,8 @@ func get_spring_arm_spring_length() -> float:
 ## Assigns a new Third Person SpringArm3D Collision Mask value.
 func set_spring_arm_collision_mask(value: int) -> void:
 	_follow_spring_arm_collision_mask = value
+func set_collision_mask_value(layer_number: int, value: bool) -> void:
+	_follow_spring_arm_collision_mask = _set_layer(_follow_spring_arm_collision_mask, layer_number, value)
 ## Gets Third Person SpringArm3D Collision Mask value.
 func get_spring_arm_collision_mask() -> int:
 	return _follow_spring_arm_collision_mask
@@ -1094,6 +1109,18 @@ func set_camera_cull_mask(value: int) -> void:
 	else:
 		_camera_3D_resouce_default.cull_mask = value
 	if is_active(): get_pcam_host_owner().camera_3D.cull_mask = value
+func set_cull_mask_value(layer_number: int, value: bool) -> void:
+	var mask: int = _set_layer(get_camera_cull_mask(), layer_number, value)
+	if get_camera_3D_resource():
+		_camera_3D_resouce_default.cull_mask = mask
+		_camera_3D_resouce_default.h_offset = _camera_3D_resouce.h_offset
+		_camera_3D_resouce_default.v_offset = _camera_3D_resouce.v_offset
+		_camera_3D_resouce_default.fov = _camera_3D_resouce.fov
+		set_camera_3D_resource(null) # Clears resource from PCam instance
+	else:
+		_camera_3D_resouce_default.cull_mask = mask
+	if is_active(): get_pcam_host_owner().camera_3D.cull_mask = mask
+	
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_camera_cull_mask() -> int:
 	if get_camera_3D_resource():
