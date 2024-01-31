@@ -1008,6 +1008,8 @@ func get_spring_arm_spring_length() -> float:
 ## Assigns a new Third Person SpringArm3D Collision Mask value.
 func set_spring_arm_collision_mask(value: int) -> void:
 	_follow_spring_arm_collision_mask = value
+func set_collision_mask_value(layer_number: int, value: bool) -> void:
+	_follow_spring_arm_collision_mask = _set_layer(_follow_spring_arm_collision_mask, layer_number, value)
 ## Gets Third Person SpringArm3D Collision Mask value.
 func get_spring_arm_collision_mask() -> int:
 	return _follow_spring_arm_collision_mask
