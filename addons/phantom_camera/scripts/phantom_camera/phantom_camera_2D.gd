@@ -185,8 +185,9 @@ var _has_follow_path: bool = false
 ## [param PhantomCamera] or reused across multiple - both 2D and 3D.
 ## By default, all [param PhantomCameras] will use a [param linear]
 ## transition, [param easeInOut] ease with a [param 1s] duration.
-@export var tween_resource: PhantomCameraTween
-var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
+@export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
+	set = set_tween_resource,
+	get = get_tween_resource
 var has_tweened: bool
 
 ## By default, the moment a [param PhantomCamera2D] is instantiated into
@@ -779,53 +780,26 @@ func get_tween_resource() -> PhantomCameraTween:
 ## Assigns a new Tween Duration value. The duration value is in seconds.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_duration(value: float) -> void:
-	if get_tween_resource():
-		tween_resource_default.duration = value
-		tween_resource_default.transition = tween_resource.transition
-		tween_resource_default.ease = tween_resource.ease
-		set_tween_resource(null) # Clears resource from PCam instance
-	else:
-		tween_resource_default.duration = value
+	tween_resource.duration = value
 ## Gets the current Tween Duration value. The duration value is in seconds.
 func get_tween_duration() -> float:
-	if get_tween_resource():
-		return get_tween_resource().duration
-	else:
-		return tween_resource_default.duration
+	return tween_resource.duration
 
 ## Assigns a new Tween Transition value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_transition(value: int) -> void:
-	if get_tween_resource():
-		tween_resource_default.duration = tween_resource.duration
-		tween_resource_default.transition = value
-		tween_resource_default.ease = tween_resource.ease
-		set_tween_resource(null) # Clears resource from PCam instance
-	else:
-		tween_resource_default.transition = value
+	tween_resource.transition = value
 ## Gets the current Tween Transition value.
 func get_tween_transition() -> int:
-	if get_tween_resource():
-		return get_tween_resource().transition
-	else:
-		return tween_resource_default.transition
+	return tween_resource.transition
 
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
 func set_tween_ease(value: int) -> void:
-	if get_tween_resource():
-		tween_resource_default.duration = tween_resource.duration
-		tween_resource_default.transition = tween_resource.transition
-		tween_resource_default.ease = value
-		set_tween_resource(null) # Clears resource from PCam instance
-	else:
-		tween_resource_default.ease = value
+	tween_resource.ease = value
 ## Gets the current Tween Ease value.
 func get_tween_ease() -> int:
-	if get_tween_resource():
-		return get_tween_resource().ease
-	else:
-		return tween_resource_default.ease
+	return tween_resource.ease
 
 ## Sets the [param PhantomCamera2D] active state[br][br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
