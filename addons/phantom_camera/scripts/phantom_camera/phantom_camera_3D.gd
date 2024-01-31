@@ -205,8 +205,10 @@ var _valid_look_at_targets: Array[Node3D] = [null]
 ## [param PhantomCamera] or reused across multiple - both 2D and 3D.
 ## By default, all [param PhantomCameras] will use a [param linear]
 ## transition, [param easeInOut] ease with a [param 1s] duration.
-@export var tween_resource: PhantomCameraTween = PhantomCameraTween.new()
-var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
+@export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
+	set = set_tween_resource,
+	get = get_tween_resource
+var has_tweened: bool
 
 ## By default, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -214,23 +216,26 @@ var tween_resource_default: PhantomCameraTween = PhantomCameraTween.new()
 ## is attached to a playable character that can be moved the moment a scene
 ## is loaded. Disabling the [param Tween on Load] property will
 ## disable this behaviour and skip the tweening entirely when instantiated.
-@export var tween_onload: bool = true
+@export var tween_onload: bool = true:
+	set = set_tween_on_load,
+	get = is_tween_on_load
 
 ## Determines how often an inactive [param PhantomCamera3D] should update
 ## its positional and rotational values. This is meant to reduce the amount
 ## of calculations inactive [param PhantomCamera3Ds] are doing when idling
 ## to improve performance.
-@export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
+@export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS:
+	set = set_inactive_update_mode,
+	get = get_inactive_update_mode
 
-var has_tweened: bool
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
-@export var camera_3d_resource: Camera3DResource
-var _camera_3D_resouce_default: Camera3DResource = Camera3DResource.new()
+@export var camera_3d_resource: Camera3DResource = Camera3DResource.new():
+	set = set_camera_3D_resource,
+	get = get_camera_3D_resource
 
 @export_group("Follow Parameters")
-
 ## Applies a damping effect on the Camera's movement.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera movement.
@@ -334,17 +339,19 @@ var _follow_spring_arm: SpringArm3D
 	get = get_follow_distance
 
 ## Defines the [member SpringArm3D.collision_mask] node's Collision Mask.
-@export_flags_3d_physics var collision_mask: int = 1
+@export_flags_3d_physics var collision_mask: int = 1:
+	set = set_collision_mask,
+	get = get_collision_mask
 
 ## Defines the [member SpringArm3D.shape] node's Shape3D.
 @export var shape: Shape3D = null:
-	set = set_spring_arm_shape,
-	get = get_spring_arm_shape
+	set = set_shape,
+	get = get_shape
 
 ## Defines the [member SpringArm3D.margin] node's Margin.
 @export var margin: float = 0.01:
-	set = set_spring_arm_margin,
-	get = get_spring_arm_margin
+	set = set_margin,
+	get = get_margin
 
 @export_group("Look At Parameters")
 
@@ -821,56 +828,29 @@ func get_tween_resource() -> PhantomCameraTween:
 ## Note: This will override and make the Tween Resource unique
 ## to this [param PhantomCamera3D].
 func set_tween_duration(value: float) -> void:
-	if get_tween_resource():
-		tween_resource_default.duration = value
-		tween_resource_default.transition = tween_resource.transition
-		tween_resource_default.ease = tween_resource.ease
-		set_tween_resource(null) # Clears resource from PCam instance
-	else:
-		tween_resource_default.duration = value
+	tween_resource.duration = value
 ## Gets the current [param Tween] Duration value. The duration value is in
 ## [param seconds].
 func get_tween_duration() -> float:
-	if tween_resource:
-		return tween_resource.duration
-	else:
-		return tween_resource_default.duration
+	return tween_resource.duration
 
 ## Assigns a new Tween Transition value.
 ## Note: This will override and make the Tween Resource unique to this
 ## [param PhantomCamera3D].
 func set_tween_transition(value: int) -> void:
-	if get_tween_resource():
-		tween_resource_default.duration = tween_resource.duration
-		tween_resource_default.transition = value
-		tween_resource_default.ease = tween_resource.ease
-		set_tween_resource(null) # Clears resource from PCam instance
-	else:
-		tween_resource_default.transition = value
+	tween_resource.transition = value
 ## Gets the current Tween Transition value.
 func get_tween_transition() -> int:
-	if get_tween_resource():
-		return tween_resource.transition
-	else:
-		return tween_resource_default.transition
+	return tween_resource.transition
 
 ## Assigns a new Tween Ease value.
 ## Note: This will override and make the Tween Resource unique to this
 ## [param PhantomCamera3D].
 func set_tween_ease(value: int) -> void:
-	if get_tween_resource():
-		tween_resource_default.duration = tween_resource.duration
-		tween_resource_default.transition = tween_resource.transition
-		tween_resource_default.ease = value
-		set_tween_resource(null) # Clears resource from PCam instance
-	else:
-		tween_resource_default.ease = value
+	tween_resource.ease = value
 ## Gets the current Tween Ease value.
 func get_tween_ease() -> int:
-	if get_tween_resource():
-		return tween_resource.ease
-	else:
-		return tween_resource_default.ease
+	return tween_resource.ease
 
 ## Sets the [param PhantomCamera3D] active state[br][br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
@@ -1071,33 +1051,35 @@ func get_third_person_quaternion() -> Quaternion:
 	return _follow_spring_arm.quaternion
 
 ## Assigns a new Third Person [member SpringArm3D.length] value.
-func set_spring_arm_spring_length(value: float) -> void:
+func set_spring_length(value: float) -> void:
 	follow_distance = value
 	_follow_spring_arm.spring_length = value
 ## Gets Third Person [SpringArm3D] Length value.
-func get_spring_arm_spring_length() -> float:
+func get_spring_length() -> float:
 	return follow_distance
 
 ## Assigns a new Third Person [member SpringArm3D.collision_mask]
 ## value.
-func set_spring_arm_collision_mask(value: int) -> void:
+func set_collision_mask(value: int) -> void:
 	collision_mask = value
+func set_collision_mask_value(value: int, enabled: bool) -> void:
+	collision_mask = _set_layer(collision_mask, value, enabled)
 ## Gets Third Person SpringArm3D Collision Mask value.
-func get_spring_arm_collision_mask() -> int:
+func get_collision_mask() -> int:
 	return collision_mask
 
 ## Assigns a new Third Person [member SpringArm3D.shape] value.
-func set_spring_arm_shape(value: Shape3D) -> void:
+func set_shape(value: Shape3D) -> void:
 	shape = value
 ## Gets Third Person SpringArm3D Shape value.
-func get_spring_arm_shape() -> Shape3D:
+func get_shape() -> Shape3D:
 	return shape
 
 ## Assigns a new Third Person [member SpringArm3D.margin] value.
-func set_spring_arm_margin(value: float) -> void:
+func set_margin(value: float) -> void:
 	margin = value
 ## Gets Third Person SpringArm3D Margin value.
-func get_spring_arm_margin() -> float:
+func get_margin() -> float:
 	return margin
 
 
@@ -1178,8 +1160,10 @@ func erase_look_at_group_node(value: Node3D) -> void:
 func get_look_at_targets() -> Array[Node3D]:
 	return look_at_targets
 
-
-## Gets Inactive Update Mode property.
+## Sets [member inactive_update_mode] property.
+func set_inactive_update_mode(value: int) -> void:
+	inactive_update_mode = value
+## Gets [member inactive_update_mode] property.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
@@ -1196,96 +1180,48 @@ func get_camera_3D_resource() -> Camera3DResource:
 ## Assigns a new [member Camera3D.cull_mask] value.
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
+func set_cull_mask(value: int) -> void:
+	camera_3d_resource.cull_mask = value
+	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = value
 func set_cull_mask_value(layer_number: int, value: bool) -> void:
 	var mask: int = _set_layer(get_cull_mask(), layer_number, value)
-
-	if get_camera_3D_resource():
-		_camera_3D_resouce_default.cull_mask = mask
-		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
-		_camera_3D_resouce_default.v_offset = camera_3d_resource.v_offset
-		_camera_3D_resouce_default.fov = camera_3d_resource.fov
-		set_camera_3D_resource(null) # Clears resource from PCam instance
-	else:
-		_camera_3D_resouce_default.cull_mask = mask
+	camera_3d_resource.cull_mask = mask
 	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = mask
-func set_cull_mask(value: int) -> void:
-	if get_camera_3D_resource():
-		_camera_3D_resouce_default.cull_mask = value
-		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
-		_camera_3D_resouce_default.v_offset = camera_3d_resource.v_offset
-		_camera_3D_resouce_default.fov = camera_3d_resource.fov
-		set_camera_3D_resource(null) # Clears resource from PCam instance
-	else:
-		_camera_3D_resouce_default.cull_mask = value
-	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = value
 ## Gets the [member Camera3D.cull_mask] value assigned this [param PhantomCamera].
 ## The duration value is in seconds.
 func get_cull_mask() -> int:
-	if get_camera_3D_resource():
-		return camera_3d_resource.cull_mask
-	else:
-		return _camera_3D_resouce_default.cull_mask
+	return camera_3d_resource.cull_mask
 
 ## Assigns a new [member Camera3D.h_offset] value.[br]
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
 func set_h_offset(value: float) -> void:
-	if get_camera_3D_resource():
-		_camera_3D_resouce_default.cull_mask = camera_3d_resource.cull_mask
-		_camera_3D_resouce_default.h_offset = value
-		_camera_3D_resouce_default.v_offset = camera_3d_resource.v_offset
-		_camera_3D_resouce_default.fov = camera_3d_resource.fov
-		set_camera_3D_resource(null) # Clears resource from PCam instance
-	else:
-		_camera_3D_resouce_default.h_offset = value
+	camera_3d_resource.h_offset = value
 	if _is_active: get_pcam_host_owner().camera_3D.h_offset = value
 ## Gets the [member Camera3D.h_offset] value assigned this
 ## [param PhantomCamera3D]. The duration value is in [param seconds].
 func get_h_offset() -> float:
-	if get_camera_3D_resource():
-		return camera_3d_resource.h_offset
-	else:
-		return _camera_3D_resouce_default.h_offset
+	return camera_3d_resource.h_offset
 
 ## Assigns a new [Camera3D.v_offset] value.[br]
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
 func set_v_offset(value: float) -> void:
-	if get_camera_3D_resource():
-		_camera_3D_resouce_default.cull_mask = camera_3d_resource.cull_mask
-		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
-		_camera_3D_resouce_default.v_offset = value
-		_camera_3D_resouce_default.fov = camera_3d_resource.fov
-		set_camera_3D_resource(null) # Clears resource from PCam instance
-	else:
-		_camera_3D_resouce_default.v_offset = value
+	camera_3d_resource.v_offset = value
 	if _is_active: get_pcam_host_owner().camera_3D.v_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera. The duration value is in seconds.
 func get_v_offset() -> float:
-	if get_camera_3D_resource():
-		return camera_3d_resource.v_offset
-	else:
-		return _camera_3D_resouce_default.v_offset
+	return camera_3d_resource.v_offset
 
 ## Assigns a new [member Camera3D.fov] value.[br]
 ## Note: This will override and make the [param Camera3D] Resource unique to
 ## this [param PhantomCamera3D].
 func set_fov(value: float) -> void:
-	if get_camera_3D_resource():
-		_camera_3D_resouce_default.cull_mask = camera_3d_resource.cull_mask
-		_camera_3D_resouce_default.h_offset = camera_3d_resource.h_offset
-		_camera_3D_resouce_default.v_offset = camera_3d_resource.v_offset
-		_camera_3D_resouce_default.fov = value
-		set_camera_3D_resource(null) # Clears resource from PCam instance
-	else:
-		_camera_3D_resouce_default.fov = value
+	camera_3d_resource.fov = value
 	if _is_active: get_pcam_host_owner().camera_3D.fov = value
 ## Gets the [member Camera3D.fov] value assigned this [param PhantomCamera3D].
 ## The duration value is in [param seconds].
 func get_fov() -> float:
-	if get_camera_3D_resource():
-		return camera_3d_resource.fov
-	else:
-		return _camera_3D_resouce_default.fov
+	return camera_3d_resource.fov
 
 #endregion
