@@ -90,7 +90,9 @@ enum InactiveUpdateMode {
 
 #region Variables
 
-var _pcam_host_owner: PhantomCameraHost
+var pcam_host_owner: PhantomCameraHost:
+	set = set_pcam_host_owner,
+	get = get_pcam_host_owner
 
 var _is_active: bool = false
 
@@ -466,7 +468,10 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	add_to_group(Constants.PCAM_GROUP_NAME)
-	set_pcam_host()
+	
+	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
+	if pcam_host.size() > 0:
+		set_pcam_host_owner(pcam_host[0])
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
@@ -783,15 +788,16 @@ func _has_valid_pcam_owner() -> bool:
 
 #region Setter & Getter Functions
 
+
 ## Assigns the [param PhantomCamera3D] to a new [PhantomCameraHost].[br]
 ## [b][color=yellow]Important:[/color][/b] This is currently restricted to
 ## plugin internals. Proper support will be added in issue #26.
-func set_pcam_host() -> void:
-	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
+func set_pcam_host_owner(value: PhantomCameraHost) -> void:
+	pcam_host_owner = value
+	if is_instance_valid(pcam_host_owner):
+		pcam_host_owner.pcam_added_to_scene(self)
 
-	if pcam_host_group.size() == 1:
-		_pcam_host_owner = pcam_host_group[0]
-		_pcam_host_owner.pcam_added_to_scene(self)
+	#if value.size() == 1:
 #	else:
 #		for camera_host in camera_host_group:
 #			print("Multiple PhantomCameraBases in scene")
@@ -799,10 +805,13 @@ func set_pcam_host() -> void:
 #			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
 #			multiple_pcam_host_group.append(camera_host)
 #			return null
+## Sets a PCamHost to 
+#func assign_pcam_host(value: PhantomCameraHost) -> void:
+	#pcam_host_owner = value
 ## Gets the current [PhantomCameraHost] this [param PhantomCamera3D] is
 ## assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
-	return _pcam_host_owner
+	return pcam_host_owner
 
 
 ## Assigns new [member priority] value.
