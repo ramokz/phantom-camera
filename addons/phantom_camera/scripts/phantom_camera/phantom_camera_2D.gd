@@ -74,9 +74,11 @@ enum InactiveUpdateMode {
 
 #region Variables
 
-var _pcam_host_owner: PhantomCameraHost
-
 var _is_active: bool = false
+
+var pcam_host_owner: PhantomCameraHost:
+	set = set_pcam_host_owner,
+	get = get_pcam_host_owner
 
 ## To quickly preview a [param PhantomCamera2D] without adjusting its
 ## [member priority], this property allows the selected PCam to ignore the
@@ -139,7 +141,7 @@ var _should_follow: bool = false
 var _follow_framed_offset: Vector2
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
-@export var follow_targets: Array[Node2D] = [null]:
+@export var follow_targets: Array[Node2D] = []:
 	set = set_follow_targets,
 	get = get_follow_targets
 var has_multiple_follow_targets: bool = false
@@ -436,9 +438,11 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	add_to_group(Constants.PCAM_GROUP_NAME)
-	set_pcam_host()
-
 	update_limit_all_sides()
+	
+	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
+	if pcam_host.size() > 0:
+		set_pcam_host_owner(pcam_host[0])
 
 
 func _exit_tree() -> void:
@@ -729,12 +733,11 @@ func reset_limit() -> void:
 ## Assigns the [param PhantomCamera2D] to a new [PhantomCameraHost].[br]
 ## [b][color=yellow]Important:[/color][/b] This is currently restricted to
 ## plugin internals. Proper support will be added in issue #26.
-func set_pcam_host() -> void:
-	var pcam_host_group: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
-
-	if pcam_host_group.size() == 1:
-		_pcam_host_owner = pcam_host_group[0]
-		_pcam_host_owner.pcam_added_to_scene(self)
+func set_pcam_host_owner(value: PhantomCameraHost) -> void:
+	pcam_host_owner = value
+	if is_instance_valid(pcam_host_owner):
+		pcam_host_owner.pcam_added_to_scene(self)
+	#if value.size() == 1:
 #	else:
 #		for camera_host in camera_host_group:
 #			print("Multiple PhantomCameraBases in scene")
@@ -745,7 +748,7 @@ func set_pcam_host() -> void:
 ## Gets the current [PhantomCameraHost] this [param PhantomCamera2D] is
 ## assigned to.
 func get_pcam_host_owner() -> PhantomCameraHost:
-	return _pcam_host_owner
+	return pcam_host_owner
 
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:

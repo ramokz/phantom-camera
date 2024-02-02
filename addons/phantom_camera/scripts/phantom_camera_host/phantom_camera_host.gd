@@ -90,7 +90,7 @@ func _enter_tree() -> void:
 		for pcam in _get_pcam_node_group():
 			if not multiple_pcam_hosts:
 				pcam_added_to_scene(pcam)
-				pcam.set_pcam_host()
+				pcam.set_pcam_host_owner(self)
 	else:
 		printerr(name, " is not a child of a Camera2D or Camera3D")
 
