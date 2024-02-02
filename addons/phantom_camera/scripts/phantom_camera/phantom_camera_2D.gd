@@ -707,8 +707,6 @@ func reset_limit() -> void:
 	limit_top = _limit_sides_default.y
 	limit_right = _limit_sides_default.z
 	limit_bottom = _limit_sides_default.w
-	limit_target = NodePath("")
-	_limit_node = null
 	if not _has_valid_pcam_owner(): return
 	if not _is_active: return
 	get_pcam_host_owner().camera_2D.set_limit(SIDE_LEFT, limit_left)
