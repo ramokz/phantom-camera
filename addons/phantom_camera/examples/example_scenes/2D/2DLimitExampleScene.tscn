@@ -753,10 +753,10 @@ debug_color = Color(0, 0.6, 0.701961, 0.0313726)
 
 [node name="RoomCentrePhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(1026, -181)
+position = Vector2(1474, -149)
 script = ExtResource("4_4b648")
 follow_mode = 2
-frame_preview = false
+zoom = Vector2(1.5, 1.5)
 tween_resource = SubResource("Resource_exr3j")
 tween_onload = false
 follow_damping = true
@@ -790,6 +790,7 @@ follow_mode = 2
 zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_exr3j")
 tween_onload = false
+follow_damping = true
 draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]

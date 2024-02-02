@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=20 format=3 uid="uid://4i5csj0s34nb"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_47xf2"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_whx47"]
@@ -10,9 +10,9 @@
 
 [sub_resource type="Resource" id="Resource_8fhct"]
 script = ExtResource("2_47xf2")
-duration = 1.0
-transition = 0
-ease = 2
+duration = 0.3
+transition = 3
+ease = 1
 
 [sub_resource type="Resource" id="Resource_7m0fv"]
 script = ExtResource("5_jt2lp")
@@ -23,9 +23,9 @@ fov = 75.0
 
 [sub_resource type="Resource" id="Resource_e7t18"]
 script = ExtResource("2_47xf2")
-duration = 1.0
-transition = 0
-ease = 2
+duration = 0.4
+transition = 2
+ease = 1
 
 [sub_resource type="Resource" id="Resource_jogxh"]
 script = ExtResource("5_jt2lp")
@@ -52,9 +52,16 @@ size = Vector3(1, 7, 7)
 
 [sub_resource type="Resource" id="Resource_afrr1"]
 script = ExtResource("2_47xf2")
-duration = 1.0
-transition = 0
-ease = 2
+duration = 0.6
+transition = 3
+ease = 1
+
+[sub_resource type="Resource" id="Resource_y5dqe"]
+script = ExtResource("5_jt2lp")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [node name="Root" type="Node3D"]
 
@@ -179,6 +186,7 @@ transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.
 script = ExtResource("2_whx47")
 look_at_targets = []
 tween_resource = SubResource("Resource_afrr1")
+camera_3d_resource = SubResource("Resource_y5dqe")
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0505604, -0.484909, 1.44357)
