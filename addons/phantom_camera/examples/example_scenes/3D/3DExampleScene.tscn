@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://ci12ytew5vwty"]
+[gd_scene load_steps=42 format=3 uid="uid://ci12ytew5vwty"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_wn7ww"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
@@ -6,9 +6,17 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_a27nb"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="4_m2vbn"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="4_moad5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_jitt8"]
+
+[sub_resource type="Resource" id="Resource_jtk1d"]
+script = ExtResource("4_m2vbn")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
 
@@ -16,6 +24,13 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flw6w"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="Resource" id="Resource_o161n"]
+script = ExtResource("4_m2vbn")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_7tjw4"]
 size = Vector3(2, 0.5, 4)
@@ -38,6 +53,13 @@ duration = 1.0
 transition = 0
 ease = 2
 
+[sub_resource type="Resource" id="Resource_bxbnv"]
+script = ExtResource("4_m2vbn")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_wcrbb"]
 size = Vector3(6.8, 0.1, 5.4)
 
@@ -47,6 +69,13 @@ duration = 1.0
 transition = 0
 ease = 2
 
+[sub_resource type="Resource" id="Resource_4iyps"]
+script = ExtResource("4_m2vbn")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_ctyr8"]
 size = Vector3(7.4, 0.1, 3.6)
 
@@ -55,6 +84,13 @@ script = ExtResource("7_jitt8")
 duration = 1.0
 transition = 0
 ease = 2
+
+[sub_resource type="Resource" id="Resource_pgiyx"]
+script = ExtResource("4_m2vbn")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ua072"]
 size = Vector3(6.8, 0.1, 3.6)
@@ -122,6 +158,7 @@ follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerModel")
 tween_resource = ExtResource("4_a27nb")
 tween_onload = false
+camera_3d_resource = SubResource("Resource_jtk1d")
 follow_damping = true
 follow_offset = Vector3(0, 1.5, 2)
 
@@ -153,6 +190,7 @@ transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0
 script = ExtResource("2_y3dy8")
 tween_resource = ExtResource("4_a27nb")
 tween_onload = false
+camera_3d_resource = SubResource("Resource_o161n")
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]
 transform = Transform3D(1, 0, 0, 0, 0.866026, 0.5, 0, -0.5, 0.866025, -3.04693, 0.367287, 0.953757)
@@ -212,6 +250,7 @@ font = ExtResource("2_e7gxt")
 transform = Transform3D(0.38357, -0.555836, 0.737507, -0.105898, 0.766851, 0.633027, -0.917417, -0.320912, 0.235279, 6.89638, 4.73986, 0.115512)
 script = ExtResource("2_y3dy8")
 tween_resource = SubResource("Resource_tpvee")
+camera_3d_resource = SubResource("Resource_bxbnv")
 
 [node name="NorthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, -0.9)
@@ -228,6 +267,7 @@ shape = SubResource("BoxShape3D_wcrbb")
 transform = Transform3D(0.258818, -0.482963, 0.836515, 1.3027e-15, 0.866025, 0.499999, -0.965924, -0.129409, 0.224143, 6.69741, 4.73364, 4.02374)
 script = ExtResource("2_y3dy8")
 tween_resource = SubResource("Resource_7ih0k")
+camera_3d_resource = SubResource("Resource_4iyps")
 
 [node name="EntryRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.00003, -0.454982, 3.00572)
@@ -244,6 +284,7 @@ shape = SubResource("BoxShape3D_ctyr8")
 transform = Transform3D(-0.766043, -0.492403, 0.413175, 0, 0.642787, 0.766043, -0.642786, 0.586825, -0.492403, 6.89741, 4.73364, 5.62374)
 script = ExtResource("2_y3dy8")
 tween_resource = SubResource("Resource_x5y0u")
+camera_3d_resource = SubResource("Resource_pgiyx")
 
 [node name="SouthRoomTrigger" type="Area3D" parent="FixedCameraTriggerZone" node_paths=PackedStringArray("area_pcam")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, -0.45, 6.7)
