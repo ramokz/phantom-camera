@@ -16,18 +16,6 @@ const _overlay_color_alpha: float = 0.3
 
 #endregion
 
-
-#region Variables
-
-var _selected_camera: Node
-var _active_pcam: Node
-var pcam_host_group: Array[Node]
-
-var editor_interface: EditorInterface
-
-#endregion
-
-
 #region @onready
 
 @onready var dead_zone_center_hbox: VBoxContainer = %DeadZoneCenterHBoxContainer
@@ -52,7 +40,21 @@ var aspect_ratio_container: AspectRatioContainer
 @onready var _priority_override_button: Button = %PriorityOverrideButton
 @onready var _priority_override_name_label: Label = %PriorityOverrideNameLabel
 
+@onready var _camera_2d: Camera2D = %Camera2D
+
 #endregion
+
+#region Variables
+
+var _selected_camera: Node
+var _active_pcam: Node
+var pcam_host_group: Array[Node]
+
+var editor_interface: EditorInterface
+
+#endregion
+
+
 
 
 #region Variables
@@ -60,7 +62,7 @@ var aspect_ratio_container: AspectRatioContainer
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
 var _no_open_scene_string: String = "[b]2D[/b] or [b]3D[/b] scene open"
 
-var is_2D: bool
+var _is_2D: bool
 var is_scene: bool
 
 var has_camera_viewport_panel_size: bool = true
@@ -69,6 +71,8 @@ var min_horizontal: float
 var max_horizontal: float
 var min_vertical: float
 var max_vertical: float
+
+var pcam_host: PhantomCameraHost
 
 #endregion
 
@@ -87,9 +91,9 @@ func _ready():
 		%SubViewportContainer.set_visible(false)
 
 		if root_node is Node2D:
-			is_2D = true
+			_is_2D = true
 		else:
-			is_2D = false
+			_is_2D = false
 
 		_set_viewfinder(root_node, false)
 
@@ -130,9 +134,12 @@ func _process(_delta: float):
 		clamp(_active_pcam.viewport_position.y, min_vertical, max_vertical)
 	)
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
-
+	
 	if not has_camera_viewport_panel_size:
 		_on_dead_zone_changed()
+		
+	if _is_2D:
+		_camera_2d.transform = pcam_host.camera_2D.transform
 
 
 func _node_added(node: Node) -> void:
@@ -153,7 +160,7 @@ func _visibility_check():
 	var root: Node = editor_interface.get_edited_scene_root()
 	if root is Node2D:
 #		print("Is a 2D scene")
-		is_2D = true
+		_is_2D = true
 		is_scene = true
 
 		_add_node_button.set_visible(true)
@@ -164,7 +171,7 @@ func _visibility_check():
 		_check_camera(root, camera, true)
 	elif root is Node3D:
 #		Is 3D scene
-		is_2D = false
+		_is_2D = false
 		is_scene = true
 
 		_add_node_button.set_visible(true)
@@ -216,7 +223,6 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 
 	if camera:
 #		Has Camera
-		var pcam_host: PhantomCameraHost
 		if camera.get_children().size() > 0:
 			for cam_child in camera.get_children():
 				if cam_child is PhantomCameraHost:
@@ -231,13 +237,7 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 
 						_set_viewfinder_state()
 
-						# Related to: https://github.com/ramokz/phantom-camera/issues/105
-						# REMOVE BELOW WHEN 2D VIEWFINDER IS SUPPORTED
-						if not is_2D:
-							%NoSupportMsg.set_visible(false)
-						elif is_2D:
-							%NoSupportMsg.set_visible(true)
-						### REMOVAL END
+						%NoSupportMsg.set_visible(false)
 
 					else:
 #						No PCam in scene
@@ -311,7 +311,7 @@ func _add_node(node_type: String) -> void:
 		Constants.PCAM_HOST_NODE_NAME:
 			var pcam_host: PhantomCameraHost = PhantomCameraHost.new()
 			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
-			if is_2D:
+			if _is_2D:
 #				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
 				_get_camera_2D().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
@@ -338,18 +338,42 @@ func _set_viewfinder(root: Node, editor: bool):
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
-			if is_2D:
+			if _is_2D:
 				_selected_camera = pcam_host.camera_2D
 				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
 				if editor:
-					var camera_2D_rid: RID = _selected_camera.get_canvas_item()
-					# TODO - Missing 2D viewport support - https://github.com/ramokz/phantom-camera/issues/105
-					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
+					var camera_2D_rid: RID = _selected_camera.get_canvas()
+					sub_viewport.disable_3d = true
+					#sub_viewport.world_2d = pcam_host.camera_2D.get_viewport().get_world_2d()
+					#_camera_2d.custom_viewport = pcam_host.camera_2D.get_viewport()
+					#_camera_2d.global_transform = pcam_host.camera_2D.global_transform
+					#_camera_2d.get_world_2d() = pcam_host.camera_2D.get_world_2d()
+					_camera_2d.zoom = pcam_host.camera_2D.zoom
+					_camera_2d.offset = pcam_host.camera_2D.offset
+					_camera_2d.ignore_rotation = pcam_host.camera_2D.ignore_rotation
+					_camera_2d.ignore_rotation = pcam_host.camera_2D.ignore_rotation
+					
+					
+					sub_viewport.world_2d = pcam_host.camera_2D.get_world_2d()
+					sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+					sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
+					sub_viewport.size_2d_override_stretch = true
+					#sub_viewport.world_2d = pcam_host.camera_2D.get_world_2d()
+					#print(pcam_host.camera_2D.get_canvas())
+					#sub_viewport.canvas_transform = pcam_host.camera_2D.get_canvas_transform()
+					#RenderingServer.camera_set_transform(_selected_camera, pcam_host.camera_2D.transform)
+					#RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
+					#RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), pcam_host.camera_2D.get_canvas())
+					#RenderingServer.viewport_attach_canvas(sub_viewport.get_viewport_rid(), sub_viewport.find_world_2d().canvas)
+					#print(sub_viewport.get_camera_2d())
+					
 			else:
 				_selected_camera = pcam_host.camera_3D
 				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera3D
 				if editor:
 					var camera_3D_rid: RID = _selected_camera.get_camera_rid()
+					sub_viewport.disable_3d = false
+					sub_viewport.world_3d = pcam_host.camera_3D.get_world_3d()
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3D_rid)
 
 				if _selected_camera.keep_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
@@ -424,7 +448,7 @@ func _select_override_pcam() -> void:
 func scene_changed(scene_root: Node) -> void:
 	if scene_root is Node2D:
 #		print("Is 2D node")
-		is_2D = true
+		_is_2D = true
 		is_scene = true
 
 		_add_node_button.set_visible(true)
@@ -435,7 +459,7 @@ func scene_changed(scene_root: Node) -> void:
 	elif scene_root is Node3D:
 #		print("Is 3D node")
 #		Is 3D scene
-		is_2D = false
+		_is_2D = false
 		is_scene = true
 
 		_add_node_button.set_visible(true)

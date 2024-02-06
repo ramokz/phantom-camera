@@ -71,7 +71,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.988235, 0.498039, 0.498039, 1)
+border_color = Color(0.552941, 0.647059, 0.952941, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -170,8 +170,11 @@ stretch = true
 unique_name_in_owner = true
 handle_input_locally = false
 gui_disable_input = true
-size = Vector2i(1920, 1080)
+size = Vector2i(1152, 648)
 render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="FramedViewfinder/SubViewportContainer/SubViewport"]
+unique_name_in_owner = true
 
 [node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="FramedViewfinder"]
 unique_name_in_owner = true
@@ -294,8 +297,7 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_li3i3")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
-text = "2D scene support not available yet
-(Control scenes are not supported)"
+text = "Control scenes are not supported"
 horizontal_alignment = 1
 vertical_alignment = 1
 
