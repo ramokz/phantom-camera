@@ -26,6 +26,9 @@ signal became_inactive
 ## Emitted when follow_target changes
 signal follow_target_changed
 
+## Emitted when [member look_at_target] changes.
+signal look_at_target_changed
+
 ## Emitted when dead zones changes. [br]
 ## [b]Note:[/b] Only applicable in Framed Follow mode.
 signal dead_zone_changed
