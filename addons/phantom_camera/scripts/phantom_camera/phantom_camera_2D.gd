@@ -167,7 +167,7 @@ var _has_follow_path: bool = false
 ## This should be particularly useful in pixel art projects,
 ## where assets should always be aligned to the monitor's pixels to avoid
 ## unintended stretching.
-@export var pixel_perfect: bool = false
+@export var snap_to_pixel: bool = false
 
 ## Enables a preview of what the [PhantomCamera2D] will see in the
 ## scene. It works identically to how a [Camera2D] shows which area
@@ -893,11 +893,11 @@ func get_follow_damping_value() -> float:
 	return follow_damping_value
 
 ## Enables or disables Pixel Perfect following.
-func set_pixel_perfect(value: bool) -> void:
-	pixel_perfect = value
+func set_snap_to_pixel(value: bool) -> void:
+	snap_to_pixel = value
 ## Gets the current Pixel Perfect property.
-func get_pixel_perfect() -> bool:
-	return pixel_perfect
+func get_snap_to_pixel() -> bool:
+	return snap_to_pixel
 
 
 func set_follow_targets(value: Array[Node2D]) -> void:
