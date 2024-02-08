@@ -3,7 +3,7 @@
 class_name PhantomCamera2D
 extends Node2D
 
-## Enables a 2D scene's [param Camera2D] to follow the behavior defined here.
+## Controls a scene's [Camera2D] and applies logic to it.
 ##
 ## The scene's [param Camera2D] will follow the position of the
 ## [param PhantomCamera2D] with the highest priority.
@@ -24,18 +24,18 @@ signal became_active
 ## Emitted when the [param PhantomCamera2D] becomes inactive.
 signal became_inactive
 
-## Emitted when follow_target changes.
+## Emitted when [member follow_target] changes.
 signal follow_target_changed
 
 ## Emitted when dead zones changes. [br]
-## [b]Note:[/b] Only applicable in Framed Follow mode.
+## [b]Note:[/b] Only applicable in [params Framed] [enum FollowMode].
 signal dead_zone_changed
 
-## Emitted when the Camera2D starts to tween to the [param PhantomCamera2D].
+## Emitted when the [Camera2D] starts to tween to another [param PhantomCamera2D].
 signal tween_started
-## Emitted when the Camera2D is to tweening to the [param PhantomCamera2D].
+## Emitted when the [Camera2D] is to tweening towards another [param PhantomCamera2D].
 signal is_tweening
-## Emitted when the tween is interrupted due to another PhantomCamera2D
+## Emitted when the tween is interrupted due to another [param PhantomCamera2D]
 ## becoming active. The argument is the [param PhantomCamera2D] that interrupted
 ## the tween.
 signal tween_interrupted(pcam_2d: PhantomCamera2D)
@@ -52,7 +52,7 @@ signal tween_completed
 ## The different modes have different functionalities and purposes, so choosing
 ## the correct one depends on what each [param PhantomCamera2D] is meant to do.
 enum FollowMode {
-	NONE 			= 0, ## Default.
+	NONE 			= 0, ## Default - No follow logic is applied.
 	GLUED 			= 1, ## Sticks to its target.
 	SIMPLE 			= 2, ## Follows its target with an optional offset.
 	GROUP 			= 3, ## Follows multiple targets with option to dynamically reframe itself.
@@ -62,8 +62,8 @@ enum FollowMode {
 
 ## Determines how often an inactive [param PhantomCamera2D] should update
 ## its positional and rotational values. This is meant to reduce the amount
-## of calculations inactive PCams are doing when idling to improve performance.
-## The value is based on the enum type [enum InactiveUpdateMode].
+## of calculations inactive [param PhantomCamera2D] are doing when idling to
+## improve performance.
 enum InactiveUpdateMode {
 	ALWAYS, ## Always updates the [param PhantomCamera2D], even when it's inactive.
 	NEVER, ## Never updates the [param PhantomCamera2D] when it's inactive. Reduces the amount of computational resources when inactive.
@@ -76,6 +76,7 @@ enum InactiveUpdateMode {
 
 var _is_active: bool = false
 
+## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
 var pcam_host_owner: PhantomCameraHost:
 	set = set_pcam_host_owner,
 	get = get_pcam_host_owner
@@ -157,12 +158,12 @@ var _has_multiple_follow_targets: bool = false
 var _has_follow_path: bool = false
 
 ## Applies a zoom level to the [param PhantomCamera2D], which effectively
-## overrides the [member zoom] property of the [Camera2D] node.
+## overrides the [param zoom] property of the [Camera2D] node.
 @export var zoom: Vector2 = Vector2.ONE:
 	set = set_zoom,
 	get = get_zoom
 	
-## If enabled, will snap the [param Camera2D] to whole pixels as it moves
+## If enabled, will snap the [param Camera2D] to whole pixels as it moves.
 ## [br][br]
 ## This should be particularly useful in pixel art projects,
 ## where assets should always be aligned to the monitor's pixels to avoid
@@ -172,7 +173,8 @@ var _has_follow_path: bool = false
 ## Enables a preview of what the [PhantomCamera2D] will see in the
 ## scene. It works identically to how a [Camera2D] shows which area
 ## will be visible during runtime. Likewise, this too will be affected by the
-## [member zoom] property and the Viewport Width and Viewport Height defined in the Project Settings.
+## [member zoom] property and the [params Viewport Width] and
+## [param Viewport Height] defined in the [param Project Settings].
 @export var frame_preview: bool = true:
 	set(value):
 		frame_preview = value
@@ -181,7 +183,7 @@ var _has_follow_path: bool = false
 		return frame_preview
 
 ## Defines how the [param PhantomCamera2D] transition between one another.
-## Changing the tween values for a given [PhantomCamera2D]
+## Changing the tween values for a given [param PhantomCamera2D]
 ## determines how transitioning to that instance will look like.
 ## This is a resource type that can be either used for one
 ## [param PhantomCamera] or reused across multiple - both 2D and 3D.
@@ -192,12 +194,12 @@ var _has_follow_path: bool = false
 	get = get_tween_resource
 var _has_tweened: bool
 
-## By default, the moment a [param PhantomCamera2D] is instantiated into
+## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
-## This is most obvious if a PCam has a long duration and is attached to a
-## playable character that can be moved the moment a scene is loaded.
-## Disabling the [param tween_on_load] property will disable this
-## behaviour and skip the tweening entirely when instantiated.
+## This is most obvious if a [param PhantomCamera3D] has a long duration and
+## is attached to a playable character that can be moved the moment a scene
+## is loaded. Disabling the [param Tween on Load] property will
+## disable this behaviour and skip the tweening entirely when instantiated.
 @export var tween_onload: bool = true
 
 ## Determines how often an inactive [param PhantomCamera2D] should update
@@ -290,6 +292,8 @@ var _has_tweened: bool
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool
 
+## Defines the position of the [member follow_target] within the viewport.[br]
+## This is only used for when [member follow_mode] is set to [param Framed]. 
 var viewport_position: Vector2
 var _follow_framed_initial_set: bool = false
 
@@ -329,18 +333,22 @@ var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10
 	set = set_limit_bottom,
 	get = get_limit_bottom
 
-## Allows for setting either a [TileMap] or [CollisionShape2D] node to automatically apply a limit size instead of manually adjusting the Left, Top, Right and Left properties.
+## Allows for setting either a [TileMap] or [CollisionShape2D] node to
+## automatically apply a limit size instead of manually adjusting the Left,
+## Top, Right and Left properties.[br][br]
 ## [b]TileMap[/b][br]
-## The Limit will update after the [TileSet] of the [TileMap] has changed.
-## Note: The limit size will only update after closing the TileMap editor bottom panel.
-## [param CollisionShape2D][br]
+## The Limit will update after the [TileSet] of the [TileMap] has changed.[br]
+## [b]Note:[/b] The limit size will only update after closing the TileMap editor
+## bottom panel.
+## [br][br]
+## [b]CollisionShape2D[/b][br]
 ## The limit will update in realtime as the Shape2D changes its size.
 ## Note: For performance reasons, resizing the [Shape2D] during runtime will not change the Limits sides.
 @export_node_path("TileMap", "CollisionShape2D") var limit_target = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 var _limit_node: Node2D
-## Applies an offset to the [param TileMap] Limit or [param Shape2D] Limit.
+## Applies an offset to the [TileMap] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
 @export var limit_margin: Vector4i:
@@ -641,6 +649,8 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 
 #region Public Functions
 
+## Updates the limit sides based what has been set to define it
+## This should be automatic, but can be called manully if need be.
 func update_limit_all_sides() -> void:
 	var limit_rect: Rect2
 
@@ -725,11 +735,15 @@ func reset_limit() -> void:
 	#_set_camera_2d_limit(SIDE_RIGHT, 10000000)
 	#_set_camera_2d_limit(SIDE_BOTTOM, 10000000)
 
+## Assigns the value of the [param has_tweened] property.
+## [b][color=yellow]Important:[/color][/b] This value can only be changed
+## from the [PhantomCameraHost] script.
 func set_has_tweened(caller: Node, value: bool) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
 		_has_tweened = value
 	else:
 		printerr("Can only be called PhantomCameraHost class")
+## Returns the current [param has_tweened] value.
 func get_has_tweened() -> bool:
 	return _has_tweened
 
@@ -786,31 +800,33 @@ func set_tween_resource(value: PhantomCameraTween) -> void:
 func get_tween_resource() -> PhantomCameraTween:
 	return tween_resource
 
-## Assigns a new Tween Duration value. The duration value is in seconds.
-## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
+## Assigns a new [param Tween Duration] to the [member tween_resource] value.[br]
+## The duration value is in seconds.
 func set_tween_duration(value: float) -> void:
 	tween_resource.duration = value
-## Gets the current Tween Duration value. The duration value is in seconds.
+## Gets the current [param Tween Duration] value inside the
+## [member tween_resource].[br]
+## The duration value is in seconds.
 func get_tween_duration() -> float:
 	return tween_resource.duration
 
-## Assigns a new Tween Transition value.
-## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
+## Assigns a new [param Tween Transition] value inside the
+## [member tween_resource].
 func set_tween_transition(value: int) -> void:
 	tween_resource.transition = value
-## Gets the current Tween Transition value.
+## Gets the current [param Tween Transition] value  inside the
+## [member tween_resource].
 func get_tween_transition() -> int:
 	return tween_resource.transition
 
-## Assigns a new Tween Ease value.
-## Note: This will override and make the Tween Resource unique to this PhantomCamera2D.
+## Assigns a new [param Tween Ease] value inside the [member tween_resource].
 func set_tween_ease(value: int) -> void:
 	tween_resource.ease = value
-## Gets the current Tween Ease value.
+## Gets the current [param Tween Ease] value inside the [member tween_resource].
 func get_tween_ease() -> int:
 	return tween_resource.ease
 
-## Sets the [param PhantomCamera2D] active state[br][br]
+## Sets the [param PhantomCamera2D] active state.[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
 func set_is_active(node, value) -> void:
@@ -818,27 +834,29 @@ func set_is_active(node, value) -> void:
 		_is_active = value
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
-## Gets current active state of the PhantomCamera2D.
-## If it returns true, it means the PhantomCamera2D is what the Camera2D is currently following.
+## Gets current active state of the [param PhantomCamera2D].
+## If it returns true, it means the [param PhantomCamera2D] is what the
+## [Camera2D] is currently following.
 func is_active() -> bool:
 	return _is_active
 
 
-## Enables or disables the Tween on Load.
+## Enables or disables the [member tween_onload].
 func set_tween_on_load(value: bool) -> void:
 	tween_onload = value
-## Gets the current Tween On Load value.
+## Gets the current [member tween_onload] value.
 func is_tween_on_load() -> bool:
 	return tween_onload
 
 
-## Gets the current follow mode as an enum int based on FOLLOW_MODE enum.
-## Note: Setting Follow Mode purposely not added. A separate PCam should be used instead.
+## Gets the current follow mode as an enum int based on [enum FollowMode].[br]
+## [b]Note:[/b] Setting [enum FollowMode] purposely not added.
+## A separate PCam should be used instead.
 func get_follow_mode() -> int:
 	return follow_mode
 
 
-## Assigns a new Node2D as the Follow Target property.
+## Assigns a new [Node2D] as the [member follow_target].
 func set_follow_target(value: Node2D) -> void:
 	if follow_target == value: return
 	follow_target = value
@@ -847,24 +865,24 @@ func set_follow_target(value: Node2D) -> void:
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
-## Erases the current Node2D from the Follow Target property.
+## Erases the current [member follow_target].
 func erase_follow_target() -> void:
 	if follow_target == null: return
 	_should_follow = false
 	follow_target = null
 	follow_target_changed.emit()
-## Gets the current Node2D target property.
+## Gets the current [member follow_target].
 func get_follow_target() -> Node2D:
 	return follow_target
 
 
-## Assigns a new Path2D to the Follow Path property.
+## Assigns a new [Path2D] to the [member follow_path].
 func set_follow_path(value: Path2D) -> void:
 	follow_path = value
-## Erases the current Path2D from the Follow Path property.
+## Erases the current [Path2D] from the [member follow_path] property.
 func erase_follow_path() -> void:
 	follow_path = null
-## Gets the current Path2D from the Follow Path property.
+## Gets the current [Path2D] from the [member follow_path].
 func get_follow_path() -> Path2D:
 	return follow_path
 
@@ -892,14 +910,14 @@ func set_follow_damping_value(value: float) -> void:
 func get_follow_damping_value() -> float:
 	return follow_damping_value
 
-## Enables or disables Pixel Perfect following.
+## Enables or disables [member snap_to_pixel].
 func set_snap_to_pixel(value: bool) -> void:
 	snap_to_pixel = value
-## Gets the current Pixel Perfect property.
+## Gets the current [member snap_to_pixel] value.
 func get_snap_to_pixel() -> bool:
 	return snap_to_pixel
 
-
+## Assigns a new [param follow_targets] array value.
 func set_follow_targets(value: Array[Node2D]) -> void:
 	# TODO - This shouldn't be needed.
 	# Needs a fix to avoid triggering this setter when not in Group Follow
@@ -920,7 +938,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 			
 			if valid_instances > 1:
 				_has_multiple_follow_targets = true
-## Adds a single Node2D to Follow Group array.
+## Appends a single [Node2D] to [member follow_targets].
 func append_follow_group_node(value: Node2D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, " is not a valid instance")
@@ -931,7 +949,7 @@ func append_follow_group_node(value: Node2D) -> void:
 		_has_multiple_follow_targets = true
 	else:
 		printerr(value, " is already part of Follow Group")
-## Adds an Array of type Node2D to Follow Group array.
+## Adds an Array of type [Node2D] to [member follow_targets].
 func append_follow_group_node_array(value: Array[Node2D]) -> void:
 	for val in value:
 		if not is_instance_valid(val): continue
@@ -942,7 +960,7 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 				_has_multiple_follow_targets = true
 		else:
 			printerr(value, " is already part of Follow Group")
-## Removes Node2D from Follow Group array.
+## Removes a [Node2D] from [member follow_targets] array.
 func erase_follow_group_node(value: Node2D) -> void:
 	follow_targets.erase(value)
 	if follow_targets.size() < 1:
@@ -952,6 +970,8 @@ func erase_follow_group_node(value: Node2D) -> void:
 func get_follow_targets() -> Array[Node2D]:
 	return follow_targets
 
+## Returns true if the [param PhantomCamera2D] has more than one member in the
+## [follow_targets] array.
 func get_has_multiple_follow_targets() -> bool:
 	return _has_multiple_follow_targets
 
@@ -1071,7 +1091,7 @@ func get_limit_margin() -> Vector4i:
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed
 
-## Gets Interactive Update Mode property.
+## Gets [enum InactiveUpdateMode] value.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
