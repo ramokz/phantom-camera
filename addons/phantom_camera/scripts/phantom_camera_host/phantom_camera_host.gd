@@ -158,7 +158,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	tween_duration = 0
 
-	if pcam.tween_onload or not pcam.has_tweened:
+	if pcam.tween_onload or not pcam.get_has_tweened():
 		trigger_pcam_tween = true
 
 
@@ -167,7 +167,7 @@ func _find_pcam_with_highest_priority() -> void:
 		if pcam.get_priority() > _active_pcam_priority:
 			_assign_new_active_pcam(pcam)
 
-		pcam.has_tweened = false
+		pcam.set_has_tweened(self, false)
 
 		_active_pcam_missing = false
 
@@ -248,7 +248,7 @@ func _pcam_follow(delta: float) -> void:
 			camera_2D.set_global_transform(pixel_perfect_glob_transform)
 		else:
 			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
-		if _active_pcam.has_multiple_follow_targets:
+		if _active_pcam.get_has_multiple_follow_targets():
 			if _active_pcam.follow_damping:
 				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
 			else:
@@ -337,7 +337,7 @@ func pcam_added_to_scene(pcam: Node) -> void:
 	_pcam_list.append(pcam)
 
 	if not pcam.tween_onload:
-		pcam.has_tweened = true # Skips its tween if it has the highest priority onload
+		pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority onload
 
 	_find_pcam_with_highest_priority()
 
