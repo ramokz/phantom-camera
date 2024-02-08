@@ -11,7 +11,7 @@ extends Node3D
 
 #region Constants
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 #endregion
 
@@ -210,7 +210,7 @@ var _valid_look_at_targets: Array[Node3D] = [null]
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var has_tweened: bool
+var _has_tweened: bool
 
 ## By default, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -467,7 +467,7 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	add_to_group(Constants.PCAM_GROUP_NAME)
+	add_to_group(_constants.PCAM_GROUP_NAME)
 	
 	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 	if pcam_host.size() > 0:
@@ -489,7 +489,7 @@ func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
-	remove_from_group(Constants.PCAM_GROUP_NAME)
+	remove_from_group(_constants.PCAM_GROUP_NAME)
 
 
 func _ready():
@@ -663,7 +663,7 @@ func _process(delta: float) -> void:
 								_follow_spring_arm.margin = margin
 
 								if not is_tween_on_load():
-									has_tweened = true
+									_has_tweened = true
 
 								reparent(_follow_spring_arm)
 
@@ -787,6 +787,14 @@ func _has_valid_pcam_owner() -> bool:
 
 
 #region Setter & Getter Functions
+
+func set_has_tweened(caller: Node, value: bool) -> void:
+	if is_instance_of(caller, PhantomCameraHost):
+		_has_tweened = value
+	else:
+		printerr("Can only be called PhantomCameraHost class")
+func get_has_tweened() -> bool:
+	return _has_tweened
 
 
 ## Assigns the [param PhantomCamera3D] to a new [PhantomCameraHost].[br]
@@ -1010,6 +1018,10 @@ func erase_follow_group_node(value: Node3D) -> void:
 ## Gets all [Node3D] from [follow_targets].
 func get_follow_targets() -> Array[Node3D]:
 	return follow_targets
+
+func get_has_multiple_follow_targets() -> bool:
+	return _has_multiple_follow_targets
+
 
 ## Enables or disables [member auto_distnace] when using Group Follow.
 func set_auto_distance(value: bool) -> void:
