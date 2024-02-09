@@ -571,7 +571,7 @@ func _process(delta: float) -> void:
 		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
-					if not _is_active || get_pcam_host_owner().trigger_pcam_tween:
+					if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
 						_interpolate_position(
 							_get_position_offset_distance(),
 							delta
