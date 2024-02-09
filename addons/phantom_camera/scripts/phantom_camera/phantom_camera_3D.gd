@@ -94,7 +94,7 @@ enum InactiveUpdateMode {
 #region Variables
 
 ## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
-var pcam_host_owner: PhantomCameraHost:
+var pcam_host_owner: PhantomCameraHost = null:
 	set = set_pcam_host_owner,
 	get = get_pcam_host_owner
 
@@ -161,7 +161,7 @@ var _should_follow: bool = false
 	get = get_follow_target
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
-@export var follow_targets: Array[Node3D] = [null]:
+@export var follow_targets: Array[Node3D] = []:
 	set = set_follow_targets,
 	get = get_follow_targets
 var _has_multiple_follow_targets: bool = false
@@ -199,10 +199,10 @@ var _has_look_at_targets: bool = false
 
 ## Defines the targets that the camera should looking at.
 ## It will be looking at the centre of all the assigned targets.
-@export var look_at_targets: Array[Node3D] = [null]:
+@export var look_at_targets: Array[Node3D] = []:
 	set = set_look_at_targets,
 	get = get_look_at_targets
-var _valid_look_at_targets: Array[Node3D] = [null]
+var _valid_look_at_targets: Array[Node3D] = []
 
 ## Defines how [param ]PhantomCamera3Ds] transition between one another.
 ## Changing the tween values for a given [param PhantomCamera3D]

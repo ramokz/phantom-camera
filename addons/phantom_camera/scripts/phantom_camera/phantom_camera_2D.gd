@@ -77,7 +77,7 @@ enum InactiveUpdateMode {
 var _is_active: bool = false
 
 ## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
-var pcam_host_owner: PhantomCameraHost:
+var pcam_host_owner: PhantomCameraHost = null:
 	set = set_pcam_host_owner,
 	get = get_pcam_host_owner
 
@@ -139,7 +139,7 @@ var pcam_host_owner: PhantomCameraHost:
 	set = set_follow_target,
 	get = get_follow_target
 var _should_follow: bool = false
-var _follow_framed_offset: Vector2
+var _follow_framed_offset: Vector2 = Vector2.ZERO
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -192,7 +192,7 @@ var _has_follow_path: bool = false
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var _has_tweened: bool
+var _has_tweened: bool = false
 
 ## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -290,7 +290,7 @@ var _has_tweened: bool
 ## Enables the [param dead zones] to be visible when running the game from the editor.
 ## [br]
 ## [param dead zones] will never be visible in build exports.
-@export var show_viewfinder_in_play: bool
+@export var show_viewfinder_in_play: bool = false
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed]. 
