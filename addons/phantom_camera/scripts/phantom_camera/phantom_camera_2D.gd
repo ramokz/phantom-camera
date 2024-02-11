@@ -919,9 +919,7 @@ func get_snap_to_pixel() -> bool:
 
 ## Assigns a new [param follow_targets] array value.
 func set_follow_targets(value: Array[Node2D]) -> void:
-	# TODO - This shouldn't be needed.
-	# Needs a fix to avoid triggering this setter when not in Group Follow
-	if not follow_mode == FollowMode.GROUP: return
+	if follow_targets == value: return
 
 	follow_targets = value
 

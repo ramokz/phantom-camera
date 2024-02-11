@@ -970,9 +970,7 @@ func get_follow_distance() -> float:
 
 ## Assigns a new [param follow_targets] array value.
 func set_follow_targets(value: Array[Node3D]) -> void:
-	# TODO - This shouldn't be needed.
-	# Needs a fix to avoid triggering this setter when not in Group Follow
-	if not follow_mode == FollowMode.GROUP: return
+	if follow_targets == value: return
 
 	follow_targets = value
 
@@ -1157,6 +1155,8 @@ func get_look_at_target_offset() -> Vector3:
 
 ## Sets an array of type [Node3D] to [member set_look_at_targets].
 func set_look_at_targets(value: Array[Node3D]) -> void:
+	if look_at_targets == value: return
+
 	look_at_targets = value
 	
 	if look_at_targets.is_empty():
@@ -1206,6 +1206,7 @@ func erase_look_at_targets_member(value: Node3D) -> void:
 ## Gets all the [Node3D] instances in [member look_at_targets].
 func get_look_at_targets() -> Array[Node3D]:
 	return look_at_targets
+
 
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
