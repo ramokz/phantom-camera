@@ -2,16 +2,17 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ce6jv7etypg8b"
-path="res://.godot/imported/PhantomCameraIcon3D.svg-2bc62e479ff60e942df3edb50acf2cff.ctex"
+uid="uid://5fatldiu7dd5"
+path="res://.godot/imported/phantom_camera_host.svg-3150f8f2d82ca9ecab9a3a415da21c5b.ctex"
 metadata={
+"has_editor_variant": true,
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg"
-dest_files=["res://.godot/imported/PhantomCameraIcon3D.svg-2bc62e479ff60e942df3edb50acf2cff.ctex"]
+source_file="res://addons/phantom_camera/icons/phantom_camera_host.svg"
+dest_files=["res://.godot/imported/phantom_camera_host.svg-3150f8f2d82ca9ecab9a3a415da21c5b.ctex"]
 
 [params]
 
@@ -32,6 +33,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=2.0
+svg/scale=1.0
 editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false
+editor/convert_colors_with_editor_theme=true

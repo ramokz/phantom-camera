@@ -1,5 +1,5 @@
 @tool
-@icon("res://addons/phantom_camera/icons/PhantomCameraIcon3D.svg")
+@icon("res://addons/phantom_camera/icons/phantom_camera_3d.svg")
 class_name PhantomCamera3D
 extends Node3D
 
