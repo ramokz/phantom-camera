@@ -1,17 +1,25 @@
 @tool
-@icon("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
+@icon("res://addons/phantom_camera/icons/phantom_camera_host.svg")
 class_name PhantomCameraHost
 extends Node
 
+## Controls a scene's [Camera2D] (2D scenes) and [Camera3D] (3D scenes).
+##
+## All instantiated [param PhantomCameras] in a scene are assign to and managed by a
+## PhantomCameraHost. It is what determines which [param PhantomCamera] should
+## be active.
+
 #region Constants
 
-const Constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 #endregion
 
 
 #region Signals
 
+## Updates the viewfinder [param dead zones] sizes.[br]
+## [b]Note:[/b] This is only being used in the editor viewfinder UI.
 signal update_editor_viewfinder
 
 #endregion
@@ -19,39 +27,42 @@ signal update_editor_viewfinder
 
 #region Variables
 
-var camera_2D: Camera2D
-var camera_3D: Camera3D
-var _pcam_list: Array[Node]
+## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
+var camera_2D: Camera2D = null
+## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
+var camera_3D: Camera3D = null
 
-var _active_pcam: Node
+var _pcam_list: Array[Node] = []
+
+var _active_pcam: Node = null
 var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
-var _active_pcam_has_damping: bool
+var _active_pcam_has_damping: bool = false
 
-var _prev_active_pcam_2D_transform: Transform2D
-var _prev_active_pcam_3D_transform: Transform3D
+var _prev_active_pcam_2D_transform: Transform2D = Transform2D()
+var _prev_active_pcam_3D_transform: Transform3D = Transform3D()
 
-var trigger_pcam_tween: bool
-var tween_duration: float
+var _trigger_pcam_tween: bool = false
+var _tween_duration: float = false
 
-var multiple_pcam_hosts: bool
+var _multiple_pcam_hosts: bool = false
 
-var is_child_of_camera: bool = false
-var _is_2D: bool
+var _is_child_of_camera: bool = false
+var _is_2D: bool = false
 
 
-var viewfinder_scene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
-var viewfinder_node: Control
-var viewfinder_needed_check: bool = true
+var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+var _viewfinder_node: Control = null
+var _viewfinder_needed_check: bool = true
 
-var camera_zoom: Vector2
+var _camera_zoom: Vector2 = Vector2.ONE
 
-var _prev_camera_h_offset: float
-var _prev_camera_v_offset: float
-var _prev_camera_fov: float
+var _prev_camera_h_offset: float = 0
+var _prev_camera_v_offset: float = 0
+var _prev_camera_fov: float = 75
 
-var _active_pcam_2D_glob_transform: Transform2D
-var _active_pcam_3D_glob_transform: Transform3D
+var _active_pcam_2D_glob_transform: Transform2D = Transform2D()
+var _active_pcam_3D_glob_transform: Transform3D = Transform3D()
 
 #endregion
 
@@ -63,7 +74,7 @@ func _enter_tree() -> void:
 	var parent = get_parent()
 
 	if parent is Camera2D or parent is Camera3D:
-		is_child_of_camera = true
+		_is_child_of_camera = true
 		if parent is Camera2D:
 			_is_2D = true
 			camera_2D = parent
@@ -74,12 +85,12 @@ func _enter_tree() -> void:
 			_is_2D = false
 			camera_3D = parent
 
-		add_to_group(Constants.PCAM_HOST_GROUP_NAME)
+		add_to_group(_constants.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
 
 		_check_camera_host_amount()
 
-		if multiple_pcam_hosts:
+		if _multiple_pcam_hosts:
 			printerr(
 				"Only one PhantomCameraHost can exist in a scene",
 				"\n",
@@ -88,7 +99,7 @@ func _enter_tree() -> void:
 			queue_free()
 
 		for pcam in _get_pcam_node_group():
-			if not multiple_pcam_hosts:
+			if not _multiple_pcam_hosts:
 				pcam_added_to_scene(pcam)
 				pcam.set_pcam_host_owner(self)
 	else:
@@ -96,7 +107,7 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	remove_from_group(Constants.PCAM_HOST_GROUP_NAME)
+	remove_from_group(_constants.PCAM_HOST_GROUP_NAME)
 	_check_camera_host_amount()
 
 
@@ -111,9 +122,9 @@ func _ready() -> void:
 
 func _check_camera_host_amount() -> void:
 	if _get_pcam_host_group().size() > 1:
-		multiple_pcam_hosts = true
+		_multiple_pcam_hosts = true
 	else:
-		multiple_pcam_hosts = false
+		_multiple_pcam_hosts = false
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
@@ -132,7 +143,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam.set_is_active(self, false)
 		_active_pcam.became_inactive.emit()
 
-		if trigger_pcam_tween:
+		if _trigger_pcam_tween:
 			_active_pcam.tween_interrupted.emit(pcam)
 	else:
 		no_previous_pcam = true
@@ -145,7 +156,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam.became_active.emit()
 
 	if _is_2D:
-		camera_zoom = camera_2D.get_zoom()
+		_camera_zoom = camera_2D.get_zoom()
 	else:
 		if _active_pcam.get_camera_3D_resource():
 			camera_3D.cull_mask = _active_pcam.get_cull_mask()
@@ -156,10 +167,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		else:
 			_prev_active_pcam_3D_transform = _active_pcam.get_global_transform()
 
-	tween_duration = 0
+	_tween_duration = 0
 
-	if pcam.tween_onload or not pcam.has_tweened:
-		trigger_pcam_tween = true
+	if pcam.tween_onload or not pcam.get_has_tweened():
+		_trigger_pcam_tween = true
 
 
 func _find_pcam_with_highest_priority() -> void:
@@ -167,32 +178,32 @@ func _find_pcam_with_highest_priority() -> void:
 		if pcam.get_priority() > _active_pcam_priority:
 			_assign_new_active_pcam(pcam)
 
-		pcam.has_tweened = false
+		pcam.set_has_tweened(self, false)
 
 		_active_pcam_missing = false
 
 
 func _pcam_tween(delta: float) -> void:
 	# Run at the first tween frame
-	if tween_duration == 0:
+	if _tween_duration == 0:
 		_active_pcam.tween_started.emit()
 
 		if _is_2D:
 			_active_pcam.reset_limit()
 
-	tween_duration += delta
+	_tween_duration += delta
 	_active_pcam.is_tweening.emit()
 
 	if _is_2D:
 		var interpolation_destination: Vector2 = _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 
-		if _active_pcam.pixel_perfect:
+		if _active_pcam.snap_to_pixel:
 			camera_2D.set_global_position(interpolation_destination.round())
 		else:
 			camera_2D.set_global_position(interpolation_destination)
 
 		camera_2D.set_zoom(
-			_tween_interpolate_value(camera_zoom, _active_pcam.zoom)
+			_tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
 		)
 	else:
 		camera_3D.set_global_position(
@@ -204,7 +215,7 @@ func _pcam_tween(delta: float) -> void:
 			Tween.interpolate_value(
 				prev_active_pcam_3D_basis, \
 				prev_active_pcam_3D_basis.inverse() * Quaternion(_active_pcam_3D_glob_transform.basis.orthonormalized()),
-				tween_duration, \
+				_tween_duration, \
 				_active_pcam.get_tween_duration(), \
 				_active_pcam.get_tween_transition(),
 				_active_pcam.get_tween_ease(),
@@ -231,7 +242,7 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 	return Tween.interpolate_value(
 		from, \
 		to - from,
-		tween_duration, \
+		_tween_duration, \
 		_active_pcam.get_tween_duration(), \
 		_active_pcam.get_tween_transition(),
 		_active_pcam.get_tween_ease(),
@@ -242,13 +253,13 @@ func _pcam_follow(delta: float) -> void:
 	if not _active_pcam: return
 
 	if _is_2D:
-		if _active_pcam.pixel_perfect:
-			var pixel_perfect_glob_transform := _active_pcam_2D_glob_transform
-			pixel_perfect_glob_transform.origin = pixel_perfect_glob_transform.origin.round()
-			camera_2D.set_global_transform(pixel_perfect_glob_transform)
+		if _active_pcam.snap_to_pixel:
+			var snap_to_pixel_glob_transform := _active_pcam_2D_glob_transform
+			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
+			camera_2D.set_global_transform(snap_to_pixel_glob_transform)
 		else:
 			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
-		if _active_pcam.has_multiple_follow_targets:
+		if _active_pcam.get_has_multiple_follow_targets():
 			if _active_pcam.follow_damping:
 				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
 			else:
@@ -260,14 +271,14 @@ func _pcam_follow(delta: float) -> void:
 
 
 func _process_pcam(delta: float) -> void:
-	if _active_pcam_missing or not is_child_of_camera: return
+	if _active_pcam_missing or not _is_child_of_camera: return
 	# When following
-	if not trigger_pcam_tween:
+	if not _trigger_pcam_tween:
 		_pcam_follow(delta)
 
-		if viewfinder_needed_check:
-			show_viewfinder_in_play()
-			viewfinder_needed_check = false
+		if _viewfinder_needed_check:
+			_show_viewfinder_in_play()
+			_viewfinder_needed_check = false
 			
 		# TODO - Should be able to find a more efficient way
 		if Engine.is_editor_hint():
@@ -280,13 +291,13 @@ func _process_pcam(delta: float) -> void:
 
 	# When tweening
 	else:
-		if tween_duration + delta <= _active_pcam.get_tween_duration():
+		if _tween_duration + delta <= _active_pcam.get_tween_duration():
 			_pcam_tween(delta)
 		else: # First frame when tweening completes
-			tween_duration = 0
-			trigger_pcam_tween = false
+			_tween_duration = 0
+			_trigger_pcam_tween = false
 
-			show_viewfinder_in_play()
+			_show_viewfinder_in_play()
 			_pcam_follow(delta)
 			_active_pcam.tween_completed.emit()
 
@@ -298,11 +309,11 @@ func _process_pcam(delta: float) -> void:
 
 
 func _get_pcam_node_group() -> Array[Node]:
-	return get_tree().get_nodes_in_group(Constants.PCAM_GROUP_NAME)
+	return get_tree().get_nodes_in_group(_constants.PCAM_GROUP_NAME)
 
 
 func _get_pcam_host_group() -> Array[Node]:
-	return get_tree().get_nodes_in_group(Constants.PCAM_HOST_GROUP_NAME)
+	return get_tree().get_nodes_in_group(_constants.PCAM_HOST_GROUP_NAME)
 
 
 func _process(delta):
@@ -320,36 +331,49 @@ func _process(delta):
 
 #region Public Functions
 
-func show_viewfinder_in_play() -> void:
+func _show_viewfinder_in_play() -> void:
 	if _active_pcam.show_viewfinder_in_play:
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
 
-			viewfinder_node = viewfinder_scene.instantiate()
-			canvas_layer.add_child(viewfinder_node)
+			_viewfinder_node = _viewfinder_scene.instantiate()
+			canvas_layer.add_child(_viewfinder_node)
 	else:
-		if viewfinder_node:
-			viewfinder_node.queue_free()
+		if _viewfinder_node:
+			_viewfinder_node.queue_free()
 
-
+## Called when a [param PhantomCamera] is added to the scene.[br]
+## [b]Note:[/b] This can only be called internally from a
+## [param PhantomCamera] node.
 func pcam_added_to_scene(pcam: Node) -> void:
-	_pcam_list.append(pcam)
+	if is_instance_of(pcam, PhantomCamera2D) or is_instance_of(pcam, PhantomCamera3D):
+		_pcam_list.append(pcam)
 
-	if not pcam.tween_onload:
-		pcam.has_tweened = true # Skips its tween if it has the highest priority onload
+		if not pcam.tween_onload:
+			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority onload
 
-	_find_pcam_with_highest_priority()
-
-
-func pcam_removed_from_scene(pcam) -> void:
-	_pcam_list.erase(pcam)
-	if pcam == _active_pcam:
-		_active_pcam_missing = true
-		_active_pcam_priority = -1
 		_find_pcam_with_highest_priority()
+	
+	else:
+		printerr("This function should only be called from PhantomCamera scripts")
 
 
+## Called when a [param PhantomCamera] is removed from the scene.[br]
+## [b]Note:[/b] This can only be called internally from a
+## [param PhantomCamera] node.
+func pcam_removed_from_scene(pcam: Node) -> void:
+	if is_instance_of(pcam, PhantomCamera2D) or is_instance_of(pcam, PhantomCamera3D):
+		_pcam_list.erase(pcam)
+		if pcam == _active_pcam:
+			_active_pcam_missing = true
+			_active_pcam_priority = -1
+			_find_pcam_with_highest_priority()
+	else:
+		printerr("This function should only be called from PhantomCamera scripts")
+
+## Triggers a recalculation to determine which PhantomCamera has the highest
+## priority. 
 func pcam_priority_updated(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.priority_override: return
 
@@ -367,6 +391,9 @@ func pcam_priority_updated(pcam: Node) -> void:
 			_active_pcam_priority = current_pcam_priority
 
 
+## Updates the viewfinder when a [param PhantomCamera] has its
+## [param priority_ovrride] enabled.[br]
+## [b]Note:[/b] This only affects the editor.
 func pcam_priority_override(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.priority_override:
 		_active_pcam.priority_override = false
@@ -374,11 +401,23 @@ func pcam_priority_override(pcam: Node) -> void:
 	_assign_new_active_pcam(pcam)
 	update_editor_viewfinder.emit()
 
+
+## Updates the viewfinder when a [param PhantomCamera] has its
+## [param priority_ovrride] disabled.[br]
+## [b]Note:[/b] This only affects the editor.
 func pcam_priority_override_disabled() -> void:
 	update_editor_viewfinder.emit()
 
 
+## Returns the currently active [param PhantomCamera]
 func get_active_pcam() -> Node:
 	return _active_pcam
+
+## Returns whether if a [param PhantomCamera] should tween when it becomes
+## active. If it's already active, the value will always be false.
+## [b]Note:[/b] This can only be called internally from a
+## [param PhantomCamera] node.
+func get_trigger_pcam_tween() -> bool:
+	return _trigger_pcam_tween
 
 #endregion
