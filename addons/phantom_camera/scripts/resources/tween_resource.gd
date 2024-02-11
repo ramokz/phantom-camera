@@ -1,5 +1,12 @@
+@icon("res://addons/phantom_camera/icons/phantom_camera_tween.svg")
 class_name PhantomCameraTween
 extends Resource
+
+## Tweening resource for [PhantomCamera2D] and [PhantomCamera3D].
+##
+## Defines how [param PhantomCameras] transition between one another.
+## Changing the tween values for a given [param PhantomCamera] determines how
+## transitioning to that instance will look like.
 
 enum TransitionType {
 	LINEAR 	= 0, ## The animation is interpolated linearly.
