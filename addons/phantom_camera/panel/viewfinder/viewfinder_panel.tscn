@@ -171,10 +171,12 @@ unique_name_in_owner = true
 handle_input_locally = false
 gui_disable_input = true
 size = Vector2i(1152, 648)
+size_2d_override_stretch = true
 render_target_update_mode = 4
 
 [node name="Camera2D" type="Camera2D" parent="FramedViewfinder/SubViewportContainer/SubViewport"]
 unique_name_in_owner = true
+editor_draw_screen = false
 
 [node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="FramedViewfinder"]
 unique_name_in_owner = true

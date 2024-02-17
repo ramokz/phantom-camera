@@ -39,7 +39,7 @@ signal is_tweening
 ## becoming active. The argument is the [param PhantomCamera2D] that interrupted
 ## the tween.
 signal tween_interrupted(pcam_2d: PhantomCamera2D)
-## Emitted when the [param Camera2D] completes its tween to the
+## Emitted when the [Camera2D] completes its tween to the
 ## [param PhantomCamera2D].
 signal tween_completed
 
@@ -600,7 +600,7 @@ func _on_dead_zone_changed() -> void:
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
-	if not is_instance_valid(get_pcam_host_owner().camera_2D): return false
+	if not is_instance_valid(get_pcam_host_owner().camera_2d): return false
 	return true
 
 
@@ -628,7 +628,7 @@ func _get_framed_side_offset() -> Vector2:
 
 func _draw_camera_2d_limit() -> void:
 	if _has_valid_pcam_owner():
-		get_pcam_host_owner().camera_2D.set_limit_drawing_enabled(draw_limits)
+		get_pcam_host_owner().camera_2d.set_limit_drawing_enabled(draw_limits)
 
 
 func _check_limit_is_not_default() -> void:
@@ -641,7 +641,7 @@ func _check_limit_is_not_default() -> void:
 func _set_camera_2d_limit(side: int, limit: int) -> void:
 	if not _has_valid_pcam_owner(): return
 	if not _is_active: return
-	get_pcam_host_owner().camera_2D.set_limit(side, limit)
+	get_pcam_host_owner().camera_2d.set_limit(side, limit)
 
 
 #endregion
@@ -723,10 +723,10 @@ func reset_limit() -> void:
 	limit_bottom = _limit_sides_default.w
 	if not _has_valid_pcam_owner(): return
 	if not _is_active: return
-	get_pcam_host_owner().camera_2D.set_limit(SIDE_LEFT, limit_left)
-	get_pcam_host_owner().camera_2D.set_limit(SIDE_TOP, limit_top)
-	get_pcam_host_owner().camera_2D.set_limit(SIDE_RIGHT, limit_right)
-	get_pcam_host_owner().camera_2D.set_limit(SIDE_BOTTOM, limit_bottom)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_LEFT, limit_left)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_TOP, limit_top)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_RIGHT, limit_right)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_BOTTOM, limit_bottom)
 	
 	#update_limit_all_sides()
 	
@@ -1084,7 +1084,7 @@ func get_limit_margin() -> Vector4i:
 #func set_limit_smoothing(value: bool) -> void:
 	#limit_smoothed = value
 	#if is_active() and _has_valid_pcam_owner():
-		#get_pcam_host_owner().camera_2D.reset_smoothing()
+		#get_pcam_host_owner().camera_2d.reset_smoothing()
 ### Returns the Limit Smoothing beaviour.
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed

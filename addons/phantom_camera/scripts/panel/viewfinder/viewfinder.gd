@@ -54,9 +54,6 @@ var editor_interface: EditorInterface
 
 #endregion
 
-
-
-
 #region Variables
 
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
@@ -139,7 +136,22 @@ func _process(_delta: float):
 		_on_dead_zone_changed()
 		
 	if _is_2D:
-		_camera_2d.transform = pcam_host.camera_2D.transform
+		if not is_instance_valid(pcam_host): return
+		if not is_instance_valid(pcam_host.camera_2d): return
+		
+		var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+		sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
+		sub_viewport.size_2d_override_stretch = true
+		
+		_camera_2d.global_transform = pcam_host.camera_2d.global_transform
+		_camera_2d.offset = pcam_host.camera_2d.offset
+		_camera_2d.zoom = pcam_host.camera_2d.zoom
+		_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
+		_camera_2d.anchor_mode = pcam_host.camera_2d.anchor_mode
+		_camera_2d.limit_left = pcam_host.camera_2d.limit_left
+		_camera_2d.limit_top = pcam_host.camera_2d.limit_top
+		_camera_2d.limit_right = pcam_host.camera_2d.limit_right
+		_camera_2d.limit_bottom = pcam_host.camera_2d.limit_bottom
 
 
 func _node_added(node: Node) -> void:
@@ -167,7 +179,7 @@ func _visibility_check():
 #		TODO: Figure out why the line below doesn't work...
 #		var camera: Camera2D = root.get_viewport().get_camera_2d()
 
-		var camera: Camera2D = _get_camera_2D()
+		var camera: Camera2D = _get_camera_2d()
 		_check_camera(root, camera, true)
 	elif root is Node3D:
 #		Is 3D scene
@@ -189,7 +201,7 @@ func _visibility_check():
 		_priority_override_button.pressed.connect(_select_override_pcam)
 
 
-func _get_camera_2D() -> Camera2D:
+func _get_camera_2d() -> Camera2D:
 	var camerasGroupName = "__cameras_%d" % editor_interface.get_edited_scene_root().get_viewport().get_viewport_rid().get_id()
 	var cameras = get_tree().get_nodes_in_group(camerasGroupName)
 
@@ -268,13 +280,14 @@ func _set_viewfinder_state() -> void:
 	_empty_state_control.set_visible(false)
 
 	_framed_viewfinder.set_visible(true)
-	target_point.set_visible(true)
 
 	if is_instance_valid(_active_pcam):
 		if _active_pcam.get_follow_mode() == _active_pcam.FollowMode.FRAMED:
 			_dead_zone_h_box_container.set_visible(true)
+			target_point.set_visible(true)
 		else:
 			_dead_zone_h_box_container.set_visible(false)
+			target_point.set_visible(false)
 
 
 func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> void:
@@ -313,7 +326,7 @@ func _add_node(node_type: String) -> void:
 			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
 			if _is_2D:
 #				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
-				_get_camera_2D().add_child(pcam_host)
+				_get_camera_2d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
 			else:
 #				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
@@ -339,42 +352,28 @@ func _set_viewfinder(root: Node, editor: bool):
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
 			if _is_2D:
-				_selected_camera = pcam_host.camera_2D
+				_selected_camera = pcam_host.camera_2d
 				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
 				if editor:
-					var camera_2D_rid: RID = _selected_camera.get_canvas()
+					var camera_2d_rid: RID = _selected_camera.get_canvas()
 					sub_viewport.disable_3d = true
-					#sub_viewport.world_2d = pcam_host.camera_2D.get_viewport().get_world_2d()
-					#_camera_2d.custom_viewport = pcam_host.camera_2D.get_viewport()
-					#_camera_2d.global_transform = pcam_host.camera_2D.global_transform
-					#_camera_2d.get_world_2d() = pcam_host.camera_2D.get_world_2d()
-					_camera_2d.zoom = pcam_host.camera_2D.zoom
-					_camera_2d.offset = pcam_host.camera_2D.offset
-					_camera_2d.ignore_rotation = pcam_host.camera_2D.ignore_rotation
-					_camera_2d.ignore_rotation = pcam_host.camera_2D.ignore_rotation
+					_camera_2d.zoom = pcam_host.camera_2d.zoom
+					_camera_2d.offset = pcam_host.camera_2d.offset
+					_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
 					
 					
-					sub_viewport.world_2d = pcam_host.camera_2D.get_world_2d()
+					sub_viewport.world_2d = pcam_host.camera_2d.get_world_2d()
 					sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 					sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
 					sub_viewport.size_2d_override_stretch = true
-					#sub_viewport.world_2d = pcam_host.camera_2D.get_world_2d()
-					#print(pcam_host.camera_2D.get_canvas())
-					#sub_viewport.canvas_transform = pcam_host.camera_2D.get_canvas_transform()
-					#RenderingServer.camera_set_transform(_selected_camera, pcam_host.camera_2D.transform)
-					#RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
-					#RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), pcam_host.camera_2D.get_canvas())
-					#RenderingServer.viewport_attach_canvas(sub_viewport.get_viewport_rid(), sub_viewport.find_world_2d().canvas)
-					#print(sub_viewport.get_camera_2d())
-					
 			else:
-				_selected_camera = pcam_host.camera_3D
+				_selected_camera = pcam_host.camera_3d
 				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera3D
 				if editor:
-					var camera_3D_rid: RID = _selected_camera.get_camera_rid()
+					var camera_3d_rid: RID = _selected_camera.get_camera_rid()
 					sub_viewport.disable_3d = false
-					sub_viewport.world_3d = pcam_host.camera_3D.get_world_3d()
-					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3D_rid)
+					sub_viewport.world_3d = pcam_host.camera_3d.get_world_3d()
+					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3d_rid)
 
 				if _selected_camera.keep_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
 					aspect_ratio_containers.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
@@ -453,7 +452,7 @@ func scene_changed(scene_root: Node) -> void:
 
 		_add_node_button.set_visible(true)
 #		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
-		var camera: Camera2D = _get_camera_2D()
+		var camera: Camera2D = _get_camera_2d()
 
 		_check_camera(scene_root, camera, true)
 	elif scene_root is Node3D:

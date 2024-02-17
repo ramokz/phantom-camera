@@ -238,8 +238,8 @@ var _has_tweened: bool
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
 @export var camera_3d_resource: Camera3DResource = Camera3DResource.new():
-	set = set_camera_3D_resource,
-	get = get_camera_3D_resource
+	set = set_camera_3d_resource,
+	get = get_camera_3d_resource
 
 @export_group("Follow Parameters")
 ## Applies a damping effect on the Camera's movement.
@@ -764,7 +764,7 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
-	if not is_instance_valid(get_pcam_host_owner().camera_3D): return false
+	if not is_instance_valid(get_pcam_host_owner().camera_3d): return false
 	return true
 
 #endregion
@@ -1105,18 +1105,19 @@ func set_collision_mask_value(value: int, enabled: bool) -> void:
 func get_collision_mask() -> int:
 	return collision_mask
 
-## Assigns a new [member shape] to the [SpringArm3D] when [enum FollowMode]
+## Assigns a new [SpringArm3D.shape] when [enum FollowMode]
 ## is set to [params Third Person].
 func set_shape(value: Shape3D) -> void:
 	shape = value
-## Gets Third Person SpringArm3D Shape value.
+## Gets Third Person [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
 	return shape
 
-## Assigns a new Third Person [member SpringArm3D.margin] value.
+## Assigns a new [member SpringArm3D.margin] value when [enum FollowMode]
+## is set to [params Third Person].
 func set_margin(value: float) -> void:
 	margin = value
-## Gets [margin] value from the [SpringArm3D] when [enum FollowMode] is set to
+## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
 ## [params Third Person].
 func get_margin() -> float:
 	return margin
@@ -1124,7 +1125,7 @@ func get_margin() -> float:
 
 ## Gets the current [member look_at_mode]. Value is based on [enum LookAtMode]
 ## enum.[br]
-## Note: To set a new [member look_at_mode], a separate PhantomCamera3D should
+## Note: To set a new [member look_at_mode], a separate [param PhantomCamera3D] should
 ## be used.
 func get_look_at_mode() -> int:
 	return look_at_mode
@@ -1217,10 +1218,10 @@ func get_inactive_update_mode() -> int:
 
 
 ## Assigns a [Camera3DResource].
-func set_camera_3D_resource(value: Camera3DResource) -> void:
+func set_camera_3d_resource(value: Camera3DResource) -> void:
 	camera_3d_resource = value
 ## Gets the [Camera3DResource]
-func get_camera_3D_resource() -> Camera3DResource:
+func get_camera_3d_resource() -> Camera3DResource:
 	return camera_3d_resource
 
 ## Assigns a new [member Camera3D.cull_mask] value.
@@ -1228,12 +1229,12 @@ func get_camera_3D_resource() -> Camera3DResource:
 ## this [param PhantomCamera3D].
 func set_cull_mask(value: int) -> void:
 	camera_3d_resource.cull_mask = value
-	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = value
+	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = value
 ## Enables or disables a specific [member Camera3D.cull_mask] layer.
 func set_cull_mask_value(layer_number: int, value: bool) -> void:
 	var mask: int = _set_layer(get_cull_mask(), layer_number, value)
 	camera_3d_resource.cull_mask = mask
-	if _is_active: get_pcam_host_owner().camera_3D.cull_mask = mask
+	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = mask
 ## Gets the [member Camera3D.cull_mask] value assigned [Camera3DResource].
 func get_cull_mask() -> int:
 	return camera_3d_resource.cull_mask
@@ -1241,7 +1242,7 @@ func get_cull_mask() -> int:
 ## Assigns a new [member Camera3D.h_offset] value.
 func set_h_offset(value: float) -> void:
 	camera_3d_resource.h_offset = value
-	if _is_active: get_pcam_host_owner().camera_3D.h_offset = value
+	if _is_active: get_pcam_host_owner().camera_3d.h_offset = value
 ## Gets the [member Camera3D.h_offset] value.
 func get_h_offset() -> float:
 	return camera_3d_resource.h_offset
@@ -1249,7 +1250,7 @@ func get_h_offset() -> float:
 ## Assigns a new [Camera3D.v_offset] value.
 func set_v_offset(value: float) -> void:
 	camera_3d_resource.v_offset = value
-	if _is_active: get_pcam_host_owner().camera_3D.v_offset = value
+	if _is_active: get_pcam_host_owner().camera_3d.v_offset = value
 ## Gets the Camera3D fov value assigned this PhantomCamera.
 func get_v_offset() -> float:
 	return camera_3d_resource.v_offset
@@ -1259,7 +1260,7 @@ func get_v_offset() -> float:
 ## this [param PhantomCamera3D].
 func set_fov(value: float) -> void:
 	camera_3d_resource.fov = value
-	if _is_active: get_pcam_host_owner().camera_3D.fov = value
+	if _is_active: get_pcam_host_owner().camera_3d.fov = value
 ## Gets the [member Camera3D.fov] value assigned this [param PhantomCamera3D].
 func get_fov() -> float:
 	return camera_3d_resource.fov
