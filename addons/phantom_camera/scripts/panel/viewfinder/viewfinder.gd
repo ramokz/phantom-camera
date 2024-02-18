@@ -24,9 +24,8 @@ const _overlay_color_alpha: float = 0.3
 @onready var dead_zone_right_center_panel: Panel = %DeadZoneRightCenterPanel
 @onready var target_point: Panel = %TargetPoint
 
-var aspect_ratio_container: AspectRatioContainer
-@onready var aspect_ratio_containers: AspectRatioContainer = %AspectRatioContainer
-@onready var camera_viewport_panel: Panel = aspect_ratio_containers.get_child(0)
+@onready var aspect_ratio_container: AspectRatioContainer = %AspectRatioContainer
+@onready var camera_viewport_panel: Panel = aspect_ratio_container.get_child(0)
 @onready var _framed_viewfinder: Control = %FramedViewfinder
 @onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
 @onready var sub_viewport: SubViewport = %SubViewport
@@ -80,7 +79,7 @@ func _ready():
 	visibility_changed.connect(_visibility_check)
 	set_process(false)
 
-	aspect_ratio_containers.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
+	#aspect_ratio_container.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
 
 #	TODO - Don't think this is needed / does anything?
 	var root_node = get_tree().get_root().get_child(0)
@@ -101,7 +100,16 @@ func _ready():
 		_empty_state_control.set_visible(false)
 
 	_priority_override_button.set_visible(false)
+	
+	ProjectSettings.settings_changed.connect(_settings_changed)
 
+func _settings_changed() -> void:
+	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var ratio: float = viewport_width / viewport_height
+	aspect_ratio_container.set_ratio(ratio)
+	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
+	# TODO - Add resizer for Framed Viewfinder
 
 func _exit_tree() -> void:
 	if Engine.is_editor_hint():
@@ -109,8 +117,8 @@ func _exit_tree() -> void:
 			get_tree().node_added.disconnect(_node_added)
 			get_tree().node_removed.disconnect(_node_added)
 
-	if aspect_ratio_containers.resized.is_connected(_resized):
-		aspect_ratio_containers.resized.disconnect(_resized)
+	if aspect_ratio_container.resized.is_connected(_resized):
+		aspect_ratio_container.resized.disconnect(_resized)
 
 	if _add_node_button.pressed.is_connected(_add_node):
 		_add_node_button.pressed.disconnect(_add_node)
@@ -152,7 +160,10 @@ func _process(_delta: float):
 		_camera_2d.limit_top = pcam_host.camera_2d.limit_top
 		_camera_2d.limit_right = pcam_host.camera_2d.limit_right
 		_camera_2d.limit_bottom = pcam_host.camera_2d.limit_bottom
-
+		
+		#_settings_changed()
+		#aspect_ratio_container. camera_viewport_panel.position.x# + camera_viewport_panel.size.x / 2 
+		#camera_viewport_panel.size.x = ProjectSettings.get_setting("display/window/size/viewport_width") / (window_size_height / sub_viewport.size.y)
 
 func _node_added(node: Node) -> void:
 	if editor_interface == null: return
@@ -376,9 +387,9 @@ func _set_viewfinder(root: Node, editor: bool):
 					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3d_rid)
 
 				if _selected_camera.keep_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-					aspect_ratio_containers.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
+					aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
 				else:
-					aspect_ratio_containers.set_stretch_mode(AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT)
+					aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT)
 
 			_on_dead_zone_changed()
 			set_process(true)
@@ -386,8 +397,8 @@ func _set_viewfinder(root: Node, editor: bool):
 			if not pcam_host.update_editor_viewfinder.is_connected(_on_update_editor_viewfinder):
 				pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder.bind(pcam_host))
 
-			if not aspect_ratio_containers.resized.is_connected(_resized):
-				aspect_ratio_containers.resized.connect(_resized)
+			if not aspect_ratio_container.resized.is_connected(_resized):
+				aspect_ratio_container.resized.connect(_resized)
 
 			if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 				_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)

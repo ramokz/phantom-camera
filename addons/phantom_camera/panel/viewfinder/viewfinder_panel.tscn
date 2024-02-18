@@ -263,7 +263,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-stretch_mode = 1
+ratio = 1.77778
 
 [node name="CameraViewportPanel" type="Panel" parent="FramedViewfinder/AspectRatioContainer"]
 layout_mode = 2
