@@ -43,23 +43,25 @@ const _overlay_color_alpha: float = 0.3
 
 #endregion
 
-#region Variables
-
-var _selected_camera: Node
-var _active_pcam: Node
-var pcam_host_group: Array[Node]
-
-var editor_interface: EditorInterface
-
-#endregion
-
-#region Variables
-
+#region Private Variables
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
 var _no_open_scene_string: String = "[b]2D[/b] or [b]3D[/b] scene open"
 
-var _is_2D: bool
+var _selected_camera: Node
+var _active_pcam: Node
+
+var _is_2d: bool
+
+#endregion
+
+#region Public variables
+
+var pcam_host_group: Array[Node]
+var editor_interface: EditorInterface
+
 var is_scene: bool
+
+var viewfinder_visible: bool
 
 var has_camera_viewport_panel_size: bool = true
 
@@ -76,7 +78,6 @@ var pcam_host: PhantomCameraHost
 #region Private Functions
 
 func _ready():
-	visibility_changed.connect(_visibility_check)
 	set_process(false)
 
 	#aspect_ratio_container.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
@@ -87,11 +88,12 @@ func _ready():
 		%SubViewportContainer.set_visible(false)
 
 		if root_node is Node2D:
-			_is_2D = true
+			_is_2d = true
 		else:
-			_is_2D = false
+			_is_2d = false
 
 		_set_viewfinder(root_node, false)
+
 
 	if Engine.is_editor_hint():
 		get_tree().node_added.connect(_node_added)
@@ -101,7 +103,9 @@ func _ready():
 
 	_priority_override_button.set_visible(false)
 	
+	# Triggered when viewport size is changed in Project Settings
 	ProjectSettings.settings_changed.connect(_settings_changed)
+
 
 func _settings_changed() -> void:
 	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
@@ -110,6 +114,7 @@ func _settings_changed() -> void:
 	aspect_ratio_container.set_ratio(ratio)
 	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
 	# TODO - Add resizer for Framed Viewfinder
+
 
 func _exit_tree() -> void:
 	if Engine.is_editor_hint():
@@ -132,24 +137,24 @@ func _exit_tree() -> void:
 
 
 func _process(_delta: float):
-	if not visible or not is_instance_valid(_active_pcam): return
+	if not viewfinder_visible or not is_instance_valid(_active_pcam): return
 
 	var unprojected_position_clamped: Vector2 = Vector2(
 		clamp(_active_pcam.viewport_position.x, min_horizontal, max_horizontal),
 		clamp(_active_pcam.viewport_position.y, min_vertical, max_vertical)
 	)
+
 	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
 	
 	if not has_camera_viewport_panel_size:
 		_on_dead_zone_changed()
 		
-	if _is_2D:
+	if _is_2d:
 		if not is_instance_valid(pcam_host): return
 		if not is_instance_valid(pcam_host.camera_2d): return
 		
 		var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
 		sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
-		sub_viewport.size_2d_override_stretch = true
 		
 		_camera_2d.global_transform = pcam_host.camera_2d.global_transform
 		_camera_2d.offset = pcam_host.camera_2d.offset
@@ -160,19 +165,15 @@ func _process(_delta: float):
 		_camera_2d.limit_top = pcam_host.camera_2d.limit_top
 		_camera_2d.limit_right = pcam_host.camera_2d.limit_right
 		_camera_2d.limit_bottom = pcam_host.camera_2d.limit_bottom
-		
-		#_settings_changed()
-		#aspect_ratio_container. camera_viewport_panel.position.x# + camera_viewport_panel.size.x / 2 
-		#camera_viewport_panel.size.x = ProjectSettings.get_setting("display/window/size/viewport_width") / (window_size_height / sub_viewport.size.y)
+
 
 func _node_added(node: Node) -> void:
 	if editor_interface == null: return
-	_visibility_check()
+	visibility_check()
 
 
-func _visibility_check():
-	if not editor_interface or not visible: return
-
+func visibility_check():
+	if not editor_interface or not viewfinder_visible: return
 	if not is_instance_valid(editor_interface):
 		is_scene = false
 #		Is not a 2D or 3D scene
@@ -182,26 +183,19 @@ func _visibility_check():
 
 	var root: Node = editor_interface.get_edited_scene_root()
 	if root is Node2D:
-#		print("Is a 2D scene")
-		_is_2D = true
+		_is_2d = true
 		is_scene = true
-
 		_add_node_button.set_visible(true)
-#		TODO: Figure out why the line below doesn't work...
-#		var camera: Camera2D = root.get_viewport().get_camera_2d()
 
 		var camera: Camera2D = _get_camera_2d()
 		_check_camera(root, camera, true)
 	elif root is Node3D:
-#		Is 3D scene
-		_is_2D = false
+		_is_2d = false
 		is_scene = true
 
 		_add_node_button.set_visible(true)
 		var camera: Camera3D = root.get_viewport().get_camera_3d()
 		_check_camera(root, camera, false)
-#		editor_interface.get_selection().clear()
-#		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
 	else:
 		is_scene = false
 #		Is not a 2D or 3D scene
@@ -335,7 +329,7 @@ func _add_node(node_type: String) -> void:
 		Constants.PCAM_HOST_NODE_NAME:
 			var pcam_host: PhantomCameraHost = PhantomCameraHost.new()
 			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
-			if _is_2D:
+			if _is_2d:
 #				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
 				_get_camera_2d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
@@ -362,7 +356,7 @@ func _set_viewfinder(root: Node, editor: bool):
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
-			if _is_2D:
+			if _is_2d:
 				_selected_camera = pcam_host.camera_2d
 				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
 				if editor:
@@ -458,18 +452,18 @@ func _select_override_pcam() -> void:
 func scene_changed(scene_root: Node) -> void:
 	if scene_root is Node2D:
 #		print("Is 2D node")
-		_is_2D = true
+		_is_2d = true
 		is_scene = true
 
 		_add_node_button.set_visible(true)
 #		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
 		var camera: Camera2D = _get_camera_2d()
 
-		_check_camera(scene_root, camera, true)
+		#_check_camera(scene_root, camera, true) # TESTING - Might not be needed
 	elif scene_root is Node3D:
 #		print("Is 3D node")
 #		Is 3D scene
-		_is_2D = false
+		_is_2d = false
 		is_scene = true
 
 		_add_node_button.set_visible(true)

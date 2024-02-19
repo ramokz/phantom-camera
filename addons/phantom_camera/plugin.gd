@@ -18,7 +18,8 @@ const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 
 var pcam_3D_gizmo_plugin = Pcam3DPlugin.new()
 
-var editor_panel_instance
+var editor_panel_instance: Control
+var panel_button: Button
 #var viewfinder_panel_instance
 
 #endregion
@@ -35,14 +36,26 @@ func _enter_tree() -> void:
 	# Phantom Camera 3D Gizmo
 	add_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
 
+	# TODO - Should be disabled unless in editor
 	# Viewfinder
 	editor_panel_instance = EditorPanel.instantiate()
 	editor_panel_instance.editor_interface = get_editor_interface()
 	editor_panel_instance.editor_plugin = self
-	add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
-	_make_visible(false)
+	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
+	
+	panel_button.toggled.connect(btn_toggled)
 
-	connect("scene_changed", _scene_changed)
+	#scene_changed.connect(_scene_changed)
+
+
+func btn_toggled(toggled_on: bool):
+	if toggled_on:
+		editor_panel_instance.viewfinder.viewfinder_visible = true
+		editor_panel_instance.viewfinder.visibility_check()
+		#editor_panel_instance.set_process(true)
+	else:
+		editor_panel_instance.viewfinder.viewfinder_visible = false
+		#editor_panel_instance.set_process(false)
 
 
 func _exit_tree() -> void:
@@ -55,20 +68,11 @@ func _exit_tree() -> void:
 	remove_control_from_bottom_panel(editor_panel_instance)
 	editor_panel_instance.queue_free()
 #	if framed_viewfinder_panel_instance:
-	disconnect("scene_changed", _scene_changed)
+	#scene_changed.disconnect(_scene_changed) 
 
 
-#func _has_main_screen():
-#	return true;
-
-
-func _make_visible(visible):
-	if editor_panel_instance:
-		editor_panel_instance.set_visible(visible)
-
-
-func _scene_changed(scene_root: Node) -> void:
-	editor_panel_instance.viewfinder.scene_changed(scene_root)
+#func _scene_changed(scene_root: Node) -> void:
+	#editor_panel_instance.viewfinder.scene_changed(scene_root)
 
 #endregion
 
