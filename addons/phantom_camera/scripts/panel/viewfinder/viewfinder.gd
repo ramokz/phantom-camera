@@ -96,6 +96,8 @@ func _ready():
 
 
 	if Engine.is_editor_hint():
+		# TODO - Both signals below are called whenever a noe is selected in the scenetree
+		# Should only be triggered whenever a node is added or removed.
 		get_tree().node_added.connect(_node_added)
 		get_tree().node_removed.connect(_node_added)
 	else:

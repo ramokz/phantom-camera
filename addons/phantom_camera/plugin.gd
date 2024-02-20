@@ -43,19 +43,16 @@ func _enter_tree() -> void:
 	editor_panel_instance.editor_plugin = self
 	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
 	
+	# Trigger events in the viewfinder whenever 
 	panel_button.toggled.connect(btn_toggled)
-
-	#scene_changed.connect(_scene_changed)
 
 
 func btn_toggled(toggled_on: bool):
 	if toggled_on:
 		editor_panel_instance.viewfinder.viewfinder_visible = true
 		editor_panel_instance.viewfinder.visibility_check()
-		#editor_panel_instance.set_process(true)
 	else:
 		editor_panel_instance.viewfinder.viewfinder_visible = false
-		#editor_panel_instance.set_process(false)
 
 
 func _exit_tree() -> void:
@@ -67,12 +64,6 @@ func _exit_tree() -> void:
 
 	remove_control_from_bottom_panel(editor_panel_instance)
 	editor_panel_instance.queue_free()
-#	if framed_viewfinder_panel_instance:
-	#scene_changed.disconnect(_scene_changed) 
-
-
-#func _scene_changed(scene_root: Node) -> void:
-	#editor_panel_instance.viewfinder.scene_changed(scene_root)
 
 #endregion
 
