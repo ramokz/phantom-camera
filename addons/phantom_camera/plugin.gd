@@ -39,12 +39,13 @@ func _enter_tree() -> void:
 	# TODO - Should be disabled unless in editor
 	# Viewfinder
 	editor_panel_instance = EditorPanel.instantiate()
-	editor_panel_instance.editor_interface = get_editor_interface()
 	editor_panel_instance.editor_plugin = self
 	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
 	
 	# Trigger events in the viewfinder whenever 
 	panel_button.toggled.connect(btn_toggled)
+	
+	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
 
 
 func btn_toggled(toggled_on: bool):
