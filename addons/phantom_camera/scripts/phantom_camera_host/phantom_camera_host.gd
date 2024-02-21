@@ -51,7 +51,6 @@ var _is_child_of_camera: bool = false
 var _is_2D: bool = false
 
 
-var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
 
@@ -337,6 +336,7 @@ func _show_viewfinder_in_play() -> void:
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
 
+			var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 			_viewfinder_node = _viewfinder_scene.instantiate()
 			canvas_layer.add_child(_viewfinder_node)
 	else:
