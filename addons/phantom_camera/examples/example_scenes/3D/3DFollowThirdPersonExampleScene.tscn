@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=21 format=3 uid="uid://4i5csj0s34nb"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_47xf2"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_whx47"]
@@ -44,6 +44,12 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 [sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
 size = Vector3(0.5, 0.5, 0.3)
 
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_aoqa7"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 4.94
+dof_blur_far_transition = -1.0
+dof_blur_near_distance = 2.71
+
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 10, 20)
 
@@ -65,14 +71,13 @@ fov = 75.0
 
 [node name="Root" type="Node3D"]
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
-look_at_targets = []
 tween_resource = SubResource("Resource_8fhct")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_7m0fv")
@@ -80,13 +85,12 @@ follow_damping = true
 follow_distance = 3.5
 spring_length = 3.5
 
-[node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
+[node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35923, 1.41338)
 script = ExtResource("2_whx47")
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
-look_at_targets = []
 tween_resource = SubResource("Resource_e7t18")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_jogxh")
@@ -130,6 +134,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
+attributes = SubResource("CameraAttributesPractical_aoqa7")
 current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -180,11 +185,10 @@ metadata/_edit_lock_ = true
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
 metadata/_edit_lock_ = true
 
-[node name="CeilingPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_targets")]
+[node name="CeilingPhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 13.366, -0.162648)
 script = ExtResource("2_whx47")
-look_at_targets = []
 tween_resource = SubResource("Resource_afrr1")
 camera_3d_resource = SubResource("Resource_y5dqe")
 
