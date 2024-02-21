@@ -92,7 +92,7 @@ func _ready() -> void:
 		_set_viewfinder(root_node, false)
 
 	if Engine.is_editor_hint():
-		# TODO - Both signals below are called whenever a noe is selected in the scenetree
+		# BUG - Both signals below are called whenever a noe is selected in the scenetree
 		# Should only be triggered whenever a node is added or removed.
 		get_tree().node_added.connect(_node_added_or_removed)
 		get_tree().node_removed.connect(_node_added_or_removed)
@@ -430,29 +430,8 @@ func _select_override_pcam() -> void:
 #region Public Functions
 
 func scene_changed(scene_root: Node) -> void:
-	if scene_root is Node2D:
-#		print("Is 2D node")
-		_is_2d = true
-		is_scene = true
-
-		_add_node_button.set_visible(true)
-#		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
-		var camera: Camera2D = _get_camera_2d()
-
-		#_check_camera(scene_root, camera, true) # TESTING - Might not be needed
-	elif scene_root is Node3D:
-#		print("Is 3D node")
-#		Is 3D scene
-		_is_2d = false
-		is_scene = true
-
-		_add_node_button.set_visible(true)
-		var camera: Camera3D = scene_root.get_viewport().get_camera_3d()
-		_check_camera(scene_root, camera, false)
-	else:
-#		print("Not a 2D or 3D scene")
+	if not scene_root is Node2D and not scene_root is Node3D:
 		is_scene = false
-#		Is not a 2D or 3D scene
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.set_visible(false)
 
