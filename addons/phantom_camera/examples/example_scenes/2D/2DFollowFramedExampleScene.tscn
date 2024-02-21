@@ -1,10 +1,11 @@
-[gd_scene load_steps=16 format=3 uid="uid://bxtsl6qlpq1ar"]
+[gd_scene load_steps=17 format=3 uid="uid://bxtsl6qlpq1ar"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_27o77"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_1tbys"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_1kfnp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_mylkx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_lwx5e"]
+[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_tju6r"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="7_lgoyn"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_bo8m7"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="9_lv4it"]
@@ -621,7 +622,7 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(674, -132)
+position = Vector2(674, -121)
 zoom = Vector2(2, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
@@ -631,20 +632,21 @@ script = ExtResource("4_mylkx")
 
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(674, -132)
+position = Vector2(674, -121)
 script = ExtResource("5_lwx5e")
 priority = 5
 follow_mode = 5
 follow_target = NodePath("../CharacterBody2D")
 zoom = Vector2(2, 2)
+tween_resource = ExtResource("6_tju6r")
 tween_onload = false
-dead_zone_width = 0.362
-dead_zone_height = 1.0
-show_viewfinder_in_play = true
+follow_damping = true
+dead_zone_width = 0.416
+dead_zone_height = 0.63
 draw_limits = true
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
-position = Vector2(674, -132)
+position = Vector2(674, -121)
 script = ExtResource("7_lgoyn")
 metadata/_edit_group_ = true
 
@@ -703,7 +705,6 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("9_lv4it")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D"]
-position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_xj4ar")
 
 [node name="PlayerArea2D" type="Area2D" parent="Player/CharacterBody2D"]
@@ -720,6 +721,7 @@ unique_name_in_owner = true
 position = Vector2(100, -135)
 script = ExtResource("5_lwx5e")
 zoom = Vector2(2, 2)
+frame_preview = false
 tween_resource = ExtResource("10_uli1l")
 draw_limits = true
 metadata/_edit_lock_ = true
@@ -729,6 +731,7 @@ unique_name_in_owner = true
 position = Vector2(-183, -5)
 script = ExtResource("5_lwx5e")
 zoom = Vector2(2.5, 2.5)
+frame_preview = false
 tween_resource = ExtResource("11_rg2e5")
 draw_limits = true
 metadata/_edit_lock_ = true

@@ -1,7 +1,6 @@
-[gd_scene load_steps=17 format=3 uid="uid://drvexsp2t0nfy"]
+[gd_scene load_steps=16 format=3 uid="uid://drvexsp2t0nfy"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_1utlo"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_eayfa"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="2_mgsut"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="4_jnuod"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="6_e46ea"]
@@ -581,7 +580,7 @@ size = Vector2(64, 57)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
 size = Vector2(42, 57)
 
-[node name="ExampleScene2D" type="Node2D"]
+[node name="ExampleScene2D2" type="Node2D"]
 
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -3
@@ -626,10 +625,6 @@ position = Vector2(243, -28)
 zoom = Vector2(1.5, 1.5)
 editor_draw_screen = false
 editor_draw_limits = true
-
-[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
-process_priority = 100
-script = ExtResource("1_eayfa")
 
 [node name="Player" type="Node" parent="."]
 

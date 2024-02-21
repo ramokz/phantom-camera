@@ -28,9 +28,9 @@ signal update_editor_viewfinder
 #region Variables
 
 ## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
-var camera_2D: Camera2D = null
+var camera_2d: Camera2D = null
 ## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
-var camera_3D: Camera3D = null
+var camera_3d: Camera3D = null
 
 var _pcam_list: Array[Node] = []
 
@@ -51,7 +51,6 @@ var _is_child_of_camera: bool = false
 var _is_2D: bool = false
 
 
-var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
 
@@ -77,13 +76,13 @@ func _enter_tree() -> void:
 		_is_child_of_camera = true
 		if parent is Camera2D:
 			_is_2D = true
-			camera_2D = parent
+			camera_2d = parent
 			# Force applies position smoothing to be disabled
 			# This is to prevent overlap with the interpolation of the PCam2D.
-			camera_2D.set_position_smoothing_enabled(false)
+			camera_2d.set_position_smoothing_enabled(false)
 		else:
 			_is_2D = false
-			camera_3D = parent
+			camera_3d = parent
 
 		add_to_group(_constants.PCAM_HOST_GROUP_NAME)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
@@ -132,13 +131,13 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _active_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = camera_2D.get_global_transform()
+			_prev_active_pcam_2D_transform = camera_2d.get_global_transform()
 			_active_pcam.queue_redraw()
 		else:
-			_prev_active_pcam_3D_transform = camera_3D.get_global_transform()
-			_prev_camera_fov = camera_3D.get_fov()
-			_prev_camera_h_offset = camera_3D.get_h_offset()
-			_prev_camera_v_offset = camera_3D.get_v_offset()
+			_prev_active_pcam_3D_transform = camera_3d.get_global_transform()
+			_prev_camera_fov = camera_3d.get_fov()
+			_prev_camera_h_offset = camera_3d.get_h_offset()
+			_prev_camera_v_offset = camera_3d.get_v_offset()
 
 		_active_pcam.set_is_active(self, false)
 		_active_pcam.became_inactive.emit()
@@ -156,10 +155,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam.became_active.emit()
 
 	if _is_2D:
-		_camera_zoom = camera_2D.get_zoom()
+		_camera_zoom = camera_2d.get_zoom()
 	else:
-		if _active_pcam.get_camera_3D_resource():
-			camera_3D.cull_mask = _active_pcam.get_cull_mask()
+		if _active_pcam.get_camera_3d_resource():
+			camera_3d.cull_mask = _active_pcam.get_cull_mask()
 
 	if no_previous_pcam:
 		if _is_2D:
@@ -198,20 +197,20 @@ func _pcam_tween(delta: float) -> void:
 		var interpolation_destination: Vector2 = _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
 
 		if _active_pcam.snap_to_pixel:
-			camera_2D.set_global_position(interpolation_destination.round())
+			camera_2d.set_global_position(interpolation_destination.round())
 		else:
-			camera_2D.set_global_position(interpolation_destination)
+			camera_2d.set_global_position(interpolation_destination)
 
-		camera_2D.set_zoom(
+		camera_2d.set_zoom(
 			_tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
 		)
 	else:
-		camera_3D.set_global_position(
+		camera_3d.set_global_position(
 			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
 		)
 
 		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
-		camera_3D.set_quaternion(
+		camera_3d.set_quaternion(
 			Tween.interpolate_value(
 				prev_active_pcam_3D_basis, \
 				prev_active_pcam_3D_basis.inverse() * Quaternion(_active_pcam_3D_glob_transform.basis.orthonormalized()),
@@ -223,17 +222,17 @@ func _pcam_tween(delta: float) -> void:
 		)
 
 		if _prev_camera_fov != _active_pcam.get_fov():
-			camera_3D.set_fov(
+			camera_3d.set_fov(
 				_tween_interpolate_value(_prev_camera_fov, _active_pcam.get_fov())
 			)
 
 		if _prev_camera_h_offset != _active_pcam.get_h_offset():
-			camera_3D.set_h_offset(
+			camera_3d.set_h_offset(
 				_tween_interpolate_value(_prev_camera_h_offset, _active_pcam.get_h_offset())
 			)
 
 		if _prev_camera_v_offset != _active_pcam.get_v_offset():
-			camera_3D.set_v_offset(
+			camera_3d.set_v_offset(
 				_tween_interpolate_value(_prev_camera_v_offset, _active_pcam.get_v_offset())
 			)
 
@@ -256,18 +255,18 @@ func _pcam_follow(delta: float) -> void:
 		if _active_pcam.snap_to_pixel:
 			var snap_to_pixel_glob_transform := _active_pcam_2D_glob_transform
 			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
-			camera_2D.set_global_transform(snap_to_pixel_glob_transform)
+			camera_2d.set_global_transform(snap_to_pixel_glob_transform)
 		else:
-			camera_2D.set_global_transform(_active_pcam_2D_glob_transform)
+			camera_2d.set_global_transform(_active_pcam_2D_glob_transform)
 		if _active_pcam.get_has_multiple_follow_targets():
 			if _active_pcam.follow_damping:
-				camera_2D.zoom = camera_2D.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
+				camera_2d.zoom = camera_2d.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
 			else:
-				camera_2D.set_zoom(_active_pcam.zoom)
+				camera_2d.set_zoom(_active_pcam.zoom)
 		else:
-			camera_2D.set_zoom(_active_pcam.zoom)
+			camera_2d.set_zoom(_active_pcam.zoom)
 	else:
-		camera_3D.set_global_transform(_active_pcam_3D_glob_transform)
+		camera_3d.set_global_transform(_active_pcam_3D_glob_transform)
 
 
 func _process_pcam(delta: float) -> void:
@@ -283,11 +282,11 @@ func _process_pcam(delta: float) -> void:
 		# TODO - Should be able to find a more efficient way
 		if Engine.is_editor_hint():
 			if not _is_2D:
-				if _active_pcam.get_camera_3D_resource():
-					camera_3D.cull_mask = _active_pcam.get_cull_mask()
-					camera_3D.fov = _active_pcam.get_fov()
-					camera_3D.h_offset =_active_pcam.get_h_offset()
-					camera_3D.v_offset = _active_pcam.get_v_offset()
+				if _active_pcam.get_camera_3d_resource():
+					camera_3d.cull_mask = _active_pcam.get_cull_mask()
+					camera_3d.fov = _active_pcam.get_fov()
+					camera_3d.h_offset =_active_pcam.get_h_offset()
+					camera_3d.v_offset = _active_pcam.get_v_offset()
 
 	# When tweening
 	else:
@@ -337,6 +336,7 @@ func _show_viewfinder_in_play() -> void:
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
 
+			var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 			_viewfinder_node = _viewfinder_scene.instantiate()
 			canvas_layer.add_child(_viewfinder_node)
 	else:
