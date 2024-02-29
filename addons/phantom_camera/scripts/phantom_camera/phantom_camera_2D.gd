@@ -239,6 +239,7 @@ var _has_tweened: bool = false
 @export var auto_zoom: bool = false:
 	set = set_auto_zoom,
 	get = get_auto_zoom
+
 ## Sets the param minimum zoom amount, in other words how far away the
 ## [param Camera2D] can be from scene.[br][br]
 ## This only works when [member auto_zoom] is enabled.
@@ -252,10 +253,10 @@ var _has_tweened: bool = false
 @export var auto_zoom_max: float = 5:
 	set = set_auto_zoom_max,
 	get = get_auto_zoom_max
+
 ## Determines how close to the edges the targets are allowed to be.
 ## This is useful to avoid targets being cut off at the edges of the screen.
 ## [br][br]
-
 ## The Vector4 parameter order goes: [param Left] - [param Top] - [param Right]
 ## - [param Bottom].
 @export var auto_zoom_margin: Vector4 = Vector4.ZERO:

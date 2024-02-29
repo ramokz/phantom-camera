@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
-@export var SPEED: float = 5.0
-@export var JUMP_VELOCITY: float = 4.5
+@export var speed: float = 5.0
+@export var jump_velocity: float = 4.5
 @export var enable_gravity = true
 
 @onready var _camera: Camera3D = %MainCamera3D
@@ -70,7 +70,7 @@ func _physics_process(delta: float) -> void:
 		INPUT_MOVE_DOWM_STRINGNAME
 	)
 
-	var cam_dir: Vector3 = -_camera.global_transform.basis.z
+	var cam_dir: Vector3 = -global_transform.basis.z
 
 	var direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
@@ -79,11 +79,11 @@ func _physics_process(delta: float) -> void:
 		move_dir.z = direction.z
 
 		move_dir = move_dir.rotated(Vector3.UP, _camera.rotation.y).normalized()
-		velocity.x = move_dir.x * SPEED
-		velocity.z = move_dir.z * SPEED
+		velocity.x = move_dir.x * speed
+		velocity.z = move_dir.z * speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, speed)
+		velocity.z = move_toward(velocity.z, 0, speed)
 
 	move_and_slide()
 
