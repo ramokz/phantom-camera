@@ -50,7 +50,15 @@ var _multiple_pcam_hosts: bool = false
 var _is_child_of_camera: bool = false
 var _is_2D: bool = false
 
+# Camera Noise
+var _noise_2d: PhantomCameraNoise2D = null
+var _noise_3d: PhantomCameraNoise3D = null
+var _trauma: float = 0
+var _noise_time: float = 0
+var _noise_duration: float = 1
+var _should_have_noise: bool = false
 
+# Viewfinder
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
 
@@ -150,7 +158,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.follow_damping
-	
+	_noise_time = 0 # TODO - Might not be needed
+
 	if _active_pcam.show_viewfinder_in_play:
 		_viewfinder_needed_check = true
 
@@ -203,7 +212,7 @@ func _pcam_tween(delta: float) -> void:
 			camera_2d.global_position = interpolation_destination.round()
 		else:
 			camera_2d.global_position = interpolation_destination
-		
+
 		camera_2d.rotation = _tween_interpolate_value(_prev_active_pcam_2d_transform.get_rotation(), _active_pcam_2d_glob_transform.get_rotation())
 		camera_2d.zoom = _tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
 	else:
@@ -274,20 +283,16 @@ func _process_pcam(delta: float) -> void:
 	# When following
 	if not _trigger_pcam_tween:
 		_pcam_follow(delta)
-
 		if _viewfinder_needed_check:
 			_show_viewfinder_in_play()
 			_viewfinder_needed_check = false
-			
-		# TODO - Should be able to find a more efficient way
-		if Engine.is_editor_hint():
+		if Engine.is_editor_hint(): # NOTE - Should be able to find a more efficient way
 			if not _is_2D:
 				if _active_pcam.get_camera_3d_resource():
 					camera_3d.cull_mask = _active_pcam.get_cull_mask()
 					camera_3d.fov = _active_pcam.get_fov()
 					camera_3d.h_offset =_active_pcam.get_h_offset()
 					camera_3d.v_offset = _active_pcam.get_v_offset()
-
 	# When tweening
 	else:
 		if _tween_duration + delta <= _active_pcam.get_tween_duration():
@@ -325,17 +330,70 @@ func _process(delta):
 
 	_process_pcam(delta)
 
-#endregion
+	if _active_pcam.get_noise_active():
+		_add_noise(delta)
 
 
-#region Public Functions
+func _add_noise(delta: float) -> void:
+	_noise_time += delta
+
+	if not _noise_3d.loop:
+		if _noise_time >= _noise_3d.duration:
+
+			#lerpf(_trauma, 0, 1 (_noise _noise_3d.duration))
+			#lerpf(_trauma, 0, delta * _noise_3d.decay)
+			_trauma = max(_trauma - delta * _noise_3d.decay, 0)
+			print("Decaying")
+			if _noise_time >= _noise_3d.duration + _noise_3d.decay:
+				_active_pcam.set_noise_active(false)
+				print("Done")
+		else:
+			_trauma += 0.1
+	else:
+		_trauma += 0.1
+
+	print("Adding")
+
+	_trauma = clampf(_trauma + delta, 0, 1)
+	#_trauma = max(_trauma - delta * _noise_3d.decay, 0)
+	var intensity: float = pow(_trauma, 2)
+
+	camera_3d.quaternion = Quaternion.from_euler(Vector3(
+		deg_to_rad(
+			camera_3d.rotation_degrees.x + _active_pcam.noise.max_rotational_offset_x * \
+			intensity * _get_noise_from_seed(_noise_3d, 0 + _noise_3d.seed_offset)
+		),
+		deg_to_rad(
+			camera_3d.rotation_degrees.y + _active_pcam.noise.max_rotational_offset_y * \
+			intensity * _get_noise_from_seed(_noise_3d, 1 + _noise_3d.seed_offset)
+		),
+		deg_to_rad(
+			camera_3d.rotation_degrees.z + _active_pcam.noise.max_rotational_offset_z * \
+			intensity * _get_noise_from_seed(_noise_3d, 2 + _noise_3d.seed_offset)
+		)
+	))
+
+	camera_3d.position = Vector3(
+		camera_3d.position.x + _noise_3d.max_position_offset_x * \
+		intensity * _get_noise_from_seed(_noise_3d, 0 + _noise_3d.seed_offset),
+		camera_3d.position.y + _noise_3d.max_position_offset_y * \
+		intensity * _get_noise_from_seed(_noise_3d, 1 + _noise_3d.seed_offset),
+		camera_3d.position.z + _noise_3d.max_position_offset_z * \
+		intensity * _get_noise_from_seed(_noise_3d, 2 + _noise_3d.seed_offset),
+	)
+
+
+func _get_noise_from_seed(noise: PhantomCameraNoise3D, seed: int) -> float:
+	noise.noise_algorithm.seed = seed
+	return noise.noise_algorithm.get_noise_1d(_noise_time * noise.intensity)
+
 
 func _show_viewfinder_in_play() -> void:
 	if _active_pcam.show_viewfinder_in_play:
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
-			
+
 			if not is_instance_valid(_viewfinder_node):
 				var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 				_viewfinder_node = _viewfinder_scene.instantiate()
@@ -346,6 +404,20 @@ func _show_viewfinder_in_play() -> void:
 	else:
 		if is_instance_valid(_viewfinder_node):
 			_viewfinder_node.visible = false
+
+#endregion
+
+
+#region Public Functions
+func add_trauma_3D(trauma_amount: float, noise_resource: PhantomCameraNoise3D, caller: Node):
+	if caller is PhantomCamera3D:
+		print("Adding trauma")
+		_noise_3d = noise_resource
+		_noise_time = 0
+		_trauma = clampf(_trauma + trauma_amount, 0, 1)
+	else:
+		printerr("This method can only be called from a PhantomCamera3D node. \n
+		Call `add_trauma()` from your PhantomCamera3D instance instead.")
 
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
@@ -359,7 +431,7 @@ func pcam_added_to_scene(pcam: Node) -> void:
 			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority onload
 
 		_find_pcam_with_highest_priority()
-	
+
 	else:
 		printerr("This function should only be called from PhantomCamera scripts")
 
@@ -378,7 +450,7 @@ func pcam_removed_from_scene(pcam: Node) -> void:
 		printerr("This function should only be called from PhantomCamera scripts")
 
 ## Triggers a recalculation to determine which PhantomCamera has the highest
-## priority. 
+## priority.
 func pcam_priority_updated(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.priority_override: return
 

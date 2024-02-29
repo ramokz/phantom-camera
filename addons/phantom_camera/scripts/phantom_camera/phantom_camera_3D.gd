@@ -372,6 +372,24 @@ var _follow_spring_arm: SpringArm3D
 var _follow_framed_offset: Vector3
 var _current_rotation: Vector3
 
+@export_group("Noise")
+## Defines the noise, or shake, of a camera.[br]
+## By default, no noise sis being applied.
+@export var noise: PhantomCameraNoise3D:
+	set = set_noise,
+	get = get_noise
+
+## If true, will trigger the noise the momemnt the PhantomCamera3D becomes active.
+## To trigger or disable the noise during runtime, call [method noise_start][br]
+## and [method noise_stop] respectively.
+@export var noise_auto_start: bool = true:
+	set = set_noise_auto_start,
+	get = get_noise_auto_start
+
+var _noise_active: bool = false:
+	set = set_noise_active,
+	get = get_noise_active
+
 #endregion
 
 
@@ -1219,6 +1237,55 @@ func set_inactive_update_mode(value: int) -> void:
 ## Gets [member inactive_update_mode] property.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
+
+## Sets a NoiseResource
+func set_noise(value: PhantomCameraNoise3D) -> void:
+	noise = value
+	if value:
+		# Applies a new resource algorithm if nothing is not already assigned.
+		if not noise.noise_algorithm:
+			# Applies a default FastNoiseLite Resource
+			noise.noise_algorithm = FastNoiseLite.new()
+			# Applies a default Noise of Type Perlin 
+			noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+		if is_active() and noise_auto_start:
+			_noise_active = true
+	else:
+		_noise_active = false
+func get_noise() -> PhantomCameraNoise3D:
+	return noise
+
+func set_noise_auto_start(value: bool) -> void:
+	noise_auto_start = value
+
+func get_noise_auto_start() -> bool:
+	return noise_auto_start
+
+## TODO
+func noise_start() -> void:
+	pass
+
+## TODO
+func noise_stop(stop_instantly: bool = false) -> void:
+	pass
+
+## TODO - Internal only
+func set_noise_active(value: bool) -> void:
+	_noise_active = value
+func get_noise_active() -> bool:
+	return _noise_active
+
+
+## Trauma adds velocity to the noise. The value will be clamped between 0 and 1. [br]
+## If you want to add incremental noise supply a value between 0 and 1.
+## If you want to have the noise run at max speed supply a value of 1.
+func add_noise_trauma(value: float, noise_resource: PhantomCameraNoise3D) -> void:
+	if _has_valid_pcam_owner():
+		_noise_active = true
+		pcam_host_owner.add_trauma_3D(value, noise_resource, self)
+	else:
+		printerr("PCamHost not found in current scene.")
+
 
 
 ## Assigns a [Camera3DResource].
