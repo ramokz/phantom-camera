@@ -1000,7 +1000,7 @@ func get_third_person_rotation_degrees() -> Vector3:
 ## Assigns a new Third Person SpringArm3D Length value.
 func set_spring_arm_spring_length(value: float) -> void:
 	follow_distance = value
-	_follow_spring_arm_node.set_length(value)
+	_follow_spring_arm_node.set_length(follow_distance)
 ## Gets Third Person SpringArm3D Length value.
 func get_spring_arm_spring_length() -> float:
 	return follow_distance
@@ -1008,8 +1008,10 @@ func get_spring_arm_spring_length() -> float:
 ## Assigns a new Third Person SpringArm3D Collision Mask value.
 func set_spring_arm_collision_mask(value: int) -> void:
 	_follow_spring_arm_collision_mask = value
+	_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
 func set_collision_mask_value(layer_number: int, value: bool) -> void:
 	_follow_spring_arm_collision_mask = _set_layer(_follow_spring_arm_collision_mask, layer_number, value)
+	_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
 ## Gets Third Person SpringArm3D Collision Mask value.
 func get_spring_arm_collision_mask() -> int:
 	return _follow_spring_arm_collision_mask
@@ -1017,6 +1019,7 @@ func get_spring_arm_collision_mask() -> int:
 ## Assigns a new Third Person SpringArm3D Shape value.
 func set_spring_arm_shape(value: Shape3D) -> void:
 	_follow_spring_arm_shape = value
+	_follow_spring_arm_node.set_shape(_follow_spring_arm_shape)
 ## Gets Third Person SpringArm3D Shape value.
 func get_spring_arm_shape() -> Shape3D:
 	return _follow_spring_arm_shape
@@ -1024,6 +1027,7 @@ func get_spring_arm_shape() -> Shape3D:
 ## Assigns a new Third Person SpringArm3D Margin value.
 func set_spring_arm_margin(value: float) -> void:
 	_follow_spring_arm_margin = value
+	_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
 ## Gets Third Person SpringArm3D Margin value.
 func get_spring_arm_margin() -> float:
 	return _follow_spring_arm_margin
