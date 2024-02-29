@@ -1086,7 +1086,7 @@ func get_third_person_quaternion() -> Quaternion:
 ## Assigns a new Third Person [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
-	_follow_spring_arm.spring_length = value
+	_follow_spring_arm.spring_length = follow_distance
 ## Gets the [member SpringArm3D.length]
 ## from a [param Third Person] [enum follow_mode] instance.
 func get_spring_length() -> float:
@@ -1096,10 +1096,12 @@ func get_spring_length() -> float:
 ## is set to [params Third Person].
 func set_collision_mask(value: int) -> void:
 	collision_mask = value
+	_follow_spring_arm.collision_mask = collision_mask
 ## Enables or disables a specific [member collision_mask] layer for the
 ## [SpringArm3d] when [enum FollowMode] is set to [params Third Person].
 func set_collision_mask_value(value: int, enabled: bool) -> void:
 	collision_mask = _set_layer(collision_mask, value, enabled)
+	_follow_spring_arm.collision_mask = collision_mask
 ## Gets [member collision_mask] from the [SpringArm3D] when [enum FollowMode]
 ## is set to [params Third Person].
 func get_collision_mask() -> int:
@@ -1109,6 +1111,7 @@ func get_collision_mask() -> int:
 ## is set to [params Third Person].
 func set_shape(value: Shape3D) -> void:
 	shape = value
+	_follow_spring_arm.shape = shape
 ## Gets Third Person [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
 	return shape
@@ -1117,6 +1120,7 @@ func get_shape() -> Shape3D:
 ## is set to [params Third Person].
 func set_margin(value: float) -> void:
 	margin = value
+	_follow_spring_arm.margin = margin
 ## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
 ## [params Third Person].
 func get_margin() -> float:
