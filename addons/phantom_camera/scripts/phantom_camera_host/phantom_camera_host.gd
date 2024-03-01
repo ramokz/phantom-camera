@@ -39,8 +39,8 @@ var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false
 
-var _prev_active_pcam_2D_transform: Transform2D = Transform2D()
-var _prev_active_pcam_3D_transform: Transform3D = Transform3D()
+var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
+var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
 
 var _trigger_pcam_tween: bool = false
 var _tween_duration: float = false
@@ -60,8 +60,8 @@ var _prev_camera_h_offset: float = 0
 var _prev_camera_v_offset: float = 0
 var _prev_camera_fov: float = 75
 
-var _active_pcam_2D_glob_transform: Transform2D = Transform2D()
-var _active_pcam_3D_glob_transform: Transform3D = Transform3D()
+var _active_pcam_2d_glob_transform: Transform2D = Transform2D()
+var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 
 #endregion
 
@@ -114,9 +114,9 @@ func _ready() -> void:
 	if not is_instance_valid(_active_pcam): return
 
 	if _is_2D:
-		_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
+		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
 	else:
-		_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
+		_active_pcam_3d_glob_transform = _active_pcam.get_global_transform()
 
 
 func _check_camera_host_amount() -> void:
@@ -131,10 +131,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _active_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = camera_2d.get_global_transform()
+			_prev_active_pcam_2d_transform = camera_2d.get_global_transform()
 			_active_pcam.queue_redraw()
 		else:
-			_prev_active_pcam_3D_transform = camera_3d.get_global_transform()
+			_prev_active_pcam_3d_transform = camera_3d.get_global_transform()
 			_prev_camera_fov = camera_3d.get_fov()
 			_prev_camera_h_offset = camera_3d.get_h_offset()
 			_prev_camera_v_offset = camera_3d.get_v_offset()
@@ -162,9 +162,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2D_transform = _active_pcam.get_global_transform()
+			_prev_active_pcam_2d_transform = _active_pcam.get_global_transform()
 		else:
-			_prev_active_pcam_3D_transform = _active_pcam.get_global_transform()
+			_prev_active_pcam_3d_transform = _active_pcam.get_global_transform()
 
 	_tween_duration = 0
 
@@ -194,32 +194,29 @@ func _pcam_tween(delta: float) -> void:
 	_active_pcam.is_tweening.emit()
 
 	if _is_2D:
-		var interpolation_destination: Vector2 = _tween_interpolate_value(_prev_active_pcam_2D_transform.origin, _active_pcam_2D_glob_transform.origin)
+		var interpolation_destination: Vector2 = _tween_interpolate_value(_prev_active_pcam_2d_transform.origin, _active_pcam_2d_glob_transform.origin)
 
 		if _active_pcam.snap_to_pixel:
-			camera_2d.set_global_position(interpolation_destination.round())
+			camera_2d.global_position = interpolation_destination.round()
 		else:
-			camera_2d.set_global_position(interpolation_destination)
-
-		camera_2d.set_zoom(
-			_tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
-		)
+			camera_2d.global_position = interpolation_destination
+		
+		camera_2d.rotation = _tween_interpolate_value(_prev_active_pcam_2d_transform.get_rotation(), _active_pcam_2d_glob_transform.get_rotation())
+		camera_2d.zoom = _tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
 	else:
-		camera_3d.set_global_position(
-			_tween_interpolate_value(_prev_active_pcam_3D_transform.origin, _active_pcam_3D_glob_transform.origin)
-		)
+		camera_3d.global_position = \
+			_tween_interpolate_value(_prev_active_pcam_3d_transform.origin, _active_pcam_3d_glob_transform.origin)
 
-		var prev_active_pcam_3D_basis = Quaternion(_prev_active_pcam_3D_transform.basis.orthonormalized())
-		camera_3d.set_quaternion(
+		var prev_active_pcam_3d_basis = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
+		camera_3d.quaternion = \
 			Tween.interpolate_value(
-				prev_active_pcam_3D_basis, \
-				prev_active_pcam_3D_basis.inverse() * Quaternion(_active_pcam_3D_glob_transform.basis.orthonormalized()),
+				prev_active_pcam_3d_basis, \
+				prev_active_pcam_3d_basis.inverse() * Quaternion(_active_pcam_3d_glob_transform.basis.orthonormalized()),
 				_tween_duration, \
 				_active_pcam.get_tween_duration(), \
 				_active_pcam.get_tween_transition(),
 				_active_pcam.get_tween_ease(),
 			)
-		)
 
 		if _prev_camera_fov != _active_pcam.get_fov():
 			camera_3d.set_fov(
@@ -253,20 +250,20 @@ func _pcam_follow(delta: float) -> void:
 
 	if _is_2D:
 		if _active_pcam.snap_to_pixel:
-			var snap_to_pixel_glob_transform := _active_pcam_2D_glob_transform
+			var snap_to_pixel_glob_transform := _active_pcam_2d_glob_transform
 			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
-			camera_2d.set_global_transform(snap_to_pixel_glob_transform)
+			camera_2d.global_transform = snap_to_pixel_glob_transform
 		else:
-			camera_2d.set_global_transform(_active_pcam_2D_glob_transform)
+			camera_2d.global_transform =_active_pcam_2d_glob_transform
 		if _active_pcam.get_has_multiple_follow_targets():
 			if _active_pcam.follow_damping:
 				camera_2d.zoom = camera_2d.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
 			else:
-				camera_2d.set_zoom(_active_pcam.zoom)
+				camera_2d.zoom = _active_pcam.zoom
 		else:
-			camera_2d.set_zoom(_active_pcam.zoom)
+			camera_2d.zoom = _active_pcam.zoom
 	else:
-		camera_3d.set_global_transform(_active_pcam_3D_glob_transform)
+		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
 
 func _process_pcam(delta: float) -> void:
@@ -319,9 +316,9 @@ func _process(delta):
 	if not is_instance_valid(_active_pcam): return
 
 	if _is_2D:
-		_active_pcam_2D_glob_transform = _active_pcam.get_global_transform()
+		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
 	else:
-		_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
+		_active_pcam_3d_glob_transform = _active_pcam.get_global_transform()
 
 	_process_pcam(delta)
 
