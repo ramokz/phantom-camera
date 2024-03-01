@@ -52,6 +52,8 @@ var _active_pcam: Node
 
 var _is_2d: bool
 
+var root_node: Node
+
 #endregion
 
 #region Public variables
@@ -80,7 +82,7 @@ func _ready() -> void:
 		camera_viewport_panel.self_modulate.a = 0
 
 #	TODO - Don't think this is needed / does anything?
-	var root_node = get_tree().get_root().get_child(0)
+	root_node = get_tree().get_root().get_child(0)
 	if root_node is Node3D || root_node is Node2D:
 		%SubViewportContainer.set_visible(false)
 
@@ -389,11 +391,18 @@ func _resized() -> void:
 
 func _on_dead_zone_changed() -> void:
 	if not is_instance_valid(_active_pcam): return
-	if not _active_pcam.follow_mode == _active_pcam.FollowMode.FRAMED: return  
+	if not _active_pcam.follow_mode == _active_pcam.FollowMode.FRAMED: return
 
 	# Waits until the camera_viewport_panel has been resized when launching the game
 	if camera_viewport_panel.size.x == 0:
 		await camera_viewport_panel.resized
+	
+	#print(_active_pcam.get_pcam_host_owner())
+	if is_instance_valid(_active_pcam.get_pcam_host_owner()):
+		pcam_host = _active_pcam.get_pcam_host_owner()
+		if not _active_pcam == pcam_host.get_active_pcam():
+			_active_pcam == pcam_host.get_active_pcam()
+			print("Active pcam in viewfinder: ", _active_pcam)
 
 	var dead_zone_width: float = _active_pcam.dead_zone_width * camera_viewport_panel.size.x
 	var dead_zone_height: float = _active_pcam.dead_zone_height * camera_viewport_panel.size.y
@@ -428,6 +437,10 @@ func _select_override_pcam() -> void:
 
 
 #region Public Functions
+
+func update_dead_zone() -> void:
+	_set_viewfinder(root_node, true)
+
 
 func scene_changed(scene_root: Node) -> void:
 	if not scene_root is Node2D and not scene_root is Node3D:
