@@ -150,6 +150,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.follow_damping
+	
+	if _active_pcam.show_viewfinder_in_play:
+		_viewfinder_needed_check = true
 
 	_active_pcam.set_is_active(self, true)
 	_active_pcam.became_active.emit()
@@ -293,7 +296,7 @@ func _process_pcam(delta: float) -> void:
 			_tween_duration = 0
 			_trigger_pcam_tween = false
 
-			_show_viewfinder_in_play()
+			#_show_viewfinder_in_play() # NOTE - Likely not needed
 			_pcam_follow(delta)
 			_active_pcam.tween_completed.emit()
 
@@ -332,13 +335,18 @@ func _show_viewfinder_in_play() -> void:
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
-
-			var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
-			_viewfinder_node = _viewfinder_scene.instantiate()
-			canvas_layer.add_child(_viewfinder_node)
+			
+			if not is_instance_valid(_viewfinder_node):
+				var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+				_viewfinder_node = _viewfinder_scene.instantiate()
+				canvas_layer.add_child(_viewfinder_node)
+			else:
+				_viewfinder_node.visible = true
+				_viewfinder_node.update_dead_zone()
 	else:
-		if _viewfinder_node:
-			_viewfinder_node.queue_free()
+		if is_instance_valid(_viewfinder_node):
+			_viewfinder_node.visible = false
+
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a
