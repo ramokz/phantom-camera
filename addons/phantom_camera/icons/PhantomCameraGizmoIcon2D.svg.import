@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b671h5enwiljg"
 path.s3tc="res://.godot/imported/PhantomCameraGizmoIcon2D.svg-5d7dab204f188a4185c9a05ae4e57434.s3tc.ctex"
+path.etc2="res://.godot/imported/PhantomCameraGizmoIcon2D.svg-5d7dab204f188a4185c9a05ae4e57434.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg"
-dest_files=["res://.godot/imported/PhantomCameraGizmoIcon2D.svg-5d7dab204f188a4185c9a05ae4e57434.s3tc.ctex"]
+dest_files=["res://.godot/imported/PhantomCameraGizmoIcon2D.svg-5d7dab204f188a4185c9a05ae4e57434.s3tc.ctex", "res://.godot/imported/PhantomCameraGizmoIcon2D.svg-5d7dab204f188a4185c9a05ae4e57434.etc2.ctex"]
 
 [params]
 
