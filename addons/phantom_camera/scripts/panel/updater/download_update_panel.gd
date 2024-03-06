@@ -62,12 +62,6 @@ func _ready() -> void:
 
 
 func _on_download_button_pressed() -> void:
-	# Safeguard the actual dialogue manager repo from accidentally updating itself
-	if FileAccess.file_exists("res://examples/test_scenes/3d/dev_scene_3d.tscn"):
-		prints("You can't update the addon from within itself.")
-		failed.emit()
-		return
-
 	download_http_request.request(next_version_release.zipball_url)
 	download_button.disabled = true
 	download_label.text = "Downloading..."

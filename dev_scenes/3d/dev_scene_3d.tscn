@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://ctqdyuxek2ere"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_7n673"]
-[ext_resource type="Script" path="res://test_scenes/3d/dev_scene_3d_script.gd" id="1_gnrfx"]
+[ext_resource type="Script" path="res://dev_scenes/3d/dev_scene_3d_script.gd" id="1_gnrfx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_4sdb7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_yhkrs"]
 
@@ -32,21 +32,34 @@ metadata/_edit_lock_ = true
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.507, 2)
 
-[node name="PhantomCamera3D2" type="Node3D" parent="." node_paths=PackedStringArray("look_at_targets")]
+[node name="PhantomCamera3D2" type="Node3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.438371, 0.898794, 0, -0.898794, 0.438371, 0, 4.507, 2)
 script = ExtResource("3_4sdb7")
-look_at_targets = []
+priority_override = false
+priority = 0
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = null
+tween_on_load = true
+inactive_update_mode = 0
+camera_3D_resource = null
 
-[node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target", "look_at_targets")]
+[node name="PhantomCamera3D" type="Node3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
 script = ExtResource("3_4sdb7")
+priority_override = false
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D2")
-look_at_targets = []
-follow_offset = Vector3(0, 2, 2)
+follow_target = NodePath("")
+follow_parameters/target_offset = Vector3(0, 0, 0)
+follow_parameters/damping = false
+look_at_mode = 0
+tween_parameters = null
+tween_on_load = true
+inactive_update_mode = 0
+camera_3D_resource = null
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
