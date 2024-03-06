@@ -74,13 +74,14 @@ unique_name_in_owner = true
 transparent_bg = true
 title = "New Update"
 initial_position = 1
-size = Vector2i(350, 350)
+size = Vector2i(404, 450)
 transient = false
 unresizable = true
 borderless = true
 transparent = true
 keep_title_visible = false
 content_scale_mode = 1
+theme_override_constants/buttons_separation = 30
 theme_override_styles/panel = SubResource("StyleBoxFlat_dr4n4")
 ok_button_text = "Close"
 
