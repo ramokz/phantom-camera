@@ -1,9 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://ctqdyuxek2ere"]
+[gd_scene load_steps=13 format=3 uid="uid://ctqdyuxek2ere"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_7n673"]
 [ext_resource type="Script" path="res://dev_scenes/3d/dev_scene_3d_script.gd" id="1_gnrfx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_4sdb7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_yhkrs"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_2cfaw"]
 
@@ -21,6 +23,18 @@ fog_density = 0.0392
 adjustment_enabled = true
 adjustment_contrast = 1.19
 
+[sub_resource type="Resource" id="Resource_cscqa"]
+script = ExtResource("6_pmc8r")
+duration = 0.6
+transition = 3
+ease = 2
+
+[sub_resource type="Resource" id="Resource_c7ngr"]
+script = ExtResource("6_pmc8r")
+duration = 0.6
+transition = 8
+ease = 2
+
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_gnrfx")
 
@@ -30,40 +44,14 @@ metadata/_edit_lock_ = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.507, 2)
+transform = Transform3D(1, 0, 0, 0, 0.712308, 0.701867, 0, -0.701867, 0.712308, 0, 2.762, 2.195)
 
-[node name="PhantomCamera3D2" type="Node3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.438371, 0.898794, 0, -0.898794, 0.438371, 0, 4.507, 2)
-script = ExtResource("3_4sdb7")
-priority_override = false
-priority = 0
-follow_mode = 0
-look_at_mode = 0
-tween_parameters = null
-tween_on_load = true
-inactive_update_mode = 0
-camera_3D_resource = null
-
-[node name="PhantomCamera3D" type="Node3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
-script = ExtResource("3_4sdb7")
-priority_override = false
-priority = 10
-follow_mode = 2
-follow_target = NodePath("")
-follow_parameters/target_offset = Vector3(0, 0, 0)
-follow_parameters/damping = false
-look_at_mode = 0
-tween_parameters = null
-tween_on_load = true
-inactive_update_mode = 0
-camera_3D_resource = null
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+script = ExtResource("3_fb4x5")
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, 0, 0.507, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.507, 0)
 script = ExtResource("4_yhkrs")
 metadata/_edit_group_ = true
 
@@ -86,3 +74,33 @@ environment = SubResource("Environment_0s7cr")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, -2.58262, 0)
 metadata/_edit_lock_ = true
+
+[node name="ScenePhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
+script = ExtResource("3_4sdb7")
+priority_override = false
+priority = 10
+follow_mode = 0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_cscqa")
+tween_on_load = false
+inactive_update_mode = 0
+camera_3D_resource = null
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.712308, 0.701867, 0, -0.701867, 0.712308, 0, 2.762, 2.195)
+script = ExtResource("3_4sdb7")
+priority_override = false
+priority = 30
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D2")
+follow_parameters/target_offset = Vector3(0, 2.255, 2.195)
+follow_parameters/damping = true
+follow_parameters/damping_value = 10.0
+look_at_mode = 0
+tween_parameters = SubResource("Resource_c7ngr")
+tween_on_load = false
+inactive_update_mode = 0
+camera_3D_resource = null
