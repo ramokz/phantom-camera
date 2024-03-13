@@ -43,7 +43,7 @@ var on_before_refresh: Callable = func(): return true
 func _ready() -> void:
 	hide()
 
-	# Check for updates on GitHub
+	# Check for updates on GitHub Releases
 	check_for_update()
 
 	pressed.connect(_on_update_button_pressed)
@@ -70,33 +70,35 @@ func _request_request_completed(result: int, response_code: int, headers: Packed
 
 	if versions.size() > 0:
 		# Safeguard forks from being updated itself
-		if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn") or \
-			not ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_enabled):
-
-			if not ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_notify_release): return
-
-			print_rich("
-[color=#3AB99A]   ********[/color]
-[color=#3AB99A] ************[/color]
-[color=#3AB99A]**************[/color]
-[color=#3AB99A]******  ***  *[/color]
-[color=#3AB99A]******  ***[/color]
-[color=#3AB99A]**********      *****[/color]
-[color=#3AB99A]********   ***********[/color]
-[color=#3AB99A]********  ***********  **[/color]
-[color=#3AB99A]*********  **************[/color]
-[color=#3AB99A]**********  *************[/color]
-[color=#3AB99A]**  **  **   *******   **[/color]
-[font_size=18][b]New Phantom Camera version is available[/b][/font_size]")
-
-			if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"):
-				print_rich("[font_size=14][color=#EAA15E][b]As you're using a fork of the project, you will need to update it manually[/b][/color][/font_size]")
-
-			print_rich("[font_size=12]If you don't want to see this kind of message, then it can be disabled inside:\n[code]Project Settings/Phantom Camera/Updater/Show New Release Info on Editor Launch in Output[/code]")
-
-			return
-
+#		if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn") or \
+#			not ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_enabled):
+#
+#			if not ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_notify_release): return
+#
+#			print_rich("
+#[color=#3AB99A]   ********[/color]
+#[color=#3AB99A] ************[/color]
+#[color=#3AB99A]**************[/color]
+#[color=#3AB99A]******  ***  *[/color]
+#[color=#3AB99A]******  ***[/color]
+#[color=#3AB99A]**********      *****[/color]
+#[color=#3AB99A]********   ***********[/color]
+#[color=#3AB99A]********  ***********  **[/color]
+#[color=#3AB99A]*********  **************[/color]
+#[color=#3AB99A]**********  *************[/color]
+#[color=#3AB99A]**  **  **   *******   **[/color]
+#[font_size=18][b]New Phantom Camera version is available[/b][/font_size]")
+#
+#			if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"):
+#				print_rich("[font_size=14][color=#EAA15E][b]As you're using a fork of the project, you will need to update it manually[/b][/color][/font_size]")
+#
+#			print_rich("[font_size=12]If you don't want to see this kind of message, then it can be disabled inside:\n[code]Project Settings/Phantom Camera/Updater/Show New Release Info on Editor Launch in Output[/code]")
+#
 		download_update_panel.next_version_release = versions[0]
+		download_update_panel.show_updater_warning(
+			versions[0].tag_name.substr(1).split("."),
+			current_version.split(".")
+		)
 		_set_scale()
 		download_dialog.show()
 		show()

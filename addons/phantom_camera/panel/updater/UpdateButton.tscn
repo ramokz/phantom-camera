@@ -73,12 +73,11 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 transparent_bg = true
 title = "New Update"
-initial_position = 1
-size = Vector2i(404, 450)
+initial_position = 2
+size = Vector2i(450, 440)
 transient = false
 unresizable = true
 borderless = true
-transparent = true
 keep_title_visible = false
 content_scale_mode = 1
 theme_override_constants/buttons_separation = 30
@@ -90,6 +89,7 @@ unique_name_in_owner = true
 offset_left = 2.0
 offset_top = 2.0
 offset_right = -2.0
+offset_bottom = -80.0
 
 [node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
