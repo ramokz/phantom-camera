@@ -497,6 +497,7 @@ func _ready():
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(_follow_spring_arm_node):
 				_follow_spring_arm_node = SpringArm3D.new()
+				_follow_spring_arm_node.top_level = true
 				get_parent().add_child.call_deferred(_follow_spring_arm_node)
 	if Properties.follow_mode == Constants.FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
