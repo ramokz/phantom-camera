@@ -15,9 +15,6 @@ export_presets.cfg
 /addons/*
 !/addons/phantom_camera
 
-/dev_scenes
-
-# Godot 4+ specific ignores
 .godot/
 
 # Docs specic ignores
