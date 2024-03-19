@@ -24,11 +24,16 @@ signal updated(updated_to_version: String)
 #region @onready
 
 #@onready var logo: TextureRect = %Logo
-@onready var label: Label = %DownloadVersionLabel
-@onready var download_http_request: HTTPRequest = %DownloadHTTPRequest
-@onready var download_button: Button = %DownloadButton
-@onready var download_button_bg: NinePatchRect = %DownloadButtonBG
-@onready var download_label: Label = %UpdateLabel
+@onready var _download_verion: Label = %DownloadVersionLabel
+@onready var _download_http_request: HTTPRequest = %DownloadHTTPRequest
+@onready var _download_button: Button = %DownloadButton
+@onready var _download_button_bg: NinePatchRect = %DownloadButtonBG
+@onready var _download_label: Label = %UpdateLabel
+
+@onready var _breaking_label: Label = %BreakingLabel
+@onready var _breaking_margin_container: MarginContainer = %BreakingMarginContainer
+@onready var _breaking_options_button: OptionButton = %BreakingOptionButton
+#@onready var current_version_label: Label = %CurrentVersionLabel
 
 #endregion
 
@@ -36,18 +41,21 @@ signal updated(updated_to_version: String)
 #region Variables
 
 # Todo - For 4.2 upgrade - Shows current version
-#@onready var current_version_label: Label = %CurrentVersionLabel
+var _download_dialogue: AcceptDialog
 var _button_texture_default: Texture2D = load("res://addons/phantom_camera/assets/PhantomCameraBtnPrimaryDefault.png")
 var _button_texture_hover: Texture2D = load("res://addons/phantom_camera/assets/PhantomCameraBtnPrimaryHover.png")
 
 var next_version_release: Dictionary:
 	set(value):
 		next_version_release = value
-		label.text = "%s update is available for download" % value.tag_name.substr(1)
+		_download_verion.text = "%s update is available for download" % value.tag_name.substr(1)
 		# Todo - For 4.2 upgrade
 		#current_version_label.text = "Current version is " + editor_plugin.get_version()
 	get:
 		return next_version_release
+
+var _breaking_window_height: float = 520
+var _breaking_window_height_update: float = 600
 
 #endregion
 
@@ -55,31 +63,40 @@ var next_version_release: Dictionary:
 #region Private Functions
 
 func _ready() -> void:
-	download_http_request.request_completed.connect(_on_http_request_request_completed)
-	download_button.pressed.connect(_on_download_button_pressed)
-	download_button.mouse_entered.connect(_on_mouse_entered)
-	download_button.mouse_exited.connect(_on_mouse_exited)
+	_download_http_request.request_completed.connect(_on_http_request_request_completed)
+	_download_button.pressed.connect(_on_download_button_pressed)
+	_download_button.mouse_entered.connect(_on_mouse_entered)
+	_download_button.mouse_exited.connect(_on_mouse_exited)
+
+	_breaking_label.hide()
+	_breaking_margin_container.hide()
+	_breaking_options_button.hide()
+
+	_breaking_options_button.item_selected.connect(_on_item_selected)
+
+
+func _on_item_selected(index: int) -> void:
+	if index == 1:
+		_download_button.show()
+		_download_dialogue.size = Vector2(_download_dialogue.size.x, _breaking_window_height_update)
+	else:
+		_download_button.hide()
+		_download_dialogue.size = Vector2(_download_dialogue.size.x, _breaking_window_height)
 
 
 func _on_download_button_pressed() -> void:
-	# Safeguard the actual dialogue manager repo from accidentally updating itself
-	if FileAccess.file_exists("res://examples/test_scenes/test_scene.gd"):
-		prints("You can't update the addon from within itself.")
-		failed.emit()
-		return
-
-	download_http_request.request(next_version_release.zipball_url)
-	download_button.disabled = true
-	download_label.text = "Downloading..."
-	download_button_bg.hide()
+	_download_http_request.request(next_version_release.zipball_url)
+	_download_button.disabled = true
+	_download_label.text = "Downloading..."
+	_download_button_bg.hide()
 
 
 func _on_mouse_entered() -> void:
-	download_button_bg.set_texture(_button_texture_hover)
+	_download_button_bg.set_texture(_button_texture_hover)
 
 
 func _on_mouse_exited() -> void:
-	download_button_bg.set_texture(_button_texture_default)
+	_download_button_bg.set_texture(_button_texture_default)
 
 
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
@@ -120,5 +137,26 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 
 func _on_notes_button_pressed() -> void:
 	OS.shell_open(next_version_release.html_url)
+
+#endregion
+
+#region Public Functions
+
+func show_updater_warning(next_version_number: Array, current_version_number: Array) -> void:
+	var current_version_number_0: int = current_version_number[0] as int
+	var current_version_number_1: int = current_version_number[1] as int
+
+	var next_version_number_0: int = next_version_number[0] as int # Major release number in the new release
+	var next_version_number_1: int = next_version_number[1] as int # Minor release number in the new release
+
+	if next_version_number_0 > current_version_number_0 or \
+	next_version_number_1 > current_version_number_1:
+		_breaking_label.show()
+		_breaking_margin_container.show()
+		_breaking_options_button.show()
+		_download_button.hide()
+
+		_download_dialogue = get_parent()
+		_download_dialogue.size = Vector2(_download_dialogue.size.x, _breaking_window_height)
 
 #endregion

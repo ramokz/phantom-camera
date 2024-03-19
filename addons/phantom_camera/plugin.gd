@@ -11,6 +11,8 @@ const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_
 
 const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 
+const updater_constants := preload("res://addons/phantom_camera/scripts/panel/updater/updater_constants.gd")
+
 #endregion
 
 
@@ -42,7 +44,18 @@ func _enter_tree() -> void:
 	add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
 	_make_visible(false)
 
-	connect("scene_changed", _scene_changed)
+	scene_changed.connect(_scene_changed)
+
+	## Sets Updater Disabling option for non-forked projects
+	if not FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"):
+		if not ProjectSettings.has_setting(updater_constants.setting_updater_enabled):
+			ProjectSettings.set_setting(updater_constants.setting_updater_enabled, true)
+		ProjectSettings.set_initial_value(updater_constants.setting_updater_enabled, true)
+
+	## Adds Release console log disabler
+	if not ProjectSettings.has_setting(updater_constants.setting_updater_notify_release):
+		ProjectSettings.set_setting(updater_constants.setting_updater_notify_release, true)
+	ProjectSettings.set_initial_value(updater_constants.setting_updater_notify_release, true)
 
 
 func _exit_tree() -> void:
@@ -55,7 +68,7 @@ func _exit_tree() -> void:
 	remove_control_from_bottom_panel(editor_panel_instance)
 	editor_panel_instance.queue_free()
 #	if framed_viewfinder_panel_instance:
-	disconnect("scene_changed", _scene_changed)
+	scene_changed.disconnect(_scene_changed)
 
 
 #func _has_main_screen():
