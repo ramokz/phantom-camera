@@ -23,6 +23,9 @@ var tween: Tween
 var _interactive_UI: Control
 var _active_pcam: PhantomCamera2D
 
+var _physics_body_trans_last: Transform2D
+var _physics_body_trans_current: Transform2D
+
 enum InteractiveType {
 	NONE = 0,
 	ITEM = 1,
@@ -104,6 +107,9 @@ func _interactive_node_logic() -> void:
 
 func _physics_process(delta: float) -> void:
 	if _movement_disabled: return
+	
+	_physics_body_trans_last = _physics_body_trans_current
+	_physics_body_trans_current = global_transform
 
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -127,6 +133,13 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+
+func _process(delta) -> void:
+	player_sprite.global_position = _physics_body_trans_last.interpolate_with(
+		_physics_body_trans_current,
+		Engine.get_physics_interpolation_fraction()
+	).origin
+	
 
 func _show_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shape: int) -> void:
 	if body is TileMap:

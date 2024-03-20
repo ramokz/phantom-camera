@@ -2,9 +2,9 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u5tk5jsy6626"
-path.s3tc="res://.godot/imported/PhantomCameraGizmoIcon3D.svg-f1749265faef32688ef013796d030703.s3tc.ctex"
-path.etc2="res://.godot/imported/PhantomCameraGizmoIcon3D.svg-f1749265faef32688ef013796d030703.etc2.ctex"
+uid="uid://e36npe2rbxyg"
+path.s3tc="res://.godot/imported/phantom_camera_gizmo.svg-ba1aacb9b1c5f4ef401d3bd3697a542b.s3tc.ctex"
+path.etc2="res://.godot/imported/phantom_camera_gizmo.svg-ba1aacb9b1c5f4ef401d3bd3697a542b.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon3D.svg"
-dest_files=["res://.godot/imported/PhantomCameraGizmoIcon3D.svg-f1749265faef32688ef013796d030703.s3tc.ctex", "res://.godot/imported/PhantomCameraGizmoIcon3D.svg-f1749265faef32688ef013796d030703.etc2.ctex"]
+source_file="res://addons/phantom_camera/icons/phantom_camera_gizmo.svg"
+dest_files=["res://.godot/imported/phantom_camera_gizmo.svg-ba1aacb9b1c5f4ef401d3bd3697a542b.s3tc.ctex", "res://.godot/imported/phantom_camera_gizmo.svg-ba1aacb9b1c5f4ef401d3bd3697a542b.etc2.ctex"]
 
 [params]
 

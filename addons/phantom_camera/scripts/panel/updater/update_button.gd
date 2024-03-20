@@ -110,14 +110,14 @@ func _on_update_button_pressed() -> void:
 	if needs_reload:
 		var will_refresh = on_before_refresh.call()
 		if will_refresh:
-			editor_plugin.get_editor_interface().restart_editor(true)
+			EditorInterface.restart_editor(true)
 	else:
 		_set_scale()
 		download_dialog.popup_centered()
 
 
 func _set_scale() -> void:
-	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
+	var scale: float = EditorInterface.get_editor_scale()
 	download_dialog.min_size = Vector2(300, 250) * scale
 
 
@@ -144,7 +144,7 @@ func _on_download_update_panel_failed() -> void:
 
 
 func _on_needs_reload_dialog_confirmed() -> void:
-	editor_plugin.get_editor_interface().restart_editor(true)
+	EditorInterface.restart_editor(true)
 
 
 func _on_timer_timeout() -> void:

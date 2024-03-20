@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/panel/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_li3i3"]
-[ext_resource type="Texture2D" uid="uid://b671h5enwiljg" path="res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg" id="4_1dven"]
+[ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="4_lcg1p"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="5_4jhax"]
 [ext_resource type="Texture2D" uid="uid://dy8eifa6aw2en" path="res://addons/phantom_camera/icons/misc/PriorityOverride.svg" id="6_ptuth"]
 
@@ -71,7 +71,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.988235, 0.498039, 0.498039, 1)
+border_color = Color(0.552941, 0.647059, 0.952941, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -170,8 +170,13 @@ stretch = true
 unique_name_in_owner = true
 handle_input_locally = false
 gui_disable_input = true
-size = Vector2i(1920, 1080)
+size = Vector2i(1152, 648)
+size_2d_override_stretch = true
 render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="FramedViewfinder/SubViewportContainer/SubViewport"]
+unique_name_in_owner = true
+editor_draw_screen = false
 
 [node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="FramedViewfinder"]
 unique_name_in_owner = true
@@ -258,7 +263,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-stretch_mode = 1
+ratio = 1.77778
 
 [node name="CameraViewportPanel" type="Panel" parent="FramedViewfinder/AspectRatioContainer"]
 layout_mode = 2
@@ -294,8 +299,7 @@ grow_vertical = 2
 theme_override_fonts/font = ExtResource("3_li3i3")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
-text = "2D scene support not available yet
-(Control scenes are not supported)"
+text = "Control scenes are not supported"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -321,21 +325,26 @@ metadata/_edit_lock_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="EmptyStateControl"]
 layout_mode = 1
-anchors_preset = 14
+anchors_preset = 8
+anchor_left = 0.5
 anchor_top = 0.5
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 0.5
-offset_top = -80.0
-offset_bottom = 80.0
+offset_left = -200.0
+offset_top = -112.0
+offset_right = 200.0
+offset_bottom = 112.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
 [node name="EmptyStateIcon" type="TextureRect" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-texture = ExtResource("4_1dven")
-stretch_mode = 3
+texture = ExtResource("4_lcg1p")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="EmptyStateText" type="RichTextLabel" parent="EmptyStateControl/VBoxContainer"]
 unique_name_in_owner = true

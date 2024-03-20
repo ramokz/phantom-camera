@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://dbfiy6svpcqap"]
+[gd_scene load_steps=14 format=3 uid="uid://dbfiy6svpcqap"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_r00ve"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_pi7mp"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="3_1eb12"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="3_a5igg"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_wr1tj"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_hehj7"]
@@ -30,7 +31,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 2.60717, 5.26374)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 1.7992, 3.53104)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("3_wr1tj")
@@ -41,26 +42,21 @@ metadata/_edit_lock_ = true
 
 [node name="Player" type="Node" parent="."]
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player"]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_targets")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 2.60717, 5.26374)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -12.326, 1.7992, 3.53104)
 script = ExtResource("2_pi7mp")
-priority_override = false
 priority = 5
 follow_mode = 3
-follow_group = Array[NodePath]([NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")])
-follow_parameters/auto_distance = true
-follow_parameters/min_distance = 2.0
-follow_parameters/max_distance = 15.0
-follow_parameters/auto_distance_divisor = 20.0
-follow_parameters/target_offset = Vector3(0, 0, 0)
-follow_parameters/damping = true
-follow_parameters/damping_value = 5.0
-look_at_mode = 0
-tween_parameters = null
-tween_on_load = false
-inactive_update_mode = 0
-camera_3D_resource = null
+follow_targets = [NodePath("../PlayerCharacterBody3D2"), NodePath("../../NPCs/PlayerMeshInstance3D"), NodePath("../../NPCs/PlayerMeshInstance3D2")]
+tween_resource = ExtResource("3_1eb12")
+tween_onload = false
+follow_damping = true
+follow_distance = 5.0
+auto_distance = true
+auto_distance_max = 10.0
+auto_distance_divisor = 20.0
+spring_length = 5.0
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
@@ -68,7 +64,8 @@ transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1
 script = ExtResource("4_hehj7")
 metadata/_edit_group_ = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
+[node name="PlayerModel" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
+unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 
