@@ -58,7 +58,7 @@ size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.960784, 0.960784, 0.960784, 1)
 theme_override_colors/font_hover_color = Color(0.939288, 0.917743, 0.892615, 1)
 theme_override_fonts/font = ExtResource("1_5e5k4")
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleBoxFlat_c7fd1")
 theme_override_styles/hover = SubResource("StyleBoxFlat_y83dj")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_slf6e")
@@ -73,14 +73,14 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 transparent_bg = true
 title = "New Update"
-initial_position = 1
-size = Vector2i(350, 350)
+initial_position = 2
+size = Vector2i(450, 480)
 transient = false
 unresizable = true
 borderless = true
-transparent = true
 keep_title_visible = false
 content_scale_mode = 1
+theme_override_constants/buttons_separation = 30
 theme_override_styles/panel = SubResource("StyleBoxFlat_dr4n4")
 ok_button_text = "Close"
 
@@ -89,6 +89,7 @@ unique_name_in_owner = true
 offset_left = 2.0
 offset_top = 2.0
 offset_right = -2.0
+offset_bottom = -80.0
 
 [node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true

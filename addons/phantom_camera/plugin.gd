@@ -11,6 +11,8 @@ const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_
 
 const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 
+const updater_constants := preload("res://addons/phantom_camera/scripts/panel/updater/updater_constants.gd")
+
 #endregion
 
 
@@ -41,12 +43,24 @@ func _enter_tree() -> void:
 	editor_panel_instance = EditorPanel.instantiate()
 	editor_panel_instance.editor_plugin = self
 	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
-	
-	# Trigger events in the viewfinder whenever 
+
+	# Trigger events in the viewfinder whenever
 	panel_button.toggled.connect(btn_toggled)
-	
+
 	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
 
+	scene_changed.connect(_scene_changed)
+
+	## Sets Updater Disabling option for non-forked projects
+	if not FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"):
+		if not ProjectSettings.has_setting(updater_constants.setting_updater_enabled):
+			ProjectSettings.set_setting(updater_constants.setting_updater_enabled, true)
+		ProjectSettings.set_initial_value(updater_constants.setting_updater_enabled, true)
+
+	## Adds Release console log disabler
+	if not ProjectSettings.has_setting(updater_constants.setting_updater_notify_release):
+		ProjectSettings.set_setting(updater_constants.setting_updater_notify_release, true)
+	ProjectSettings.set_initial_value(updater_constants.setting_updater_notify_release, true)
 
 func btn_toggled(toggled_on: bool):
 	if toggled_on:
@@ -65,6 +79,21 @@ func _exit_tree() -> void:
 
 	remove_control_from_bottom_panel(editor_panel_instance)
 	editor_panel_instance.queue_free()
+#	if framed_viewfinder_panel_instance:
+	scene_changed.disconnect(_scene_changed)
+
+
+#func _has_main_screen():
+#	return true;
+
+
+func _make_visible(visible):
+	if editor_panel_instance:
+		editor_panel_instance.set_visible(visible)
+
+
+func _scene_changed(scene_root: Node) -> void:
+	editor_panel_instance.viewfinder.scene_changed(scene_root)
 
 #endregion
 
