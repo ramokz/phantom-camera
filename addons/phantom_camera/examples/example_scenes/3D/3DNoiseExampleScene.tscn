@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="4_poyyk"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="5_d6uqs"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="6_fbad7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_n8u0x"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="6_vpla5"]
 
 [sub_resource type="Resource" id="Resource_lhgur"]
@@ -22,16 +23,13 @@ h_offset = 0.0
 v_offset = 0.0
 fov = 75.0
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_aldi5"]
-noise_type = 3
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_t0x8u"]
+seed = 2
 
-[sub_resource type="Resource" id="Resource_nld4k"]
+[sub_resource type="Resource" id="Resource_irqt8"]
 script = ExtResource("4_poyyk")
-loop = false
-duration = 1.0
-decay = 1.0
-intensity = 100.0
-noise_algorithm = SubResource("FastNoiseLite_aldi5")
+intensity = 50.0
+noise_algorithm = SubResource("FastNoiseLite_t0x8u")
 seed_offset = 0
 max_rotational_offset_x = 10.0
 max_rotational_offset_y = 10.0
@@ -40,15 +38,9 @@ max_position_offset_x = 0.0
 max_position_offset_y = 0.0
 max_position_offset_z = 0.0
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_3vsom"]
-
 [sub_resource type="Resource" id="Resource_t3bgw"]
 script = ExtResource("4_poyyk")
-loop = false
-duration = 0.1
-decay = 4.0
 intensity = 1000.0
-noise_algorithm = SubResource("FastNoiseLite_3vsom")
 seed_offset = 0
 max_rotational_offset_x = 10.0
 max_rotational_offset_y = 10.0
@@ -78,7 +70,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-4.37113e-08, 0, 0.999997, 0, 0.999997, 0, -0.999998, 0, -4.37112e-08, -16.4602, 0.507079, 4.24898)
+transform = Transform3D(0.0694782, 0.0406376, 0.996752, -0.0297864, 0.998806, -0.038645, -0.997137, -0.0270048, 0.0706058, -16.4602, 0.507079, 4.24898)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_ggfbg")
@@ -93,7 +85,11 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_lhgur")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_ghjuj")
-noise = SubResource("Resource_nld4k")
+noise = SubResource("Resource_irqt8")
+
+[node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="PlayerPhantomCamera3D"]
+unique_name_in_owner = true
+script = ExtResource("6_n8u0x")
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true

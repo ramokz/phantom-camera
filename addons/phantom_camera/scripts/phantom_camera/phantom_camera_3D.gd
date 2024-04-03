@@ -379,13 +379,6 @@ var _current_rotation: Vector3
 	set = set_noise,
 	get = get_noise
 
-## If true, will trigger the noise the momemnt the PhantomCamera3D becomes active.
-## To trigger or disable the noise during runtime, call [method noise_start][br]
-## and [method noise_stop] respectively.
-@export var noise_auto_start: bool = true:
-	set = set_noise_auto_start,
-	get = get_noise_auto_start
-
 var _noise_active: bool = false:
 	set = set_noise_active,
 	get = get_noise_active
@@ -492,6 +485,7 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	add_to_group(_constants.PCAM_GROUP_NAME)
+	PhantomCameraManager.add_pcam_to_list(self)
 	
 	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 	if pcam_host.size() > 0:
@@ -514,6 +508,7 @@ func _exit_tree() -> void:
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
 	remove_from_group(_constants.PCAM_GROUP_NAME)
+	PhantomCameraManager.remove_pcam_from_list(self)
 
 
 func _ready():
@@ -1237,25 +1232,25 @@ func get_inactive_update_mode() -> int:
 ## Sets a NoiseResource
 func set_noise(value: PhantomCameraNoise3D) -> void:
 	noise = value
-	if value:
-		# Applies a new resource algorithm if nothing is not already assigned.
-		if not noise.noise_algorithm:
-			# Applies a default FastNoiseLite Resource
-			noise.noise_algorithm = FastNoiseLite.new()
-			# Applies a default Noise of Type Perlin 
-			noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
-		if is_active() and noise_auto_start:
-			_noise_active = true
-	else:
-		_noise_active = false
+	#noise.noise_algorithm = FastNoiseLite.new()
+	# Applies a default Noise of Type Perlin 
+	#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+	_noise_active = true
+
+	## TBD To be applied for spatial fields
+	#if value:
+		## Applies a new resource algorithm if nothing is not already assigned.
+		#if not noise.noise_algorithm:
+			## Applies a default FastNoiseLite Resource
+			#noise.noise_algorithm = FastNoiseLite.new()
+			## Applies a default Noise of Type Perlin 
+			#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+		#_noise_active = true
+	#else:
+		#_noise_active = false
 func get_noise() -> PhantomCameraNoise3D:
 	return noise
 
-func set_noise_auto_start(value: bool) -> void:
-	noise_auto_start = value
-
-func get_noise_auto_start() -> bool:
-	return noise_auto_start
 
 ## TODO
 func noise_start() -> void:

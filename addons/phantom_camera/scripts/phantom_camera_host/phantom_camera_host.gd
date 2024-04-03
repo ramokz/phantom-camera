@@ -52,11 +52,14 @@ var _is_2D: bool = false
 
 # Camera Noise
 var _noise_2d: PhantomCameraNoise2D = null
+var _noise_2d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
 var _noise_3d: PhantomCameraNoise3D = null
+var _noise_3d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
 var _trauma: float = 0
 var _noise_time: float = 0
+var _decay_time: float = 0
 var _noise_duration: float = 1
-var _should_have_noise: bool = false
+var _noise_loop: bool = false
 
 # Viewfinder
 var _viewfinder_node: Control = null
@@ -93,6 +96,7 @@ func _enter_tree() -> void:
 			camera_3d = parent
 
 		add_to_group(_constants.PCAM_HOST_GROUP_NAME)
+		PhantomCameraManager.add_pcam_host_to_list(self)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
 
 		_check_camera_host_amount()
@@ -115,6 +119,7 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_from_group(_constants.PCAM_HOST_GROUP_NAME)
+	PhantomCameraManager.remove_pcam_host_from_list(self)
 	_check_camera_host_amount()
 
 
@@ -166,9 +171,17 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		_camera_zoom = camera_2d.get_zoom()
+		if _active_pcam.get_noise_active():
+			_noise_2d = _active_pcam.noise
+			_noise_2d_pcam = _active_pcam.noise
+			_noise_loop = true
 	else:
 		if _active_pcam.get_camera_3d_resource():
 			camera_3d.cull_mask = _active_pcam.get_cull_mask()
+		if _active_pcam.get_noise_active():
+			_noise_3d = _active_pcam.noise
+			_noise_3d_pcam = _active_pcam.noise
+			_noise_loop = true
 
 	if no_previous_pcam:
 		if _is_2D:
@@ -330,21 +343,27 @@ func _process(delta):
 		_active_pcam_3D_glob_transform = _active_pcam.get_global_transform()
 
 	_process_pcam(delta)
-	
 	if _active_pcam.get_noise_active():
 		_add_noise(delta)
 
 
 func _add_noise(delta: float) -> void:
 	_noise_time += delta
-	
-	if not _noise_3d.loop:
+	if not _noise_loop:
 		if _noise_time >= _noise_3d.duration:
-			
+			_decay_time += delta
 			#lerpf(_trauma, 0, 1 (_noise _noise_3d.duration))
 			#lerpf(_trauma, 0, delta * _noise_3d.decay)
-			_trauma = max(_trauma - delta * _noise_3d.decay, 0)
+			#_trauma = max(_trauma - delta * _noise_3d.decay, 0)
 			print("Decaying")
+			Tween.interpolate_value(
+				_trauma,
+				0 - _trauma,
+				_decay_time,
+				_noise_3d.decay,
+				Tween.TRANS_LINEAR,
+				Tween.EASE_IN_OUT
+			)
 			if _noise_time >= _noise_3d.duration + _noise_3d.decay:
 				_active_pcam.set_noise_active(false)
 				print("Done")
@@ -352,13 +371,11 @@ func _add_noise(delta: float) -> void:
 			_trauma += 0.1
 	else:
 		_trauma += 0.1
-	
-	print("Adding")
 
 	_trauma = clampf(_trauma + delta, 0, 1)
 	#_trauma = max(_trauma - delta * _noise_3d.decay, 0)
 	var intensity: float = pow(_trauma, 2)
-	
+
 	camera_3d.quaternion = Quaternion.from_euler(Vector3(
 		deg_to_rad(
 			camera_3d.rotation_degrees.x + _active_pcam.noise.max_rotational_offset_x * \
@@ -373,7 +390,7 @@ func _add_noise(delta: float) -> void:
 			intensity * _get_noise_from_seed(_noise_3d, 2 + _noise_3d.seed_offset)
 		)
 	))
-	
+
 	camera_3d.position = Vector3(
 		camera_3d.position.x + _noise_3d.max_position_offset_x * \
 		intensity * _get_noise_from_seed(_noise_3d, 0 + _noise_3d.seed_offset),
@@ -427,7 +444,7 @@ func pcam_added_to_scene(pcam: Node) -> void:
 			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority onload
 
 		_find_pcam_with_highest_priority()
-	
+
 	else:
 		printerr("This function should only be called from PhantomCamera scripts")
 
@@ -446,7 +463,7 @@ func pcam_removed_from_scene(pcam: Node) -> void:
 		printerr("This function should only be called from PhantomCamera scripts")
 
 ## Triggers a recalculation to determine which PhantomCamera has the highest
-## priority. 
+## priority.
 func pcam_priority_updated(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.priority_override: return
 
