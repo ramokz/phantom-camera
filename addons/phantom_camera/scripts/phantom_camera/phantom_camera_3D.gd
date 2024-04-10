@@ -249,10 +249,11 @@ var _has_tweened: bool
 	set = set_follow_has_damping,
 	get = get_follow_has_damping
 
-## Defines the damping amount.[br][br]
-## [b]Lower value[/b] = slower / heavier camera movement.[br][br]
-## [b]Higher value[/b] = faster / sharper camera movement.
-@export var follow_damping_value: float = 10:
+## Defines the damping amount. The ideal range should be somewhere between 0-1.[br][br]
+## The damping amount can be specified in the individual axis.
+## [b]Lower value[/b] = faster / sharper camera movement.[br][br]
+## [b]Higher value[/b] = slower / heavier camera movement.
+@export var follow_damping_value: Vector3 = Vector3.ZERO:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 
@@ -524,14 +525,12 @@ func _process(delta: float) -> void:
 		FollowMode.GLUED:
 			if follow_target:
 				_interpolate_position(
-					follow_target.global_position,
-					delta
+					follow_target.global_position
 				)
 		FollowMode.SIMPLE:
 			if follow_target:
 				_interpolate_position(
-					_get_target_position_offset(),
-					delta
+					_get_target_position_offset()
 				)
 		FollowMode.GROUP:
 			if follow_targets:
@@ -539,8 +538,7 @@ func _process(delta: float) -> void:
 					_interpolate_position(
 						follow_targets[0].global_position +
 						follow_offset +
-						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance),
-						delta
+						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 					)
 				elif follow_targets.size() > 1:
 					var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
@@ -558,23 +556,20 @@ func _process(delta: float) -> void:
 					_interpolate_position(
 						bounds.get_center() +
 						follow_offset +
-						get_transform().basis.z * Vector3(distance, distance, distance),
-						delta
+						get_transform().basis.z * Vector3(distance, distance, distance)
 					)
 		FollowMode.PATH:
 			if follow_target and follow_path:
 				var path_position: Vector3 = follow_path.global_position
 				_interpolate_position(
-					follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position,
-					delta
+					follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position
 				)
 		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
 					if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
 						_interpolate_position(
-							_get_position_offset_distance(),
-							delta
+							_get_position_offset_distance()
 						)
 						return
 
@@ -585,8 +580,7 @@ func _process(delta: float) -> void:
 
 					if _current_rotation != global_rotation:
 						_interpolate_position(
-							_get_position_offset_distance(),
-							delta
+							_get_position_offset_distance()
 						)
 
 					if _get_framed_side_offset() != Vector2.ZERO:
@@ -598,20 +592,17 @@ func _process(delta: float) -> void:
 								glo_pos = _get_position_offset_distance()
 								glo_pos.z = target_position.z
 								_interpolate_position(
-									glo_pos,
-									delta
+									glo_pos
 								)
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _get_position_offset_distance()
 								glo_pos.x = target_position.x
 								_interpolate_position(
-									glo_pos,
-									delta
+									glo_pos
 								)
 							else:
 								_interpolate_position(
-									_get_position_offset_distance(),
-									delta
+									_get_position_offset_distance()
 								)
 						else:
 							if _current_rotation != global_rotation:
@@ -621,14 +612,12 @@ func _process(delta: float) -> void:
 								glo_pos.x = global_position.x
 
 								_interpolate_position(
-									glo_pos,
-									delta
+									glo_pos
 								)
 								_current_rotation = global_rotation
 							else:
 								_interpolate_position(
-									target_position,
-									delta
+									target_position
 								)
 					else:
 						_follow_framed_offset = global_position - _get_target_position_offset()
@@ -675,7 +664,6 @@ func _process(delta: float) -> void:
 
 							_interpolate_position(
 								_get_target_position_offset(),
-								delta,
 								_follow_spring_arm
 							)
 				else:
@@ -707,16 +695,72 @@ func _get_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
+var _velocity: Vector3
 
-func _interpolate_position(_global_position: Vector3, delta: float, target: Node3D = self) -> void:
+# Unity SmoothDamp variables
+#var smooth_time: float = 1
+var _cur_follow_velocity: Vector3 = Vector3.ZERO
+
+func _follow_vel(index: int, value: float):
+	_cur_follow_velocity[index] = value
+
+func _interpolate_position(follow_global_position: Vector3, camera_target: Node3D = self) -> void:
 	if follow_damping:
-		target.global_position = \
-			target.global_position.lerp(
-				_global_position,
-				delta * follow_damping_value
+
+		# Critcally Damping (Default Damping Value = 5)
+		#var n1 = _velocity - (camera_target.global_position - follow_global_position) * \
+			#(pow(follow_damping_value, 2) * get_process_delta_time())
+		#var n1: Vector3 = _velocity - (camera_target.global_position - follow_global_position) * \
+			#((damping * damping) * get_process_delta_time())
+		#var n2 = 1 + follow_damping_value * get_process_delta_time()
+		#var n3 = Vector3.ONE + damping * get_process_delta_time()
+		#_velocity = n1 / pow(n2, 2)
+		#_velocity = n1 / (n3 * n3)
+		#camera_target.global_position += _velocity * get_process_delta_time() # TODO - Add multiplier for different axis speeds
+		
+		#var new_position: Vector3 = 
+		
+		for index in 3:
+			camera_target.global_position[index] = _smooth_damp(
+				camera_target.global_position[index],
+				follow_global_position[index],
+				index,
+				_cur_follow_velocity[index],
+				_follow_vel,
+				follow_damping_value[index]
 			)
+
+		#camera_target.global_position = \
+			#camera_target.global_position.lerp(
+				#follow_global_position,
+				#get_process_delta_time() * follow_damping_value
+			#)
 	else:
-		target.global_position = _global_position
+		camera_target.global_position = follow_global_position
+
+
+func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, current_vel: Callable, damping_time: float) -> float:
+		damping_time = maxf(0.0001, damping_time)
+		var omega: float = 2 / damping_time
+		var x: float = omega * get_process_delta_time()
+		var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
+		var diff: float = self_axis - target_axis
+		var _target_axis: float = target_axis
+
+		var max_change: float = INF * damping_time
+		diff = clampf(diff, -max_change, max_change)
+		target_axis = self_axis - diff
+
+		var temp: float = (current_velocity + omega * diff) * get_process_delta_time()
+		current_vel.call(index, (current_velocity - omega * temp) * exponential)
+		var output: float = target_axis + (diff + temp) * exponential
+		
+		## To prevent overshooting
+		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
+			output = _target_axis
+			current_vel.call(index, (output - _target_axis) / get_process_delta_time())
+
+		return output
 
 
 func _get_raw_unprojected_position() -> Vector2:
@@ -954,10 +998,16 @@ func get_follow_has_damping() -> bool:
 
 
 ## Assigns new [member follow_damping_value] value.
-func set_follow_damping_value(value: float) -> void:
+func set_follow_damping_value(value: Vector3) -> void:
+	
+	## TODO - Should be using @export_range once minimum version support is Godot 4.3
+	if value.x < 0: value.x = 0
+	elif value.y < 0: value.y = 0
+	elif value.z < 0: value.z = 0
+	
 	follow_damping_value = value
 ## Gets the currents [member follow_damping_value] value.
-func get_follow_damping_value() -> float:
+func get_follow_damping_value() -> Vector3:
 	return follow_damping_value
 
 
