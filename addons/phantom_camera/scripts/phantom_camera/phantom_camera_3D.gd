@@ -256,6 +256,7 @@ var _has_tweened: bool
 @export var follow_damping_value: Vector3 = Vector3.ZERO:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
+var _cur_follow_velocity: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
 
 ## Offsets the follow target's position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
@@ -699,27 +700,12 @@ var _velocity: Vector3
 
 # Unity SmoothDamp variables
 #var smooth_time: float = 1
-var _cur_follow_velocity: Vector3 = Vector3.ZERO
 
 func _follow_vel(index: int, value: float):
 	_cur_follow_velocity[index] = value
 
 func _interpolate_position(follow_global_position: Vector3, camera_target: Node3D = self) -> void:
 	if follow_damping:
-
-		# Critcally Damping (Default Damping Value = 5)
-		#var n1 = _velocity - (camera_target.global_position - follow_global_position) * \
-			#(pow(follow_damping_value, 2) * get_process_delta_time())
-		#var n1: Vector3 = _velocity - (camera_target.global_position - follow_global_position) * \
-			#((damping * damping) * get_process_delta_time())
-		#var n2 = 1 + follow_damping_value * get_process_delta_time()
-		#var n3 = Vector3.ONE + damping * get_process_delta_time()
-		#_velocity = n1 / pow(n2, 2)
-		#_velocity = n1 / (n3 * n3)
-		#camera_target.global_position += _velocity * get_process_delta_time() # TODO - Add multiplier for different axis speeds
-		
-		#var new_position: Vector3 = 
-		
 		for index in 3:
 			camera_target.global_position[index] = _smooth_damp(
 				camera_target.global_position[index],
@@ -729,12 +715,6 @@ func _interpolate_position(follow_global_position: Vector3, camera_target: Node3
 				_follow_vel,
 				follow_damping_value[index]
 			)
-
-		#camera_target.global_position = \
-			#camera_target.global_position.lerp(
-				#follow_global_position,
-				#get_process_delta_time() * follow_damping_value
-			#)
 	else:
 		camera_target.global_position = follow_global_position
 

@@ -1,11 +1,10 @@
-[gd_scene load_steps=17 format=3 uid="uid://ctqdyuxek2ere"]
+[gd_scene load_steps=16 format=3 uid="uid://ctqdyuxek2ere"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_7n673"]
 [ext_resource type="Script" path="res://dev_scenes/3d/scripts/dev_scene_3d_script.gd" id="1_gnrfx"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_4sdb7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_yhkrs"]
-[ext_resource type="Script" path="res://addons/smoothing/smoothing.gd" id="5_wvrn3"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="7_fioii"]
 
@@ -80,13 +79,9 @@ shape = SubResource("CapsuleShape3D_8efyg")
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D2"]
 shape = SubResource("CapsuleShape3D_8efyg")
 
-[node name="Smoothing" type="Node3D" parent="PlayerCharacterBody3D2"]
-script = ExtResource("5_wvrn3")
-
-[node name="PlayerModel" type="MeshInstance3D" parent="PlayerCharacterBody3D2/Smoothing"]
+[node name="PlayerModel" type="MeshInstance3D" parent="PlayerCharacterBody3D2"]
 unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_2cfaw")
-skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_r3ldp")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -111,10 +106,9 @@ transform = Transform3D(1, 0, 0, 0, 0.712308, 0.701867, 0, -0.701867, 0.712308, 
 script = ExtResource("3_4sdb7")
 priority = 30
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D2/Smoothing/PlayerModel")
+follow_target = NodePath("../PlayerCharacterBody3D2/PlayerModel")
 tween_resource = SubResource("Resource_6c6yi")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_j8csy")
-follow_damping = true
 follow_damping_value = Vector3(0.25, 0, 0.02)
 follow_offset = Vector3(0, 2, 2)
