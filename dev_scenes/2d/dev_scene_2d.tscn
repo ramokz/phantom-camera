@@ -620,7 +620,7 @@ zoom = Vector2(1.5, 1.5)
 tween_resource = SubResource("Resource_f4kig")
 tween_onload = false
 follow_damping = true
-follow_damping_value = Vector2(0.01, 0.01)
+follow_damping_value = Vector2(0.1, 0.1)
 draw_limits = true
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]

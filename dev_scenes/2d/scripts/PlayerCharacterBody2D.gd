@@ -48,8 +48,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	#_physics_body_trans_last = _physics_body_trans_current
-	#_physics_body_trans_current = global_transform
+	_physics_body_trans_last = _physics_body_trans_current
+	_physics_body_trans_current = global_transform
 
 	if not is_on_floor():
 		velocity.y += gravity * delta
@@ -74,8 +74,8 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-#func _process(_delta: float) -> void:
-	#player_sprite.global_transform = _physics_body_trans_last.interpolate_with(
-		#_physics_body_trans_current,
-		#Engine.get_physics_interpolation_fraction()
-	#)
+func _process(_delta: float) -> void:
+	player_sprite.global_transform = _physics_body_trans_last.interpolate_with(
+		_physics_body_trans_current,
+		Engine.get_physics_interpolation_fraction()
+	)
