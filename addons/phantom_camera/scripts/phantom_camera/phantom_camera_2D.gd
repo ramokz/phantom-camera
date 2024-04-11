@@ -140,6 +140,7 @@ var pcam_host_owner: PhantomCameraHost = null:
 	get = get_follow_target
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
+var _is_physics_node: bool = false
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -219,9 +220,10 @@ var _has_tweened: bool = false
 ## Defines the damping amount.[br][br]
 ## [b]Lower value[/b] = slower / heavier camera movement.[br][br]
 ## [b]Higher value[/b] = faster / sharper camera movement.
-@export var follow_damping_value: float = 10:
+@export var follow_damping_value: Vector2 = Vector2.ZERO:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
+var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
 
 ## Offsets the follow target's position.
 @export var follow_offset: Vector2 = Vector2.ZERO:
@@ -479,13 +481,13 @@ func _process(delta: float) -> void:
 	match follow_mode:
 		FollowMode.GLUED:
 			if follow_target:
-				_set_pcam_global_position(follow_target.global_position, delta)
+				_interpolate_position(follow_target.global_position)
 		FollowMode.SIMPLE:
 			if follow_target:
-				_set_pcam_global_position(_target_position_with_offset(), delta)
+				_interpolate_position(_target_position_with_offset())
 		FollowMode.GROUP:
 			if follow_targets.size() == 1:
-				_set_pcam_global_position(follow_targets[0].global_position, delta)
+				_interpolate_position(follow_targets[0].global_position)
 			elif _has_multiple_follow_targets and follow_targets.size() > 1:
 				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
 				for node in follow_targets:
@@ -504,15 +506,15 @@ func _process(delta: float) -> void:
 						zoom = clamp(screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
-				_set_pcam_global_position(rect.get_center(), delta)
+				_interpolate_position(rect.get_center())
 		FollowMode.PATH:
 				if follow_targets and follow_path:
 					var path_position: Vector2 = follow_path.global_position
-					_set_pcam_global_position(
+					_interpolate_position(
 						follow_path.curve.get_closest_point(
 							_target_position_with_offset() - path_position
-						) + path_position,
-						delta)
+						) + path_position
+					)
 		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
@@ -524,34 +526,65 @@ func _process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								_set_pcam_global_position(_target_position_with_offset(), delta)
+								_interpolate_position(_target_position_with_offset())
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _target_position_with_offset()
 								glo_pos.x += target_position.x - global_position.x
-								_set_pcam_global_position(glo_pos, delta)
+								_interpolate_position(glo_pos)
 							else:
-								_set_pcam_global_position(_target_position_with_offset(), delta)
+								_interpolate_position(_target_position_with_offset())
 						else:
-							_set_pcam_global_position(target_position, delta)
+							_interpolate_position(target_position)
 					else:
 						_follow_framed_offset = global_position - _target_position_with_offset()
 				else:
-					_set_pcam_global_position(_target_position_with_offset(), delta)
+					_interpolate_position(_target_position_with_offset())
 
 
-func _set_pcam_global_position(_global_position: Vector2, delta: float) -> void:
+func _set_velocity(index: int, value: float):
+	_velocity_ref[index] = value
+
+func _interpolate_position(target_position: Vector2) -> void:
 	if _limit_inactive_pcam and not _has_tweened:
-		_global_position = _set_limit_clamp_position(_global_position)
+		target_position = _set_limit_clamp_position(target_position)
 
-	if get_follow_has_damping():
-		set_global_position(
-			get_global_position().lerp(
-				_global_position,
-				delta * follow_damping_value
-			)
-		)
+	if follow_damping:
+		for index in 2:
+			global_position[index] = \
+				_smooth_damp(
+					global_position[index],
+					target_position[index],
+					index,
+					_velocity_ref[index],
+					_set_velocity,
+					follow_damping_value[index]
+				)
 	else:
-		set_global_position(_global_position)
+		global_position = target_position
+
+
+func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
+		damping_time = maxf(0.0001, damping_time)
+		var omega: float = 2 / damping_time
+		var x: float = omega * get_process_delta_time()
+		var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
+		var diff: float = self_axis - target_axis
+		var _target_axis: float = target_axis
+
+		var max_change: float = INF * damping_time
+		diff = clampf(diff, -max_change, max_change)
+		target_axis = self_axis - diff
+
+		var temp: float = (current_velocity + omega * diff) * get_process_delta_time()
+		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
+		var output: float = target_axis + (diff + temp) * exponential
+
+		## To prevent overshooting
+		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
+			output = _target_axis
+			set_velocity.call(index, (output - _target_axis) / get_process_delta_time())
+
+		return output
 
 
 func _set_limit_clamp_position(value: Vector2) -> Vector2i:
@@ -563,7 +596,7 @@ func _set_limit_clamp_position(value: Vector2) -> Vector2i:
 
 func _draw():
 	if not Engine.is_editor_hint(): return
-	
+
 	if frame_preview and not _is_active:
 		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
 		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
@@ -862,6 +895,12 @@ func set_follow_target(value: Node2D) -> void:
 	follow_target = value
 	if is_instance_valid(value):
 		_should_follow = true
+		if value is PhysicsBody2D:
+			_is_physics_node = true
+			set_physics_process(true)
+		else:
+			_is_physics_node = false
+			set_physics_process(false)
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
@@ -904,10 +943,13 @@ func get_follow_has_damping() -> bool:
 	return follow_damping
 
 ## Assigns new Damping value.
-func set_follow_damping_value(value: float) -> void:
+func set_follow_damping_value(value: Vector2) -> void:
+	## TODO - Should be using @export_range once minimum version support is Godot 4.3
+	if value.x < 0: value.x = 0
+	elif value.y < 0: value.y = 0
 	follow_damping_value = value
 ## Gets the current Follow Damping value.
-func get_follow_damping_value() -> float:
+func get_follow_damping_value() -> Vector2:
 	return follow_damping_value
 
 ## Enables or disables [member snap_to_pixel].

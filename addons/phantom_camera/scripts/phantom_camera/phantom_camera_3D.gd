@@ -256,7 +256,7 @@ var _has_tweened: bool
 @export var follow_damping_value: Vector3 = Vector3.ZERO:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
-var _cur_follow_velocity: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
+var _velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
 
 ## Offsets the follow target's position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
@@ -701,8 +701,8 @@ var _velocity: Vector3
 # Unity SmoothDamp variables
 #var smooth_time: float = 1
 
-func _follow_vel(index: int, value: float):
-	_cur_follow_velocity[index] = value
+func _set_velocity(index: int, value: float):
+	_velocity_ref[index] = value
 
 func _interpolate_position(follow_global_position: Vector3, camera_target: Node3D = self) -> void:
 	if follow_damping:
@@ -711,15 +711,15 @@ func _interpolate_position(follow_global_position: Vector3, camera_target: Node3
 				camera_target.global_position[index],
 				follow_global_position[index],
 				index,
-				_cur_follow_velocity[index],
-				_follow_vel,
+				_velocity_ref[index],
+				_set_velocity,
 				follow_damping_value[index]
 			)
 	else:
 		camera_target.global_position = follow_global_position
 
 
-func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, current_vel: Callable, damping_time: float) -> float:
+func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
 		var x: float = omega * get_process_delta_time()
@@ -732,13 +732,13 @@ func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velo
 		target_axis = self_axis - diff
 
 		var temp: float = (current_velocity + omega * diff) * get_process_delta_time()
-		current_vel.call(index, (current_velocity - omega * temp) * exponential)
+		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
 		var output: float = target_axis + (diff + temp) * exponential
 		
 		## To prevent overshooting
 		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
 			output = _target_axis
-			current_vel.call(index, (output - _target_axis) / get_process_delta_time())
+			set_velocity.call(index, (output - _target_axis) / get_process_delta_time())
 
 		return output
 
