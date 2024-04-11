@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dd4sd404yydqk"]
+[gd_scene load_steps=12 format=3 uid="uid://dd4sd404yydqk"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_11grc"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_g1jp6"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_qq8ep"]
 [ext_resource type="Script" path="res://dev_scenes/2d/scripts/PlayerCharacterBody2D.gd" id="5_lslws"]
 [ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="7_k3dw6"]
-[ext_resource type="Script" path="res://addons/smoothing/smoothing_2d.gd" id="7_x5b0b"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_11grc")
@@ -659,6 +658,3 @@ shape = SubResource("RectangleShape2D_1nuj4")
 [node name="PlayerSprite" type="Sprite2D" parent="CharacterBody2D"]
 unique_name_in_owner = true
 texture = ExtResource("7_k3dw6")
-
-[node name="Smoothing2D" type="Node2D" parent="CharacterBody2D"]
-script = ExtResource("7_x5b0b")

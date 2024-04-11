@@ -217,9 +217,10 @@ var _has_tweened: bool = false
 	set = set_follow_has_damping,
 	get = get_follow_has_damping
 
-## Defines the damping amount.[br][br]
-## [b]Lower value[/b] = slower / heavier camera movement.[br][br]
-## [b]Higher value[/b] = faster / sharper camera movement.
+## Defines the damping amount. The ideal range should be somewhere between 0-1.[br][br]
+## The damping amount can be specified in the individual axis.
+## [b]Lower value[/b] = faster / sharper camera movement.[br][br]
+## [b]Higher value[/b] = slower / heavier camera movement.
 @export var follow_damping_value: Vector2 = Vector2.ZERO:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
