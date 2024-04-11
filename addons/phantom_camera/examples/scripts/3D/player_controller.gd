@@ -87,7 +87,8 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-func _process(delta) -> void:
+
+func _process(_delta: float) -> void:
 	_player_model.global_transform = _physics_body_trans_last.interpolate_with(
 		_physics_body_trans_current,
 		Engine.get_physics_interpolation_fraction()
