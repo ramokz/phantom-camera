@@ -520,155 +520,154 @@ func _process(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
-	if not _should_follow: return
-	
-	match follow_mode:
-		FollowMode.GLUED:
-			if follow_target:
-				_interpolate_position(
-					follow_target.global_position
-				)
-		FollowMode.SIMPLE:
-			if follow_target:
-				_interpolate_position(
-					_get_target_position_offset()
-				)
-		FollowMode.GROUP:
-			if follow_targets:
-				if follow_targets.size() == 1:
+	if _should_follow: 
+		match follow_mode:
+			FollowMode.GLUED:
+				if follow_target:
 					_interpolate_position(
-						follow_targets[0].global_position +
-						follow_offset +
-						get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+						follow_target.global_position
 					)
-				elif follow_targets.size() > 1:
-					var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
-					for node in follow_targets:
-						if is_instance_valid(node):
-							bounds = bounds.expand(node.global_position)
-
-					var distance: float
-					if auto_distance:
-						distance = lerp(auto_distance_min, auto_distance_max, bounds.get_longest_axis_size() / auto_distance_divisor)
-						distance = clamp(distance, auto_distance_min, auto_distance_max)
-					else:
-						distance = follow_distance
-
+			FollowMode.SIMPLE:
+				if follow_target:
 					_interpolate_position(
-						bounds.get_center() +
-						follow_offset +
-						get_transform().basis.z * Vector3(distance, distance, distance)
+						_get_target_position_offset()
 					)
-		FollowMode.PATH:
-			if follow_target and follow_path:
-				var path_position: Vector3 = follow_path.global_position
-				_interpolate_position(
-					follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position
-				)
-		FollowMode.FRAMED:
-			if follow_target:
-				if not Engine.is_editor_hint():
-					if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
+			FollowMode.GROUP:
+				if follow_targets:
+					if follow_targets.size() == 1:
 						_interpolate_position(
-							_get_position_offset_distance()
+							follow_targets[0].global_position +
+							follow_offset +
+							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 						)
-						return
+					elif follow_targets.size() > 1:
+						var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
+						for node in follow_targets:
+							if is_instance_valid(node):
+								bounds = bounds.expand(node.global_position)
 
-					viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
-					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-					viewport_position = viewport_position / visible_rect_size
-					_current_rotation = global_rotation
-
-					if _current_rotation != global_rotation:
-						_interpolate_position(
-							_get_position_offset_distance()
-						)
-
-					if _get_framed_side_offset() != Vector2.ZERO:
-						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
-						var glo_pos: Vector3
-
-						if dead_zone_width == 0 || dead_zone_height == 0:
-							if dead_zone_width == 0 && dead_zone_height != 0:
-								glo_pos = _get_position_offset_distance()
-								glo_pos.z = target_position.z
-								_interpolate_position(
-									glo_pos
-								)
-							elif dead_zone_width != 0 && dead_zone_height == 0:
-								glo_pos = _get_position_offset_distance()
-								glo_pos.x = target_position.x
-								_interpolate_position(
-									glo_pos
-								)
-							else:
-								_interpolate_position(
-									_get_position_offset_distance()
-								)
+						var distance: float
+						if auto_distance:
+							distance = lerp(auto_distance_min, auto_distance_max, bounds.get_longest_axis_size() / auto_distance_divisor)
+							distance = clamp(distance, auto_distance_min, auto_distance_max)
 						else:
-							if _current_rotation != global_rotation:
-								var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
-								glo_pos.y = _get_target_position_offset().y + opposite
-								glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
-								glo_pos.x = global_position.x
+							distance = follow_distance
 
-								_interpolate_position(
-									glo_pos
-								)
-								_current_rotation = global_rotation
-							else:
-								_interpolate_position(
-									target_position
-								)
-					else:
-						_follow_framed_offset = global_position - _get_target_position_offset()
-						_current_rotation = global_rotation
-				else:
-					global_position = _get_position_offset_distance()
-					var unprojected_position: Vector2 = _get_raw_unprojected_position()
-					var viewport_width: float = get_viewport().size.x
-					var viewport_height: float = get_viewport().size.y
-					var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-
-					unprojected_position = unprojected_position - visible_rect_size / 2
-					if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#							Landscape View
-						var aspect_ratio_scale: float = viewport_width / viewport_height
-						unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-						unprojected_position.y = (unprojected_position.y + 1) / 2
-					else:
-#							Portrait View
-						var aspect_ratio_scale: float = viewport_height / viewport_width
-						unprojected_position.x = (unprojected_position.x + 1) / 2
-						unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-
-					viewport_position = unprojected_position
-		FollowMode.THIRD_PERSON:
-			if follow_target:
-				if not Engine.is_editor_hint():
-					if is_instance_valid(follow_target):
-						if is_instance_valid(_follow_spring_arm):
-							if not get_parent() == _follow_spring_arm:
-								var follow_target: Node3D = follow_target
-								_follow_spring_arm.rotation = rotation
-								_follow_spring_arm.global_position = _get_target_position_offset() # Ensure the PCam3D starts at the right position at runtime
-								_follow_spring_arm.spring_length = spring_length
-								_follow_spring_arm.collision_mask = collision_mask
-								_follow_spring_arm.shape = shape
-								_follow_spring_arm.margin = margin
-
-								if not is_tween_on_load():
-									_has_tweened = true
-
-								reparent(_follow_spring_arm)
-
+						_interpolate_position(
+							bounds.get_center() +
+							follow_offset +
+							get_transform().basis.z * Vector3(distance, distance, distance)
+						)
+			FollowMode.PATH:
+				if follow_target and follow_path:
+					var path_position: Vector3 = follow_path.global_position
+					_interpolate_position(
+						follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position
+					)
+			FollowMode.FRAMED:
+				if follow_target:
+					if not Engine.is_editor_hint():
+						if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
 							_interpolate_position(
-								_get_target_position_offset(),
-								_follow_spring_arm
+								_get_position_offset_distance()
 							)
-				else:
-					global_position = _get_position_offset_distance()
+							return
+
+						viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
+						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+						viewport_position = viewport_position / visible_rect_size
+						_current_rotation = global_rotation
+
+						if _current_rotation != global_rotation:
+							_interpolate_position(
+								_get_position_offset_distance()
+							)
+
+						if _get_framed_side_offset() != Vector2.ZERO:
+							var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
+							var glo_pos: Vector3
+
+							if dead_zone_width == 0 || dead_zone_height == 0:
+								if dead_zone_width == 0 && dead_zone_height != 0:
+									glo_pos = _get_position_offset_distance()
+									glo_pos.z = target_position.z
+									_interpolate_position(
+										glo_pos
+									)
+								elif dead_zone_width != 0 && dead_zone_height == 0:
+									glo_pos = _get_position_offset_distance()
+									glo_pos.x = target_position.x
+									_interpolate_position(
+										glo_pos
+									)
+								else:
+									_interpolate_position(
+										_get_position_offset_distance()
+									)
+							else:
+								if _current_rotation != global_rotation:
+									var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
+									glo_pos.y = _get_target_position_offset().y + opposite
+									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
+									glo_pos.x = global_position.x
+
+									_interpolate_position(
+										glo_pos
+									)
+									_current_rotation = global_rotation
+								else:
+									_interpolate_position(
+										target_position
+									)
+						else:
+							_follow_framed_offset = global_position - _get_target_position_offset()
+							_current_rotation = global_rotation
+					else:
+						global_position = _get_position_offset_distance()
+						var unprojected_position: Vector2 = _get_raw_unprojected_position()
+						var viewport_width: float = get_viewport().size.x
+						var viewport_height: float = get_viewport().size.y
+						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+
+						unprojected_position = unprojected_position - visible_rect_size / 2
+						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+	#							Landscape View
+							var aspect_ratio_scale: float = viewport_width / viewport_height
+							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+							unprojected_position.y = (unprojected_position.y + 1) / 2
+						else:
+	#							Portrait View
+							var aspect_ratio_scale: float = viewport_height / viewport_width
+							unprojected_position.x = (unprojected_position.x + 1) / 2
+							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+						viewport_position = unprojected_position
+			FollowMode.THIRD_PERSON:
+				if follow_target:
+					if not Engine.is_editor_hint():
+						if is_instance_valid(follow_target):
+							if is_instance_valid(_follow_spring_arm):
+								if not get_parent() == _follow_spring_arm:
+									var follow_target: Node3D = follow_target
+									_follow_spring_arm.rotation = rotation
+									_follow_spring_arm.global_position = _get_target_position_offset() # Ensure the PCam3D starts at the right position at runtime
+									_follow_spring_arm.spring_length = spring_length
+									_follow_spring_arm.collision_mask = collision_mask
+									_follow_spring_arm.shape = shape
+									_follow_spring_arm.margin = margin
+
+									if not is_tween_on_load():
+										_has_tweened = true
+
+									reparent(_follow_spring_arm)
+
+								_interpolate_position(
+									_get_target_position_offset(),
+									_follow_spring_arm
+								)
+					else:
+						global_position = _get_position_offset_distance()
 
 	if _should_look_at:
 		if not _has_look_at_target: return
