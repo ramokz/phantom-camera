@@ -701,16 +701,16 @@ func _process(delta: float) -> void:
 			LookAtMode.MIMIC:
 				global_rotation = look_at_target.global_rotation
 			LookAtMode.SIMPLE:
-				_interpolate_rotation(look_at_target.global_transform)
+				_interpolate_rotation(look_at_target.global_position)
 			LookAtMode.GROUP:
 				if not _has_look_at_targets:
-					#print("Single target")
-					look_at(look_at_targets[0].global_position)
+					if look_at_targets.size() == 0: return
+					_interpolate_position(look_at_targets[0].global_position)
 				else:
 					var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 					for node in look_at_targets:
 						bounds = bounds.expand(node.global_position)
-					look_at(bounds.get_center())
+					_interpolate_rotation(bounds.get_center())
 
 
 func _get_target_position_offset() -> Vector3:
@@ -1243,7 +1243,6 @@ func get_look_at_target():
 ## Sets an array of type [Node3D] to [member set_look_at_targets].
 func set_look_at_targets(value: Array[Node3D]) -> void:
 	if look_at_targets == value: return
-
 	look_at_targets = value
 	
 	if look_at_targets.is_empty():
@@ -1258,11 +1257,8 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 			_valid_look_at_targets.append(target)
 		
 		if valid_instances > 1:
-			print("Larger than 1")
 			_has_look_at_targets = true
-			break
 		elif valid_instances == 0:
-			print("Invalid instances")
 			_should_look_at = false
 			_has_look_at_targets = false
 
