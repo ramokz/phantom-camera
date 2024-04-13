@@ -743,35 +743,38 @@ func _interpolate_position(target_position: Vector3, camera_target: Node3D = sel
 		camera_target.global_position = target_position
 
 
-func _interpolate_rotation(target_trans: Transform3D, current: Node3D = self) -> void:
-	var direction: Vector3 = (target_trans.origin - current.global_position).normalized()
+func _interpolate_rotation(target_trans: Vector3, current: Node3D = self) -> void:
+	var direction: Vector3 = (target_trans - current.global_position + look_at_target_offset).normalized()
 	var target_basis: Basis = Basis().looking_at(direction)
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
-	var current_quat: Quaternion = current.quaternion.normalized()
-	
-	var damping_time: float = max(0.0001, look_at_damping_value)
-	var t: float = min(1.0, get_process_delta_time() / damping_time)
-	
-	var dot: float = current_quat.dot(target_quat)
-	
-	if dot < 0.0:
-		target_quat = -target_quat
-		dot = -dot
-	
-	dot = clampf(dot, -1.0, 1.0)
-	
-	var theta: float = acos(dot) * t
-	var sin_theta: float = sin(theta)
-	var sin_theta_total: float = sin(acos(dot))
-	
-	# Stop interpolating once sin_theta_total reaches a very low value or 0
-	if sin_theta_total < 0.00001:
-		return
-	
-	var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
-	var ratio_b: float = sin_theta / sin_theta_total
-	
-	current.quaternion = current_quat * ratio_a + target_quat * ratio_b
+	if look_at_damping:
+		var current_quat: Quaternion = current.quaternion.normalized()
+		
+		var damping_time: float = max(0.0001, look_at_damping_value)
+		var t: float = min(1.0, get_process_delta_time() / damping_time)
+		
+		var dot: float = current_quat.dot(target_quat)
+		
+		if dot < 0.0:
+			target_quat = -target_quat
+			dot = -dot
+		
+		dot = clampf(dot, -1.0, 1.0)
+		
+		var theta: float = acos(dot) * t
+		var sin_theta: float = sin(theta)
+		var sin_theta_total: float = sin(acos(dot))
+		
+		# Stop interpolating once sin_theta_total reaches a very low value or 0
+		if sin_theta_total < 0.00001:
+			return
+		
+		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
+		var ratio_b: float = sin_theta / sin_theta_total
+		
+		current.quaternion = current_quat * ratio_a + target_quat * ratio_b
+	else:
+		current.quaternion = target_quat
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, rot: bool = false) -> float:
