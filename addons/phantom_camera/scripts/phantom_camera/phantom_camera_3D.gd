@@ -175,9 +175,6 @@ var _has_multiple_follow_targets: bool = false
 	set = set_follow_path,
 	get = get_follow_path
 
-var _should_look_at: bool = false
-var _has_look_at_target: bool = false
-var _has_look_at_targets: bool = false
 
 ## Determines the rotational logic for a given [param PhantomCamera3D].
 ## The different modes has different functionalities and purposes,
@@ -189,6 +186,9 @@ var _has_look_at_targets: bool = false
 		notify_property_list_changed()
 	get:
 		return look_at_mode
+var _should_look_at: bool = false
+var _has_look_at_target: bool = false
+var _has_look_at_targets: bool = false
 
 ## Determines which target should be looked at.
 ## The [param PhantomCamera3D] will update its rotational value as the
@@ -242,7 +242,7 @@ var _has_tweened: bool
 	get = get_camera_3d_resource
 
 @export_group("Follow Parameters")
-## Applies a damping effect on the Camera's movement.
+## Applies a damping effect on the camera's movement.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera movement.
 @export var follow_damping: bool = false:
@@ -256,7 +256,7 @@ var _has_tweened: bool
 @export var follow_damping_value: Vector3 = Vector3.ZERO:
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
-var _velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
+var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
 
 ## Offsets the follow target's position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
@@ -339,6 +339,7 @@ var _velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of t
 ## This is only used for when [member follow_mode] is set to [param Framed]. 
 var viewport_position: Vector2
 var _follow_framed_initial_set: bool = false
+var _follow_framed_offset: Vector3
 
 @export_subgroup("Spring Arm")
 var _follow_spring_arm: SpringArm3D
@@ -364,14 +365,23 @@ var _follow_spring_arm: SpringArm3D
 	get = get_margin
 
 @export_group("Look At Parameters")
-
 ## Offsets the target's [param Vector3] position that the
 ## [param PhantomCamera3D] is looking at.
 @export var look_at_target_offset: Vector3 = Vector3.ZERO:
 	set = set_look_at_target_offset,
 	get = get_look_at_target_offset
 
-var _follow_framed_offset: Vector3
+## Applies a damping effect on the camera's rotation.
+## Leading to heavier / slower camera movement as the targeted node moves around.
+## This is useful to avoid sharp and rapid camera rotation.
+@export var look_at_damping: bool = false
+
+## Defines the Rotational damping amount. The ideal range is typicall somewhere between 0-1.[br][br]
+## The damping amount can be specified in the individual axis.
+## [b]Lower value[/b] = faster / sharper camera rotation.[br][br]
+## [b]Higher value[/b] = slower / heavier camera rotation.
+@export var look_at_damping_value: float = 0.25
+
 var _current_rotation: Vector3
 
 #endregion
@@ -456,6 +466,18 @@ func _validate_property(property: Dictionary) -> void:
 	##########
 	## Look At
 	##########
+	if look_at_mode == LookAtMode.NONE:
+		match property.name:
+			"look_at_target", \
+			"look_at_target_offset" , \
+			"look_at_damping", \
+			"look_at_damping_value":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+	elif look_at_mode == LookAtMode.GROUP:
+		match property.name:
+			"look_at_target":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
 	if property.name == "look_at_target":
 		if look_at_mode == LookAtMode.NONE or \
 		look_at_mode == LookAtMode.GROUP:
@@ -465,9 +487,6 @@ func _validate_property(property: Dictionary) -> void:
 	not look_at_mode == LookAtMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "look_at_target_offset" and \
-	look_at_mode == LookAtMode.NONE:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	notify_property_list_changed()
 #endregion
