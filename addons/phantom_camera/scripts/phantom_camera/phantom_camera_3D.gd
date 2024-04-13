@@ -258,7 +258,7 @@ var _has_tweened: bool
 ## The damping amount can be specified in the individual axis.
 ## [b]Lower value[/b] = faster / sharper camera movement.[br][br]
 ## [b]Higher value[/b] = slower / heavier camera movement.
-@export var follow_damping_value: Vector3 = Vector3.ZERO:
+@export var follow_damping_value: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
@@ -382,7 +382,7 @@ var _follow_spring_arm: SpringArm3D
 ## The damping amount can be specified in the individual axis.
 ## [b]Lower value[/b] = faster / sharper camera rotation.[br][br]
 ## [b]Higher value[/b] = slower / heavier camera rotation.
-@export var look_at_damping_value: float = 0:
+@export var look_at_damping_value: float = 0.25:
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
 
