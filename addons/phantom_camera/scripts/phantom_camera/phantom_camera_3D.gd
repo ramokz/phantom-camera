@@ -242,6 +242,11 @@ var _has_tweened: bool
 	get = get_camera_3d_resource
 
 @export_group("Follow Parameters")
+## Offsets the follow target's position.
+@export var follow_offset: Vector3 = Vector3.ZERO:
+	set = set_follow_target_offset,
+	get = get_follow_target_offset
+	
 ## Applies a damping effect on the camera's movement.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera movement.
@@ -257,11 +262,6 @@ var _has_tweened: bool
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
-
-## Offsets the follow target's position.
-@export var follow_offset: Vector3 = Vector3.ZERO:
-	set = set_follow_target_offset,
-	get = get_follow_target_offset
 
 ## Sets a distance offset from the centre of the target's position.
 ## The distance is applied to the [param PhantomCamera3D]'s local z axis.
@@ -374,13 +374,17 @@ var _follow_spring_arm: SpringArm3D
 ## Applies a damping effect on the camera's rotation.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera rotation.
-@export var look_at_damping: bool = false
+@export var look_at_damping: bool = false:
+	set = set_look_at_damping,
+	get = get_look_at_damping
 
 ## Defines the Rotational damping amount. The ideal range is typicall somewhere between 0-1.[br][br]
 ## The damping amount can be specified in the individual axis.
 ## [b]Lower value[/b] = faster / sharper camera rotation.[br][br]
 ## [b]Higher value[/b] = slower / heavier camera rotation.
-@export var look_at_damping_value: float = 0.25
+@export var look_at_damping_value: float = 0:
+	set = set_look_at_damping_value,
+	get = get_look_at_damping_value
 
 var _current_rotation: Vector3
 
@@ -486,7 +490,10 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "look_at_targets" and \
 	not look_at_mode == LookAtMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-
+	
+	if property.name == "look_at_damping_value" and \
+	not look_at_damping:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	notify_property_list_changed()
 #endregion
@@ -694,7 +701,7 @@ func _process(delta: float) -> void:
 			LookAtMode.MIMIC:
 				global_rotation = look_at_target.global_rotation
 			LookAtMode.SIMPLE:
-				look_at(look_at_target.global_position + look_at_target_offset)
+				_interpolate_rotation(look_at_target.global_transform)
 			LookAtMode.GROUP:
 				if not _has_look_at_targets:
 					#print("Single target")
@@ -733,12 +740,41 @@ func _interpolate_position(target_position: Vector3, camera_target: Node3D = sel
 				follow_damping_value[index]
 			)
 	else:
-		camera_target.global_position = follow_global_position
-
-
-func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
 		camera_target.global_position = target_position
 
+
+func _interpolate_rotation(target_trans: Transform3D, current: Node3D = self) -> void:
+	var direction: Vector3 = (target_trans.origin - current.global_position).normalized()
+	var target_basis: Basis = Basis().looking_at(direction)
+	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
+	var current_quat: Quaternion = current.quaternion.normalized()
+	
+	var damping_time: float = max(0.0001, look_at_damping_value)
+	var t: float = min(1.0, get_process_delta_time() / damping_time)
+	
+	var dot: float = current_quat.dot(target_quat)
+	
+	if dot < 0.0:
+		target_quat = -target_quat
+		dot = -dot
+	
+	dot = clampf(dot, -1.0, 1.0)
+	
+	var theta: float = acos(dot) * t
+	var sin_theta: float = sin(theta)
+	var sin_theta_total: float = sin(acos(dot))
+	
+	# Stop interpolating once sin_theta_total reaches a very low value or 0
+	if sin_theta_total < 0.00001:
+		return
+	
+	var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
+	var ratio_b: float = sin_theta / sin_theta_total
+	
+	current.quaternion = current_quat * ratio_a + target_quat * ratio_b
+
+
+func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, rot: bool = false) -> float:
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
 		var x: float = omega * get_process_delta_time()
@@ -753,7 +789,7 @@ func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velo
 		var temp: float = (current_velocity + omega * diff) * get_process_delta_time()
 		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
 		var output: float = target_axis + (diff + temp) * exponential
-		
+
 		## To prevent overshooting
 		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
 			output = _target_axis
@@ -1200,12 +1236,6 @@ func get_look_at_target():
 	return look_at_target
 
 
-## Assigns a new [Vector3] to the [member look_at_target_offset] value.
-func set_look_at_target_offset(value: Vector3) -> void:
-	look_at_target_offset = value
-## Gets the current [member look_at_target_offset] value.
-func get_look_at_target_offset() -> Vector3:
-	return look_at_target_offset
 
 ## Sets an array of type [Node3D] to [member set_look_at_targets].
 func set_look_at_targets(value: Array[Node3D]) -> void:
@@ -1261,6 +1291,24 @@ func erase_look_at_targets_member(value: Node3D) -> void:
 func get_look_at_targets() -> Array[Node3D]:
 	return look_at_targets
 
+## Assigns a new [Vector3] to the [member look_at_target_offset] value.
+func set_look_at_target_offset(value: Vector3) -> void:
+	look_at_target_offset = value
+## Gets the current [member look_at_target_offset] value.
+func get_look_at_target_offset() -> Vector3:
+	return look_at_target_offset
+
+
+func set_look_at_damping(value: bool) -> void:
+	look_at_damping = value
+	notify_property_list_changed()
+func get_look_at_damping() -> bool:
+	return look_at_damping
+
+func set_look_at_damping_value(value: float) -> void:
+	look_at_damping_value = value
+func get_look_at_damping_value() -> float:
+	return look_at_damping_value
 
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
