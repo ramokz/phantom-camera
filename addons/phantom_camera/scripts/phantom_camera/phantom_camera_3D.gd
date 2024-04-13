@@ -719,18 +719,17 @@ var _velocity: Vector3
 # Unity SmoothDamp variables
 #var smooth_time: float = 1
 
-func _set_velocity(index: int, value: float):
-	_velocity_ref[index] = value
-
-func _interpolate_position(follow_global_position: Vector3, camera_target: Node3D = self) -> void:
+func _set_follow_velocity(index: int, value: float) -> void:
+	_follow_velocity_ref[index] = value
+func _interpolate_position(target_position: Vector3, camera_target: Node3D = self) -> void:
 	if follow_damping:
 		for index in 3:
 			camera_target.global_position[index] = _smooth_damp(
+				target_position[index],
 				camera_target.global_position[index],
-				follow_global_position[index],
 				index,
-				_velocity_ref[index],
-				_set_velocity,
+				_follow_velocity_ref[index],
+				_set_follow_velocity,
 				follow_damping_value[index]
 			)
 	else:
@@ -738,6 +737,8 @@ func _interpolate_position(follow_global_position: Vector3, camera_target: Node3
 
 
 func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
+		camera_target.global_position = target_position
+
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
 		var x: float = omega * get_process_delta_time()
