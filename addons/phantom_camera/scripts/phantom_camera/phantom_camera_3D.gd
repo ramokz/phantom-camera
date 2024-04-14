@@ -187,8 +187,7 @@ var _has_multiple_follow_targets: bool = false
 	get:
 		return look_at_mode
 var _should_look_at: bool = false
-var _has_look_at_target: bool = false
-var _has_look_at_targets: bool = false
+var _multiple_look_at_targets: bool = false
 
 ## Determines which target should be looked at.
 ## The [param PhantomCamera3D] will update its rotational value as the
@@ -698,14 +697,13 @@ func _process(delta: float) -> void:
 						global_position = _get_position_offset_distance()
 
 	if _should_look_at:
-		if not _has_look_at_target: return
 		match look_at_mode:
 			LookAtMode.MIMIC:
 				global_rotation = look_at_target.global_rotation
 			LookAtMode.SIMPLE:
 				_interpolate_rotation(look_at_target.global_position)
 			LookAtMode.GROUP:
-				if not _has_look_at_targets:
+				if not _multiple_look_at_targets:
 					if look_at_targets.size() == 0: return
 					_interpolate_position(look_at_targets[0].global_position)
 				else:
@@ -770,10 +768,10 @@ func _interpolate_rotation(target_trans: Vector3) -> void:
 		# Stop interpolating once sin_theta_total reaches a very low value or 0
 		if sin_theta_total < 0.00001:
 			return
-		
+
 		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
 		var ratio_b: float = sin_theta / sin_theta_total
-		
+
 		quaternion = current_quat * ratio_a + target_quat * ratio_b
 	else:
 		quaternion = target_quat
@@ -1233,10 +1231,8 @@ func set_look_at_target(value: Node3D) -> void:
 	look_at_target_changed
 	if is_instance_valid(look_at_target):
 		_should_look_at = true
-		_has_look_at_target = true
 	else:
 		_should_look_at = false
-		_has_look_at_target = false
 	notify_property_list_changed()
 ## Gets current [Node3D] from [member look_at_target] property.
 func get_look_at_target():
@@ -1251,7 +1247,7 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 	
 	if look_at_targets.is_empty():
 		_should_look_at = false
-		_has_look_at_targets = false
+		_multiple_look_at_targets = false
 
 	var valid_instances: int = 0
 	for target in look_at_targets:
@@ -1261,10 +1257,10 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 			_valid_look_at_targets.append(target)
 		
 		if valid_instances > 1:
-			_has_look_at_targets = true
+			_multiple_look_at_targets = true
 		elif valid_instances == 0:
 			_should_look_at = false
-			_has_look_at_targets = false
+			_multiple_look_at_targets = false
 
 	notify_property_list_changed()
 ## Appends a [Node3D] to [member look_at_targets] array.
@@ -1272,7 +1268,7 @@ func append_look_at_target(value: Node3D) -> void:
 	if not look_at_targets.has(value):
 		look_at_targets.append(value)
 		_valid_look_at_targets.append(value)
-		_has_look_at_targets = true
+		_multiple_look_at_targets = true
 	else:
 		printerr(value, " is already part of Look At Group")
 ## Appends an array of type [Node3D] to [member look_at_targets] array.
@@ -1281,7 +1277,7 @@ func append_look_at_targets_array(value: Array[NodePath]) -> void:
 		if not look_at_targets.has(val):
 			look_at_targets.append(val)
 			_valid_look_at_targets.append(val)
-			_has_look_at_targets = true
+			_multiple_look_at_targets = true
 		else:
 			printerr(val, " is already part of Look At Group")
 ## Removes [Node3D] from [member look_at_targets] array.
@@ -1289,7 +1285,7 @@ func erase_look_at_targets_member(value: Node3D) -> void:
 	look_at_targets.erase(value)
 	_valid_look_at_targets.erase(value)
 	if look_at_targets.size() < 1:
-		_has_look_at_targets = false
+		_multiple_look_at_targets = false
 ## Gets all the [Node3D] instances in [member look_at_targets].
 func get_look_at_targets() -> Array[Node3D]:
 	return look_at_targets
