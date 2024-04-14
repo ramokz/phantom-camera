@@ -553,8 +553,8 @@ func _interpolate_position(target_position: Vector2) -> void:
 		for index in 2:
 			global_position[index] = \
 				_smooth_damp(
-					global_position[index],
 					target_position[index],
+					global_position[index],
 					index,
 					_velocity_ref[index],
 					_set_velocity,
@@ -564,7 +564,7 @@ func _interpolate_position(target_position: Vector2) -> void:
 		global_position = target_position
 
 
-func _smooth_damp(self_axis: float, target_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
+func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
 		var x: float = omega * get_process_delta_time()
