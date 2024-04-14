@@ -409,18 +409,20 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Parameters
 	####################
-	if property.name == "follow_offset":
-		if follow_mode == FollowMode.GLUED or \
-		follow_mode == FollowMode.PATH or \
-		follow_mode == FollowMode.NONE:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	if property.name == "follow_damping" and \
-	follow_mode == FollowMode.NONE:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
-
+	
+	if follow_mode == FollowMode.NONE:
+		match property.name:
+			"follow_offset", \
+			"follow_damping", \
+			"follow_damping_value":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+	
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "follow_offset":
+		if follow_mode == FollowMode.PATH:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
 		if not follow_mode == FollowMode.FRAMED:
@@ -743,12 +745,12 @@ func _interpolate_position(target_position: Vector3, camera_target: Node3D = sel
 		camera_target.global_position = target_position
 
 
-func _interpolate_rotation(target_trans: Vector3, current: Node3D = self) -> void:
-	var direction: Vector3 = (target_trans - current.global_position + look_at_target_offset).normalized()
+func _interpolate_rotation(target_trans: Vector3) -> void:
+	var direction: Vector3 = (target_trans - global_position + look_at_target_offset).normalized()
 	var target_basis: Basis = Basis().looking_at(direction)
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
 	if look_at_damping:
-		var current_quat: Quaternion = current.quaternion.normalized()
+		var current_quat: Quaternion = quaternion.normalized()
 		
 		var damping_time: float = max(0.0001, look_at_damping_value)
 		var t: float = min(1.0, get_process_delta_time() / damping_time)
@@ -772,15 +774,16 @@ func _interpolate_rotation(target_trans: Vector3, current: Node3D = self) -> voi
 		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
 		var ratio_b: float = sin_theta / sin_theta_total
 		
-		current.quaternion = current_quat * ratio_a + target_quat * ratio_b
+		quaternion = current_quat * ratio_a + target_quat * ratio_b
 	else:
-		current.quaternion = target_quat
+		quaternion = target_quat
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, rot: bool = false) -> float:
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
-		var x: float = omega * get_process_delta_time()
+		var delta: float = get_process_delta_time()
+		var x: float = omega * delta
 		var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
 		var diff: float = self_axis - target_axis
 		var _target_axis: float = target_axis
@@ -789,14 +792,14 @@ func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velo
 		diff = clampf(diff, -max_change, max_change)
 		target_axis = self_axis - diff
 
-		var temp: float = (current_velocity + omega * diff) * get_process_delta_time()
+		var temp: float = (current_velocity + omega * diff) * delta
 		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
 		var output: float = target_axis + (diff + temp) * exponential
 
 		## To prevent overshooting
 		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
 			output = _target_axis
-			set_velocity.call(index, (output - _target_axis) / get_process_delta_time())
+			set_velocity.call(index, (output - _target_axis) / delta)
 
 		return output
 
@@ -996,6 +999,7 @@ func set_follow_target(value: Node3D) -> void:
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
+	notify_property_list_changed()
 ## Removes the current [Node3D] [member follow_target].
 func erase_follow_target() -> void:
 	if follow_target == null: return
