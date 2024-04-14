@@ -381,7 +381,7 @@ var _follow_spring_arm: SpringArm3D
 ## The damping amount can be specified in the individual axis.
 ## [b]Lower value[/b] = faster / sharper camera rotation.[br][br]
 ## [b]Higher value[/b] = slower / heavier camera rotation.
-@export var look_at_damping_value: float = 0.25:
+@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_damping_value: float = 0.25:
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
 
