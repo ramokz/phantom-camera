@@ -183,6 +183,8 @@ var _has_multiple_follow_targets: bool = false
 @export var look_at_mode: LookAtMode = LookAtMode.NONE:
 	set(value):
 		look_at_mode = value
+		if look_at_target is Node3D:
+			_should_look_at = true
 		notify_property_list_changed()
 	get:
 		return look_at_mode
@@ -1245,22 +1247,24 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 	if look_at_targets == value: return
 	look_at_targets = value
 	
+	if look_at_mode != LookAtMode.GROUP: return
+	
 	if look_at_targets.is_empty():
 		_should_look_at = false
 		_multiple_look_at_targets = false
-
-	var valid_instances: int = 0
-	for target in look_at_targets:
-		if is_instance_valid(target):
-			valid_instances += 1
-			_should_look_at = true
-			_valid_look_at_targets.append(target)
-		
-		if valid_instances > 1:
-			_multiple_look_at_targets = true
-		elif valid_instances == 0:
-			_should_look_at = false
-			_multiple_look_at_targets = false
+	else:
+		var valid_instances: int = 0
+		for target in look_at_targets:
+			if is_instance_valid(target):
+				valid_instances += 1
+				_should_look_at = true
+				_valid_look_at_targets.append(target)
+			
+			if valid_instances > 1:
+				_multiple_look_at_targets = true
+			elif valid_instances == 0:
+				_should_look_at = false
+				_multiple_look_at_targets = false
 
 	notify_property_list_changed()
 ## Appends a [Node3D] to [member look_at_targets] array.
