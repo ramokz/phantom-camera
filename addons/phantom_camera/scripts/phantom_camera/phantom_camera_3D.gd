@@ -707,7 +707,7 @@ func _process(delta: float) -> void:
 			LookAtMode.GROUP:
 				if not _multiple_look_at_targets:
 					if look_at_targets.size() == 0: return
-					_interpolate_position(look_at_targets[0].global_position)
+					_interpolate_rotation(look_at_targets[0].global_position)
 				else:
 					var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 					for node in look_at_targets:
