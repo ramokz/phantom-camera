@@ -210,11 +210,11 @@ func _pcam_tween(delta: float) -> void:
 		camera_3d.global_position = \
 			_tween_interpolate_value(_prev_active_pcam_3d_transform.origin, _active_pcam_3d_glob_transform.origin)
 
-		var prev_active_pcam_3d_basis = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
+		var prev_active_pcam_3d_quat: Quaternion = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
 		camera_3d.quaternion = \
 			Tween.interpolate_value(
-				prev_active_pcam_3d_basis, \
-				prev_active_pcam_3d_basis.inverse() * Quaternion(_active_pcam_3d_glob_transform.basis.orthonormalized()),
+				prev_active_pcam_3d_quat, \
+				prev_active_pcam_3d_quat.inverse() * Quaternion(_active_pcam_3d_glob_transform.basis.orthonormalized()),
 				_tween_duration, \
 				_active_pcam.get_tween_duration(), \
 				_active_pcam.get_tween_transition(),
