@@ -723,10 +723,6 @@ func _get_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
 	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
-var _velocity: Vector3
-
-# Unity SmoothDamp variables
-#var smooth_time: float = 1
 
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
