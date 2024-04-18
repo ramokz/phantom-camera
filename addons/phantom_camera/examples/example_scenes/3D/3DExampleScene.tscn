@@ -49,7 +49,7 @@ albedo_color = Color(0.988235, 0.478431, 0.905882, 1)
 
 [sub_resource type="Resource" id="Resource_tpvee"]
 script = ExtResource("7_jitt8")
-duration = 1.0
+duration = 0.0
 transition = 0
 ease = 2
 
@@ -65,7 +65,7 @@ size = Vector3(6.8, 0.1, 5.4)
 
 [sub_resource type="Resource" id="Resource_7ih0k"]
 script = ExtResource("7_jitt8")
-duration = 1.0
+duration = 0.0
 transition = 0
 ease = 2
 
@@ -81,7 +81,7 @@ size = Vector3(7.4, 0.1, 3.6)
 
 [sub_resource type="Resource" id="Resource_x5y0u"]
 script = ExtResource("7_jitt8")
-duration = 1.0
+duration = 0.0
 transition = 0
 ease = 2
 
@@ -159,8 +159,8 @@ follow_target = NodePath("../PlayerCharacterBody3D/PlayerModel")
 tween_resource = ExtResource("4_a27nb")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_jtk1d")
-follow_damping = true
 follow_offset = Vector3(0, 1.5, 2)
+follow_damping = true
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
 unique_name_in_owner = true
