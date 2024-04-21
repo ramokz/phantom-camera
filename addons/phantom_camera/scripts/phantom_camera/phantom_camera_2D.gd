@@ -221,7 +221,7 @@ var _has_tweened: bool = false
 ## The damping amount can be specified in the individual axis.
 ## [b]Lower value[/b] = faster / sharper camera movement.[br][br]
 ## [b]Higher value[/b] = slower / heavier camera movement.
-@export var follow_damping_value: Vector2 = Vector2.ZERO:
+@export var follow_damping_value: Vector2 = Vector2(0.1, 0.1):
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
@@ -397,15 +397,20 @@ func _validate_property(property: Dictionary) -> void:
 	###############
 	## Follow Group
 	###############
-	if property.name == "follow_targets" and follow_mode != FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	if not auto_zoom:
+	if follow_mode != FollowMode.GROUP:
 		match property.name:
-			"auto_zoom_min", \
-			"auto_zoom_max", \
-			"auto_zoom_margin":
+			"follow_targets", \
+			"auto_zoom":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
+		
+		
+		
+		if not auto_zoom:
+			match property.name:
+				"auto_zoom_min", \
+				"auto_zoom_max", \
+				"auto_zoom_margin":
+					property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	################
 	## Follow Framed
