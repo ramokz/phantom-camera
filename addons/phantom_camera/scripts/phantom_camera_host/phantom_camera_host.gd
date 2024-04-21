@@ -258,13 +258,7 @@ func _pcam_follow(delta: float) -> void:
 			camera_2d.global_transform = snap_to_pixel_glob_transform
 		else:
 			camera_2d.global_transform =_active_pcam_2d_glob_transform
-		if _active_pcam.get_has_multiple_follow_targets():
-			if _active_pcam.follow_damping:
-				camera_2d.zoom = camera_2d.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
-			else:
-				camera_2d.zoom = _active_pcam.zoom
-		else:
-			camera_2d.zoom = _active_pcam.zoom
+		camera_2d.zoom = _active_pcam.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
