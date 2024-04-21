@@ -51,6 +51,8 @@ func _ready() -> void:
 		movement_input.physical_keycode = key_val
 		InputMap.add_action(action_val)
 		InputMap.action_add_event(action_val, movement_input)
+		
+		_player_model.top_level = true
 
 
 func _physics_process(delta: float) -> void:
