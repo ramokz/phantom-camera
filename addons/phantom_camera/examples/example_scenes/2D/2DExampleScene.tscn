@@ -631,7 +631,7 @@ follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 zoom = Vector2(1.5, 1.5)
 frame_preview = false
 tween_resource = ExtResource("6_pxbym")
-tween_on_load = null
+tween_on_load = false
 follow_damping = true
 draw_limits = true
 

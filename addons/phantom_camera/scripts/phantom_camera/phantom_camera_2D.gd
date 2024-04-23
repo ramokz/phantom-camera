@@ -488,7 +488,7 @@ func _process(delta: float) -> void:
 #				TODO
 
 	if not _should_follow: return
-	
+
 	match follow_mode:
 		FollowMode.GLUED:
 			if follow_target:
@@ -906,12 +906,6 @@ func set_follow_target(value: Node2D) -> void:
 	follow_target = value
 	if is_instance_valid(value):
 		_should_follow = true
-		if value is PhysicsBody2D:
-			_is_physics_node = true
-			set_physics_process(true)
-		else:
-			_is_physics_node = false
-			set_physics_process(false)
 	else:
 		_should_follow = false
 	follow_target_changed.emit()

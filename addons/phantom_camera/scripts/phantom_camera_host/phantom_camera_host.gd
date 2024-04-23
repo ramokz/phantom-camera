@@ -112,7 +112,6 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	if not is_instance_valid(_active_pcam): return
-
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
 	else:

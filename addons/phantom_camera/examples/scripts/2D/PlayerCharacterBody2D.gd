@@ -111,7 +111,6 @@ func _interactive_node_logic() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _movement_disabled: return
 	
 	_physics_body_trans_last = _physics_body_trans_current
 	_physics_body_trans_current = global_transform
@@ -121,6 +120,8 @@ func _physics_process(delta: float) -> void:
 
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+
+	if _movement_disabled: return
 
 	var input_dir: = Input.get_axis(
 		INPUT_MOVE_LEFT_STRINGNAME,

@@ -62,12 +62,12 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_physics_body_trans_last = _physics_body_trans_current
 	_physics_body_trans_current = global_transform
-	
-	if not movement_enabled: return
-	
+
 	# Add the gravity.
 	if enable_gravity and not is_on_floor():
 		velocity.y -= gravity * delta
+
+	if not movement_enabled: return
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
