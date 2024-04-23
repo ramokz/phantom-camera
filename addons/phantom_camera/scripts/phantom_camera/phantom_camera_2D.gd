@@ -113,7 +113,7 @@ var pcam_host_owner: PhantomCameraHost = null:
 	get = get_priority
 
 ## Determines the positional logic for a given [param PhantomCamera2D].
-## The different modes have different functionalities and purposes, so 
+## The different modes have different functionalities and purposes, so
 ## choosing the correct one depends on what each [param PhantomCamera2D]
 ## is meant to do.
 @export var follow_mode: FollowMode = FollowMode.NONE:
@@ -163,7 +163,7 @@ var _has_follow_path: bool = false
 @export var zoom: Vector2 = Vector2.ONE:
 	set = set_zoom,
 	get = get_zoom
-	
+
 ## If enabled, will snap the [param Camera2D] to whole pixels as it moves.
 ## [br][br]
 ## This should be particularly useful in pixel art projects,
@@ -300,7 +300,7 @@ var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of t
 @export var show_viewfinder_in_play: bool = false
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
-## This is only used for when [member follow_mode] is set to [param Framed]. 
+## This is only used for when [member follow_mode] is set to [param Framed].
 var viewport_position: Vector2
 var _follow_framed_initial_set: bool = false
 
@@ -315,7 +315,7 @@ var _follow_framed_initial_set: bool = false
 			_draw_camera_2d_limit()
 	get:
 		return _draw_limits
-	
+
 static var _draw_limits: bool
 
 var _limit_sides: Vector4i
@@ -398,7 +398,7 @@ func _validate_property(property: Dictionary) -> void:
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-	
+
 	###############
 	## Follow Group
 	###############
@@ -407,9 +407,7 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_targets", \
 			"auto_zoom":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-		
-		
-		
+
 		if not auto_zoom:
 			match property.name:
 				"auto_zoom_min", \
@@ -432,7 +430,7 @@ func _validate_property(property: Dictionary) -> void:
 	#######
 	if property.name == "zoom" and auto_zoom:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-		
+
 	########
 	## Limit
 	########
@@ -443,10 +441,10 @@ func _validate_property(property: Dictionary) -> void:
 			"limit_right", \
 			"limit_bottom":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-	
+
 	if property.name == "limit_margin" and not _limit_node:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-	
+
 	################
 	## Frame Preview
 	################
@@ -460,7 +458,7 @@ func _validate_property(property: Dictionary) -> void:
 func _enter_tree() -> void:
 	add_to_group(_constants.PCAM_GROUP_NAME)
 	update_limit_all_sides()
-	
+
 	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 	if pcam_host.size() > 0:
 		set_pcam_host_owner(pcam_host[0])
@@ -469,7 +467,7 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
-	
+
 	remove_from_group(_constants.PCAM_GROUP_NAME)
 
 
@@ -505,7 +503,7 @@ func _process(delta: float) -> void:
 					rect = rect.expand(node.global_position)
 					if auto_zoom:
 						rect = rect.grow_individual(
-							auto_zoom_margin.x, 
+							auto_zoom_margin.x,
 							auto_zoom_margin.y,
 							auto_zoom_margin.z,
 							auto_zoom_margin.w)
@@ -771,9 +769,9 @@ func reset_limit() -> void:
 	get_pcam_host_owner().camera_2d.set_limit(SIDE_TOP, limit_top)
 	get_pcam_host_owner().camera_2d.set_limit(SIDE_RIGHT, limit_right)
 	get_pcam_host_owner().camera_2d.set_limit(SIDE_BOTTOM, limit_bottom)
-	
+
 	#update_limit_all_sides()
-	
+
 	#_set_camera_2d_limit(SIDE_LEFT, -10000000)
 	#_set_camera_2d_limit(SIDE_TOP, -10000000)
 	#_set_camera_2d_limit(SIDE_RIGHT, 10000000)
@@ -980,7 +978,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 		if is_instance_valid(target):
 			_should_follow = true
 			valid_instances += 1
-			
+
 			if valid_instances > 1:
 				_has_multiple_follow_targets = true
 ## Appends a single [Node2D] to [member follow_targets].
@@ -1084,19 +1082,19 @@ func get_limit_bottom() -> int:
 # Set Limit Target.
 func set_limit_target(value: NodePath) -> void:
 	limit_target = value
-	
+
 	set_notify_transform(false)
-	
+
 	# Waits for PCam2d's _ready() before trying to validate limit_node_path
 	if not is_node_ready(): await ready
-	
+
 	# Removes signal from existing TileMap node
 	if is_instance_valid(get_node_or_null(value)):
 		var prev_limit_node: Node2D = _limit_node
 		if prev_limit_node is TileMap:
 			if prev_limit_node.changed.is_connected(_on_tile_map_changed):
 				prev_limit_node.changed.disconnect(_on_tile_map_changed)
-		
+
 		if _limit_node is TileMap:
 			var tile_map_node: TileMap = get_node(value)
 			tile_map_node.changed.connect(_on_tile_map_changed)
@@ -1107,7 +1105,7 @@ func set_limit_target(value: NodePath) -> void:
 				printerr("No Shape2D in: ", col_shape.name)
 			else:
 				set_notify_transform(true)
-	
+
 	_limit_node = get_node_or_null(value)
 
 	notify_property_list_changed()

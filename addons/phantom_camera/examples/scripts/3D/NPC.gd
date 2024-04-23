@@ -26,7 +26,7 @@ func _ready() -> void:
 
 	dialogue_label_initial_position = dialogueLabel3D.get_global_position()
 	dialogue_label_initial_rotation = dialogueLabel3D.get_global_rotation()
-	
+
 	npc_pcam.tween_completed.connect(_on_tween_started)
 
 

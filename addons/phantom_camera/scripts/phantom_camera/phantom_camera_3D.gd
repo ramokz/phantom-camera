@@ -133,7 +133,7 @@ var _is_active: bool = false
 	get = get_priority
 
 ## Determines the positional logic for a given [param PhantomCamera3D].
-## The different modes have different functionalities and purposes, so 
+## The different modes have different functionalities and purposes, so
 ## choosing the correct one depends on what each [param PhantomCamera3D]
 ## is meant to do.
 @export var follow_mode: FollowMode = FollowMode.NONE:
@@ -247,7 +247,7 @@ var _has_tweened: bool = false
 @export var follow_offset: Vector3 = Vector3.ZERO:
 	set = set_follow_offset,
 	get = get_follow_offset
-	
+
 ## Applies a damping effect on the camera's movement.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera movement.
@@ -337,7 +337,7 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 @export var show_viewfinder_in_play: bool = false
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
-## This is only used for when [member follow_mode] is set to [param Framed]. 
+## This is only used for when [member follow_mode] is set to [param Framed].
 var viewport_position: Vector2
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3
@@ -410,14 +410,14 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Parameters
 	####################
-	
+
 	if follow_mode == FollowMode.NONE:
 		match property.name:
 			"follow_offset", \
 			"follow_damping", \
 			"follow_damping_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-	
+
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
@@ -493,7 +493,7 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "look_at_targets" and \
 	not look_at_mode == LookAtMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-	
+
 	if property.name == "look_at_damping_value" and \
 	not look_at_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -505,7 +505,7 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	add_to_group(_constants.PCAM_GROUP_NAME)
-	
+
 	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
 	if pcam_host.size() > 0:
 		set_pcam_host_owner(pcam_host[0])
@@ -549,7 +549,7 @@ func _process(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
-	if _should_follow: 
+	if _should_follow:
 		match follow_mode:
 			FollowMode.GLUED:
 				if follow_target:
@@ -747,22 +747,22 @@ func _interpolate_rotation(target_trans: Vector3) -> void:
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
 	if look_at_damping:
 		var current_quat: Quaternion = quaternion.normalized()
-		
+
 		var damping_time: float = max(0.0001, look_at_damping_value)
 		var t: float = min(1.0, get_process_delta_time() / damping_time)
-		
+
 		var dot: float = current_quat.dot(target_quat)
-		
+
 		if dot < 0.0:
 			target_quat = -target_quat
 			dot = -dot
-		
+
 		dot = clampf(dot, -1.0, 1.0)
-		
+
 		var theta: float = acos(dot) * t
 		var sin_theta: float = sin(theta)
 		var sin_theta_total: float = sin(acos(dot))
-		
+
 		# Stop interpolating once sin_theta_total reaches a very low value or 0
 		if sin_theta_total < 0.00001:
 			return
@@ -831,7 +831,7 @@ func _get_framed_side_offset() -> Vector2:
 
 func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 	var mask: int = current_layers
-	
+
 	# From https://github.com/godotengine/godot/blob/51991e20143a39e9ef0107163eaf283ca0a761ea/scene/3d/camera_3d.cpp#L638
 	if layer_number < 1 or layer_number > 20:
 		printerr("Render layer must be between 1 and 20.")
@@ -904,7 +904,7 @@ func set_pcam_host_owner(value: PhantomCameraHost) -> void:
 #			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
 #			multiple_pcam_host_group.append(camera_host)
 #			return null
-## Sets a PCamHost to 
+## Sets a PCamHost to
 #func assign_pcam_host(value: PhantomCameraHost) -> void:
 	#pcam_host_owner = value
 ## Gets the current [PhantomCameraHost] this [param PhantomCamera3D] is
@@ -1037,12 +1037,12 @@ func get_follow_damping() -> bool:
 
 ## Assigns new [member follow_damping_value] value.
 func set_follow_damping_value(value: Vector3) -> void:
-	
+
 	## TODO - Should be using @export_range once minimum version support is Godot 4.3
 	if value.x < 0: value.x = 0
 	elif value.y < 0: value.y = 0
 	elif value.z < 0: value.z = 0
-	
+
 	follow_damping_value = value
 ## Gets the currents [member follow_damping_value] value.
 func get_follow_damping_value() -> Vector3:
@@ -1066,7 +1066,7 @@ func set_follow_targets(value: Array[Node3D]) -> void:
 		_should_follow = false
 		_has_multiple_follow_targets = false
 		return
-	
+
 	var valid_instances: int
 	for target in follow_targets:
 		if is_instance_valid(target):
@@ -1082,7 +1082,7 @@ func append_follow_targets_node(value: Node3D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, " is not a valid instance")
 		return
-	
+
 	if not follow_targets.has(value):
 		follow_targets.append(value)
 		_should_follow = true
@@ -1243,9 +1243,9 @@ func get_look_at_target():
 func set_look_at_targets(value: Array[Node3D]) -> void:
 	if look_at_targets == value: return
 	look_at_targets = value
-	
+
 	if look_at_mode != LookAtMode.GROUP: return
-	
+
 	if look_at_targets.is_empty():
 		_should_look_at = false
 		_multiple_look_at_targets = false
@@ -1256,7 +1256,7 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 				valid_instances += 1
 				_should_look_at = true
 				_valid_look_at_targets.append(target)
-			
+
 			if valid_instances > 1:
 				_multiple_look_at_targets = true
 			elif valid_instances == 0:

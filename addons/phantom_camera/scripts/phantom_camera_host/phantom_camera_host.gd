@@ -149,7 +149,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.follow_damping
-	
+
 	if _active_pcam.show_viewfinder_in_play:
 		_viewfinder_needed_check = true
 
@@ -202,7 +202,7 @@ func _pcam_tween(delta: float) -> void:
 			camera_2d.global_position = interpolation_destination.round()
 		else:
 			camera_2d.global_position = interpolation_destination
-		
+
 		camera_2d.rotation = _tween_interpolate_value(_prev_active_pcam_2d_transform.get_rotation(), _active_pcam_2d_glob_transform.get_rotation())
 		camera_2d.zoom = _tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
 	else:
@@ -271,7 +271,7 @@ func _process_pcam(delta: float) -> void:
 		if _viewfinder_needed_check:
 			_show_viewfinder_in_play()
 			_viewfinder_needed_check = false
-			
+
 		# TODO - Should be able to find a more efficient way
 		if Engine.is_editor_hint():
 			if not _is_2D:
@@ -328,7 +328,7 @@ func _show_viewfinder_in_play() -> void:
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
 			var canvas_layer: CanvasLayer = CanvasLayer.new()
 			get_tree().get_root().get_child(0).add_child(canvas_layer)
-			
+
 			if not is_instance_valid(_viewfinder_node):
 				var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 				_viewfinder_node = _viewfinder_scene.instantiate()
@@ -352,7 +352,7 @@ func pcam_added_to_scene(pcam: Node) -> void:
 			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority on load
 
 		_find_pcam_with_highest_priority()
-	
+
 	else:
 		printerr("This function should only be called from PhantomCamera scripts")
 
@@ -371,7 +371,7 @@ func pcam_removed_from_scene(pcam: Node) -> void:
 		printerr("This function should only be called from PhantomCamera scripts")
 
 ## Triggers a recalculation to determine which PhantomCamera has the highest
-## priority. 
+## priority.
 func pcam_priority_updated(pcam: Node) -> void:
 	if Engine.is_editor_hint() and _active_pcam.priority_override: return
 
