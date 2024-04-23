@@ -12,8 +12,8 @@ extends Node2D
 
 
 func _ready():
-	pcam_room_left.set_follow_target_offset(Vector2(0, -80))
-	pcam_room_right.set_follow_target_offset(Vector2(0, -80))
+	pcam_room_left.set_follow_offset(Vector2(0, -80))
+	pcam_room_right.set_follow_offset(Vector2(0, -80))
 
 	area_2d_room_left.body_entered.connect(_on_body_entered.bind(pcam_room_left))
 	area_2d_room_centre.body_entered.connect(_on_body_entered.bind(pcam_room_centre))
