@@ -74,6 +74,8 @@ enum InactiveUpdateMode {
 
 #region Variables
 
+## Determines whether if a [PhantomCamera2D] has the highest priority and is
+## currently controlling a [Camera2D] with [PhantomCameraHost].
 var _is_active: bool = false
 
 ## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
@@ -169,7 +171,9 @@ var _has_follow_path: bool = false
 ## This should be particularly useful in pixel art projects,
 ## where assets should always be aligned to the monitor's pixels to avoid
 ## unintended stretching.
-@export var snap_to_pixel: bool = false
+@export var snap_to_pixel: bool = false:
+	set = set_snap_to_pixel,
+	get = get_snap_to_pixel
 
 ## Enables a preview of what the [PhantomCamera2D] will see in the
 ## scene. It works identically to how a [Camera2D] shows which area
@@ -210,12 +214,17 @@ var _has_tweened: bool = false
 @export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
 @export_group("Follow Parameters")
+## Offsets the follow target's position.
+@export var follow_offset: Vector2 = Vector2.ZERO:
+	set = set_follow_offset,
+	get = get_follow_offset
+
 ## Applies a damping effect on the [param Camera2D]'s movement.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera movement.
 @export var follow_damping: bool = false:
-	set = set_follow_has_damping,
-	get = get_follow_has_damping
+	set = set_follow_damping,
+	get = get_follow_damping
 
 ## Defines the damping amount. The ideal range should be somewhere between 0-1.[br][br]
 ## The damping amount can be specified in the individual axis.
@@ -225,11 +234,6 @@ var _has_tweened: bool = false
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
-
-## Offsets the follow target's position.
-@export var follow_offset: Vector2 = Vector2.ZERO:
-	set = set_follow_target_offset,
-	get = get_follow_target_offset
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -311,6 +315,7 @@ var _follow_framed_initial_set: bool = false
 			_draw_camera_2d_limit()
 	get:
 		return _draw_limits
+	
 static var _draw_limits: bool
 
 var _limit_sides: Vector4i
@@ -933,19 +938,19 @@ func get_follow_path() -> Path2D:
 
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
-func set_follow_target_offset(value: Vector2) -> void:
+func set_follow_offset(value: Vector2) -> void:
 	follow_offset = value
 ## Gets the current Vector2 for the Follow Target Offset property.
-func get_follow_target_offset() -> Vector2:
+func get_follow_offset() -> Vector2:
 	return follow_offset
 
 
 ## Enables or disables Follow Damping.
-func set_follow_has_damping(value: bool) -> void:
+func set_follow_damping(value: bool) -> void:
 	follow_damping = value
 	notify_property_list_changed()
 ## Gets the current Follow Damping property.
-func get_follow_has_damping() -> bool:
+func get_follow_damping() -> bool:
 	return follow_damping
 
 ## Assigns new Damping value.
@@ -985,7 +990,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 			if valid_instances > 1:
 				_has_multiple_follow_targets = true
 ## Appends a single [Node2D] to [member follow_targets].
-func append_follow_group_node(value: Node2D) -> void:
+func append_follow_targets(value: Node2D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, " is not a valid instance")
 		return
@@ -996,7 +1001,7 @@ func append_follow_group_node(value: Node2D) -> void:
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type [Node2D] to [member follow_targets].
-func append_follow_group_node_array(value: Array[Node2D]) -> void:
+func append_follow_targets_array(value: Array[Node2D]) -> void:
 	for val in value:
 		if not is_instance_valid(val): continue
 		if not follow_targets.has(val):
@@ -1007,7 +1012,7 @@ func append_follow_group_node_array(value: Array[Node2D]) -> void:
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes a [Node2D] from [member follow_targets] array.
-func erase_follow_group_node(value: Node2D) -> void:
+func erase_follow_targets(value: Node2D) -> void:
 	follow_targets.erase(value)
 	if follow_targets.size() < 1:
 		_should_follow = false
@@ -1137,6 +1142,9 @@ func get_limit_margin() -> Vector4i:
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed
 
+## Sets [member inactive_update_mode] property.
+func set_inactive_update_mode(value: int) -> void:
+	inactive_update_mode = value
 ## Gets [enum InactiveUpdateMode] value.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode

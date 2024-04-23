@@ -245,15 +245,15 @@ var _has_tweened: bool
 @export_group("Follow Parameters")
 ## Offsets the follow target's position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
-	set = set_follow_target_offset,
-	get = get_follow_target_offset
+	set = set_follow_offset,
+	get = get_follow_offset
 	
 ## Applies a damping effect on the camera's movement.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
 ## This is useful to avoid sharp and rapid camera movement.
 @export var follow_damping: bool = false:
-	set = set_follow_has_damping,
-	get = get_follow_has_damping
+	set = set_follow_damping,
+	get = get_follow_damping
 
 ## Defines the damping amount. The ideal range should be somewhere between 0-1.[br][br]
 ## The damping amount can be specified in the individual axis.
@@ -277,23 +277,23 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 ## [member follow_group_distance] properties.[br][br]
 ## Note: Enabling this property hides and disables the [member distance]
 ## property as this effectively overrides that property.
-@export var auto_distance: bool = false:
-	set = set_auto_distance,
-	get = get_auto_distance
+@export var auto_follow_distance: bool = false:
+	set = set_auto_follow_distance,
+	get = get_auto_follow_distance
 
 ## Sets the minimum distance between the Camera and centre of [AABB].
 ## [br][br]
 ## Note: This distance will only ever be reached when all the targets are in
 ## the exact same [param Vector3] coordinate, which will very unlikely
 ## happen, so adjust the value here accordingly.
-@export var auto_distance_min: float = 1:
-	set = set_auto_distance_min,
-	get = get_auto_distance_min
+@export var auto_follow_distance_min: float = 1:
+	set = set_auto_follow_distance_min,
+	get = get_auto_follow_distance_min
 
 ## Sets the maximum distance between the Camera and centre of [AABB].
-@export var auto_distance_max: float = 5:
-	set = set_auto_distance_max,
-	get = get_auto_distance_max
+@export var auto_follow_distance_max: float = 5:
+	set = set_auto_follow_distance_max,
+	get = get_auto_follow_distance_max
 
 ## Determines how fast the [member auto_distance] moves between the
 ## maximum and minimum distance. The higher the value, the sooner the
@@ -303,9 +303,9 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 ## E.g. if the value between the [member auto_distance_min] and
 ## [member auto_distance_max] is small, consider keeping the number low
 ## and vice versa.
-@export var auto_distance_divisor: float = 10:
-	set = set_auto_distance_divisor,
-	get = get_auto_distance_divisor
+@export var auto_follow_distance_divisor: float = 10:
+	set = set_auto_follow_distance_divisor,
+	get = get_auto_follow_distance_divisor
 
 @export_subgroup("Dead Zones")
 ## Defines the horizontal dead zone area. While the target is within it, the
@@ -347,8 +347,8 @@ var _follow_spring_arm: SpringArm3D
 
 ## Defines the [member SpringArm3D.spring_length].
 @export var spring_length: float = 1:
-	set = set_follow_distance,
-	get = get_follow_distance
+	set = set_spring_length,
+	get = get_spring_length
 
 ## Defines the [member SpringArm3D.collision_mask] node's Collision Mask.
 @export_flags_3d_physics var collision_mask: int = 1:
@@ -368,9 +368,9 @@ var _follow_spring_arm: SpringArm3D
 @export_group("Look At Parameters")
 ## Offsets the target's [param Vector3] position that the
 ## [param PhantomCamera3D] is looking at.
-@export var look_at_target_offset: Vector3 = Vector3.ZERO:
-	set = set_look_at_target_offset,
-	get = get_look_at_target_offset
+@export var look_at_offset: Vector3 = Vector3.ZERO:
+	set = set_look_at_offset,
+	get = get_look_at_offset
 
 ## Applies a damping effect on the camera's rotation.
 ## Leading to heavier / slower camera movement as the targeted node moves around.
@@ -428,7 +428,7 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "follow_distance":
 		if not follow_mode == FollowMode.FRAMED:
 			if not follow_mode == FollowMode.GROUP or \
-			auto_distance: \
+			auto_follow_distance: \
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
@@ -438,15 +438,15 @@ func _validate_property(property: Dictionary) -> void:
 	not follow_mode == FollowMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "auto_distance" and \
+	if property.name == "auto_follow_distance" and \
 	not follow_mode == FollowMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if not auto_distance:
+	if not auto_follow_distance:
 		match property.name:
-			"auto_distance_min", \
-			"auto_distance_max", \
-			"auto_distance_divisor":
+			"auto_follow_distance_min", \
+			"auto_follow_distance_max", \
+			"auto_follow_distance_divisor":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
@@ -476,7 +476,7 @@ func _validate_property(property: Dictionary) -> void:
 	if look_at_mode == LookAtMode.NONE:
 		match property.name:
 			"look_at_target", \
-			"look_at_target_offset" , \
+			"look_at_offset" , \
 			"look_at_damping", \
 			"look_at_damping_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -576,9 +576,9 @@ func _process(delta: float) -> void:
 								bounds = bounds.expand(node.global_position)
 
 						var distance: float
-						if auto_distance:
-							distance = lerp(auto_distance_min, auto_distance_max, bounds.get_longest_axis_size() / auto_distance_divisor)
-							distance = clamp(distance, auto_distance_min, auto_distance_max)
+						if auto_follow_distance:
+							follow_distance = lerp(auto_follow_distance_min, auto_follow_distance_max, bounds.get_longest_axis_size() / auto_follow_distance_divisor)
+							follow_distance = clamp(follow_distance, auto_follow_distance_min, auto_follow_distance_max)
 						else:
 							distance = follow_distance
 
@@ -742,7 +742,7 @@ func _interpolate_position(target_position: Vector3, camera_target: Node3D = sel
 
 
 func _interpolate_rotation(target_trans: Vector3) -> void:
-	var direction: Vector3 = (target_trans - global_position + look_at_target_offset).normalized()
+	var direction: Vector3 = (target_trans - global_position + look_at_offset).normalized()
 	var target_basis: Basis = Basis().looking_at(direction)
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
 	if look_at_damping:
@@ -1018,20 +1018,20 @@ func get_follow_path() -> Path3D:
 	return follow_path
 
 
-## Assigns a new [param Vector3] for the [param follow_target_offset] property.
-func set_follow_target_offset(value: Vector3) -> void:
+## Assigns a new [param Vector3] for the [param follow_offset] property.
+func set_follow_offset(value: Vector3) -> void:
 	follow_offset = value
-## Gets the current [param Vector3] for the [param follow_target_offset] property.
-func get_follow_target_offset() -> Vector3:
+## Gets the current [param Vector3] for the [param follow_ta_offset] property.
+func get_follow_offset() -> Vector3:
 	return follow_offset
 
 
 ## Enables or disables [member follow_damping].
-func set_follow_has_damping(value: bool) -> void:
+func set_follow_damping(value: bool) -> void:
 	follow_damping = value
 	notify_property_list_changed()
 ## Gets the currents [member follow_damping] property.
-func get_follow_has_damping() -> bool:
+func get_follow_damping() -> bool:
 	return follow_damping
 
 
@@ -1078,7 +1078,7 @@ func set_follow_targets(value: Array[Node3D]) -> void:
 			_has_multiple_follow_targets = false
 
 ## Adds a single [Node3D] to [member follow_targets] array.
-func append_follow_group_node(value: Node3D) -> void:
+func append_follow_targets_node(value: Node3D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, " is not a valid instance")
 		return
@@ -1090,7 +1090,7 @@ func append_follow_group_node(value: Node3D) -> void:
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type [Node3D] to [member follow_targets] array.
-func append_follow_group_node_array(value: Array[Node3D]) -> void:
+func append_follow_targets_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not is_instance_valid(val): continue
 		if not follow_targets.has(val):
@@ -1101,7 +1101,7 @@ func append_follow_group_node_array(value: Array[Node3D]) -> void:
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes [Node3D] from [member follow_targets].
-func erase_follow_group_node(value: Node3D) -> void:
+func erase_follow_targets(value: Node3D) -> void:
 	follow_targets.erase(value)
 	if follow_targets.size() < 2:
 		_has_multiple_follow_targets = false
@@ -1118,33 +1118,33 @@ func get_has_multiple_follow_targets() -> bool:
 
 
 ## Enables or disables [member auto_distnace] when using Group Follow.
-func set_auto_distance(value: bool) -> void:
-	auto_distance = value
+func set_auto_follow_distance(value: bool) -> void:
+	auto_follow_distance = value
 	notify_property_list_changed()
 ## Gets [member auto_distance] state.
-func get_auto_distance() -> bool:
-	return auto_distance
+func get_auto_follow_distance() -> bool:
+	return auto_follow_distance
 
 ## Assigns new [member auto_distance_min] value.
-func set_auto_distance_min(value: float) -> void:
-	auto_distance_min = value
+func set_auto_follow_distance_min(value: float) -> void:
+	auto_follow_distance_min = value
 ## Gets [member auto_distance_min] value.
-func get_auto_distance_min() -> float:
-	return auto_distance_min
+func get_auto_follow_distance_min() -> float:
+	return auto_follow_distance_min
 
 ## Assigns new [member auto_distance_max] value.
-func set_auto_distance_max(value: float) -> void:
-	auto_distance_max = value
+func set_auto_follow_distance_max(value: float) -> void:
+	auto_follow_distance_max = value
 ## Gets [member auto_distance_max] value.
-func get_auto_distance_max() -> float:
-	return auto_distance_max
+func get_auto_follow_distance_max() -> float:
+	return auto_follow_distance_max
 
 ## Assigns new [member auto_distance_divisor] value.
-func set_auto_distance_divisor(value: float) -> void:
-	auto_distance_divisor = value
+func set_auto_follow_distance_divisor(value: float) -> void:
+	auto_follow_distance_divisor = value
 ## Gets [member auto_distance_divisor] value.
-func get_auto_distance_divisor() -> float:
-	return auto_distance_divisor
+func get_auto_follow_distance_divisor() -> float:
+	return auto_follow_distance_divisor
 
 ## Assigns new rotation (in radians) value to [SpringArm3D] for
 ## [params Third Person] [enum FollowMode].
@@ -1174,7 +1174,8 @@ func get_third_person_quaternion() -> Quaternion:
 ## Assigns a new Third Person [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
-	_follow_spring_arm.spring_length = follow_distance
+	if is_instance_valid(_follow_spring_arm):
+		_follow_spring_arm.spring_length = value
 ## Gets the [member SpringArm3D.length]
 ## from a [param Third Person] [enum follow_mode] instance.
 func get_spring_length() -> float:
@@ -1290,12 +1291,12 @@ func erase_look_at_targets_member(value: Node3D) -> void:
 func get_look_at_targets() -> Array[Node3D]:
 	return look_at_targets
 
-## Assigns a new [Vector3] to the [member look_at_target_offset] value.
-func set_look_at_target_offset(value: Vector3) -> void:
-	look_at_target_offset = value
-## Gets the current [member look_at_target_offset] value.
-func get_look_at_target_offset() -> Vector3:
-	return look_at_target_offset
+## Assigns a new [Vector3] to the [member look_at_offset] value.
+func set_look_at_offset(value: Vector3) -> void:
+	look_at_offset = value
+## Gets the current [member look_at_offset] value.
+func get_look_at_offset() -> Vector3:
+	return look_at_offset
 
 
 func set_look_at_damping(value: bool) -> void:

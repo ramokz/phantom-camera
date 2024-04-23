@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="1_jnc14"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_62b2n"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="3_78oid"]
+[ext_resource type="Texture2D" uid="uid://ci76plsequlrq" path="res://addons/phantom_camera/examples/textures/2D/PlayerSprite.svg" id="2_yr8cm"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="4_rloon"]
 [ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="5_4iyk1"]
 [ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="6_2h6fv"]
@@ -23,7 +23,7 @@ corner_radius_bottom_left = 7
 size = Vector2(64, 57)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
-size = Vector2(42, 57)
+size = Vector2(64, 57)
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
 script = ExtResource("1_jnc14")
@@ -49,7 +49,8 @@ unique_name_in_owner = true
 
 [node name="PlayerSprite" type="Sprite2D" parent="PlayerVisuals"]
 unique_name_in_owner = true
-texture = ExtResource("3_78oid")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_yr8cm")
 
 [node name="InteractionPrompt" type="Panel" parent="PlayerVisuals"]
 unique_name_in_owner = true
@@ -92,6 +93,7 @@ shape = SubResource("RectangleShape2D_xj4ar")
 unique_name_in_owner = true
 collision_layer = 2
 collision_mask = 2
+priority = 20
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerArea2D"]
 position = Vector2(0, -0.5)

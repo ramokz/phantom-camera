@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://psbaaxnedqmq"]
+[gd_scene load_steps=12 format=3 uid="uid://psbaaxnedqmq"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_17ngo"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_whpvu"]
@@ -6,11 +6,8 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_yddet"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_x25dj"]
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_4vtmp"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="7_ipd3c"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_6pcaf"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="9_cspd2"]
-[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="10_mh1yw"]
-[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="11_apay3"]
+[ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="8_a2pel"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_17ngo")
@@ -563,24 +560,6 @@ custom_data_layer_0/name = "Type"
 custom_data_layer_0/type = 21
 sources/0 = SubResource("TileSetAtlasSource_easgx")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hryl"]
-bg_color = Color(0.85098, 0.894118, 0.937255, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.113725, 0.113725, 0.113725, 1)
-corner_radius_top_left = 7
-corner_radius_top_right = 7
-corner_radius_bottom_right = 7
-corner_radius_bottom_left = 7
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xj4ar"]
-size = Vector2(64, 57)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
-size = Vector2(42, 57)
-
 [sub_resource type="Curve2D" id="Curve2D_usrhf"]
 _data = {
 "points": PackedVector2Array(-96.4111, 42.3785, 0, 0, 222, 0, 0, 0, 0, 0, 1550, 0)
@@ -646,96 +625,6 @@ text = "[WASD] to move
 
 [node name="Player" type="Node" parent="."]
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
-position = Vector2(221, -28)
-script = ExtResource("7_ipd3c")
-metadata/_edit_group_ = true
-
-[node name="DarkOverlay" type="ColorRect" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -1000.0
-offset_top = -1000.0
-offset_right = 1000.0
-offset_bottom = 1000.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.615686)
-
-[node name="InteractionPrompt" type="Panel" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -16.0
-offset_top = -66.0
-offset_right = 16.0
-offset_bottom = -34.0
-grow_horizontal = 2
-grow_vertical = 0
-size_flags_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_5hryl")
-
-[node name="Label" type="Label" parent="Player/CharacterBody2D/InteractionPrompt"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -3.0
-offset_bottom = 5.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("8_6pcaf")
-theme_override_font_sizes/font_size = 26
-text = "F"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="PlayerSprite" type="Sprite2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("9_cspd2")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_xj4ar")
-
-[node name="PlayerArea2D" type="Area2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-collision_layer = 2
-collision_mask = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D/PlayerArea2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_18i13")
-
-[node name="ItemFocusPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-position = Vector2(0, -122)
-script = ExtResource("5_x25dj")
-zoom = Vector2(2, 2)
-frame_preview = false
-tween_resource = ExtResource("10_mh1yw")
-draw_limits = true
-
-[node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-position = Vector2(-183, -5)
-script = ExtResource("5_x25dj")
-zoom = Vector2(2.5, 2.5)
-frame_preview = false
-tween_resource = ExtResource("11_apay3")
-draw_limits = true
-
 [node name="Label" type="Label" parent="Player"]
 visible = false
 offset_left = 167.0
@@ -751,9 +640,9 @@ text = "[WASD] to move
 unique_name_in_owner = true
 position = Vector2(374, -216)
 script = ExtResource("5_x25dj")
-priority = 5
+priority = 10
 follow_mode = 4
-follow_target = NodePath("../Player/CharacterBody2D")
+follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 follow_path = NodePath("../Path2D")
 zoom = Vector2(1.5, 1.5)
 tween_resource = ExtResource("6_4vtmp")
@@ -762,3 +651,8 @@ draw_limits = true
 [node name="Path2D" type="Path2D" parent="."]
 position = Vector2(152, -216)
 curve = SubResource("Curve2D_usrhf")
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("8_a2pel")]
+position = Vector2(225, -28)
+
+[editable path="CharacterBody2D"]

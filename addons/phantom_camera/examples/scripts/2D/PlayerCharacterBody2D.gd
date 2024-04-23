@@ -4,7 +4,7 @@ extends CharacterBody2D
 @onready var _player_visuals: Node2D = %PlayerVisuals
 @onready var _player_sprite: Sprite2D = %PlayerSprite
 @onready var _interaction_prompt: Panel = %InteractionPrompt
-@onready var _ui_sign:Control = %UISign
+@onready var _ui_sign: Control
 @onready var _dark_overlay: ColorRect = %DarkOverlay
 
 const KEY_STRINGNAME: StringName = "Key"
@@ -49,6 +49,8 @@ var InputMovementDic: Dictionary = {
 func _ready() -> void:
 	_player_area2d.connect("body_shape_entered", _show_prompt)
 	_player_area2d.connect("body_shape_exited", _hide_prompt)
+	
+	_ui_sign = owner.get_node("%UISign")
 	
 	_player_visuals.top_level = true
 

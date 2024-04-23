@@ -632,6 +632,7 @@ zoom = Vector2(1.5, 1.5)
 frame_preview = false
 tween_resource = ExtResource("6_pxbym")
 tween_onload = false
+follow_damping = true
 draw_limits = true
 
 [node name="CharacterBody2D" parent="Player" instance=ExtResource("7_62i3t")]

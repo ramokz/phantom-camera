@@ -1,13 +1,11 @@
-[gd_scene load_steps=21 format=3 uid="uid://w20wokw3ohsq"]
+[gd_scene load_steps=16 format=3 uid="uid://w20wokw3ohsq"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2d_room_limit_tween.gd" id="1_ijqyv"]
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_wmhqb"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_v5qg2"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_oqmwp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="4_4b648"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_tahws"]
-[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_yh2um"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_h2jna"]
+[ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="5_pr2x5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_twplb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="9_w5e16"]
 
@@ -562,24 +560,6 @@ custom_data_layer_0/name = "Type"
 custom_data_layer_0/type = 21
 sources/0 = SubResource("TileSetAtlasSource_easgx")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hryl"]
-bg_color = Color(0.85098, 0.894118, 0.937255, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.113725, 0.113725, 0.113725, 1)
-corner_radius_top_left = 7
-corner_radius_top_right = 7
-corner_radius_bottom_right = 7
-corner_radius_bottom_left = 7
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xj4ar"]
-size = Vector2(64, 57)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
-size = Vector2(42, 57)
-
 [sub_resource type="Resource" id="Resource_ct1eh"]
 script = ExtResource("9_twplb")
 duration = 0.9
@@ -654,90 +634,21 @@ visible = false
 unique_name_in_owner = true
 visible = false
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+[node name="CharacterBody2D" parent="." instance=ExtResource("5_pr2x5")]
 unique_name_in_owner = true
-position = Vector2(5, -28)
-script = ExtResource("6_tahws")
+position = Vector2(0, -32)
 
-[node name="DarkOverlay" type="ColorRect" parent="CharacterBody2D"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -1000.0
-offset_top = -1000.0
-offset_right = 1000.0
-offset_bottom = 1000.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.615686)
-
-[node name="InteractionPrompt" type="Panel" parent="CharacterBody2D"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -16.0
-offset_top = -66.0
-offset_right = 16.0
-offset_bottom = -34.0
-grow_horizontal = 2
-grow_vertical = 0
-size_flags_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_5hryl")
-
-[node name="Label" type="Label" parent="CharacterBody2D/InteractionPrompt"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -3.0
-offset_bottom = 5.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("7_yh2um")
-theme_override_font_sizes/font_size = 26
-text = "F"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="PlayerSprite" type="Sprite2D" parent="CharacterBody2D"]
-unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("8_h2jna")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_xj4ar")
-
-[node name="PlayerArea2D" type="Area2D" parent="CharacterBody2D"]
-unique_name_in_owner = true
-collision_layer = 2
-collision_mask = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/PlayerArea2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_18i13")
-
-[node name="RoomLeftPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
+[node name="RoomLeftPhantomCamera2D" type="Node2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(5, -91)
 script = ExtResource("4_4b648")
 priority = 5
 follow_mode = 2
-follow_target = NodePath("../CharacterBody2D")
 zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_ct1eh")
 tween_onload = false
-follow_damping = true
 follow_offset = Vector2(0, -63.205)
+follow_damping = true
 draw_limits = true
 limit_target = NodePath("../TileMap")
 limit_margin = Vector4i(-50, 0, -50, 0)

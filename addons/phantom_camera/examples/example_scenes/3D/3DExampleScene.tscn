@@ -1,14 +1,14 @@
-[gd_scene load_steps=42 format=3 uid="uid://ci12ytew5vwty"]
+[gd_scene load_steps=40 format=3 uid="uid://ci12ytew5vwty"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_wn7ww"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/NPC.gd" id="2_2n1da"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_e7gxt"]
+[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="2_tvx5n"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_y3dy8"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="3_f5qrw"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_a27nb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="4_m2vbn"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="4_moad5"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="5_c85ys"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_jitt8"]
 
 [sub_resource type="Resource" id="Resource_jtk1d"]
@@ -17,13 +17,6 @@ cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
 fov = 75.0
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy1i7"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flw6w"]
-albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [sub_resource type="Resource" id="Resource_o161n"]
 script = ExtResource("4_m2vbn")
@@ -43,6 +36,8 @@ albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
 size = Vector3(2, 0.5, 4)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tpc7d"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g0eml"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v5iy7"]
 albedo_color = Color(0.988235, 0.478431, 0.905882, 1)
@@ -135,12 +130,15 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -4.632, 2, 9.011)
+transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -3.61209, 2.96949, 11.587)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_wn7ww")
 
 [node name="PlayerGroup" type="Node" parent="."]
+
+[node name="PlayerCharacterBody3D2" parent="PlayerGroup" instance=ExtResource("2_tvx5n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.61209, 1.46949, 9.587)
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="PlayerGroup"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -2.50422, -0.455369, 6.62486)
@@ -151,36 +149,16 @@ font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -4.632, 2, 9.011)
+transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -3.61209, 2.96949, 11.587)
 script = ExtResource("2_y3dy8")
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D/PlayerModel")
+follow_target = NodePath("../PlayerCharacterBody3D2/PlayerVisual")
 tween_resource = ExtResource("4_a27nb")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_jtk1d")
 follow_offset = Vector3(0, 1.5, 2)
 follow_damping = true
-
-[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="PlayerGroup"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.632, 0.5, 7.011)
-script = ExtResource("5_c85ys")
-SPEED = 3.5
-metadata/_edit_group_ = true
-
-[node name="PlayerArea3D" type="Area3D" parent="PlayerGroup/PlayerCharacterBody3D"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D/PlayerArea3D"]
-shape = SubResource("CapsuleShape3D_dy1i7")
-
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerGroup/PlayerCharacterBody3D"]
-shape = SubResource("CapsuleShape3D_dy1i7")
-
-[node name="PlayerModel" type="MeshInstance3D" parent="PlayerGroup/PlayerCharacterBody3D"]
-unique_name_in_owner = true
-mesh = SubResource("CapsuleMesh_g0eml")
-surface_material_override/0 = SubResource("StandardMaterial3D_flw6w")
 
 [node name="NPCGroup" type="Node" parent="."]
 
@@ -397,3 +375,5 @@ mesh = SubResource("BoxMesh_niuda")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.50541, 1.19209e-07)
 operation = 2
 mesh = SubResource("BoxMesh_242ij")
+
+[editable path="PlayerGroup/PlayerCharacterBody3D2"]

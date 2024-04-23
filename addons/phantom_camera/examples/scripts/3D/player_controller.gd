@@ -4,9 +4,9 @@ extends CharacterBody3D
 @export var JUMP_VELOCITY: float = 4.5
 @export var enable_gravity = true
 
-@onready var _camera: Camera3D = %MainCamera3D
+@onready var _camera: Camera3D
 
-@onready var _player_model: Node3D = %PlayerModel
+@onready var _player_visual: Node3D = %PlayerVisual
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = 9.8
@@ -46,13 +46,15 @@ func _ready() -> void:
 	for input in InputMovementDic:
 		var key_val = InputMovementDic[input].get(KEY_STRINGNAME)
 		var action_val = InputMovementDic[input].get(ACTION_STRINGNAME)
+		
+		_camera = owner.get_node("%MainCamera3D")
 
 		var movement_input = InputEventKey.new()
 		movement_input.physical_keycode = key_val
 		InputMap.add_action(action_val)
 		InputMap.action_add_event(action_val, movement_input)
 		
-		_player_model.top_level = true
+		_player_visual.top_level = true
 
 
 func _physics_process(delta: float) -> void:
@@ -91,7 +93,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
-	_player_model.global_transform = _physics_body_trans_last.interpolate_with(
+	_player_visual.global_transform = _physics_body_trans_last.interpolate_with(
 		_physics_body_trans_current,
 		Engine.get_physics_interpolation_fraction()
 	)
