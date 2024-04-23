@@ -11,6 +11,8 @@ extends CharacterBody3D
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = 9.8
 
+var movement_enabled: bool = true
+
 var _physics_body_trans_last: Transform3D
 var _physics_body_trans_current: Transform3D
 
@@ -60,6 +62,8 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_physics_body_trans_last = _physics_body_trans_current
 	_physics_body_trans_current = global_transform
+	
+	if not movement_enabled: return
 	
 	# Add the gravity.
 	if enable_gravity and not is_on_floor():

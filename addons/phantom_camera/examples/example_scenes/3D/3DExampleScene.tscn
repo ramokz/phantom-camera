@@ -130,18 +130,19 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -3.61209, 2.96949, 11.587)
+transform = Transform3D(0.999858, 0, 0, 0, 0.94884, 0.315632, 0, -0.315637, 0.948825, -2.53871, 2, 9.76232)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_wn7ww")
 
 [node name="PlayerGroup" type="Node" parent="."]
 
-[node name="PlayerCharacterBody3D2" parent="PlayerGroup" instance=ExtResource("2_tvx5n")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.61209, 1.46949, 9.587)
+[node name="PlayerCharacterBody3D" parent="PlayerGroup" instance=ExtResource("2_tvx5n")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.53871, 0.5, 7.26232)
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="PlayerGroup"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -2.50422, -0.455369, 6.62486)
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -2.47682, -0.0708016, 7.93048)
 modulate = Color(0.294118, 1, 0.631373, 1)
 text = "[WASD] to move"
 font = ExtResource("2_e7gxt")
@@ -149,15 +150,15 @@ font_size = 48
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="PlayerGroup" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.997417, 0.0220127, -0.0662648, 0, 0.948973, 0.315232, 0.0698191, -0.314467, 0.946641, -3.61209, 2.96949, 11.587)
+transform = Transform3D(0.999858, 0, 0, 0, 0.94884, 0.315632, 0, -0.315637, 0.948825, -2.53871, 2, 9.76232)
 script = ExtResource("2_y3dy8")
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D2/PlayerVisual")
+follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = ExtResource("4_a27nb")
 tween_onload = false
 camera_3d_resource = SubResource("Resource_jtk1d")
-follow_offset = Vector3(0, 1.5, 2)
+follow_offset = Vector3(0, 1.5, 2.5)
 follow_damping = true
 
 [node name="NPCGroup" type="Node" parent="."]
@@ -376,4 +377,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.50541, 1.19209e-07)
 operation = 2
 mesh = SubResource("BoxMesh_242ij")
 
-[editable path="PlayerGroup/PlayerCharacterBody3D2"]
+[editable path="PlayerGroup/PlayerCharacterBody3D"]
