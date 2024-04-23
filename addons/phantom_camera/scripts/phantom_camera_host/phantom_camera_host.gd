@@ -171,7 +171,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	_tween_duration = 0
 
-	if pcam.tween_onload or not pcam.get_has_tweened():
+	if pcam.tween_on_load or not pcam.get_has_tweened():
 		_trigger_pcam_tween = true
 
 
@@ -349,8 +349,8 @@ func pcam_added_to_scene(pcam: Node) -> void:
 	if is_instance_of(pcam, PhantomCamera2D) or is_instance_of(pcam, PhantomCamera3D):
 		_pcam_list.append(pcam)
 
-		if not pcam.tween_onload:
-			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority onload
+		if not pcam.tween_on_load:
+			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority on load
 
 		_find_pcam_with_highest_priority()
 	

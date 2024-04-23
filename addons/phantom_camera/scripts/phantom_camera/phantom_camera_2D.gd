@@ -27,19 +27,19 @@ signal became_inactive
 ## Emitted when [member follow_target] changes.
 signal follow_target_changed
 
-## Emitted when dead zones changes. [br]
-## [b]Note:[/b] Only applicable in [params Framed] [enum FollowMode].
+## Emitted when dead zones changes.[br]
+## [b]Note:[/b] Only applicable in [param Framed] [enum FollowMode].
 signal dead_zone_changed
 
-## Emitted when the [Camera2D] starts to tween to another [param PhantomCamera2D].
+## Emitted when the [param Camera2D] starts to tween to another [param PhantomCamera2D].
 signal tween_started
-## Emitted when the [Camera2D] is to tweening towards another [param PhantomCamera2D].
+## Emitted when the [param Camera2D] is to tweening towards another [param PhantomCamera2D].
 signal is_tweening
 ## Emitted when the tween is interrupted due to another [param PhantomCamera2D]
 ## becoming active. The argument is the [param PhantomCamera2D] that interrupted
 ## the tween.
 signal tween_interrupted(pcam_2d: PhantomCamera2D)
-## Emitted when the [Camera2D] completes its tween to the
+## Emitted when the [param Camera2D] completes its tween to the
 ## [param PhantomCamera2D].
 signal tween_completed
 
@@ -159,7 +159,7 @@ var _has_multiple_follow_targets: bool = false
 var _has_follow_path: bool = false
 
 ## Applies a zoom level to the [param PhantomCamera2D], which effectively
-## overrides the [param zoom] property of the [Camera2D] node.
+## overrides the [param zoom] property of the [param Camera2D] node.
 @export var zoom: Vector2 = Vector2.ONE:
 	set = set_zoom,
 	get = get_zoom
@@ -174,9 +174,9 @@ var _has_follow_path: bool = false
 	get = get_snap_to_pixel
 
 ## Enables a preview of what the [PhantomCamera2D] will see in the
-## scene. It works identically to how a [Camera2D] shows which area
+## scene. It works identically to how a [param Camera2D] shows which area
 ## will be visible during runtime. Likewise, this too will be affected by the
-## [member zoom] property and the [params Viewport Width] and
+## [member zoom] property and the [param viewport_width] and
 ## [param Viewport Height] defined in the [param Project Settings].
 @export var frame_preview: bool = true:
 	set(value):
@@ -201,9 +201,11 @@ var _has_tweened: bool = false
 ## a scene, and has the highest priority, it will perform its tween transition.
 ## This is most obvious if a [param PhantomCamera3D] has a long duration and
 ## is attached to a playable character that can be moved the moment a scene
-## is loaded. Disabling the [param Tween on Load] property will
+## is loaded. Disabling the [param tween_on_load] property will
 ## disable this behaviour and skip the tweening entirely when instantiated.
-@export var tween_onload: bool = true
+@export var tween_on_load: bool = true:
+	set = set_tween_on_load,
+	get = get_tween_on_load
 
 ## Determines how often an inactive [param PhantomCamera2D] should update
 ## its positional and rotational values. This is meant to reduce the amount
@@ -212,7 +214,7 @@ var _has_tweened: bool = false
 @export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
 @export_group("Follow Parameters")
-## Offsets the follow target's position.
+## Offsets the [member follow_target] position.
 @export var follow_offset: Vector2 = Vector2.ZERO:
 	set = set_follow_offset,
 	get = get_follow_offset
@@ -225,8 +227,8 @@ var _has_tweened: bool = false
 	get = get_follow_damping
 
 ## Defines the damping amount. The ideal range should be somewhere between 0-1.[br][br]
-## The damping amount can be specified in the individual axis.
-## [b]Lower value[/b] = faster / sharper camera movement.[br][br]
+## The damping amount can be specified in the individual axis.[br][br]
+## [b]Lower value[/b] = faster / sharper camera movement.[br]
 ## [b]Higher value[/b] = slower / heavier camera movement.
 @export var follow_damping_value: Vector2 = Vector2(0.1, 0.1):
 	set = set_follow_damping_value,
@@ -878,17 +880,17 @@ func set_is_active(node, value) -> void:
 		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera2D].
 ## If it returns true, it means the [param PhantomCamera2D] is what the
-## [Camera2D] is currently following.
+## [param Camera2D] is currently following.
 func is_active() -> bool:
 	return _is_active
 
 
-## Enables or disables the [member tween_onload].
+## Enables or disables the [member tween_on_load].
 func set_tween_on_load(value: bool) -> void:
-	tween_onload = value
-## Gets the current [member tween_onload] value.
-func is_tween_on_load() -> bool:
-	return tween_onload
+	tween_on_load = value
+## Gets the current [member tween_on_load] value.
+func get_tween_on_load() -> bool:
+	return tween_on_load
 
 
 ## Gets the current follow mode as an enum int based on [enum FollowMode].[br]

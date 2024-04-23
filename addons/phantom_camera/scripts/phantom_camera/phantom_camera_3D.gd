@@ -221,11 +221,11 @@ var _has_tweened: bool
 ## a scene, and has the highest priority, it will perform its tween transition.
 ## This is most obvious if a [param PhantomCamera3D] has a long duration and
 ## is attached to a playable character that can be moved the moment a scene
-## is loaded. Disabling the [param Tween on Load] property will
+## is loaded. Disabling the [param tween_on_load] property will
 ## disable this behaviour and skip the tweening entirely when instantiated.
-@export var tween_onload: bool = true:
+@export var tween_on_load: bool = true:
 	set = set_tween_on_load,
-	get = is_tween_on_load
+	get = get_tween_on_load
 
 ## Determines how often an inactive [param PhantomCamera3D] should update
 ## its positional and rotational values. This is meant to reduce the amount
@@ -243,7 +243,7 @@ var _has_tweened: bool
 	get = get_camera_3d_resource
 
 @export_group("Follow Parameters")
-## Offsets the follow target's position.
+## Offsets the [member follow_target] position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
 	set = set_follow_offset,
 	get = get_follow_offset
@@ -256,8 +256,8 @@ var _has_tweened: bool
 	get = get_follow_damping
 
 ## Defines the damping amount. The ideal range should be somewhere between 0-1.[br][br]
-## The damping amount can be specified in the individual axis.
-## [b]Lower value[/b] = faster / sharper camera movement.[br][br]
+## The damping amount can be specified in the individual axis.[br][br]
+## [b]Lower value[/b] = faster / sharper camera movement.[br]
 ## [b]Higher value[/b] = slower / heavier camera movement.
 @export var follow_damping_value: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_damping_value,
@@ -273,9 +273,9 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 ## Enables the [param PhantomCamera3D] to automatically distance
 ## itself as the [param follow targets] move further apart.[br]
 ## It looks at the longest axis between the different targets and interpolates
-## the distance length between the [member auto_distance_min] and
+## the distance length between the [member auto_follow_distance_min] and
 ## [member follow_group_distance] properties.[br][br]
-## Note: Enabling this property hides and disables the [member distance]
+## Note: Enabling this property hides and disables the [member follow_distance]
 ## property as this effectively overrides that property.
 @export var auto_follow_distance: bool = false:
 	set = set_auto_follow_distance,
@@ -295,13 +295,13 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 	set = set_auto_follow_distance_max,
 	get = get_auto_follow_distance_max
 
-## Determines how fast the [member auto_distance] moves between the
+## Determines how fast the [member auto_follow_distance] moves between the
 ## maximum and minimum distance. The higher the value, the sooner the
 ## maximum distance is reached.[br][br]
-## This value should be based on the sizes of the [member auto_distance_min]
-## and [member auto_distance_max].[br]
-## E.g. if the value between the [member auto_distance_min] and
-## [member auto_distance_max] is small, consider keeping the number low
+## This value should be based on the sizes of the [member auto_follow_distance_min]
+## and [member auto_follow_distance_max].[br]
+## E.g. if the value between the [member auto_follow_distance_min] and
+## [member auto_follow_distance_max] is small, consider keeping the number low
 ## and vice versa.
 @export var auto_follow_distance_divisor: float = 10:
 	set = set_auto_follow_distance_divisor,
@@ -380,8 +380,8 @@ var _follow_spring_arm: SpringArm3D
 	get = get_look_at_damping
 
 ## Defines the Rotational damping amount. The ideal range is typicall somewhere between 0-1.[br][br]
-## The damping amount can be specified in the individual axis.
-## [b]Lower value[/b] = faster / sharper camera rotation.[br][br]
+## The damping amount can be specified in the individual axis.[br][br]
+## [b]Lower value[/b] = faster / sharper camera rotation.[br]
 ## [b]Higher value[/b] = slower / heavier camera rotation.
 @export_range(0.0, 1.0, 0.001, "or_greater") var look_at_damping_value: float = 0.25:
 	set = set_look_at_damping_value,
@@ -686,7 +686,7 @@ func _process(delta: float) -> void:
 									_follow_spring_arm.shape = shape
 									_follow_spring_arm.margin = margin
 
-									if not is_tween_on_load():
+									if not tween_on_load:
 										_has_tweened = true
 
 									reparent(_follow_spring_arm)
@@ -875,7 +875,7 @@ func _has_valid_pcam_owner() -> bool:
 
 #region Setter & Getter Functions
 
-## Assigns the value of the [param has_tweened] property.
+## Assigns the value of the [param has_tweened] property.[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
 func set_has_tweened(caller: Node, value: bool) -> void:
@@ -971,12 +971,12 @@ func is_active() -> bool:
 	return _is_active
 
 
-## Enables or disables the Tween on Load.
+## Enables or disables the [member tween_on_load].
 func set_tween_on_load(value: bool) -> void:
-	tween_onload = value
-## Gets the current Tween On Load value.
-func is_tween_on_load() -> bool:
-	return tween_onload
+	tween_on_load = value
+## Gets the current [member tween_on_load] value.
+func get_tween_on_load() -> bool:
+	return tween_on_load
 
 
 ## Gets the current follow mode as an enum int based on [member FollowMode] enum.[br]
@@ -1021,7 +1021,7 @@ func get_follow_path() -> Path3D:
 ## Assigns a new [param Vector3] for the [param follow_offset] property.
 func set_follow_offset(value: Vector3) -> void:
 	follow_offset = value
-## Gets the current [param Vector3] for the [param follow_ta_offset] property.
+## Gets the current [param Vector3] for the [param follow_offset] property.
 func get_follow_offset() -> Vector3:
 	return follow_offset
 
@@ -1112,106 +1112,106 @@ func get_follow_targets() -> Array[Node3D]:
 	return follow_targets
 
 ## Returns true if the [param PhantomCamera3D] has more than one member in the
-## [follow_targets] array.
+## [member follow_targets] array.
 func get_has_multiple_follow_targets() -> bool:
 	return _has_multiple_follow_targets
 
 
-## Enables or disables [member auto_distnace] when using Group Follow.
+## Enables or disables [member auto_follow_distance] when using Group Follow.
 func set_auto_follow_distance(value: bool) -> void:
 	auto_follow_distance = value
 	notify_property_list_changed()
-## Gets [member auto_distance] state.
+## Gets [member auto_follow_distance] state.
 func get_auto_follow_distance() -> bool:
 	return auto_follow_distance
 
-## Assigns new [member auto_distance_min] value.
+## Assigns new [member auto_follow_distance_min] value.
 func set_auto_follow_distance_min(value: float) -> void:
 	auto_follow_distance_min = value
-## Gets [member auto_distance_min] value.
+## Gets [member auto_follow_distance_min] value.
 func get_auto_follow_distance_min() -> float:
 	return auto_follow_distance_min
 
-## Assigns new [member auto_distance_max] value.
+## Assigns new [member auto_follow_distance_max] value.
 func set_auto_follow_distance_max(value: float) -> void:
 	auto_follow_distance_max = value
-## Gets [member auto_distance_max] value.
+## Gets [member auto_follow_distance_max] value.
 func get_auto_follow_distance_max() -> float:
 	return auto_follow_distance_max
 
-## Assigns new [member auto_distance_divisor] value.
+## Assigns new [member auto_follow_distance_divisor] value.
 func set_auto_follow_distance_divisor(value: float) -> void:
 	auto_follow_distance_divisor = value
-## Gets [member auto_distance_divisor] value.
+## Gets [member auto_follow_distance_divisor] value.
 func get_auto_follow_distance_divisor() -> float:
 	return auto_follow_distance_divisor
 
 ## Assigns new rotation (in radians) value to [SpringArm3D] for
-## [params Third Person] [enum FollowMode].
+## [param ThirdPerson] [enum FollowMode].
 func set_third_person_rotation(value: Vector3) -> void:
 	_follow_spring_arm.rotation = value
 ## Gets the rotation value (in radians) from the [SpringArm3D] for
-## [param Third Person] [enum FollowMode].
+## [param ThirdPerson] [enum FollowMode].
 func get_third_person_rotation() -> Vector3:
 	return _follow_spring_arm.rotation
 ## Assigns new rotation (in degrees) value to [SpringArm3D] for
-## [params Third Person] [enum FollowMode].
+## [param ThirdPerson] [enum FollowMode].
 func set_third_person_rotation_degrees(value: Vector3) -> void:
 	_follow_spring_arm.rotation_degrees = value
 ## Gets the rotation value (in degrees) from the [SpringArm3D] for
-## [params Third Person] [enum FollowMode].
+## [param ThirdPerson] [enum FollowMode].
 func get_third_person_rotation_degrees() -> Vector3:
 	return _follow_spring_arm.rotation_degrees
-## Assigns new [Quaternion] value to [SpringArm3D] for [params Third Person]
+## Assigns new [Quaternion] value to [SpringArm3D] for [param ThirdPerson]
 ## [enum FollowMode].
 func set_third_person_quaternion(value: Quaternion) -> void:
 	_follow_spring_arm.quaternion = value
-## Gets the [Quaternion] value of the [SpringArm3D] for [params Third Person]
+## Gets the [Quaternion] value of the [SpringArm3D] for [param ThirdPerson]
 ## [enum Follow mode].
 func get_third_person_quaternion() -> Quaternion:
 	return _follow_spring_arm.quaternion
 
-## Assigns a new Third Person [member SpringArm3D.length] value.
+## Assigns a new ThirdPerson [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
 	if is_instance_valid(_follow_spring_arm):
 		_follow_spring_arm.spring_length = value
 ## Gets the [member SpringArm3D.length]
-## from a [param Third Person] [enum follow_mode] instance.
+## from a [param ThirdPerson] [enum follow_mode] instance.
 func get_spring_length() -> float:
 	return follow_distance
 
 ## Assigns a new [member collision_mask] to the [SpringArm3D] when [enum FollowMode]
-## is set to [params Third Person].
+## is set to [param ThirdPerson].
 func set_collision_mask(value: int) -> void:
 	collision_mask = value
 	_follow_spring_arm.collision_mask = collision_mask
 ## Enables or disables a specific [member collision_mask] layer for the
-## [SpringArm3d] when [enum FollowMode] is set to [params Third Person].
+## [SpringArm3D] when [enum FollowMode] is set to [param ThirdPerson].
 func set_collision_mask_value(value: int, enabled: bool) -> void:
 	collision_mask = _set_layer(collision_mask, value, enabled)
 	_follow_spring_arm.collision_mask = collision_mask
 ## Gets [member collision_mask] from the [SpringArm3D] when [enum FollowMode]
-## is set to [params Third Person].
+## is set to [param ThirdPerson].
 func get_collision_mask() -> int:
 	return collision_mask
 
 ## Assigns a new [SpringArm3D.shape] when [enum FollowMode]
-## is set to [params Third Person].
+## is set to [param ThirdPerson].
 func set_shape(value: Shape3D) -> void:
 	shape = value
 	_follow_spring_arm.shape = shape
-## Gets Third Person [member SpringArm3D.shape] value.
+## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
 	return shape
 
 ## Assigns a new [member SpringArm3D.margin] value when [enum FollowMode]
-## is set to [params Third Person].
+## is set to [param ThirdPerson].
 func set_margin(value: float) -> void:
 	margin = value
 	_follow_spring_arm.margin = margin
 ## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
-## [params Third Person].
+## [param ThirdPerson].
 func get_margin() -> float:
 	return margin
 
@@ -1325,44 +1325,50 @@ func set_camera_3d_resource(value: Camera3DResource) -> void:
 func get_camera_3d_resource() -> Camera3DResource:
 	return camera_3d_resource
 
-## Assigns a new [member Camera3D.cull_mask] value.
-## Note: This will override and make the [param Camera3D] Resource unique to
+## Assigns a new [member Camera3D.cull_mask] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
 ## this [param PhantomCamera3D].
 func set_cull_mask(value: int) -> void:
 	camera_3d_resource.cull_mask = value
 	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = value
-## Enables or disables a specific [member Camera3D.cull_mask] layer.
+## Enables or disables a specific [member Camera3D.cull_mask] layer.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
 func set_cull_mask_value(layer_number: int, value: bool) -> void:
 	var mask: int = _set_layer(get_cull_mask(), layer_number, value)
 	camera_3d_resource.cull_mask = mask
 	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = mask
-## Gets the [member Camera3D.cull_mask] value assigned [Camera3DResource].
+## Gets the [member Camera3D.cull_mask] value assigned to the [Camera3DResource].
 func get_cull_mask() -> int:
 	return camera_3d_resource.cull_mask
 
-## Assigns a new [member Camera3D.h_offset] value.
+## Assigns a new [member Camera3D.h_offset] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
 func set_h_offset(value: float) -> void:
 	camera_3d_resource.h_offset = value
 	if _is_active: get_pcam_host_owner().camera_3d.h_offset = value
-## Gets the [member Camera3D.h_offset] value.
+## Gets the [member Camera3D.h_offset] value assigned to the [param Camera3DResource].
 func get_h_offset() -> float:
 	return camera_3d_resource.h_offset
 
-## Assigns a new [Camera3D.v_offset] value.
+## Assigns a new [Camera3D.v_offset] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
 func set_v_offset(value: float) -> void:
 	camera_3d_resource.v_offset = value
 	if _is_active: get_pcam_host_owner().camera_3d.v_offset = value
-## Gets the Camera3D fov value assigned this PhantomCamera.
+## Gets the Camera3D fov value assigned to the [param Camera3DResource].
 func get_v_offset() -> float:
 	return camera_3d_resource.v_offset
 
 ## Assigns a new [member Camera3D.fov] value.[br]
-## Note: This will override and make the [param Camera3D] Resource unique to
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
 ## this [param PhantomCamera3D].
 func set_fov(value: float) -> void:
 	camera_3d_resource.fov = value
 	if _is_active: get_pcam_host_owner().camera_3d.fov = value
-## Gets the [member Camera3D.fov] value assigned this [param PhantomCamera3D].
+## Gets the [member Camera3D.fov] value assigned to the [param Camera3DResource].
 func get_fov() -> float:
 	return camera_3d_resource.fov
 
