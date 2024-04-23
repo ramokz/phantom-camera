@@ -646,6 +646,7 @@ follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 follow_path = NodePath("../Path2D")
 zoom = Vector2(1.5, 1.5)
 tween_resource = ExtResource("6_4vtmp")
+tween_on_load = false
 draw_limits = true
 
 [node name="Path2D" type="Path2D" parent="."]

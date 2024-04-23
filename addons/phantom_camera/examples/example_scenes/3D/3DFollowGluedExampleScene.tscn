@@ -38,7 +38,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -2.15175e-37, 6.39, 6.99973)
+transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -5.60519e-45, 6.39, 7)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_pmeux")
@@ -51,13 +51,13 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -1.9235e-37, 6.39, 6.99975)
+transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -5.60519e-45, 6.39, 7)
 script = ExtResource("2_q1ygp")
 priority = 5
 follow_mode = 1
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = SubResource("Resource_ucp3e")
-tween_onload = false
+tween_on_load = false
 camera_3d_resource = SubResource("Resource_ab013")
 follow_damping = true
 follow_damping_value = Vector3(0.3, 0.3, 0.3)

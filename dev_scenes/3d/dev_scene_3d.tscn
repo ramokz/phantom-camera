@@ -73,7 +73,6 @@ transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
 script = ExtResource("3_4sdb7")
 priority = 10
 tween_resource = SubResource("Resource_sj6ok")
-tween_onload = false
 camera_3d_resource = SubResource("Resource_a3u85")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
@@ -84,7 +83,7 @@ priority = 30
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = SubResource("Resource_6c6yi")
-tween_onload = false
+tween_on_load = false
 camera_3d_resource = SubResource("Resource_j8csy")
 follow_offset = Vector3(0, 2, 2)
 follow_damping = true

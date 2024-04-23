@@ -646,7 +646,7 @@ priority = 5
 follow_mode = 2
 follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 tween_resource = ExtResource("6_gu0o0")
-tween_onload = false
+tween_on_load = false
 follow_damping = true
 draw_limits = true
 

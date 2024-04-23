@@ -631,11 +631,17 @@ follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 zoom = Vector2(1.5, 1.5)
 frame_preview = false
 tween_resource = ExtResource("6_pxbym")
-tween_onload = false
+tween_on_load = null
 follow_damping = true
 draw_limits = true
 
 [node name="CharacterBody2D" parent="Player" instance=ExtResource("7_62i3t")]
 position = Vector2(227, -28)
+
+[node name="ItemFocusPhantomCamera2D" parent="Player/CharacterBody2D" index="4"]
+tween_on_load = null
+
+[node name="InventoryPhantomCamera2D" parent="Player/CharacterBody2D" index="5"]
+tween_on_load = null
 
 [editable path="Player/CharacterBody2D"]

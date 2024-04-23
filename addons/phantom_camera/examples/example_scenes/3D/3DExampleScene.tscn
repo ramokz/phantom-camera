@@ -156,7 +156,7 @@ priority = 10
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = ExtResource("4_a27nb")
-tween_onload = false
+tween_on_load = false
 camera_3d_resource = SubResource("Resource_jtk1d")
 follow_offset = Vector3(0, 1.5, 2.5)
 follow_damping = true
@@ -168,7 +168,6 @@ unique_name_in_owner = true
 transform = Transform3D(0.616596, -0.109786, 0.779587, -2.23517e-08, 0.990229, 0.13945, -0.78728, -0.0859841, 0.610571, -2.98802, 1.50739, 1.19719)
 script = ExtResource("2_y3dy8")
 tween_resource = ExtResource("4_a27nb")
-tween_onload = false
 camera_3d_resource = SubResource("Resource_o161n")
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="NPCGroup"]

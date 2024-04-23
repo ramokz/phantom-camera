@@ -63,7 +63,7 @@ priority = 10
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = SubResource("Resource_8fhct")
-tween_onload = false
+tween_on_load = null
 camera_3d_resource = SubResource("Resource_7m0fv")
 follow_damping = true
 follow_distance = 3.5
@@ -76,7 +76,7 @@ script = ExtResource("2_whx47")
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = SubResource("Resource_e7t18")
-tween_onload = false
+tween_on_load = null
 camera_3d_resource = SubResource("Resource_jogxh")
 follow_offset = Vector3(0, 0.8, 0)
 follow_damping = true
@@ -144,6 +144,7 @@ unique_name_in_owner = true
 transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 13.366, -0.162648)
 script = ExtResource("2_whx47")
 tween_resource = SubResource("Resource_afrr1")
+tween_on_load = null
 camera_3d_resource = SubResource("Resource_y5dqe")
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="."]
