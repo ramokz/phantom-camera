@@ -74,8 +74,6 @@ enum InactiveUpdateMode {
 
 #region Variables
 
-## Determines whether if a [PhantomCamera2D] has the highest priority and is
-## currently controlling a [Camera2D] with [PhantomCameraHost].
 var _is_active: bool = false
 
 ## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
