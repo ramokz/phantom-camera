@@ -5,8 +5,8 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_tm0ws"]
 [ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="4_dfyri"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_qq8ep"]
-[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="6_cow2s"]
-[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="7_ot6g8"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="6_cow2s"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/ui_sign.tscn" id="7_ot6g8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
 texture = ExtResource("1_11grc")
