@@ -7,7 +7,7 @@ const PCAM_HOST: String = "PhantomCameraHost"
 const PCAM_2D: String = "PhantomCamera2D"
 const PCAM_3D: String = "PhantomCamera3D"
 
-const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_3D.gd")
+const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_3d.gd")
 
 const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 
