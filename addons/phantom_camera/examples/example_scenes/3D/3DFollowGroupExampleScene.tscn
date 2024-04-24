@@ -6,7 +6,7 @@
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="3_1eb12"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="3_a5igg"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_wr1tj"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="5_70gws"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_70gws"]
 
 [sub_resource type="Resource" id="Resource_1iman"]
 script = ExtResource("5_70gws")

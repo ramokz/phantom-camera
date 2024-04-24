@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_q1ygp"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_hpix1"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_8qqha"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="4_evdoo"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_evdoo"]
 [ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_vqgn5"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_wr3bq"]
 

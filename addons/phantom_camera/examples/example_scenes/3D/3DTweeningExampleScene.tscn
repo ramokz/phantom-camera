@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_b2yrt"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_m2w30"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="4_425ma"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="5_cn3g7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_cn3g7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="5_h0ouh"]
 [ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="6_gcjyn"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_wup4d"]
