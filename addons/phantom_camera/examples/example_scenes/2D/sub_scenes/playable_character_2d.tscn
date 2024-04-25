@@ -1,0 +1,120 @@
+[gd_scene load_steps=10 format=3 uid="uid://7kh0xydx0b1o"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d.gd" id="1_jnc14"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_62b2n"]
+[ext_resource type="Texture2D" uid="uid://ci76plsequlrq" path="res://addons/phantom_camera/examples/textures/2D/player_sprite.svg" id="2_yr8cm"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="4_rloon"]
+[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/item_focus_phantom_camera_2d_tween.tres" id="5_4iyk1"]
+[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/inventory_phantom_camera_2d_tween.tres" id="6_2h6fv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hryl"]
+bg_color = Color(0.85098, 0.894118, 0.937255, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.113725, 0.113725, 0.113725, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xj4ar"]
+size = Vector2(64, 57)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
+size = Vector2(64, 57)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_jnc14")
+
+[node name="DarkOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.615686)
+
+[node name="PlayerVisuals" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="PlayerSprite" type="Sprite2D" parent="PlayerVisuals"]
+unique_name_in_owner = true
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_yr8cm")
+
+[node name="InteractionPrompt" type="Panel" parent="PlayerVisuals"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -66.0
+offset_right = 16.0
+offset_bottom = -34.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5hryl")
+
+[node name="Label" type="Label" parent="PlayerVisuals/InteractionPrompt"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -3.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_62b2n")
+theme_override_font_sizes/font_size = 26
+text = "F"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_xj4ar")
+
+[node name="PlayerArea2D" type="Area2D" parent="."]
+unique_name_in_owner = true
+collision_layer = 2
+collision_mask = 2
+priority = 20
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerArea2D"]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_18i13")
+
+[node name="ItemFocusPhantomCamera2D" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -122)
+script = ExtResource("4_rloon")
+zoom = Vector2(2, 2)
+frame_preview = false
+tween_resource = ExtResource("5_4iyk1")
+follow_damping_value = Vector2(0, 0)
+draw_limits = true
+
+[node name="InventoryPhantomCamera2D" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(-183, -5)
+script = ExtResource("4_rloon")
+zoom = Vector2(2.5, 2.5)
+frame_preview = false
+tween_resource = ExtResource("6_2h6fv")
+follow_damping_value = Vector2(0, 0)
+draw_limits = true

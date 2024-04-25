@@ -1,0 +1,193 @@
+[gd_scene load_steps=14 format=3 uid="uid://bdhrdhbux7sjg"]
+
+[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="1_i2pjc"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_lldvu"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_8md3q"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_dqss1"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="4_2i811"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_m3qpq"]
+[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="5_u5qhp"]
+
+[sub_resource type="Resource" id="Resource_pwcgo"]
+script = ExtResource("3_dqss1")
+duration = 1.0
+transition = 0
+ease = 2
+
+[sub_resource type="Resource" id="Resource_ft2w3"]
+script = ExtResource("4_m3qpq")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2h36r"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w3olp"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cw102"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
+albedo_texture = ExtResource("5_u5qhp")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[node name="Node3D" type="Node3D"]
+
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773413, -0.137901, 4.03222, 6.36446)
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 100
+script = ExtResource("1_lldvu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target", "look_at_targets")]
+transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773413, -0.137901, 4.03222, 6.36446)
+script = ExtResource("2_8md3q")
+priority = 10
+look_at_mode = 2
+look_at_target = NodePath("../PlayerCharacterBody3D2/PlayerVisual")
+look_at_targets = [null, NodePath("../NPCs/PlayerMeshInstance3D")]
+tween_resource = SubResource("Resource_pwcgo")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_ft2w3")
+look_at_damping = true
+look_at_damping_value = 0.1
+
+[node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("1_i2pjc")]
+
+[node name="NPCs" type="Node" parent="."]
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="NPCs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.96028, 0.519002, -1.52506)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_w3olp")
+
+[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="NPCs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.59952, 0.519, 4.06618)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_cw102")
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="Floor" parent="Environment" instance=ExtResource("4_2i811")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.00548, 0.805455, -6.37532)
+use_collision = true
+radius = 1.71971
+height = 2.61091
+sides = 32
+
+[node name="CSGCylinder3D5" type="CSGCylinder3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5597, 0.31181, -5.46661)
+use_collision = true
+radius = 2.77591
+height = 1.62362
+sides = 32
+
+[node name="CSGCylinder3D6" type="CSGCylinder3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.96428, 0.31181, 6.6322)
+use_collision = true
+radius = 1.57419
+height = 3.47475
+sides = 32
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.3959, 0.201103, 2.71259)
+use_collision = true
+radius = 1.41311
+height = 1.40221
+sides = 32
+
+[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.02677, 0.201101, 11.6804)
+use_collision = true
+radius = 2.21673
+height = 7.88261
+sides = 32
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.8316, 0.805455, -8.78984)
+use_collision = true
+radius = 0.956285
+height = 2.61091
+sides = 32
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.5989, -1.69814, -6.51262)
+use_collision = true
+radius = 3.34732
+rings = 32
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.17742, -0.599204, 8.81048)
+use_collision = true
+radius = 2.65844
+rings = 32
+
+[node name="CSGSphere3D3" type="CSGSphere3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.4392, -0.599204, -2.42244)
+use_collision = true
+radius = 2.14606
+rings = 32
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.58998, -1.90735e-06, 0.346393)
+use_collision = true
+inner_radius = 1.3
+outer_radius = 2.0
+sides = 32
+ring_sides = 18
+
+[node name="CSGTorus3D2" type="CSGTorus3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.5502, -1.90735e-06, 7.89765)
+use_collision = true
+inner_radius = 0.971543
+outer_radius = 2.15226
+sides = 32
+ring_sides = 18
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1202, 6.53866, -12.6331)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_auy8m")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.53078, 0.760708, -6.1376)
+use_collision = true
+size = Vector3(2.64182, 2.52142, 2.30997)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.9646, 0.335247, 8.22829)
+use_collision = true
+size = Vector3(3.80964, 1.67049, 0.932048)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.70216, 0.138478, -4.36159)
+use_collision = true
+size = Vector3(1.53893, 1.27695, 1.80814)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.1529, 0.138478, 5.20734)
+use_collision = true
+size = Vector3(4.03502, 1.27695, 5.2198)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.7692, 1.78638, -1.60318)
+use_collision = true
+size = Vector3(4.57784, 4.57276, 3.11285)
+
+[editable path="PlayerCharacterBody3D2"]

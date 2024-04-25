@@ -4,10 +4,17 @@ extends CharacterBody3D
 @export var JUMP_VELOCITY: float = 4.5
 @export var enable_gravity = true
 
-@onready var _camera: Camera3D = %MainCamera3D
+@onready var _camera: Camera3D
+
+@onready var _player_visual: Node3D = %PlayerVisual
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = 9.8
+
+var movement_enabled: bool = true
+
+var _physics_body_trans_last: Transform3D
+var _physics_body_trans_current: Transform3D
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"
@@ -41,17 +48,26 @@ func _ready() -> void:
 	for input in InputMovementDic:
 		var key_val = InputMovementDic[input].get(KEY_STRINGNAME)
 		var action_val = InputMovementDic[input].get(ACTION_STRINGNAME)
+		
+		_camera = owner.get_node("%MainCamera3D")
 
 		var movement_input = InputEventKey.new()
 		movement_input.physical_keycode = key_val
 		InputMap.add_action(action_val)
 		InputMap.action_add_event(action_val, movement_input)
+		
+		_player_visual.top_level = true
 
 
 func _physics_process(delta: float) -> void:
+	_physics_body_trans_last = _physics_body_trans_current
+	_physics_body_trans_current = global_transform
+
 	# Add the gravity.
 	if enable_gravity and not is_on_floor():
 		velocity.y -= gravity * delta
+
+	if not movement_enabled: return
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
@@ -78,3 +94,10 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
+
+
+func _process(_delta: float) -> void:
+	_player_visual.global_transform = _physics_body_trans_last.interpolate_with(
+		_physics_body_trans_current,
+		Engine.get_physics_interpolation_fraction()
+	)

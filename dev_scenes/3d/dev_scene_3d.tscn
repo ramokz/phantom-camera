@@ -1,18 +1,12 @@
 [gd_scene load_steps=13 format=3 uid="uid://ctqdyuxek2ere"]
 
-[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_7n673"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="1_7n673"]
 [ext_resource type="Script" path="res://dev_scenes/3d/scripts/dev_scene_3d_script.gd" id="1_gnrfx"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_4sdb7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_4sdb7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_yhkrs"]
+[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="4_dm3jl"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_2cfaw"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ldp"]
-albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8efyg"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_fioii"]
 
 [sub_resource type="Environment" id="Environment_0s7cr"]
 ssil_intensity = 3.25
@@ -23,17 +17,31 @@ fog_density = 0.0392
 adjustment_enabled = true
 adjustment_contrast = 1.19
 
-[sub_resource type="Resource" id="Resource_cscqa"]
+[sub_resource type="Resource" id="Resource_sj6ok"]
 script = ExtResource("6_pmc8r")
 duration = 0.6
-transition = 3
+transition = 2
 ease = 2
 
-[sub_resource type="Resource" id="Resource_c7ngr"]
+[sub_resource type="Resource" id="Resource_a3u85"]
+script = ExtResource("7_fioii")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
+[sub_resource type="Resource" id="Resource_6c6yi"]
 script = ExtResource("6_pmc8r")
-duration = 0.6
-transition = 8
+duration = 1.0
+transition = 2
 ease = 2
+
+[sub_resource type="Resource" id="Resource_j8csy"]
+script = ExtResource("7_fioii")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [node name="Node3D" type="Node3D"]
 script = ExtResource("1_gnrfx")
@@ -44,29 +52,13 @@ metadata/_edit_lock_ = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.712308, 0.701867, 0, -0.701867, 0.712308, 0, 2.762, 2.195)
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.5, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("3_fb4x5")
 
-[node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.507, 0)
-script = ExtResource("4_yhkrs")
-metadata/_edit_group_ = true
-
-[node name="PlayerMesh" type="MeshInstance3D" parent="PlayerCharacterBody3D2"]
-unique_name_in_owner = true
-mesh = SubResource("CapsuleMesh_2cfaw")
-surface_material_override/0 = SubResource("StandardMaterial3D_r3ldp")
-
-[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D2"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D2/PlayerArea3D"]
-shape = SubResource("CapsuleShape3D_8efyg")
-
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D2"]
-shape = SubResource("CapsuleShape3D_8efyg")
+[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("4_dm3jl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_0s7cr")
@@ -79,28 +71,21 @@ metadata/_edit_lock_ = true
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
 script = ExtResource("3_4sdb7")
-priority_override = false
 priority = 10
-follow_mode = 0
-look_at_mode = 0
-tween_parameters = SubResource("Resource_cscqa")
-tween_on_load = false
-inactive_update_mode = 0
-camera_3D_resource = null
+tween_resource = SubResource("Resource_sj6ok")
+camera_3d_resource = SubResource("Resource_a3u85")
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="."]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.712308, 0.701867, 0, -0.701867, 0.712308, 0, 2.762, 2.195)
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.5, 2)
 script = ExtResource("3_4sdb7")
-priority_override = false
 priority = 30
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D2")
-follow_parameters/target_offset = Vector3(0, 2.255, 2.195)
-follow_parameters/damping = true
-follow_parameters/damping_value = 10.0
-look_at_mode = 0
-tween_parameters = SubResource("Resource_c7ngr")
+follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+tween_resource = SubResource("Resource_6c6yi")
 tween_on_load = false
-inactive_update_mode = 0
-camera_3D_resource = null
+camera_3d_resource = SubResource("Resource_j8csy")
+follow_offset = Vector3(0, 2, 2)
+follow_damping = true
+
+[editable path="PlayerCharacterBody3D"]

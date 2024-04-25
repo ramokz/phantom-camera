@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://dg7rhrymsrrrm"]
+
+[ext_resource type="Texture2D" uid="uid://b7cs6me43ufh3" path="res://addons/phantom_camera/examples/textures/2D/inventory_container.png" id="1_pi2dp"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_0rdcn"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 28.0
+offset_top = -255.0
+offset_right = 908.0
+offset_bottom = 183.0
+grow_vertical = 2
+texture = ExtResource("1_pi2dp")
+
+[node name="Label" type="Label" parent="TextureRect"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 12.0
+offset_right = 535.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.356863, 0.105882, 0.133333, 1)
+theme_override_fonts/font = ExtResource("2_0rdcn")
+theme_override_font_sizes/font_size = 32
+text = "Inventory"
+horizontal_alignment = 1
+uppercase = true

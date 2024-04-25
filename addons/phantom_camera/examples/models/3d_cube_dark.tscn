@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://cixlwqycoox8h"]
+
+[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="1_836jx"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_d24c3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aox6v"]
+albedo_texture = ExtResource("1_836jx")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[node name="3DPrototypeCube" type="CSGMesh3D"]
+use_collision = true
+mesh = SubResource("BoxMesh_d24c3")
+material = SubResource("StandardMaterial3D_aox6v")

@@ -3,31 +3,18 @@ extends Control
 
 #region Constants
 
-const PcamGroupNames = preload("res://addons/phantom_camera/scripts/group_names.gd")
 const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 # TODO - Should be in a central location
 const _camera_2d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera2DIcon.svg")
 const _camera_3d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera3DIcon.svg")
-const _pcam_host_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg")
-const _pcam_2D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon2D.svg")
-const _pcam_3D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/PhantomCameraGizmoIcon3D.svg")
+const _pcam_host_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/phantom_camera_host.svg")
+const _pcam_2D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg")
+const _pcam_3D_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/phantom_camera_3d.svg")
 
 const _overlay_color_alpha: float = 0.3
 
 #endregion
-
-
-#region Variables
-
-var _selected_camera: Node
-var _active_pcam_camera
-var pcam_host_group: Array[Node]
-
-var editor_interface: EditorInterface
-
-#endregion
-
 
 #region @onready
 
@@ -37,9 +24,8 @@ var editor_interface: EditorInterface
 @onready var dead_zone_right_center_panel: Panel = %DeadZoneRightCenterPanel
 @onready var target_point: Panel = %TargetPoint
 
-var aspect_ratio_container: AspectRatioContainer
-@onready var aspect_ratio_containers: AspectRatioContainer = %AspectRatioContainer
-@onready var camera_viewport_panel: Panel = aspect_ratio_containers.get_child(0)
+@onready var aspect_ratio_container: AspectRatioContainer = %AspectRatioContainer
+@onready var camera_viewport_panel: Panel = aspect_ratio_container.get_child(0)
 @onready var _framed_viewfinder: Control = %FramedViewfinder
 @onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
 @onready var sub_viewport: SubViewport = %SubViewport
@@ -53,126 +39,150 @@ var aspect_ratio_container: AspectRatioContainer
 @onready var _priority_override_button: Button = %PriorityOverrideButton
 @onready var _priority_override_name_label: Label = %PriorityOverrideNameLabel
 
+@onready var _camera_2d: Camera2D = %Camera2D
+
 #endregion
 
-
-#region Variables
-
+#region Private Variables
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
 var _no_open_scene_string: String = "[b]2D[/b] or [b]3D[/b] scene open"
 
-var is_2D: bool
+var _selected_camera: Node
+var _active_pcam: Node
+
+var _is_2d: bool
+
+var root_node: Node
+
+#endregion
+
+#region Public variables
+
+var pcam_host_group: Array[Node]
+
 var is_scene: bool
 
-var has_camera_viewport_panel_size: bool = true
+var viewfinder_visible: bool
 
 var min_horizontal: float
 var max_horizontal: float
 var min_vertical: float
 var max_vertical: float
 
+var pcam_host: PhantomCameraHost
+
 #endregion
 
 
 #region Private Functions
 
-func _ready():
-	visibility_changed.connect(_visibility_check)
-	set_process(false)
-	
-	aspect_ratio_containers.set_ratio(get_viewport_rect().size.x / get_viewport_rect().size.y)
+func _ready() -> void:
+	if not Engine.is_editor_hint():
+		set_process(true)
+		camera_viewport_panel.self_modulate.a = 0
 
 #	TODO - Don't think this is needed / does anything?
-	var root_node = get_tree().get_root().get_child(0)
+	root_node = get_tree().get_root().get_child(0)
 	if root_node is Node3D || root_node is Node2D:
 		%SubViewportContainer.set_visible(false)
 
 		if root_node is Node2D:
-			is_2D = true
+			_is_2d = true
 		else:
-			is_2D = false
-			
+			_is_2d = false
+
 		_set_viewfinder(root_node, false)
 
 	if Engine.is_editor_hint():
-		get_tree().node_added.connect(_node_added)
-		get_tree().node_removed.connect(_node_added)
+		# BUG - Both signals below are called whenever a noe is selected in the scenetree
+		# Should only be triggered whenever a node is added or removed.
+		get_tree().node_added.connect(_node_added_or_removed)
+		get_tree().node_removed.connect(_node_added_or_removed)
 	else:
 		_empty_state_control.set_visible(false)
 
 	_priority_override_button.set_visible(false)
+	
+	# Triggered when viewport size is changed in Project Settings
+	ProjectSettings.settings_changed.connect(_settings_changed)
 
 
 func _exit_tree() -> void:
 	if Engine.is_editor_hint():
-		if get_tree().node_added.is_connected(_node_added):
-			get_tree().node_added.disconnect(_node_added)
-			get_tree().node_removed.disconnect(_node_added)
+		if get_tree().node_added.is_connected(_node_added_or_removed):
+			get_tree().node_added.disconnect(_node_added_or_removed)
+			get_tree().node_removed.disconnect(_node_added_or_removed)
 
-	if aspect_ratio_containers.resized.is_connected(_resized):
-		aspect_ratio_containers.resized.disconnect(_resized)
+	if aspect_ratio_container.resized.is_connected(_resized):
+		aspect_ratio_container.resized.disconnect(_resized)
 
-	if _add_node_button.pressed.is_connected(_add_node):
-		_add_node_button.pressed.disconnect(_add_node)
+	if _add_node_button.pressed.is_connected(visibility_check):
+		_add_node_button.pressed.disconnect(visibility_check)
 
-	if is_instance_valid(_active_pcam_camera):
-		if _active_pcam_camera.Properties.is_connected(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-			_active_pcam_camera.Properties.disconnect(Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
-	
+	if is_instance_valid(_active_pcam):
+		if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+			_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+
 	if _priority_override_button.pressed.is_connected(_select_override_pcam):
 		_priority_override_button.pressed.disconnect(_select_override_pcam)
 
 
-func _process(_delta: float):
-	if not visible or not is_instance_valid(_active_pcam_camera): return
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint() and not viewfinder_visible: return
+	if not is_instance_valid(_active_pcam): return
 
 	var unprojected_position_clamped: Vector2 = Vector2(
-		clamp(_active_pcam_camera.Properties.viewport_position.x, min_horizontal, max_horizontal),
-		clamp(_active_pcam_camera.Properties.viewport_position.y, min_vertical, max_vertical)
+		clamp(_active_pcam.viewport_position.x, min_horizontal, max_horizontal),
+		clamp(_active_pcam.viewport_position.y, min_vertical, max_vertical)
 	)
-	target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
+
+	if not Engine.is_editor_hint():
+		target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
 	
-	if not has_camera_viewport_panel_size:
-		_on_dead_zone_changed()
+	if _is_2d:
+		if not is_instance_valid(pcam_host): return
+		if not is_instance_valid(pcam_host.camera_2d): return
+		
+		var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+		sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
+		
+		_camera_2d.global_transform = pcam_host.camera_2d.global_transform
+		_camera_2d.offset = pcam_host.camera_2d.offset
+		_camera_2d.zoom = pcam_host.camera_2d.zoom
+		_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
+		_camera_2d.anchor_mode = pcam_host.camera_2d.anchor_mode
+		_camera_2d.limit_left = pcam_host.camera_2d.limit_left
+		_camera_2d.limit_top = pcam_host.camera_2d.limit_top
+		_camera_2d.limit_right = pcam_host.camera_2d.limit_right
+		_camera_2d.limit_bottom = pcam_host.camera_2d.limit_bottom
 
 
-func _node_added(node: Node) -> void:
-	if editor_interface == null: return
-	_visibility_check()
+func _settings_changed() -> void:
+	var viewport_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var viewport_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var ratio: float = viewport_width / viewport_height
+	aspect_ratio_container.set_ratio(ratio)
+	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
+	# TODO - Add resizer for Framed Viewfinder
 
+func _node_added_or_removed(_node: Node) -> void:
+	visibility_check()
 
-func _visibility_check():
-	if not editor_interface or not visible: return
+func visibility_check() -> void:
+	if not viewfinder_visible: return
+	
+	var root: Node = EditorInterface.get_edited_scene_root()
 
-	if not is_instance_valid(editor_interface):
-		is_scene = false
-#		Is not a 2D or 3D scene
-		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
-		_add_node_button.set_visible(false)
-		return
-
-	var root: Node = editor_interface.get_edited_scene_root()
 	if root is Node2D:
-#		print("Is a 2D scene")
-		is_2D = true
+		_is_2d = true
 		is_scene = true
-
 		_add_node_button.set_visible(true)
-#		TODO: Figure out why the line below doesn't work...
-#		var camera: Camera2D = root.get_viewport().get_camera_2d()
-
-		var camera: Camera2D = _get_camera_2D()
-		_check_camera(root, camera, true)
+		_check_camera(root, _get_camera_2d(), true)
 	elif root is Node3D:
-#		Is 3D scene
-		is_2D = false
+		_is_2d = false
 		is_scene = true
-
 		_add_node_button.set_visible(true)
-		var camera: Camera3D = root.get_viewport().get_camera_3d()
-		_check_camera(root, camera, false)
-#		editor_interface.get_selection().clear()
-#		editor_interface.get_selection().add_node(pcam_host_group[0].get_active_pcam())
+		_check_camera(root, root.get_viewport().get_camera_3d(), false)
 	else:
 		is_scene = false
 #		Is not a 2D or 3D scene
@@ -183,14 +193,13 @@ func _visibility_check():
 		_priority_override_button.pressed.connect(_select_override_pcam)
 
 
-func _get_camera_2D() -> Camera2D:
-	var camerasGroupName = "__cameras_%d" % editor_interface.get_edited_scene_root().get_viewport().get_viewport_rid().get_id()
+func _get_camera_2d() -> Camera2D:
+	var camerasGroupName = "__cameras_%d" % EditorInterface.get_edited_scene_root().get_viewport().get_viewport_rid().get_id()
 	var cameras = get_tree().get_nodes_in_group(camerasGroupName)
 
 	for camera in cameras:
 		if camera is Camera2D and camera.is_current:
 			return camera
-
 	return null
 
 
@@ -217,28 +226,21 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 
 	if camera:
 #		Has Camera
-		var pcam_host: PhantomCameraHost
 		if camera.get_children().size() > 0:
 			for cam_child in camera.get_children():
 				if cam_child is PhantomCameraHost:
 					pcam_host = cam_child
 
 				if pcam_host:
-					if get_tree().get_nodes_in_group(PcamGroupNames.PCAM_GROUP_NAME):
-#						Pcam exists in tree
+					if get_tree().get_nodes_in_group(Constants.PCAM_GROUP_NAME):
+						# Pcam exists in tree
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
 #								_on_dead_zone_changed()
 
 						_set_viewfinder_state()
 
-						# Related to: https://github.com/ramokz/phantom-camera/issues/105
-						# REMOVE BELOW WHEN 2D VIEWFINDER IS SUPPORTED
-						if not is_2D:
-							%NoSupportMsg.set_visible(false)
-						elif is_2D:
-							%NoSupportMsg.set_visible(true)
-						### REMOVAL END
+						%NoSupportMsg.set_visible(false)
 
 					else:
 #						No PCam in scene
@@ -269,13 +271,14 @@ func _set_viewfinder_state() -> void:
 	_empty_state_control.set_visible(false)
 
 	_framed_viewfinder.set_visible(true)
-	target_point.set_visible(true)
 
-	if is_instance_valid(_active_pcam_camera):
-		if _active_pcam_camera.get_follow_mode() == Constants.FollowMode.FRAMED:
+	if is_instance_valid(_active_pcam):
+		if _active_pcam.get_follow_mode() == _active_pcam.FollowMode.FRAMED:
 			_dead_zone_h_box_container.set_visible(true)
+			target_point.set_visible(true)
 		else:
 			_dead_zone_h_box_container.set_visible(false)
+			target_point.set_visible(false)
 
 
 func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> void:
@@ -296,9 +299,7 @@ func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> voi
 
 
 func _add_node(node_type: String) -> void:
-	if not editor_interface: return
-
-	var root: Node = editor_interface.get_edited_scene_root()
+	var root: Node = EditorInterface.get_edited_scene_root()
 
 	match node_type:
 		_no_open_scene_string:
@@ -312,9 +313,9 @@ func _add_node(node_type: String) -> void:
 		Constants.PCAM_HOST_NODE_NAME:
 			var pcam_host: PhantomCameraHost = PhantomCameraHost.new()
 			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
-			if is_2D:
+			if _is_2d:
 #				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
-				_get_camera_2D().add_child(pcam_host)
+				_get_camera_2d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
 			else:
 #				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
@@ -334,29 +335,39 @@ func _instantiate_node(root: Node, node: Node, name: String) -> void:
 	node.set_owner(get_tree().get_edited_scene_root())
 
 
-func _set_viewfinder(root: Node, editor: bool):
-	pcam_host_group = root.get_tree().get_nodes_in_group(PcamGroupNames.PCAM_HOST_GROUP_NAME)
+func _set_viewfinder(root: Node, editor: bool) -> void:
+	pcam_host_group = root.get_tree().get_nodes_in_group(Constants.PCAM_HOST_GROUP_NAME)
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
-			if is_2D:
-				_selected_camera = pcam_host.camera_2D
-				_active_pcam_camera = pcam_host.get_active_pcam() as PhantomCamera2D
+			if _is_2d:
+				_selected_camera = pcam_host.camera_2d
+				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
 				if editor:
-					var camera_2D_rid: RID = _selected_camera.get_canvas_item()
-					# TODO - Missing 2D viewport support - https://github.com/ramokz/phantom-camera/issues/105 
-					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_2D_rid)
+					var camera_2d_rid: RID = _selected_camera.get_canvas()
+					sub_viewport.disable_3d = true
+					_camera_2d.zoom = pcam_host.camera_2d.zoom
+					_camera_2d.offset = pcam_host.camera_2d.offset
+					_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
+					
+					
+					sub_viewport.world_2d = pcam_host.camera_2d.get_world_2d()
+					sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+					sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
+					sub_viewport.size_2d_override_stretch = true
 			else:
-				_selected_camera = pcam_host.camera_3D
-				_active_pcam_camera = pcam_host.get_active_pcam() as PhantomCamera3D
+				_selected_camera = pcam_host.camera_3d
+				_active_pcam = pcam_host.get_active_pcam() as PhantomCamera3D
 				if editor:
-					var camera_3D_rid: RID = _selected_camera.get_camera_rid()
-					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3D_rid)
+					var camera_3d_rid: RID = _selected_camera.get_camera_rid()
+					sub_viewport.disable_3d = false
+					sub_viewport.world_3d = pcam_host.camera_3d.get_world_3d()
+					RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3d_rid)
 
 				if _selected_camera.keep_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-					aspect_ratio_containers.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
+					aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
 				else:
-					aspect_ratio_containers.set_stretch_mode(AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT)
+					aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT)
 
 			_on_dead_zone_changed()
 			set_process(true)
@@ -364,15 +375,11 @@ func _set_viewfinder(root: Node, editor: bool):
 			if not pcam_host.update_editor_viewfinder.is_connected(_on_update_editor_viewfinder):
 				pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder.bind(pcam_host))
 
-			if not aspect_ratio_containers.resized.is_connected(_resized):
-				aspect_ratio_containers.resized.connect(_resized)
+			if not aspect_ratio_container.resized.is_connected(_resized):
+				aspect_ratio_container.resized.connect(_resized)
 
-			if not _active_pcam_camera.Properties.is_connected(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed):
-				_active_pcam_camera.Properties.connect(_active_pcam_camera.Constants.DEAD_ZONE_CHANGED_SIGNAL, _on_dead_zone_changed)
-
-				#			aspect_ratio_container
-				#			TODO - Might not be needed
-				#			_active_pcam_camera.Properties.disconnect(_on_dead_zone_changed)
+			if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+				_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
 		else:
 			for pcam_host in pcam_host_group:
 				print(pcam_host, " is in a scene")
@@ -383,73 +390,61 @@ func _resized() -> void:
 
 
 func _on_dead_zone_changed() -> void:
-	if not is_instance_valid(_active_pcam_camera): return
-	
-	if camera_viewport_panel.size == Vector2.ZERO:
-		has_camera_viewport_panel_size = false
-		return
-	else:
-		has_camera_viewport_panel_size = true
+	if not is_instance_valid(_active_pcam): return
+	if not _active_pcam.follow_mode == _active_pcam.FollowMode.FRAMED: return
 
-	var dead_zone_width: float = _active_pcam_camera.Properties.follow_framed_dead_zone_width * camera_viewport_panel.size.x
-	var dead_zone_height: float = _active_pcam_camera.Properties.follow_framed_dead_zone_height * camera_viewport_panel.size.y
+	# Waits until the camera_viewport_panel has been resized when launching the game
+	if camera_viewport_panel.size.x == 0:
+		await camera_viewport_panel.resized
+	
+	#print(_active_pcam.get_pcam_host_owner())
+	if is_instance_valid(_active_pcam.get_pcam_host_owner()):
+		pcam_host = _active_pcam.get_pcam_host_owner()
+		if not _active_pcam == pcam_host.get_active_pcam():
+			_active_pcam == pcam_host.get_active_pcam()
+			print("Active pcam in viewfinder: ", _active_pcam)
+
+	var dead_zone_width: float = _active_pcam.dead_zone_width * camera_viewport_panel.size.x
+	var dead_zone_height: float = _active_pcam.dead_zone_height * camera_viewport_panel.size.y
 	dead_zone_center_hbox.set_custom_minimum_size(Vector2(dead_zone_width, 0))
 	dead_zone_center_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_left_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 	dead_zone_right_center_panel.set_custom_minimum_size(Vector2(0, dead_zone_height))
 
-	min_horizontal = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
-	max_horizontal = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_width / 2
-	min_vertical = 0.5 - _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
-	max_vertical = 0.5 + _active_pcam_camera.Properties.follow_framed_dead_zone_height / 2
-	
-#	target_point.position = Vector2(viewport_width / 2, viewport_height /  2)
+	min_horizontal = 0.5 - _active_pcam.dead_zone_width / 2
+	max_horizontal = 0.5 + _active_pcam.dead_zone_width / 2
+	min_vertical = 0.5 - _active_pcam.dead_zone_height / 2
+	max_vertical = 0.5 + _active_pcam.dead_zone_height / 2
+
 
 ####################
 ## Priority Override
 ####################
 func _on_update_editor_viewfinder(pcam_host: PhantomCameraHost) -> void:
-	if pcam_host.get_active_pcam().Properties.priority_override:
-		_active_pcam_camera = pcam_host.get_active_pcam()
+	if pcam_host.get_active_pcam().priority_override:
+		_active_pcam = pcam_host.get_active_pcam()
 		_priority_override_button.set_visible(true)
-		_priority_override_name_label.set_text(_active_pcam_camera.name)
-		_priority_override_button.set_tooltip_text(_active_pcam_camera.name)
+		_priority_override_name_label.set_text(_active_pcam.name)
+		_priority_override_button.set_tooltip_text(_active_pcam.name)
 	else:
 		_priority_override_button.set_visible(false)
 
 func _select_override_pcam() -> void:
-	editor_interface.get_selection().clear()
-	editor_interface.get_selection().add_node(_active_pcam_camera)
+	EditorInterface.get_selection().clear()
+	EditorInterface.get_selection().add_node(_active_pcam)
 
 #endregion
 
 
 #region Public Functions
 
+func update_dead_zone() -> void:
+	_set_viewfinder(root_node, true)
+
+
 func scene_changed(scene_root: Node) -> void:
-	if scene_root is Node2D:
-#		print("Is 2D node")
-		is_2D = true
-		is_scene = true
-
-		_add_node_button.set_visible(true)
-#		var camera: Camera2D = scene_root.get_viewport().get_camera_2d()
-		var camera: Camera2D = _get_camera_2D()
-
-		_check_camera(scene_root, camera, true)
-	elif scene_root is Node3D:
-#		print("Is 3D node")
-#		Is 3D scene
-		is_2D = false
-		is_scene = true
-
-		_add_node_button.set_visible(true)
-		var camera: Camera3D = scene_root.get_viewport().get_camera_3d()
-		_check_camera(scene_root, camera, false)
-	else:
-#		print("Not a 2D or 3D scene")
+	if not scene_root is Node2D and not scene_root is Node3D:
 		is_scene = false
-#		Is not a 2D or 3D scene
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.set_visible(false)
 
