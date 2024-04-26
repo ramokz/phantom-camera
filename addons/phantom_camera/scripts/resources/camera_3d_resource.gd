@@ -1,3 +1,4 @@
+@icon("res://addons/phantom_camera/icons/phantom_camera_camera_3d_resource.svg")
 class_name Camera3DResource
 extends Resource
 
