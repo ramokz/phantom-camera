@@ -534,6 +534,10 @@ func _ready():
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(_follow_spring_arm):
 				_follow_spring_arm = SpringArm3D.new()
+				_follow_spring_arm.spring_length = spring_length
+				_follow_spring_arm.collision_mask = collision_mask
+				_follow_spring_arm.shape = shape
+				_follow_spring_arm.margin = margin
 				get_parent().add_child.call_deferred(_follow_spring_arm)
 	if follow_mode == FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
@@ -1185,12 +1189,14 @@ func get_spring_length() -> float:
 ## is set to [param ThirdPerson].
 func set_collision_mask(value: int) -> void:
 	collision_mask = value
-	_follow_spring_arm.collision_mask = collision_mask
+	if is_instance_valid(_follow_spring_arm):
+		_follow_spring_arm.collision_mask = collision_mask
 ## Enables or disables a specific [member collision_mask] layer for the
 ## [SpringArm3D] when [enum FollowMode] is set to [param ThirdPerson].
 func set_collision_mask_value(value: int, enabled: bool) -> void:
 	collision_mask = _set_layer(collision_mask, value, enabled)
-	_follow_spring_arm.collision_mask = collision_mask
+	if is_instance_valid(_follow_spring_arm):
+		_follow_spring_arm.collision_mask = collision_mask
 ## Gets [member collision_mask] from the [SpringArm3D] when [enum FollowMode]
 ## is set to [param ThirdPerson].
 func get_collision_mask() -> int:
@@ -1200,7 +1206,8 @@ func get_collision_mask() -> int:
 ## is set to [param ThirdPerson].
 func set_shape(value: Shape3D) -> void:
 	shape = value
-	_follow_spring_arm.shape = shape
+	if is_instance_valid(_follow_spring_arm):
+		_follow_spring_arm.shape = shape
 ## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
 	return shape
@@ -1209,7 +1216,8 @@ func get_shape() -> Shape3D:
 ## is set to [param ThirdPerson].
 func set_margin(value: float) -> void:
 	margin = value
-	_follow_spring_arm.margin = margin
+	if is_instance_valid(_follow_spring_arm):
+		_follow_spring_arm.margin = margin
 ## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
 ## [param ThirdPerson].
 func get_margin() -> float:
