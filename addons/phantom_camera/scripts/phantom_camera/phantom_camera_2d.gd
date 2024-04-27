@@ -215,7 +215,7 @@ var _has_tweened: bool = false
 
 @export_group("Follow Parameters")
 
-## Applies an offset to the [member follow_target] position
+## Applies an offset to the [member follow_target]'s position
 ## based on mouse position.
 @export var mouse_offset: bool = false:
 	set = set_mouse_offset,
@@ -227,8 +227,8 @@ var _has_tweened: bool = false
 # the code base.
 const mouse_offset_min: float = 1.0
 const mouse_offset_max: float = 10.0
-## Defines the mouse offset amount.
-## [b]Higher value[/b] = less offset to mouse position
+## Defines the mouse offset amount. [br] [br]
+## [b]Higher value[/b] = less offset to mouse position [br]
 ## [b]Lower value[/b] = more offset to mouse position
 @export_range(mouse_offset_min, mouse_offset_max) var mouse_offset_value: float = mouse_offset_max:
 	set = set_mouse_offset_value,
