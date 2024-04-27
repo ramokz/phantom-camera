@@ -214,6 +214,26 @@ var _has_tweened: bool = false
 @export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
 @export_group("Follow Parameters")
+
+## Applies an offset to the [member follow_target] position
+## based on mouse position.
+@export var mouse_offset: bool = false:
+	set = set_mouse_offset,
+	get = get_mouse_offset
+
+# These constants serve both as a way to set the
+# maximum and minimum values for the mouse offset,
+# and make those values available to other parts of
+# the code base.
+const mouse_offset_min: float = 1.0
+const mouse_offset_max: float = 10.0
+## Defines the mouse offset amount.
+## [b]Higher value[/b] = less offset to mouse position
+## [b]Lower value[/b] = more offset to mouse position
+@export_range(mouse_offset_min, mouse_offset_max) var mouse_offset_value: float = mouse_offset_max:
+	set = set_mouse_offset_value,
+	get = get_mouse_offset_value
+
 ## Offsets the [member follow_target] position.
 @export var follow_offset: Vector2 = Vector2.ZERO:
 	set = set_follow_offset,
@@ -398,6 +418,9 @@ func _validate_property(property: Dictionary) -> void:
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
+	
+	if property.name == "mouse_offset_value" and not mouse_offset:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
 	## Follow Group
@@ -493,7 +516,10 @@ func _process(delta: float) -> void:
 				_interpolate_position(follow_target.global_position)
 		FollowMode.SIMPLE:
 			if follow_target:
-				_interpolate_position(_target_position_with_offset())
+				if mouse_offset:
+					_interpolate_position(_target_position_with_mouse_offset())
+				else:
+					_interpolate_position(_target_position_with_offset())
 		FollowMode.GROUP:
 			if follow_targets.size() == 1:
 				_interpolate_position(follow_targets[0].global_position)
@@ -631,6 +657,12 @@ func _notification(what):
 func _on_tile_map_changed() -> void:
 	update_limit_all_sides()
 
+func _target_position_with_mouse_offset() -> Vector2:
+	var _mouse_offset: Vector2 = (get_viewport().get_mouse_position() \
+		- get_viewport_rect().size / 2)
+	
+	return follow_target.global_position + \
+		(_mouse_offset * (remap(mouse_offset_value, mouse_offset_min, mouse_offset_max, 0.01, 0.5)))
 
 func _target_position_with_offset() -> Vector2:
 	return follow_target.global_position + follow_offset
@@ -927,6 +959,23 @@ func erase_follow_path() -> void:
 ## Gets the current [Path2D] from the [member follow_path].
 func get_follow_path() -> Path2D:
 	return follow_path
+
+
+## Enables or disables Mouse Offset.
+func set_mouse_offset(value: bool) -> void:
+	mouse_offset = value
+	notify_property_list_changed()
+## Gets the current Mouse Offset property.
+func get_mouse_offset() -> bool:
+	return mouse_offset
+
+
+## Assigns a new float for the Mouse Offset Value property.
+func set_mouse_offset_value(value: float) -> void:
+	mouse_offset_value = value
+## Gets the current float for the Mouse Offset Value property.
+func get_mouse_offset_value() -> float:
+	return mouse_offset_value
 
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
