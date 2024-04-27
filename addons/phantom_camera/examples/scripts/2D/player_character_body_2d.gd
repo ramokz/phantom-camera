@@ -51,8 +51,6 @@ func _ready() -> void:
 	_player_area2d.connect("body_shape_exited", _hide_prompt)
 	
 	_ui_sign = owner.get_node("%UISign")
-	
-	_player_visuals.top_level = true
 
 	for input in InputMovementDic:
 		var key_val = InputMovementDic[input].get(KEY_STRINGNAME)
