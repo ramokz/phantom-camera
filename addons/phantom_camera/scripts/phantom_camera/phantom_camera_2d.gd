@@ -601,7 +601,7 @@ func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velo
 		return output
 
 
-func _set_limit_clamp_position(value: Vector2) -> Vector2i:
+func _set_limit_clamp_position(value: Vector2) -> Vector2:
 	var camera_frame_rect_size: Vector2 = _camera_frame_rect().size
 	value.x = clampf(value.x, _limit_sides.x + camera_frame_rect_size.x / 2, _limit_sides.z - camera_frame_rect_size.x / 2)
 	value.y = clampf(value.y, _limit_sides.y + camera_frame_rect_size.y / 2, _limit_sides.w - camera_frame_rect_size.y / 2)
