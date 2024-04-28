@@ -710,6 +710,7 @@ limit_top = -528
 limit_right = 433
 limit_bottom = 288
 position_smoothing_speed = 10.0
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("9_w5e16")
