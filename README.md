@@ -46,11 +46,6 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <img src="https://phantom-camera.dev/assets/github/yt-bissash-0.png" width="100%" alt="Bissash's Youtube Video"/>
       </a>
     </td>
-    <td>
-      <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A">
-        <img src="https://phantom-camera.dev/assets/github/yt-clecioespindola-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
-      </a>
-    </td>
 </tr>
   <tr>
     <td align="center">
@@ -58,8 +53,9 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <i>(English)</i>
       </p>
       <p>
-        Phantom Camera For Godot Is Awesome! <br>
-        <a href="https://www.youtube.com/watch?v=1Gtvr-Jk-iE" target="_blank"><b>GameFromScratch</b></a>
+        <a href="https://www.youtube.com/watch?v=1Gtvr-Jk-iE" target="_blank">Phantom Camera For Godot Is Awesome!</a>
+        <br>
+        <b>GameFromScratch</b>
       </p>
     </td>
     <td align="center" valign="top">
@@ -67,20 +63,49 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <i>(Spanish)</i>
       </p>
       <p>
-        Mejores cámaras con Phantom Camera<br>
-        <a href="https://www.youtube.com/watch?v=85K0e2Y0U3Q" target="_blank"><b>Bissash</b></a>
+        <br>
+        <a href="https://www.youtube.com/watch?v=85K0e2Y0U3Q" target="_blank">Mejores cámaras con Phantom Camera</a>
+        <br>
+        <b>Bissash</b>
       </p>
     </td>
+  </tr>
+<tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A">
+        <img src="https://phantom-camera.dev/assets/github/yt-clecioespindola-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
+      </a>
+    </td>
+    <td>
+      <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A">
+        <img src="https://phantom-camera.dev/assets/github/yt-devworm-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
+      </a>
+    </td>
+</tr>
+<tr>
     <td align="center">
       <p>
         <i>(Portuguese)</i>
       </p>
       <p>
-        CÂMERA mais DINÂMICA com Phanton Camera | Godot 4.2<br>
-        <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A" target="_blank"><b>Clécio Espindola GameDev</b></a>
+        <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A" target="_blank">
+          CÂMERA mais DINÂMICA com Phanton Camera | Godot 4.2
+        </a>
+        <br>
+        <b>Clécio Espindola GameDev</b>
       </p>
     </td>
-  </tr>
+<td align="center">
+  <p>
+    <i>(English)</i>
+  </p>
+  <a href="https://youtube.com/watch?v=bKNmsae5zXk" target="_blank">
+    The 4 MUST Have ADDONS for Godot 4
+  </a>
+    <br>
+    <b>DevWorm</b>
+  </td>
+</tr>
 </table>
 
 # Features
