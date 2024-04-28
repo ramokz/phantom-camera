@@ -4,7 +4,7 @@ extends Node2D
 @onready var pcam_room_centre: PhantomCamera2D = %RoomCentrePhantomCamera2D
 @onready var pcam_room_right: PhantomCamera2D = %RoomRightPhantomCamera2D
 
-@onready var player: CharacterBody2D = %CharacterBody2D
+@onready var player: Node2D = %CharacterBody2D/%PlayerVisuals
 
 @onready var area_2d_room_left: Area2D = %RoomLeftArea2D
 @onready var area_2d_room_centre: Area2D = %RoomCentreArea2D
@@ -25,12 +25,12 @@ func _ready():
 
 
 func _on_body_entered(body: Node2D, pcam: PhantomCamera2D) -> void:
-	if body == player:
+	if body == player.get_parent():
 		pcam.set_follow_target(player)
 		pcam.set_priority(20)
 
 
 func _on_body_exited(body: Node2D, pcam: PhantomCamera2D) -> void:
-	if body == player:
+	if body == player.get_parent():
 		pcam.set_priority(0)
 		pcam.set_follow_target(null)

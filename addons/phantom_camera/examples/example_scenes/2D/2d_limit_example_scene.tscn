@@ -636,17 +636,17 @@ visible = false
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("5_pr2x5")]
 unique_name_in_owner = true
-position = Vector2(0, -32)
+position = Vector2(66, -50)
 
-[node name="RoomLeftPhantomCamera2D" type="Node2D" parent="."]
+[node name="RoomLeftPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(5, -91)
+position = Vector2(66, -113)
 script = ExtResource("4_4b648")
 priority = 5
 follow_mode = 2
+follow_target = NodePath("../CharacterBody2D")
 zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_ct1eh")
-tween_on_load = null
 follow_offset = Vector2(0, -63.205)
 follow_damping = true
 draw_limits = true
@@ -669,7 +669,6 @@ script = ExtResource("4_4b648")
 follow_mode = 2
 zoom = Vector2(1.5, 1.5)
 tween_resource = SubResource("Resource_exr3j")
-tween_on_load = null
 follow_damping = true
 draw_limits = true
 limit_target = NodePath("../RoomCentreArea2D/CollisionShape2D")
@@ -700,19 +699,19 @@ script = ExtResource("4_4b648")
 follow_mode = 2
 zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_exr3j")
-tween_on_load = null
 follow_damping = true
 draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(5, -91)
+position = Vector2(66, -113)
 zoom = Vector2(2, 2)
 limit_left = -387
 limit_top = -528
 limit_right = 433
 limit_bottom = 288
 position_smoothing_speed = 10.0
-editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("9_w5e16")
+
+[editable path="CharacterBody2D"]
