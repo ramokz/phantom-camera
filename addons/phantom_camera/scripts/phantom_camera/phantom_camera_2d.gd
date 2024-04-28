@@ -485,6 +485,11 @@ func _process(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
+	## TODO - Needs to see if this can be triggerd only from CollisionShape2D Transform changes
+	if Engine.is_editor_hint():
+		if draw_limits:
+			update_limit_all_sides()
+
 	if not _should_follow: return
 
 	match follow_mode:
@@ -619,13 +624,6 @@ func _camera_frame_rect() -> Rect2:
 	var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
 
 	return Rect2(-screen_size_zoom / 2, screen_size_zoom)
-
-
-func _notification(what):
-	if what == NOTIFICATION_TRANSFORM_CHANGED:
-		if Engine.is_editor_hint(): # Used for updating Limit when a CollisionShape2D is applied
-			if not _is_active:
-				update_limit_all_sides()
 
 
 func _on_tile_map_changed() -> void:
@@ -1083,28 +1081,34 @@ func get_limit_bottom() -> int:
 func set_limit_target(value: NodePath) -> void:
 	limit_target = value
 
-	set_notify_transform(false)
-
 	# Waits for PCam2d's _ready() before trying to validate limit_node_path
 	if not is_node_ready(): await ready
 
 	# Removes signal from existing TileMap node
 	if is_instance_valid(get_node_or_null(value)):
 		var prev_limit_node: Node2D = _limit_node
+		var new_limit_node: Node2D = get_node(value)
+
 		if prev_limit_node is TileMap:
 			if prev_limit_node.changed.is_connected(_on_tile_map_changed):
 				prev_limit_node.changed.disconnect(_on_tile_map_changed)
 
-		if _limit_node is TileMap:
-			var tile_map_node: TileMap = get_node(value)
-			tile_map_node.changed.connect(_on_tile_map_changed)
-
-		elif _limit_node is CollisionShape2D:
+		if new_limit_node is TileMap:
+			if not new_limit_node.changed.is_connected(_on_tile_map_changed):
+				new_limit_node.changed.connect(_on_tile_map_changed)
+		elif new_limit_node is CollisionShape2D:
 			var col_shape: CollisionShape2D = get_node(value)
-			if col_shape.get_shape() == null:
+
+			if col_shape.shape == null:
 				printerr("No Shape2D in: ", col_shape.name)
-			else:
-				set_notify_transform(true)
+				reset_limit()
+				limit_target = null
+				return
+	else:
+		printerr("Not a valid instance of TileMap or CollisionShape2D")
+		reset_limit()
+		limit_target = null
+		return
 
 	_limit_node = get_node_or_null(value)
 
