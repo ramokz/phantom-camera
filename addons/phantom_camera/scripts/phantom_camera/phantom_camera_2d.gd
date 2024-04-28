@@ -419,6 +419,9 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 	
+	if property.name == "mouse_offset" and (follow_mode != FollowMode.SIMPLE and follow_mode != FollowMode.GLUED):
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+	
 	if property.name == "mouse_offset_value" and not mouse_offset:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
@@ -513,7 +516,10 @@ func _process(delta: float) -> void:
 	match follow_mode:
 		FollowMode.GLUED:
 			if follow_target:
-				_interpolate_position(follow_target.global_position)
+				if mouse_offset:
+					_interpolate_position(_target_position_with_mouse_offset())
+				else:
+					_interpolate_position(follow_target.global_position)
 		FollowMode.SIMPLE:
 			if follow_target:
 				if mouse_offset:
