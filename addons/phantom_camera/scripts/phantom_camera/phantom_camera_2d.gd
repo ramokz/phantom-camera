@@ -1105,10 +1105,8 @@ func set_limit_target(value: NodePath) -> void:
 				limit_target = null
 				return
 	else:
-		printerr("Not a valid instance of TileMap or CollisionShape2D")
 		reset_limit()
 		limit_target = null
-		return
 
 	_limit_node = get_node_or_null(value)
 
