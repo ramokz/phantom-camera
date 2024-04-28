@@ -1082,7 +1082,7 @@ func set_follow_targets(value: Array[Node3D]) -> void:
 			_has_multiple_follow_targets = false
 
 ## Adds a single [Node3D] to [member follow_targets] array.
-func append_follow_targets_node(value: Node3D) -> void:
+func append_follow_targets(value: Node3D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, " is not a valid instance")
 		return
