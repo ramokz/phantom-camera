@@ -485,6 +485,11 @@ func _process(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO
 
+	## TODO - Needs to see if this can be triggerd only from CollisionShape2D Transform changes
+	if Engine.is_editor_hint():
+		if draw_limits:
+			update_limit_all_sides()
+
 	if not _should_follow: return
 
 	match follow_mode:
@@ -619,12 +624,6 @@ func _camera_frame_rect() -> Rect2:
 	var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
 
 	return Rect2(-screen_size_zoom / 2, screen_size_zoom)
-
-
-func _notification(what: int):
-	if not Engine.is_editor_hint(): return
-	if not _is_active and draw_limits: return
-	update_limit_all_sides()
 
 
 func _on_tile_map_changed() -> void:
