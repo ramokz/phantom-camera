@@ -683,7 +683,6 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 	if not _is_active: return
 	get_pcam_host_owner().camera_2d.set_limit(side, limit)
 
-
 #endregion
 
 
@@ -695,8 +694,8 @@ func update_limit_all_sides() -> void:
 	var limit_rect: Rect2
 
 	if not is_instance_valid(_limit_node):
-		_limit_sides.y = limit_top
 		_limit_sides.x = limit_left
+		_limit_sides.y = limit_top
 		_limit_sides.z = limit_right
 		_limit_sides.w = limit_bottom
 	elif _limit_node is TileMap:
@@ -757,10 +756,6 @@ func update_limit_all_sides() -> void:
 ## Resets the limit size to the default values and removes the
 ## [param limit_target].
 func reset_limit() -> void:
-	limit_left = _limit_sides_default.x
-	limit_top = _limit_sides_default.y
-	limit_right = _limit_sides_default.z
-	limit_bottom = _limit_sides_default.w
 	if not _has_valid_pcam_owner(): return
 	if not _is_active: return
 	get_pcam_host_owner().camera_2d.set_limit(SIDE_LEFT, limit_left)
@@ -768,12 +763,6 @@ func reset_limit() -> void:
 	get_pcam_host_owner().camera_2d.set_limit(SIDE_RIGHT, limit_right)
 	get_pcam_host_owner().camera_2d.set_limit(SIDE_BOTTOM, limit_bottom)
 
-	#update_limit_all_sides()
-
-	#_set_camera_2d_limit(SIDE_LEFT, -10000000)
-	#_set_camera_2d_limit(SIDE_TOP, -10000000)
-	#_set_camera_2d_limit(SIDE_RIGHT, 10000000)
-	#_set_camera_2d_limit(SIDE_BOTTOM, 10000000)
 
 ## Assigns the value of the [param has_tweened] property.
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
