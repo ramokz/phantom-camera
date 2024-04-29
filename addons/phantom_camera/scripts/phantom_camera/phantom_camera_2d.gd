@@ -483,7 +483,7 @@ func _process(delta: float) -> void:
 						_set_limit_clamp_position(global_position)
 					)
 #			InactiveUpdateMode.EXPONENTIALLY:
-#				TODO
+#				TODO - Trigger positional updates less frequently as more Pcams gets added
 
 	## TODO - Needs to see if this can be triggerd only from CollisionShape2D Transform changes
 	if Engine.is_editor_hint():
@@ -1037,28 +1037,26 @@ func get_auto_zoom_margin() -> Vector4:
 ## Sets a limit side based on the side parameter.[br]
 ## It's recommended to pass the [enum Side] enum as the sid parameter.
 func set_limit(side: int, value: int) -> void:
-	if limit_target:
-		printerr("Cannot set a Limit value when a Limit Target is set.")
-		return
 	match side:
-		0: limit_left = value
-		1: limit_top = value
-		2: limit_right = value
-		3: limit_bottom = value
-	update_limit_all_sides()
+		SIDE_LEFT: 		limit_left = value
+		SIDE_TOP: 		limit_top = value
+		SIDE_RIGHT: 	limit_right = value
+		SIDE_BOTTOM: 	limit_bottom = value
+		_:				printerr("Not a valid Side parameter.")
 ## Gets the limit side 
 func get_limit(value: int) -> int:
 	match value:
-		0: return limit_left
-		1: return limit_top
-		2: return limit_right
-		3: return limit_bottom
+		SIDE_LEFT: 		return limit_left
+		SIDE_TOP: 		return limit_top
+		SIDE_RIGHT: 	return limit_right
+		SIDE_BOTTOM: 	return limit_bottom
 		_:
-			printerr("Not a valid limit side")
-			return 0
+						printerr("Not a valid limit side")
+						return -1
 
 ## Assign a the Camera2D Left Limit Side value.
 func set_limit_left(value: int) -> void:
+	_limit_target_exist_error()
 	limit_left = value
 	update_limit_all_sides()
 ## Gets the Camera2D Left Limit value.
@@ -1067,6 +1065,7 @@ func get_limit_left() -> int:
 
 ## Assign a the Camera2D Top Limit Side value.
 func set_limit_top(value: int) -> void:
+	_limit_target_exist_error()
 	limit_top = value
 	update_limit_all_sides()
 ## Gets the Camera2D Top Limit value.
@@ -1075,6 +1074,7 @@ func get_limit_top() -> int:
 
 ## Assign a the Camera2D Right Limit Side value.
 func set_limit_right(value: int) -> void:
+	_limit_target_exist_error()
 	limit_right = value
 	update_limit_all_sides()
 ## Gets the Camera2D Right Limit value.
@@ -1083,11 +1083,16 @@ func get_limit_right() -> int:
 
 ## Assign a the Camera2D Bottom Limit Side value.
 func set_limit_bottom(value: int) -> void:
+	_limit_target_exist_error()
 	limit_bottom = value
 	update_limit_all_sides()
 ## Gets the Camera2D Bottom Limit value.
 func get_limit_bottom() -> int:
 	return limit_bottom
+
+func _limit_target_exist_error() -> void:
+	if not limit_target.is_empty():
+		printerr("Unable to set Limit Side due to Limit Target ", _limit_node.name,  " being assigned")
 
 # Set Limit Target.
 func set_limit_target(value: NodePath) -> void:
