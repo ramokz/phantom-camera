@@ -1040,7 +1040,7 @@ func set_limit(side: int, value: int) -> void:
 		SIDE_TOP: 		limit_top = value
 		SIDE_RIGHT: 	limit_right = value
 		SIDE_BOTTOM: 	limit_bottom = value
-		_:				printerr("Not a valid Side parameter.")
+		_:				printerr("Not a valid Side.")
 ## Gets the limit side 
 func get_limit(value: int) -> int:
 	match value:
@@ -1049,7 +1049,7 @@ func get_limit(value: int) -> int:
 		SIDE_RIGHT: 	return limit_right
 		SIDE_BOTTOM: 	return limit_bottom
 		_:
-						printerr("Not a valid limit side")
+						printerr("Not a valid Side.")
 						return -1
 
 ## Assign a the Camera2D Left Limit Side value.
