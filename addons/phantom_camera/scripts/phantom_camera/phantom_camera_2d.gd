@@ -1045,6 +1045,29 @@ func set_auto_zoom_margin(value: Vector4) -> void:
 func get_auto_zoom_margin() -> Vector4:
 	return auto_zoom_margin
 
+## Sets a limit side based on the side parameter.[br]
+## It's recommended to pass the [enum Side] enum as the sid parameter.
+func set_limit(side: int, value: int) -> void:
+	if limit_target:
+		printerr("Cannot set a Limit value when a Limit Target is set.")
+		return
+	match side:
+		0: limit_left = value
+		1: limit_top = value
+		2: limit_right = value
+		3: limit_bottom = value
+	update_limit_all_sides()
+## Gets the limit side 
+func get_limit(value: int) -> int:
+	match value:
+		0: return limit_left
+		1: return limit_top
+		2: return limit_right
+		3: return limit_bottom
+		_:
+			printerr("Not a valid limit side")
+			return 0
+
 ## Assign a the Camera2D Left Limit Side value.
 func set_limit_left(value: int) -> void:
 	limit_left = value
