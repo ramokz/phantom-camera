@@ -753,15 +753,13 @@ func update_limit_all_sides() -> void:
 		_set_camera_2d_limit(SIDE_BOTTOM, _limit_sides.w)
 
 
-## Resets the limit size to the default values and removes the
-## [param limit_target].
 func reset_limit() -> void:
 	if not _has_valid_pcam_owner(): return
 	if not _is_active: return
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_LEFT, limit_left)
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_TOP, limit_top)
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_RIGHT, limit_right)
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_BOTTOM, limit_bottom)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_LEFT, _limit_sides_default.x)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_TOP, _limit_sides_default.y)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_RIGHT, _limit_sides_default.z)
+	get_pcam_host_owner().camera_2d.set_limit(SIDE_BOTTOM, _limit_sides_default.w)
 
 
 ## Assigns the value of the [param has_tweened] property.
