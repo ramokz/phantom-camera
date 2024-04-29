@@ -551,7 +551,7 @@ func _process(delta: float) -> void:
 			InactiveUpdateMode.NEVER:
 				return
 #			InactiveUpdateMode.EXPONENTIALLY:
-#				TODO
+#				TODO - Trigger positional updates less frequently as more Pcams gets added
 
 	if _should_follow:
 		match follow_mode:
