@@ -63,7 +63,6 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <i>(Spanish)</i>
       </p>
       <p>
-        <br>
         <a href="https://www.youtube.com/watch?v=85K0e2Y0U3Q" target="_blank">Mejores cámaras con Phantom Camera</a>
         <br>
         <b>Bissash</b>
@@ -77,7 +76,7 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
       </a>
     </td>
     <td>
-      <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A">
+      <a href="https://www.youtube.com/watch?v=bKNmsae5zXk">
         <img src="https://phantom-camera.dev/assets/github/yt-devworm-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
       </a>
     </td>
@@ -89,7 +88,7 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
       </p>
       <p>
         <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A" target="_blank">
-          CÂMERA mais DINÂMICA com Phanton Camera | Godot 4.2
+          CÂMERA mais DINÂMICA com Phanton Camera
         </a>
         <br>
         <b>Clécio Espindola GameDev</b>
