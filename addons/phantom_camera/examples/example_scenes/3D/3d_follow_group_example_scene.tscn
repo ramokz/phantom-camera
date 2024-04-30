@@ -32,7 +32,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -7.26116, 2.62594, 5.62292)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -7.26116, 5.72974, 12.279)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("3_wr1tj")
@@ -47,7 +47,7 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_targets")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -7.26116, 2.62594, 5.62292)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -7.26116, 5.72974, 12.279)
 script = ExtResource("2_pi7mp")
 priority = 5
 follow_mode = 3
@@ -57,6 +57,10 @@ tween_on_load = false
 camera_3d_resource = SubResource("Resource_1iman")
 follow_damping = true
 follow_distance = 5.0
+auto_follow_distance = true
+auto_follow_distance_min = 5.0
+auto_follow_distance_max = 15.0
+auto_follow_distance_divisor = 20.0
 spring_length = 5.0
 
 [node name="NPCs" type="Node" parent="."]
