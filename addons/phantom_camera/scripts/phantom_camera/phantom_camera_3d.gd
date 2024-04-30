@@ -582,7 +582,7 @@ func _process(delta: float) -> void:
 						var distance: float
 						if auto_follow_distance:
 							distance = lerp(auto_follow_distance_min, auto_follow_distance_max, bounds.get_longest_axis_size() / auto_follow_distance_divisor)
-							distance = clamp(follow_distance, auto_follow_distance_min, auto_follow_distance_max)
+							distance = clamp(distance, auto_follow_distance_min, auto_follow_distance_max)
 						else:
 							distance = follow_distance
 
