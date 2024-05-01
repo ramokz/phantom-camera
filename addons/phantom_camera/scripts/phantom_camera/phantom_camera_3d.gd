@@ -534,11 +534,17 @@ func _ready():
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(_follow_spring_arm):
 				_follow_spring_arm = SpringArm3D.new()
+				_follow_spring_arm.rotation = global_rotation
+				if is_instance_valid(follow_target):
+					_follow_spring_arm.position = _get_target_position_offset()
 				_follow_spring_arm.spring_length = spring_length
 				_follow_spring_arm.collision_mask = collision_mask
 				_follow_spring_arm.shape = shape
 				_follow_spring_arm.margin = margin
+				if not tween_on_load:
+					_has_tweened = true
 				get_parent().add_child.call_deferred(_follow_spring_arm)
+				reparent.call_deferred(_follow_spring_arm)
 	if follow_mode == FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
 			_follow_framed_offset = global_position - _get_target_position_offset()
@@ -679,26 +685,11 @@ func _process(delta: float) -> void:
 			FollowMode.THIRD_PERSON:
 				if follow_target:
 					if not Engine.is_editor_hint():
-						if is_instance_valid(follow_target):
-							if is_instance_valid(_follow_spring_arm):
-								if not get_parent() == _follow_spring_arm:
-									var follow_target: Node3D = follow_target
-									_follow_spring_arm.rotation = rotation
-									_follow_spring_arm.global_position = _get_target_position_offset() # Ensure the PCam3D starts at the right position at runtime
-									_follow_spring_arm.spring_length = spring_length
-									_follow_spring_arm.collision_mask = collision_mask
-									_follow_spring_arm.shape = shape
-									_follow_spring_arm.margin = margin
-
-									if not tween_on_load:
-										_has_tweened = true
-
-									reparent(_follow_spring_arm)
-
-								_interpolate_position(
-									_get_target_position_offset(),
-									_follow_spring_arm
-								)
+						if is_instance_valid(follow_target) and is_instance_valid(_follow_spring_arm):
+							_interpolate_position(
+								_get_target_position_offset(),
+								_follow_spring_arm
+							)
 					else:
 						global_position = _get_position_offset_distance()
 
