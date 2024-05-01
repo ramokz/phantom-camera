@@ -72,6 +72,48 @@ enum InactiveUpdateMode {
 
 #endregion
 
+## The following dictionary serves to move `@export` variables/properties'
+## visibility logic closer to their declarations.
+##
+## The structure is as following:
+## [codeblock]
+## _property_visibilities = {
+##     ["property_name_here": String]: {
+##         "predicates": Array[Callable],
+##         "parent": String, # The name of the parent property
+##     }
+## }
+## [/codeblock]
+var _property_visibilities: Dictionary = {}
+
+func _with_visibility(default_value, prop_name: String, visibility_predicates: Array[Callable], parent_prop_name: String = ""):
+	_property_visibilities[prop_name] = {
+		"predicates": visibility_predicates,
+	}
+
+	if parent_prop_name != "":
+		_property_visibilities[prop_name]["parent"] = parent_prop_name
+
+	return default_value
+
+func _get_property_visibility(property_name: String) -> bool:
+	var current = _property_visibilities.get(property_name)
+
+	if current == null:
+		return true
+
+	# Check own predicates
+	if !current.get("predicates", []).all(func(c): return c.call()):
+		return false
+
+	# Check parent's visibility
+	var parent = current.get("parent")
+
+	if parent != null:
+		return _get_property_visibility(parent)
+
+	return true
+
 #region Variables
 
 var _is_active: bool = false
@@ -141,6 +183,7 @@ var pcam_host_owner: PhantomCameraHost = null:
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _is_physics_node: bool = false
+var _prev_follow_target_position: Vector2 = Vector2.INF
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -234,6 +277,74 @@ var _has_tweened: bool = false
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
+
+@export_subgroup("Look ahead")
+## Enables the [param PhantomCamera2D] to automatically "look ahead" as the
+## target it's following starts moving.
+## This is usually useful when following a moving player, essentially allowing
+## them to see and focus on the more important part of the game world.
+@export var look_ahead: bool = _with_visibility(
+	false,
+	"look_ahead",
+	[func(): return follow_mode == FollowMode.SIMPLE]
+):
+	set(value):
+		look_ahead = value
+		notify_property_list_changed()
+	get:
+		return look_ahead
+
+## Defines the maximum "look ahead" offset that gets applied to the
+## [param PhantomCamera2D] at [param look_ahead_max_velocity].
+@export var look_ahead_min_offset: Vector2 = _with_visibility(
+	Vector2.ZERO,
+	"look_ahead_min_offset", 
+	[func(): return look_ahead], 
+	"look_ahead"
+):
+	set(value):
+		look_ahead_min_offset = value
+	get:
+		return look_ahead_min_offset
+
+## Defines the maximum "look ahead" offset that gets applied to the
+## [param PhantomCamera2D] at [param look_ahead_max_velocity].
+@export var look_ahead_max_offset: Vector2 = _with_visibility(
+	Vector2.ZERO, 
+	"look_ahead_max_offset",
+	[func(): return look_ahead], 
+	"look_ahead"
+):
+	set(value):
+		look_ahead_max_offset = value
+	get:
+		return look_ahead_max_offset
+
+## Defines at which velocity the [param PhantomCamera2D] will start getting
+## offset by [member look_ahead_offset].
+@export var look_ahead_min_velocity: Vector2 = _with_visibility(
+	Vector2.ZERO,
+	"look_ahead_min_velocity",
+	[func(): return look_ahead],
+	"look_ahead"
+):
+	set(value):
+		look_ahead_min_velocity = value
+	get:
+		return look_ahead_min_velocity
+
+## Defines at which velocity the [param PhantomCamera2D] will be offset
+## at the maximum [member look_ahead_offset] values for x and y respectively.
+@export var look_ahead_max_velocity: Vector2 = _with_visibility(
+	Vector2.ZERO,
+	"look_ahead_max_velocity",
+	[func(): return look_ahead],
+	"look_ahead"
+):
+	set(value):
+		look_ahead_max_velocity = value
+	get:
+		return look_ahead_max_velocity
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -451,6 +562,13 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "frame_preview" and _is_active:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
+	#############
+	## Look ahead
+	#############
+	if !_get_property_visibility(property.name):
+		# print(property.name + " is not visible")
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
 	notify_property_list_changed()
 
 #region Private Functions
@@ -498,7 +616,14 @@ func _process(delta: float) -> void:
 				_interpolate_position(follow_target.global_position)
 		FollowMode.SIMPLE:
 			if follow_target:
-				_interpolate_position(_target_position_with_offset())
+				# var target_position = _target_position_with_offset()
+				var target_position = follow_target.global_position
+				target_position = _apply_follow_offset(target_position)
+
+				if look_ahead:
+					target_position = _apply_look_ahead_offset(target_position, delta)
+
+				_interpolate_position(target_position)
 		FollowMode.GROUP:
 			if follow_targets.size() == 1:
 				_interpolate_position(follow_targets[0].global_position)
@@ -632,6 +757,60 @@ func _on_tile_map_changed() -> void:
 
 func _target_position_with_offset() -> Vector2:
 	return follow_target.global_position + follow_offset
+
+
+func _apply_follow_offset(target_position: Vector2) -> Vector2:
+	return target_position + follow_offset
+
+
+# TODO: Think about handling negative offset values
+func _apply_look_ahead_offset(target_position: Vector2, delta: float) -> Vector2:
+	if follow_target == null:
+		return target_position
+
+	if _prev_follow_target_position == Vector2.INF:
+		_prev_follow_target_position = target_position
+		return target_position
+
+	var target_velocity = (target_position - _prev_follow_target_position) / delta
+	_prev_follow_target_position = target_position # Update previous position too
+
+	var x_abs = absf(target_velocity.x)
+	var y_abs = absf(target_velocity.y)
+
+	var x_min = look_ahead_min_velocity.x
+	var y_min = look_ahead_min_velocity.x
+
+	var x_max = look_ahead_max_velocity.x
+	var y_max = look_ahead_max_velocity.x
+
+	# TODO: There's definitely a better way of doing this
+	x_abs = clampf(x_abs, x_min, x_max)
+	y_abs = clampf(y_abs, x_min, x_max)
+
+	# Make sure we're not dividing by zero
+	# TODO: This can be a lot higher up in the function (if min_offset == max_offset basically)
+	if x_max - x_min == 0 or y_max - y_min == 0:
+		return target_position
+
+	var x_mag = (x_abs - x_min) / (x_max - x_min)
+	var y_mag = (y_abs - y_min) / (y_max - y_min)
+
+	x_mag *= sign(target_velocity.x)
+	y_mag *= sign(target_velocity.y)
+
+	var offset_x_min = look_ahead_min_offset.x
+	var offset_y_min = look_ahead_min_offset.y
+
+	var offset_x_max = look_ahead_max_offset.x
+	var offset_y_max = look_ahead_max_offset.y
+
+	var offset = Vector2(
+		(offset_x_max - offset_x_min) * x_mag,
+		(offset_y_max - offset_y_min) * y_mag
+	)
+
+	return target_position + offset
 
 
 func _on_dead_zone_changed() -> void:
