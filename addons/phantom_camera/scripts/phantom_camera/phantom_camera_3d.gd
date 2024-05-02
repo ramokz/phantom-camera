@@ -534,6 +534,7 @@ func _ready():
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(_follow_spring_arm):
 				_follow_spring_arm = SpringArm3D.new()
+				_follow_spring_arm.top_level = true
 				_follow_spring_arm.rotation = global_rotation
 				if is_instance_valid(follow_target):
 					_follow_spring_arm.position = _get_target_position_offset()
