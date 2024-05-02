@@ -522,7 +522,7 @@ func _process(delta: float) -> void:
 						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 				_interpolate_position(rect.get_center())
 		FollowMode.PATH:
-				if follow_targets and follow_path:
+				if follow_target and follow_path:
 					var path_position: Vector2 = follow_path.global_position
 					_interpolate_position(
 						follow_path.curve.get_closest_point(
