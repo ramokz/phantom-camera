@@ -536,8 +536,7 @@ func _ready():
 				_follow_spring_arm = SpringArm3D.new()
 				_follow_spring_arm.top_level = true
 				_follow_spring_arm.rotation = global_rotation
-				if is_instance_valid(follow_target):
-					_follow_spring_arm.position = _get_target_position_offset()
+				_follow_spring_arm.position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
 				_follow_spring_arm.spring_length = spring_length
 				_follow_spring_arm.collision_mask = collision_mask
 				_follow_spring_arm.shape = shape
