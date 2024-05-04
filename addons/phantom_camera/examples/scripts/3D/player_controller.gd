@@ -48,14 +48,14 @@ func _ready() -> void:
 	for input in InputMovementDic:
 		var key_val = InputMovementDic[input].get(KEY_STRINGNAME)
 		var action_val = InputMovementDic[input].get(ACTION_STRINGNAME)
-		
+
 		_camera = owner.get_node("%MainCamera3D")
 
 		var movement_input = InputEventKey.new()
 		movement_input.physical_keycode = key_val
 		InputMap.add_action(action_val)
 		InputMap.action_add_event(action_val, movement_input)
-		
+
 		_player_visual.top_level = true
 
 

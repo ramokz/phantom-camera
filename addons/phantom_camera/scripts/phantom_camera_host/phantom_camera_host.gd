@@ -38,6 +38,7 @@ var _active_pcam: Node = null
 var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false
+var _follow_target_physics_based: bool = false
 
 var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
 var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
@@ -69,7 +70,6 @@ var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 #region Private Functions
 
 func _enter_tree() -> void:
-#	camera = get_parent()
 	var parent = get_parent()
 
 	if parent is Camera2D or parent is Camera3D:
@@ -104,6 +104,7 @@ func _enter_tree() -> void:
 	else:
 		printerr(name, " is not a child of a Camera2D or Camera3D")
 
+	Engine.physics_jitter_fix = 0
 
 func _exit_tree() -> void:
 	remove_from_group(_constants.PCAM_HOST_GROUP_NAME)
@@ -158,6 +159,14 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		_camera_zoom = camera_2d.get_zoom()
+
+		## TODO - Needs 3D variant once Godot supports physics_interpolation for
+		## 3D scenes.
+		if _active_pcam._follow_target_physics_based:
+			_follow_target_physics_based = true
+		else:
+			_follow_target_physics_based = false
+
 	else:
 		if _active_pcam.get_camera_3d_resource():
 			camera_3d.cull_mask = _active_pcam.get_cull_mask()
@@ -184,7 +193,79 @@ func _find_pcam_with_highest_priority() -> void:
 		_active_pcam_missing = false
 
 
+func _get_pcam_node_group() -> Array[Node]:
+	return get_tree().get_nodes_in_group(_constants.PCAM_GROUP_NAME)
+
+
+func _get_pcam_host_group() -> Array[Node]:
+	return get_tree().get_nodes_in_group(_constants.PCAM_HOST_GROUP_NAME)
+
+
+func _process(delta: float):
+	if _trigger_pcam_tween:
+		_pcam_tween(delta)
+
+	if _follow_target_physics_based: return
+	_process_logic(delta)
+
+
+func _physics_process(delta: float):
+	if _trigger_pcam_tween: return
+
+	if not _follow_target_physics_based: return
+	_process_logic(delta)
+
+
+func _process_logic(delta: float) -> void:
+	if not is_instance_valid(_active_pcam): return
+
+	if _is_2D:
+		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
+	else:
+		_active_pcam_3d_glob_transform = _active_pcam.get_global_transform()
+
+	_process_pcam(delta)
+
+
 func _pcam_tween(delta: float) -> void:
+	if _tween_duration + delta <= _active_pcam.get_tween_duration():
+		_pcam_tween_properties(delta)
+	else: # First frame when tweening completes
+		_tween_duration = 0
+		_trigger_pcam_tween = false
+
+		#_show_viewfinder_in_play() # NOTE - Likely not needed
+		_pcam_follow(delta)
+		_active_pcam.tween_completed.emit()
+
+		if _is_2D:
+			_active_pcam.update_limit_all_sides()
+
+			if Engine.is_editor_hint():
+				_active_pcam.queue_redraw()
+
+
+func _process_pcam(delta: float) -> void:
+	if _active_pcam_missing or not _is_child_of_camera: return
+	# When following
+	if not _trigger_pcam_tween:
+		_pcam_follow(delta)
+
+		if _viewfinder_needed_check:
+			_show_viewfinder_in_play()
+			_viewfinder_needed_check = false
+
+		# TODO - Should be able to find a more efficient way
+		if Engine.is_editor_hint():
+			if not _is_2D:
+				if _active_pcam.get_camera_3d_resource():
+					camera_3d.cull_mask = _active_pcam.get_cull_mask()
+					camera_3d.fov = _active_pcam.get_fov()
+					camera_3d.h_offset =_active_pcam.get_h_offset()
+					camera_3d.v_offset = _active_pcam.get_v_offset()
+
+
+func _pcam_tween_properties(delta: float) -> void:
 	# Run at the first tween frame
 	if _tween_duration == 0:
 		_active_pcam.tween_started.emit()
@@ -260,63 +341,6 @@ func _pcam_follow(delta: float) -> void:
 		camera_2d.zoom = _active_pcam.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
-
-
-func _process_pcam(delta: float) -> void:
-	if _active_pcam_missing or not _is_child_of_camera: return
-	# When following
-	if not _trigger_pcam_tween:
-		_pcam_follow(delta)
-
-		if _viewfinder_needed_check:
-			_show_viewfinder_in_play()
-			_viewfinder_needed_check = false
-
-		# TODO - Should be able to find a more efficient way
-		if Engine.is_editor_hint():
-			if not _is_2D:
-				if _active_pcam.get_camera_3d_resource():
-					camera_3d.cull_mask = _active_pcam.get_cull_mask()
-					camera_3d.fov = _active_pcam.get_fov()
-					camera_3d.h_offset =_active_pcam.get_h_offset()
-					camera_3d.v_offset = _active_pcam.get_v_offset()
-
-	# When tweening
-	else:
-		if _tween_duration + delta <= _active_pcam.get_tween_duration():
-			_pcam_tween(delta)
-		else: # First frame when tweening completes
-			_tween_duration = 0
-			_trigger_pcam_tween = false
-
-			#_show_viewfinder_in_play() # NOTE - Likely not needed
-			_pcam_follow(delta)
-			_active_pcam.tween_completed.emit()
-
-			if _is_2D:
-				_active_pcam.update_limit_all_sides()
-
-				if Engine.is_editor_hint():
-					_active_pcam.queue_redraw()
-
-
-func _get_pcam_node_group() -> Array[Node]:
-	return get_tree().get_nodes_in_group(_constants.PCAM_GROUP_NAME)
-
-
-func _get_pcam_host_group() -> Array[Node]:
-	return get_tree().get_nodes_in_group(_constants.PCAM_HOST_GROUP_NAME)
-
-
-func _process(delta):
-	if not is_instance_valid(_active_pcam): return
-
-	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
-	else:
-		_active_pcam_3d_glob_transform = _active_pcam.get_global_transform()
-
-	_process_pcam(delta)
 
 #endregion
 
