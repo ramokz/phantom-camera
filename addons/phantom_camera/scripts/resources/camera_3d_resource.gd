@@ -8,7 +8,7 @@ extends Resource
 ## [PhantomCamera3D] becoming active.
 
 ## Overrides [member Camera3D.cull_mask].
-@export_flags_3d_physics var cull_mask: int = 1048575
+@export_flags_3d_render var cull_mask: int = 1048575
 
 ## Overrides [member Camera3D.h_offset].
 @export var h_offset: float = 0
