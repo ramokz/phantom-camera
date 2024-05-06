@@ -160,6 +160,7 @@ var _is_active: bool = false
 	get = get_follow_target
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
+var _physics_interpolation_enabled = false ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
 @export var follow_targets: Array[Node3D] = []:
@@ -998,7 +999,6 @@ func set_follow_target(value: Node3D) -> void:
 	if follow_target == value: return
 	follow_target = value
 
-
 	if is_instance_valid(value):
 		_should_follow = true
 
@@ -1006,8 +1006,8 @@ func set_follow_target(value: Node3D) -> void:
 			#_follow_target_physics_based = true
 			print_rich("Following a [b]PhysicsBody3D[/b] node will likely result in jitter.")
 			print_rich("Will have proper support once Godot support 3D Physics Interpolation.")
-			print_rich("Until then, try following the guide on the [url=_jitter_documentation]documentation site[/url] for better results.")
-			_follow_target_physics_based = false
+			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+			_follow_target_physics_based = true
 		else:
 			_follow_target_physics_based = false
 	else:

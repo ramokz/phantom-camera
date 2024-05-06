@@ -27,6 +27,17 @@ signal update_editor_viewfinder
 
 #region Variables
 
+enum InterpolationMode {
+	AUTO = 0,
+	IDLE = 1,
+	PHYSICS = 2,
+}
+
+@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
+	set = set_interpolation_mode,
+	get = get_interpolation_mode
+
+
 ## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
 var camera_2d: Camera2D = null
 ## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
@@ -39,6 +50,7 @@ var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false
 var _follow_target_physics_based: bool = false
+var _physics_interpolation_enabled = false ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works seamlessly
 
 var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
 var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
@@ -68,6 +80,13 @@ var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 
 
 #region Private Functions
+
+
+func _validate_property(property: Dictionary) -> void:
+	if property.name == "interpolation_mode" and get_parent() is Node3D or \
+	not _physics_interpolation_enabled:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
 
 func _enter_tree() -> void:
 	var parent = get_parent()
@@ -105,6 +124,7 @@ func _enter_tree() -> void:
 		printerr(name, " is not a child of a Camera2D or Camera3D")
 
 	Engine.physics_jitter_fix = 0
+
 
 func _exit_tree() -> void:
 	remove_from_group(_constants.PCAM_HOST_GROUP_NAME)
@@ -146,7 +166,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_active_pcam.tween_interrupted.emit(pcam)
 	else:
 		no_previous_pcam = true
-
 	_active_pcam = pcam
 	_active_pcam_priority = pcam.get_priority()
 	_active_pcam_has_damping = pcam.follow_damping
@@ -156,17 +175,31 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	_active_pcam.set_is_active(self, true)
 	_active_pcam.became_active.emit()
-
 	if _is_2D:
 		_camera_zoom = camera_2d.get_zoom()
+		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
+		var _physics_based: bool
 
-		## TODO - Needs 3D variant once Godot supports physics_interpolation for
-		## 3D scenes.
-		if _active_pcam._follow_target_physics_based:
-			_follow_target_physics_based = true
-		else:
-			_follow_target_physics_based = false
+		## NOTE - Feature Toggle
+		if _physics_interpolation_enabled:
+			## NOTE - Only supported in Godot 4.3 or above
+			if Engine.get_version_info().major == 4 and \
+			Engine.get_version_info().minor >= 3:
+				if interpolation_mode == InterpolationMode.IDLE:
+					_physics_based = false
+				elif interpolation_mode == InterpolationMode.PHYSICS:
+					_physics_based = true
+				else:
+					_physics_based = _active_pcam.follow_target_physics_based
 
+				if _physics_based:
+					_follow_target_physics_based = true
+					_active_pcam.follow_target_physics_based = true
+					camera_2d.physics_interpolation_mode = 1 # TODO - Replace with Node.PHYSICS_INTERPOLATION_MODE_ON once minimum version is 4.3+
+				else:
+					_follow_target_physics_based = false
+					_active_pcam.follow_target_physics_based = false
+					camera_2d.physics_interpolation_mode = 2 # TODO - Replace with Node.PHYSICS_INTERPOLATION_MODE_OFF once minimum version is 4.3+
 	else:
 		if _active_pcam.get_camera_3d_resource():
 			camera_3d.cull_mask = _active_pcam.get_cull_mask()
@@ -202,29 +235,66 @@ func _get_pcam_host_group() -> Array[Node]:
 
 
 func _process(delta: float):
-	if _trigger_pcam_tween:
-		_pcam_tween(delta)
-
 	if _follow_target_physics_based: return
-	_process_logic(delta)
-
-
-func _physics_process(delta: float):
-	if _trigger_pcam_tween: return
-
-	if not _follow_target_physics_based: return
-	_process_logic(delta)
-
-
-func _process_logic(delta: float) -> void:
-	if not is_instance_valid(_active_pcam): return
 
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
 	else:
 		_active_pcam_3d_glob_transform = _active_pcam.get_global_transform()
 
-	_process_pcam(delta)
+	if _trigger_pcam_tween:
+		_pcam_tween(delta)
+	else:
+		_pcam_follow(delta)
+
+
+func _physics_process(delta: float):
+	if not _follow_target_physics_based: return
+
+	if _is_2D:
+		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
+	else:
+		_active_pcam_3d_glob_transform = _active_pcam.get_global_transform()
+
+	if _trigger_pcam_tween:
+		_pcam_tween(delta)
+	else:
+		_pcam_follow(delta)
+
+
+func _pcam_follow(delta: float) -> void:
+	if not is_instance_valid(_active_pcam): return
+	if _active_pcam_missing or not _is_child_of_camera: return
+	# When following
+	_pcam_set_position(delta)
+
+	if _viewfinder_needed_check:
+		_show_viewfinder_in_play()
+		_viewfinder_needed_check = false
+
+	# TODO - Should be able to find a more efficient way
+	if Engine.is_editor_hint():
+		if not _is_2D:
+			if _active_pcam.get_camera_3d_resource():
+				camera_3d.cull_mask = _active_pcam.get_cull_mask()
+				camera_3d.fov = _active_pcam.get_fov()
+				camera_3d.h_offset =_active_pcam.get_h_offset()
+				camera_3d.v_offset = _active_pcam.get_v_offset()
+
+
+func _pcam_set_position(delta: float) -> void:
+	if not _active_pcam: return
+
+	if _is_2D:
+		if _active_pcam.snap_to_pixel:
+			var snap_to_pixel_glob_transform: Transform2D = _active_pcam_2d_glob_transform
+			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
+			camera_2d.global_transform = snap_to_pixel_glob_transform
+		else:
+			camera_2d.global_transform =_active_pcam_2d_glob_transform
+		camera_2d.zoom = _active_pcam.zoom
+	else:
+		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
 
 func _pcam_tween(delta: float) -> void:
@@ -233,7 +303,6 @@ func _pcam_tween(delta: float) -> void:
 	else: # First frame when tweening completes
 		_tween_duration = 0
 		_trigger_pcam_tween = false
-
 		#_show_viewfinder_in_play() # NOTE - Likely not needed
 		_pcam_follow(delta)
 		_active_pcam.tween_completed.emit()
@@ -245,31 +314,10 @@ func _pcam_tween(delta: float) -> void:
 				_active_pcam.queue_redraw()
 
 
-func _process_pcam(delta: float) -> void:
-	if _active_pcam_missing or not _is_child_of_camera: return
-	# When following
-	if not _trigger_pcam_tween:
-		_pcam_follow(delta)
-
-		if _viewfinder_needed_check:
-			_show_viewfinder_in_play()
-			_viewfinder_needed_check = false
-
-		# TODO - Should be able to find a more efficient way
-		if Engine.is_editor_hint():
-			if not _is_2D:
-				if _active_pcam.get_camera_3d_resource():
-					camera_3d.cull_mask = _active_pcam.get_cull_mask()
-					camera_3d.fov = _active_pcam.get_fov()
-					camera_3d.h_offset =_active_pcam.get_h_offset()
-					camera_3d.v_offset = _active_pcam.get_v_offset()
-
-
 func _pcam_tween_properties(delta: float) -> void:
 	# Run at the first tween frame
 	if _tween_duration == 0:
 		_active_pcam.tween_started.emit()
-
 		if _is_2D:
 			_active_pcam.reset_limit()
 
@@ -287,8 +335,7 @@ func _pcam_tween_properties(delta: float) -> void:
 		camera_2d.rotation = _tween_interpolate_value(_prev_active_pcam_2d_transform.get_rotation(), _active_pcam_2d_glob_transform.get_rotation())
 		camera_2d.zoom = _tween_interpolate_value(_camera_zoom, _active_pcam.zoom)
 	else:
-		camera_3d.global_position = \
-			_tween_interpolate_value(_prev_active_pcam_3d_transform.origin, _active_pcam_3d_glob_transform.origin)
+		camera_3d.global_position = _tween_interpolate_value(_prev_active_pcam_3d_transform.origin, _active_pcam_3d_glob_transform.origin)
 
 		var prev_active_pcam_3d_quat: Quaternion = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
 		camera_3d.quaternion = \
@@ -328,19 +375,7 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 	)
 
 
-func _pcam_follow(delta: float) -> void:
-	if not _active_pcam: return
 
-	if _is_2D:
-		if _active_pcam.snap_to_pixel:
-			var snap_to_pixel_glob_transform := _active_pcam_2d_glob_transform
-			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
-			camera_2d.global_transform = snap_to_pixel_glob_transform
-		else:
-			camera_2d.global_transform =_active_pcam_2d_glob_transform
-		camera_2d.zoom = _active_pcam.zoom
-	else:
-		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
 #endregion
 
@@ -441,5 +476,10 @@ func get_active_pcam() -> Node:
 ## [param PhantomCamera] node.
 func get_trigger_pcam_tween() -> bool:
 	return _trigger_pcam_tween
+
+func set_interpolation_mode(value: int) -> void:
+	interpolation_mode = value
+func get_interpolation_mode() -> int:
+	return interpolation_mode
 
 #endregion
