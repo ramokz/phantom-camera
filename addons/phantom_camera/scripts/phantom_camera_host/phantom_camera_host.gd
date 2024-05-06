@@ -198,12 +198,12 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 					_follow_target_physics_based = true
 					_active_pcam.follow_target_physics_based = true
 					## TODO - For when Godot 4.3 becomes a minimum version
-					#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF ## TODO - For when Godot 4.3 becomes a minimum version
+					#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 				else:
 					_follow_target_physics_based = false
 					_active_pcam.follow_target_physics_based = false
 					## TODO - For when Godot 4.3 becomes a minimum version
-					#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF ## TODO - For when Godot 4.3 becomes a minimum version
+					#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	else:
 		if _active_pcam.get_camera_3d_resource():
 			camera_3d.cull_mask = _active_pcam.get_cull_mask()
