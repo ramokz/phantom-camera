@@ -33,7 +33,7 @@ enum InterpolationMode {
 	PHYSICS = 2,
 }
 
-## TODO - For when Godot 4.3 becomes a minimum version
+## TBD - For when Godot 4.3 becomes the minimum version
 #@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
 	#set = set_interpolation_mode,
 	#get = get_interpolation_mode
@@ -51,7 +51,7 @@ var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled = false ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works seamlessly
+var _physics_interpolation_enabled = true ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works seamlessly
 
 var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
 var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
@@ -82,10 +82,9 @@ var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 
 #region Private Functions
 
-## TODO - For when Godot 4.3 becomes a minimum version
+## TBD - For when Godot 4.3 becomes a minimum version
 #func _validate_property(property: Dictionary) -> void:
-	#if property.name == "interpolation_mode" and get_parent() is Node3D or \
-	#not _physics_interpolation_enabled:
+	#if property.name == "interpolation_mode" and get_parent() is Node3D:
 		#property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
@@ -181,29 +180,30 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
 		var _physics_based: bool
 
-		## NOTE - Feature Toggle
-		if _physics_interpolation_enabled:
-			## NOTE - Only supported in Godot 4.3 or above
-			if Engine.get_version_info().major == 4 and \
-			Engine.get_version_info().minor >= 3:
-				## TODO - For when Godot 4.3 becomes a minimum version
-				#if interpolation_mode == InterpolationMode.IDLE:
-					#_physics_based = false
-				#elif interpolation_mode == InterpolationMode.PHYSICS:
-					#_physics_based = true
-				#else:
-					#_physics_based = _active_pcam.follow_target_physics_based
+		## NOTE - Only supported in Godot 4.3 or above
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor >= 3:
+			## TBD - For when Godot 4.3 becomes the minimum version
+			#if interpolation_mode == InterpolationMode.IDLE:
+				#_physics_based = false
+			#elif interpolation_mode == InterpolationMode.PHYSICS:
+				#_physics_based = true
+			#else:
+				#_physics_based = _active_pcam.follow_target_physics_based
 
-				if _physics_based:
-					_follow_target_physics_based = true
-					_active_pcam.follow_target_physics_based = true
-					## TODO - For when Godot 4.3 becomes a minimum version
-					#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-				else:
-					_follow_target_physics_based = false
-					_active_pcam.follow_target_physics_based = false
-					## TODO - For when Godot 4.3 becomes a minimum version
-					#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+			# TBD - REMOVE once Godot 4.3 becomes the minimum version
+			_physics_based = _active_pcam.follow_target_physics_based
+
+			if _physics_based:
+				_follow_target_physics_based = true
+				_active_pcam.follow_target_physics_based = true
+				## INFO - Enable for Godot 4.3
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+			else:
+				_follow_target_physics_based = false
+				_active_pcam.follow_target_physics_based = false
+				## INFO - Enable for Godot 4.3
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 	else:
 		if _active_pcam.get_camera_3d_resource():
 			camera_3d.cull_mask = _active_pcam.get_cull_mask()

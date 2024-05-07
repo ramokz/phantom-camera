@@ -143,7 +143,7 @@ var _follow_framed_offset: Vector2 = Vector2.ZERO
 var follow_target_physics_based: bool = false:
 	set = set_follow_target_physics_based,
 	get = get_follow_target_physics_based
-var _physics_interpolation_enabled = false ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works seamlessly
+var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -926,25 +926,20 @@ func set_follow_target(value: Node2D) -> void:
 		_should_follow = true
 
 		if follow_target is PhysicsBody2D:
-			print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
-			print_rich("Will have proper support once Godot support 2D Physics Interpolation.")
-			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-
 			## NOTE - Feature Toggle
-			if _physics_interpolation_enabled:
-				follow_target_physics_based = true
-				if Engine.get_version_info().major == 4 and \
-				Engine.get_version_info().minor < 3:
-					print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
-					print_rich("Will strongly recommend upgrading to Godot 4.3 as it has built-in support for 2D Physics Interpolation.")
-					print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-				else:
-					## NOTE - Only supported in Godot 4.3 or above
-					if not ProjectSettings.get_setting("physics/common/physics_interpolation"):
-						printerr("Phantom Camera: Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics movement")
-				follow_target_physics_based = true
+			follow_target_physics_based = true
+			if Engine.get_version_info().major == 4 and \
+			Engine.get_version_info().minor < 3:
+				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
+				print_rich("Will strongly recommend upgrading to Godot 4.3 as it has built-in support for 2D Physics Interpolation.")
+				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
 			else:
-				follow_target_physics_based = false
+				## NOTE - Only supported in Godot 4.3 or above
+				if not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					printerr("Phantom Camera: Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics movement")
+			follow_target_physics_based = true
+		else:
+			follow_target_physics_based = false
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
