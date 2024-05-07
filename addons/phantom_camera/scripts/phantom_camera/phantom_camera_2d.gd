@@ -925,21 +925,8 @@ func set_follow_target(value: Node2D) -> void:
 	if is_instance_valid(value):
 		_should_follow = true
 
-		if follow_target is PhysicsBody2D:
-			## NOTE - Feature Toggle
-			follow_target_physics_based = true
-			if Engine.get_version_info().major == 4 and \
-			Engine.get_version_info().minor < 3:
-				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
-				print_rich("Will strongly recommend upgrading to Godot 4.3 as it has built-in support for 2D Physics Interpolation.")
-				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-			else:
-				## NOTE - Only supported in Godot 4.3 or above
-				if not ProjectSettings.get_setting("physics/common/physics_interpolation"):
-					printerr("Phantom Camera: Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics movement")
-			follow_target_physics_based = true
-		else:
-			follow_target_physics_based = false
+		follow_target_physics_based = false
+		_check_physics_body(value)
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
@@ -1004,6 +991,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 	if follow_targets == value: return
 
 	follow_targets = value
+	follow_target_physics_based = false
 
 	if follow_targets.is_empty():
 		_should_follow = false
@@ -1016,6 +1004,8 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 			_should_follow = true
 			valid_instances += 1
 
+			_check_physics_body(target)
+
 			if valid_instances > 1:
 				_has_multiple_follow_targets = true
 ## Appends a single [Node2D] to [member follow_targets].
@@ -1027,6 +1017,9 @@ func append_follow_targets(value: Node2D) -> void:
 		follow_targets.append(value)
 		_should_follow = true
 		_has_multiple_follow_targets = true
+
+		_check_physics_body(value)
+
 	else:
 		printerr(value, " is already part of Follow Group")
 ## Adds an Array of type [Node2D] to [member follow_targets].
@@ -1038,6 +1031,9 @@ func append_follow_targets_array(value: Array[Node2D]) -> void:
 			_should_follow = true
 			if follow_targets.size() > 1:
 				_has_multiple_follow_targets = true
+
+			_check_physics_body(val)
+
 		else:
 			printerr(value, " is already part of Follow Group")
 ## Removes a [Node2D] from [member follow_targets] array.
@@ -1046,9 +1042,28 @@ func erase_follow_targets(value: Node2D) -> void:
 	if follow_targets.size() < 1:
 		_should_follow = false
 		_has_multiple_follow_targets = false
+
+	follow_target_physics_based = false
+	for target in follow_targets:
+		_check_physics_body(target)
 ## Gets all Node2D from Follow Group array.
 func get_follow_targets() -> Array[Node2D]:
 	return follow_targets
+
+func _check_physics_body(target: Node2D) -> void:
+	if target is PhysicsBody2D:
+		## NOTE - Feature Toggle
+		follow_target_physics_based = true
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 3:
+			print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
+			print_rich("Will strongly recommend upgrading to Godot 4.3 as it has built-in support for 2D Physics Interpolation.")
+			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+		else:
+			## NOTE - Only supported in Godot 4.3 or above
+			if not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+				printerr("Phantom Camera: Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics movement")
+		follow_target_physics_based = true
 
 ## Returns true if the [param PhantomCamera2D] has more than one member in the
 ## [follow_targets] array.
