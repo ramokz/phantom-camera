@@ -141,6 +141,7 @@ var pcam_host_owner: PhantomCameraHost = null:
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _is_physics_node: bool = false
+var _prev_follow_target_position: Vector2 = Vector2.INF
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -234,6 +235,59 @@ var _has_tweened: bool = false
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
+
+@export_subgroup("Velocity Offset")
+## Enables the [param PhantomCamera2D] to automatically "look ahead" as the
+## target it's following starts moving.
+## This is usually useful when following a moving player, essentially allowing
+## them to see and focus on the more important part of the game world.
+@export var velocity_offset_time: float = 0.0:
+	set(value):
+		velocity_offset_time = value
+	get:
+		return velocity_offset_time
+
+@export var velocity_offset_min: Vector2 = Vector2.ZERO:
+	set(value):
+		velocity_offset_min = value
+	get:
+		return velocity_offset_min
+
+@export var velocity_offset_max: Vector2 = Vector2.ZERO:
+	set(value):
+		velocity_offset_max = value
+	get:
+		return velocity_offset_max
+
+@export var velocity_offset_smoothing: bool = false:
+	set(value):
+		velocity_offset_smoothing = value
+		if !value:
+			velocity_offset_smoothed_first_update = true
+		notify_property_list_changed()
+	get:
+		return velocity_offset_smoothing
+
+@export var velocity_offset_smoothing_factor: Vector2 = Vector2.ZERO:
+	set(value):
+		velocity_offset_smoothing_factor = value
+	get:
+		return velocity_offset_smoothing_factor
+
+var velocity_offset_smoothed: Vector2 = Vector2.ZERO
+var velocity_offset_smoothed_first_update: bool = true
+
+## Defines the maximum "look ahead" offset that gets applied to the
+## [param PhantomCamera2D] at [param look_ahead_max_velocity].
+
+## Defines the maximum "look ahead" offset that gets applied to the
+## [param PhantomCamera2D] at [param look_ahead_max_velocity].
+
+## Defines at which velocity the [param PhantomCamera2D] will start getting
+## offset by [member look_ahead_offset].
+
+## Defines at which velocity the [param PhantomCamera2D] will be offset
+## at the maximum [member look_ahead_offset] values for x and y respectively.
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -451,6 +505,21 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "frame_preview" and _is_active:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
+	##################
+	## Velocity offset
+	##################
+	match property.name:
+		"velocity_offset_time", \
+		"velocity_offset_min", \
+		"velocity_offset_max", \
+		"velocity_offset_smoothing":
+			if follow_mode != FollowMode.SIMPLE:
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+		"velocity_offset_smoothing_factor":
+			if follow_mode != FollowMode.SIMPLE or !velocity_offset_smoothing:
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
 	notify_property_list_changed()
 
 #region Private Functions
@@ -498,7 +567,12 @@ func _process(delta: float) -> void:
 				_interpolate_position(follow_target.global_position)
 		FollowMode.SIMPLE:
 			if follow_target:
-				_interpolate_position(_target_position_with_offset())
+				var target_position = follow_target.global_position
+
+				target_position = _apply_follow_offset(target_position)
+				target_position = _apply_velocity_offset(target_position, delta)
+
+				_interpolate_position(target_position)
 		FollowMode.GROUP:
 			if follow_targets.size() == 1:
 				_interpolate_position(follow_targets[0].global_position)
@@ -633,6 +707,48 @@ func _on_tile_map_changed() -> void:
 func _target_position_with_offset() -> Vector2:
 	return follow_target.global_position + follow_offset
 
+
+func _apply_follow_offset(target_position: Vector2) -> Vector2:
+	return target_position + follow_offset
+
+
+func _apply_velocity_offset(target_position: Vector2, delta: float) -> Vector2:
+	if follow_target == null:
+		return target_position
+
+	var current_position = follow_target.global_position
+	var previous_position = _prev_follow_target_position
+	_prev_follow_target_position = current_position
+
+	# `Vector2.INF` _probably_ means we don't have a `previous_position`
+	if previous_position == Vector2.INF:
+		return target_position
+
+	var target_velocity = (current_position - previous_position) / delta
+	var offset = target_velocity * velocity_offset_time
+
+	offset.x = clamp(abs(offset.x), velocity_offset_min.x, velocity_offset_max.x) * sign(offset.x)
+	offset.y = clamp(abs(offset.y), velocity_offset_min.y, velocity_offset_max.y) * sign(offset.y)
+
+	if velocity_offset_smoothing:
+		var smoothed_offset = _get_velocity_offset_smoothed(offset)
+		return target_position + smoothed_offset
+
+	return target_position + offset
+
+
+# TODO: Smoothing values
+func _get_velocity_offset_smoothed(offset: Vector2) -> Vector2:
+	if velocity_offset_smoothed_first_update:
+		velocity_offset_smoothed = offset
+		velocity_offset_smoothed_first_update = false
+		return velocity_offset_smoothed
+
+	velocity_offset_smoothed.x = lerp(velocity_offset_smoothed.x, offset.x, velocity_offset_smoothing_factor.x)
+	velocity_offset_smoothed.y = lerp(velocity_offset_smoothed.y, offset.y, velocity_offset_smoothing_factor.y)
+
+	return velocity_offset_smoothed
+	
 
 func _on_dead_zone_changed() -> void:
 	set_global_position( _target_position_with_offset() )
@@ -1091,6 +1207,9 @@ func get_limit_bottom() -> int:
 func _limit_target_exist_error() -> void:
 	if not limit_target.is_empty():
 		printerr("Unable to set Limit Side due to Limit Target ", _limit_node.name,  " being assigned")
+
+func _ready() -> void:
+	dead_zone_changed.connect(func(): print("Dead zone changed"))
 
 # Set Limit Target.
 func set_limit_target(value: NodePath) -> void:
