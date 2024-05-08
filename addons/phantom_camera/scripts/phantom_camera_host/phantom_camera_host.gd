@@ -324,21 +324,21 @@ func _process(delta):
 #region Public Functions
 
 func _show_viewfinder_in_play() -> void:
+	# Don't show the viewfinder in the actual editor or project builds
+	if Engine.is_editor_hint() or !OS.has_feature("editor"):
+		return
+
 	# We default the viewfinder node to hidden
 	if is_instance_valid(_viewfinder_node):
 		_viewfinder_node.visible = false
+
+	if !_active_pcam.show_viewfinder_in_play:
+		return
 
 	var _typed_active_pcam = (_active_pcam as PhantomCamera2D) if _is_2D else (_active_pcam as PhantomCamera3D)
 	assert(_typed_active_pcam != null, "The current active PCam couldn't be properly type-cast")
 
 	if _typed_active_pcam.follow_mode != _typed_active_pcam.FollowMode.FRAMED:
-		return
-
-	if !_active_pcam.show_viewfinder_in_play:
-		return
-
-	# Don't show the viewfinder in the actual editor or project builds
-	if Engine.is_editor_hint() or !OS.has_feature("editor"):
 		return
 
 	var canvas_layer: CanvasLayer = CanvasLayer.new()
