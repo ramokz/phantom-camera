@@ -324,7 +324,7 @@ func _process(delta):
 #region Public Functions
 
 func _show_viewfinder_in_play() -> void:
-	# We hide the viewfinder scene, and only show it if we pass early returns
+	# We default the viewfinder node to hidden
 	if is_instance_valid(_viewfinder_node):
 		_viewfinder_node.visible = false
 
@@ -337,6 +337,7 @@ func _show_viewfinder_in_play() -> void:
 	if !_active_pcam.show_viewfinder_in_play:
 		return
 
+	# Don't show the viewfinder in the actual editor or project builds
 	if Engine.is_editor_hint() or !OS.has_feature("editor"):
 		return
 
