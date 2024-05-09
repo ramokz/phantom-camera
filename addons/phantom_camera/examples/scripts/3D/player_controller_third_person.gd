@@ -1,9 +1,9 @@
 extends "player_controller.gd"
 
-@onready var _player_pcam: PhantomCamera3D = %PlayerPhantomCamera3D
-@onready var _aim_pcam: PhantomCamera3D = %PlayerAimPhantomCamera3D
+@onready var _player_pcam: PhantomCamera3D
+@onready var _aim_pcam: PhantomCamera3D
 @onready var _player_direction: Node3D = %PlayerDirection
-@onready var _ceiling_pcam: PhantomCamera3D = %CeilingPhantomCamera3D
+@onready var _ceiling_pcam: PhantomCamera3D
 
 @export var mouse_sensitivity: float = 0.05
 
@@ -17,6 +17,11 @@ extends "player_controller.gd"
 
 func _ready() -> void:
 	super()
+	
+	_player_pcam = owner.get_node("%PlayerPhantomCamera3D")
+	_aim_pcam = owner.get_node("%PlayerAimPhantomCamera3D")
+	_ceiling_pcam = owner.get_node("%CeilingPhantomCamera3D")
+	
 	if _player_pcam.get_follow_mode() == _player_pcam.FollowMode.THIRD_PERSON:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 

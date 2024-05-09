@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cfdoaceoosi1w"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/panel/editor.gd" id="1_86hp7"]
-[ext_resource type="PackedScene" uid="uid://cuqkqsp3ikv5u" path="res://addons/phantom_camera/panel/updater/UpdateButton.tscn" id="1_oowcd"]
+[ext_resource type="PackedScene" uid="uid://cuqkqsp3ikv5u" path="res://addons/phantom_camera/panel/updater/update_button.tscn" id="1_oowcd"]
 [ext_resource type="PackedScene" uid="uid://dbkr3d716wtx0" path="res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn" id="2_xecnk"]
 
 [node name="EditorPanel" type="VBoxContainer"]

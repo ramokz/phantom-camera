@@ -1,10 +1,11 @@
 extends CharacterBody2D
 
-@onready var player_area2D = %PlayerArea2D
-@onready var player_sprite: Sprite2D = %PlayerSprite
-@onready var interaction_prompt: Panel = %InteractionPrompt
-@onready var ui_sign:Control = %UISign
-@onready var dark_overlay: ColorRect = %DarkOverlay
+@onready var _player_area2d = %PlayerArea2D
+@onready var _player_visuals: Node2D = %PlayerVisuals
+@onready var _player_sprite: Sprite2D = %PlayerSprite
+@onready var _interaction_prompt: Panel = %InteractionPrompt
+@onready var _ui_sign: Control
+@onready var _dark_overlay: ColorRect = %DarkOverlay
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"
@@ -46,8 +47,10 @@ var InputMovementDic: Dictionary = {
 
 
 func _ready() -> void:
-	player_area2D.connect("body_shape_entered", _show_prompt)
-	player_area2D.connect("body_shape_exited", _hide_prompt)
+	_player_area2d.connect("body_shape_entered", _show_prompt)
+	_player_area2d.connect("body_shape_exited", _hide_prompt)
+	
+	_ui_sign = owner.get_node("%UISign")
 
 	for input in InputMovementDic:
 		var key_val = InputMovementDic[input].get(KEY_STRINGNAME)
@@ -100,13 +103,12 @@ func _interactive_node_logic() -> void:
 	match _interactive_object:
 		2:
 			if _movement_disabled:
-				dark_overlay.set_visible(true)
+				_dark_overlay.set_visible(true)
 			else:
-				dark_overlay.set_visible(false)
+				_dark_overlay.set_visible(false)
 
 
 func _physics_process(delta: float) -> void:
-	if _movement_disabled: return
 	
 	_physics_body_trans_last = _physics_body_trans_current
 	_physics_body_trans_current = global_transform
@@ -117,6 +119,8 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
+	if _movement_disabled: return
+
 	var input_dir: = Input.get_axis(
 		INPUT_MOVE_LEFT_STRINGNAME,
 		INPUT_MOVE_RIGHT_STRINGNAME
@@ -125,9 +129,9 @@ func _physics_process(delta: float) -> void:
 	if input_dir:
 		velocity.x = input_dir * SPEED
 		if input_dir > 0:
-			player_sprite.set_flip_h(false)
+			_player_sprite.set_flip_h(false)
 		elif input_dir < 0:
-			player_sprite.set_flip_h(true)
+			_player_sprite.set_flip_h(true)
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 
@@ -135,7 +139,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(delta) -> void:
-	player_sprite.global_position = _physics_body_trans_last.interpolate_with(
+	_player_visuals.global_position = _physics_body_trans_last.interpolate_with(
 		_physics_body_trans_current,
 		Engine.get_physics_interpolation_fraction()
 	).origin
@@ -152,15 +156,15 @@ func _show_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 			var cell_data_type: StringName = cell_data.get_custom_data("Type")
 #			var cell_global_pos: Vector2 = tile_map.to_global(tile_map.map_to_local(tile_coords))
 			_is_interactive = true
-			interaction_prompt.set_visible(true)
+			_interaction_prompt.set_visible(true)
 
 			match cell_data_type:
 				"Sign":
-					_interactive_UI = %UISign
+					_interactive_UI = owner.get_node("%UISign")
 					_active_pcam = %ItemFocusPhantomCamera2D
 					_interactive_object = InteractiveType.ITEM
 				"Inventory":
-					_interactive_UI = %UIInventory
+					_interactive_UI = owner.get_node("%UIInventory")
 					_interactive_object = InteractiveType.INVENTORY
 					_active_pcam = %InventoryPhantomCamera2D
 
@@ -173,7 +177,7 @@ func _hide_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 		var cell_data: TileData = tile_map.get_cell_tile_data(1, tile_coords)
 
 		if cell_data:
-			interaction_prompt.set_visible(false)
+			_interaction_prompt.set_visible(false)
 			_is_interactive = false
 			_interactive_UI = null
 			_interactive_object = InteractiveType.NONE

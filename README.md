@@ -2,14 +2,12 @@
 
 <p align="center">
   <a href="https://godotengine.org/download/windows/">
-      <img alt="Static Badge" src="https://img.shields.io/badge/Godot-4.1%2B-blue">
+      <img alt="Static Badge" src="https://img.shields.io/badge/Godot-4.2%2B-blue">
   </a>
   <a href="LICENSE">
     <img alt="GitHub License" src="https://img.shields.io/github/license/ramokz/phantom-camera">
   </a>
 </p>
-
-> ⚠️ Upcoming 0.7 release will require Godot 4.2+ 
 
 # What is it?
 Phantom Camera is a Godot 4 plugin designed to provide and simplify common behaviors for the built-in `Camera2D` and `Camera3D` nodes - heavily inspired by a Unity package called Cinemachine.
@@ -48,11 +46,6 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <img src="https://phantom-camera.dev/assets/github/yt-bissash-0.png" width="100%" alt="Bissash's Youtube Video"/>
       </a>
     </td>
-    <td>
-      <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A">
-        <img src="https://phantom-camera.dev/assets/github/yt-clecioespindola-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
-      </a>
-    </td>
 </tr>
   <tr>
     <td align="center">
@@ -60,8 +53,9 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <i>(English)</i>
       </p>
       <p>
-        Phantom Camera For Godot Is Awesome! <br>
-        <a href="https://www.youtube.com/watch?v=1Gtvr-Jk-iE" target="_blank"><b>GameFromScratch</b></a>
+        <a href="https://www.youtube.com/watch?v=1Gtvr-Jk-iE" target="_blank">Phantom Camera For Godot Is Awesome!</a>
+        <br>
+        <b>GameFromScratch</b>
       </p>
     </td>
     <td align="center" valign="top">
@@ -69,20 +63,48 @@ https://github.com/ramokz/phantom-camera/assets/5159399/2a900def-4a8b-46c2-976c-
         <i>(Spanish)</i>
       </p>
       <p>
-        Mejores cámaras con Phantom Camera<br>
-        <a href="https://www.youtube.com/watch?v=85K0e2Y0U3Q" target="_blank"><b>Bissash</b></a>
+        <a href="https://www.youtube.com/watch?v=85K0e2Y0U3Q" target="_blank">Mejores cámaras con Phantom Camera</a>
+        <br>
+        <b>Bissash</b>
       </p>
     </td>
+  </tr>
+<tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A">
+        <img src="https://phantom-camera.dev/assets/github/yt-clecioespindola-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
+      </a>
+    </td>
+    <td>
+      <a href="https://www.youtube.com/watch?v=bKNmsae5zXk">
+        <img src="https://phantom-camera.dev/assets/github/yt-devworm-0.png" width="100%" alt="Clécio Espindola GameDev's Youtube Video"/>
+      </a>
+    </td>
+</tr>
+<tr>
     <td align="center">
       <p>
         <i>(Portuguese)</i>
       </p>
       <p>
-        CÂMERA mais DINÂMICA com Phanton Camera | Godot 4.2<br>
-        <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A" target="_blank"><b>Clécio Espindola GameDev</b></a>
+        <a href="https://www.youtube.com/watch?v=5Y6AQG-Ik2A" target="_blank">
+          CÂMERA mais DINÂMICA com Phanton Camera
+        </a>
+        <br>
+        <b>Clécio Espindola GameDev</b>
       </p>
     </td>
-  </tr>
+<td align="center">
+  <p>
+    <i>(English)</i>
+  </p>
+  <a href="https://youtube.com/watch?v=bKNmsae5zXk" target="_blank">
+    The 4 MUST Have ADDONS for Godot 4
+  </a>
+    <br>
+    <b>DevWorm</b>
+  </td>
+</tr>
 </table>
 
 # Features
@@ -490,10 +512,6 @@ Preview what the `Camera2D` / `Camera3D` sees when attached to a PhantomCamera. 
 
 <hr>
 
-## 📔 Deep Dive & How to use
-
-See the [Phantom Camera - Wiki](https://phantom-camera.dev/)
-
 ### 🪀 Example Scenes
 A 2D and 3D example scenes can be found inside `res://addons/phantom_camera/examples`.
 
@@ -518,49 +536,15 @@ For more help,
 see [Godot's official documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html)
 
 ## 📖 Roadmap
-
 See the [project page](https://github.com/users/ramokz/projects/3/views/8) for upcoming features.
 
 ## FAQ
-
-### _What is the intent behind the plugin?_
-
-Cameras are an essential part of practically any game for rendering what you see on the screen. But rarely do they
-remain static and immovable, but instead dynamic and changes based on what happens in the game.
-
-The plugin is meant to simplify some common camera behaviour, such as smoothly moving between different points in space
-at specified points in time or retain a particular positional/rotational value relative to other elements.
-
-The end goal is to make it functional enough to become a generalised camera extension for Godot projects.
-
-### _What is the state of the plugin?_
-
-Ongoing, but still in early stages. Core features have been implemented, but may change as more get added. Things will
-likely break or change along the way. It's also worth keeping in mind that lots of key and, likely, frequently used
-features are yet to be done.
-
-See the [project page](https://github.com/users/ramokz/projects/3/views/8) to see planned features.
-
-### _Does this work for Godot 3.5 or older?_
-
-Unfortunately not.
-
-GDScript has received a lot of changes and improvements in 4.0, but as a result it would require a rather large rewrite
-to make it compatible with older versions.
-
-### _When will X feature be added?_
-
-There's no deadline or precise timeframe for when things get implemented.
-The [milestones page](https://github.com/MarcusSkov/phantom-camera/milestones) should give a good idea for what has,
-will, and currently being looked at.
+See the [FAQ page on the documentation site](https://phantom-camera.dev/support/faq).
 
 ## Contribution
-
-Issues, PRs, suggestions and feedback are welcome. Please create an Issue for bugs or a Discussion post for suggestions
-or general discussions.
+See the [contribution guidelines on the documentation site](https://phantom-camera.dev/support/how-to-contribute).
 
 ## Credits
-
 - [Unity's Cinemachine Package](https://unity.com/unity/features/editor/art-and-design/cinemachine) for the key
   inspiration
 - [Godot](https://godotengine.org/) for their amazing work creating the engine

@@ -44,31 +44,6 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: importance
-    attributes:
-      label: Importance
-      description: How important is this feature? Does a lack of it block important functionality?
-      options:
-        - High - there are critical things I can't do without this feature
-        - Medium - the feature would unlock new possibilities, but it's not a showstopper
-        - Low - there are workarounds where the proposed feature would just simplify things
-    validations:
-      required: true
-
-  - type: dropdown
-    id: usage
-    attributes:
-      label: Usage
-      description: How often do you think people will use this feature? Think in terms of genre, style, intensity etc.
-      options:
-        - All the time - the feature can be very useful for a varity of different projects 
-        - Often - a significant amount of projects can find this useful
-        - Rarely - just a handful of projects can likely benefit from this 
-        - Only me - this is highly specific to just my project
-    validations:
-      required: true
-
   - type: textarea
     attributes:
       label: (Optional) Proposed Solution

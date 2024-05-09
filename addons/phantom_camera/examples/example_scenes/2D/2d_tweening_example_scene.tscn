@@ -1,17 +1,14 @@
-[gd_scene load_steps=25 format=3 uid="uid://cpyb3ucwcqj8l"]
+[gd_scene load_steps=19 format=3 uid="uid://cpyb3ucwcqj8l"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_oo2bo"]
-[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/UIInventory.tscn" id="2_as4e6"]
-[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/UISign.tscn" id="3_6yi7w"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="2_as4e6"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/ui_sign.tscn" id="3_6yi7w"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_bb7en"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="5_kikl5"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="5_kikl5"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_8u8cj"]
-[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera2DTween.tres" id="6_gu0o0"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/PlayerCharacterBody2D.gd" id="6_oxdpf"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/PhantomCamera2DSprite.png" id="8_ok3b7"]
-[ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/ItemFocusPhantomCamera2DTween.tres" id="9_3xq6h"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2D_trigger_area.gd" id="9_184pu"]
-[ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/InventoryPhantomCamera2DTween.tres" id="10_6i6qa"]
+[ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_2d_tween.tres" id="6_gu0o0"]
+[ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="8_g1syc"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2d_trigger_area.gd" id="9_184pu"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_myq47"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
@@ -565,24 +562,6 @@ custom_data_layer_0/name = "Type"
 custom_data_layer_0/type = 21
 sources/0 = SubResource("TileSetAtlasSource_easgx")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hryl"]
-bg_color = Color(0.85098, 0.894118, 0.937255, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.113725, 0.113725, 0.113725, 1)
-corner_radius_top_left = 7
-corner_radius_top_right = 7
-corner_radius_bottom_right = 7
-corner_radius_bottom_left = 7
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xj4ar"]
-size = Vector2(64, 57)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_18i13"]
-size = Vector2(42, 57)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tgk1y"]
 size = Vector2(140, 160)
 
@@ -651,7 +630,7 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(243, -28)
+position = Vector2(227, -28)
 position_smoothing_speed = 10.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
@@ -661,97 +640,14 @@ script = ExtResource("4_bb7en")
 
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(243, -28)
+position = Vector2(227, -28)
 script = ExtResource("5_kikl5")
 priority = 5
 follow_mode = 2
-follow_target = NodePath("../CharacterBody2D")
+follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 tween_resource = ExtResource("6_gu0o0")
-draw_limits = true
-
-[node name="CharacterBody2D" type="CharacterBody2D" parent="Player"]
-position = Vector2(243, -28)
-script = ExtResource("6_oxdpf")
-
-[node name="DarkOverlay" type="ColorRect" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -1000.0
-offset_top = -1000.0
-offset_right = 1000.0
-offset_bottom = 1000.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.615686)
-
-[node name="InteractionPrompt" type="Panel" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -16.0
-offset_top = -66.0
-offset_right = 16.0
-offset_bottom = -34.0
-grow_horizontal = 2
-grow_vertical = 0
-size_flags_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_5hryl")
-
-[node name="Label" type="Label" parent="Player/CharacterBody2D/InteractionPrompt"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -3.0
-offset_bottom = 5.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("11_myq47")
-theme_override_font_sizes/font_size = 26
-text = "F"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="PlayerSprite" type="Sprite2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("8_ok3b7")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_xj4ar")
-
-[node name="PlayerArea2D" type="Area2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/CharacterBody2D/PlayerArea2D"]
-position = Vector2(0, -0.5)
-shape = SubResource("RectangleShape2D_18i13")
-
-[node name="ItemFocusPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-position = Vector2(0, -122)
-script = ExtResource("5_kikl5")
-frame_preview = false
-tween_resource = ExtResource("9_3xq6h")
-draw_limits = true
-
-[node name="InventoryPhantomCamera2D" type="Node2D" parent="Player/CharacterBody2D"]
-unique_name_in_owner = true
-position = Vector2(-183, -5)
-script = ExtResource("5_kikl5")
-frame_preview = false
-tween_resource = ExtResource("10_6i6qa")
+tween_on_load = false
+follow_damping = true
 draw_limits = true
 
 [node name="Label" type="Label" parent="Player"]
@@ -764,8 +660,13 @@ theme_override_fonts/font = ExtResource("11_myq47")
 text = "[WASD] to move
 [Space] to jump"
 
+[node name="CharacterBody2D" parent="Player" instance=ExtResource("8_g1syc")]
+position = Vector2(227, -28)
+
 [node name="WideArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(393, -40)
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("9_184pu")
 area_pcam = NodePath("PhantomCamera2D")
 
@@ -805,10 +706,16 @@ draw_limits = true
 
 [node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(649, -135)
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("9_184pu")
 area_pcam = NodePath("PhantomCamera2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="UpperZoomArea"]
+position = Vector2(0, -40)
+shape = SubResource("RectangleShape2D_clm0y")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="UpperZoomArea"]
 position = Vector2(0, -40)
 shape = SubResource("RectangleShape2D_clm0y")
 
@@ -844,6 +751,8 @@ draw_limits = true
 
 [node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
 position = Vector2(1136, -38)
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("9_184pu")
 area_pcam = NodePath("PhantomCamera2D")
 
@@ -880,3 +789,5 @@ script = ExtResource("5_kikl5")
 zoom = Vector2(0.9, 0.9)
 tween_resource = SubResource("Resource_e4e41")
 draw_limits = true
+
+[editable path="Player/CharacterBody2D"]

@@ -2,8 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<<< HEAD:addons/phantom_camera/icons/phantom_camera_tween.svg.import
+uid="uid://dphl04mdf3220"
+path="res://.godot/imported/phantom_camera_tween.svg-16faced08ef4a5f3458264d894230dbd.ctex"
+|||||||| 6f7fc92:addons/phantom_camera/icons/PhantomCameraIcon2D.svg.import
+uid="uid://c88qnl38ej6nr"
+path="res://.godot/imported/PhantomCameraIcon2D.svg-ff639bc802b50f88263b8dee8a265dab.ctex"
+========
 uid="uid://bf8bxgxx71qki"
 path="res://.godot/imported/phantom_camera_3d.svg-41ed612e834470377fb56eebffa083fe.ctex"
+>>>>>>>> refs/heads/main:addons/phantom_camera/icons/phantom_camera_3d.svg.import
 metadata={
 "has_editor_variant": true,
 "vram_texture": false
@@ -11,8 +19,16 @@ metadata={
 
 [deps]
 
+<<<<<<<< HEAD:addons/phantom_camera/icons/phantom_camera_tween.svg.import
+source_file="res://addons/phantom_camera/icons/phantom_camera_tween.svg"
+dest_files=["res://.godot/imported/phantom_camera_tween.svg-16faced08ef4a5f3458264d894230dbd.ctex"]
+|||||||| 6f7fc92:addons/phantom_camera/icons/PhantomCameraIcon2D.svg.import
+source_file="res://addons/phantom_camera/icons/PhantomCameraIcon2D.svg"
+dest_files=["res://.godot/imported/PhantomCameraIcon2D.svg-ff639bc802b50f88263b8dee8a265dab.ctex"]
+========
 source_file="res://addons/phantom_camera/icons/phantom_camera_3d.svg"
 dest_files=["res://.godot/imported/phantom_camera_3d.svg-41ed612e834470377fb56eebffa083fe.ctex"]
+>>>>>>>> refs/heads/main:addons/phantom_camera/icons/phantom_camera_3d.svg.import
 
 [params]
 

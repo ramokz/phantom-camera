@@ -9,7 +9,7 @@ const PCAM_3D: String = "PhantomCamera3D"
 const PCAM_NOISE_EMITTER_2D: String = "PhantomCameraNoiseEmitter2D"
 const PCAM_NOISE_EMITTER_3D: String = "PhantomCameraNoiseEmitter3D"
 
-const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_3D.gd")
+const Pcam3DPlugin = preload("res://addons/phantom_camera/gizmos/phantom_camera_gizmo_plugin_3d.gd")
 
 const EditorPanel = preload("res://addons/phantom_camera/panel/editor.tscn")
 
@@ -35,8 +35,8 @@ var panel_button: Button
 
 func _enter_tree() -> void:
 	# Phantom Camera Nodes
-	add_custom_type(PCAM_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
-	add_custom_type(PCAM_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
+	add_custom_type(PCAM_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
+	add_custom_type(PCAM_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
 	add_custom_type(PCAM_HOST, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
 	add_custom_type(PCAM_NOISE_EMITTER_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_2d.gd"),  preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg"))
 	add_custom_type(PCAM_NOISE_EMITTER_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd"),  preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg"))
@@ -69,8 +69,6 @@ func _enter_tree() -> void:
 	if not ProjectSettings.has_setting(updater_constants.setting_updater_notify_release):
 		ProjectSettings.set_setting(updater_constants.setting_updater_notify_release, true)
 	ProjectSettings.set_initial_value(updater_constants.setting_updater_notify_release, true)
-
-
 
 func btn_toggled(toggled_on: bool):
 	if toggled_on:
@@ -108,7 +106,6 @@ func _make_visible(visible):
 
 func _scene_changed(scene_root: Node) -> void:
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
-
 
 #endregion
 

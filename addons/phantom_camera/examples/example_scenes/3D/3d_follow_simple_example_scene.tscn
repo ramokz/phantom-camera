@@ -1,15 +1,21 @@
-[gd_scene load_steps=14 format=3 uid="uid://c4llb3gsbfv1a"]
+[gd_scene load_steps=14 format=3 uid="uid://buglvjwpn85ny"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_7824u"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="2_g1bv4"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_6xt4f"]
-[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/PlayerPhantomCamera3DTween.tres" id="3_420vh"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3D_resource.gd" id="4_oqbub"]
-[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="4_t4fso"]
-[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/CheckerPatternDark.png" id="5_c0upu"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_3tok8"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_grjck"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_j3f4l"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="3_uymu2"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="4_4u2y6"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_sielv"]
+[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="5_1tybo"]
 
-[sub_resource type="Resource" id="Resource_wg1pr"]
-script = ExtResource("4_oqbub")
+[sub_resource type="Resource" id="Resource_28vpp"]
+script = ExtResource("3_j3f4l")
+duration = 1.0
+transition = 0
+ease = 2
+
+[sub_resource type="Resource" id="Resource_axopo"]
+script = ExtResource("4_sielv")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -20,25 +26,21 @@ fov = 75.0
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u74j7"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_xgjm7"]
-radius = 0.05
-height = 0.1
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3xplc"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
-albedo_texture = ExtResource("5_c0upu")
+albedo_texture = ExtResource("5_1tybo")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[node name="Root" type="Node3D"]
+[node name="Node3D2" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -13.1946, 2.34415, 10.4086)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
-script = ExtResource("1_7824u")
+script = ExtResource("1_3tok8")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
@@ -48,47 +50,41 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, -16.4602, 2.94168, 7.33457)
-script = ExtResource("2_g1bv4")
-follow_mode = 5
-follow_target = NodePath("../PlayerCharacterBody3D")
-tween_resource = ExtResource("3_420vh")
-tween_onload = false
-camera_3d_resource = SubResource("Resource_wg1pr")
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -13.1946, 2.34415, 10.4086)
+script = ExtResource("2_grjck")
+priority = 10
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D2")
+tween_resource = SubResource("Resource_28vpp")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_axopo")
+follow_offset = Vector3(0, 2, 2)
 follow_damping = true
-follow_distance = 4.0
-dead_zone_width = 0.384
-dead_zone_height = 0.669
-show_viewfinder_in_play = true
-spring_length = 4.0
 
-[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="Player"]
+[node name="PlayerCharacterBody3D2" type="CharacterBody3D" parent="Player"]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.4602, 0.507, 4.16163)
-script = ExtResource("3_6xt4f")
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -13.1946, 0.344147, 8.40857)
+script = ExtResource("3_uymu2")
 metadata/_edit_group_ = true
 
-[node name="PlayerModel" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
+[node name="PlayerModel" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D2"]
 unique_name_in_owner = true
 mesh = SubResource("CapsuleMesh_pda7a")
 surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
 
-[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="Player/PlayerCharacterBody3D"]
-visible = false
-mesh = SubResource("CapsuleMesh_xgjm7")
-surface_material_override/0 = SubResource("StandardMaterial3D_u74j7")
+[node name="PlayerArea3D" type="Area3D" parent="Player/PlayerCharacterBody3D2"]
 
-[node name="PlayerArea3D" type="Area3D" parent="Player/PlayerCharacterBody3D"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D/PlayerArea3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D2/PlayerArea3D"]
 shape = SubResource("CapsuleShape3D_3xplc")
 
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D"]
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="Player/PlayerCharacterBody3D2"]
 shape = SubResource("CapsuleShape3D_3xplc")
+
+[node name="NPCs" type="Node" parent="."]
 
 [node name="Environment" type="Node" parent="."]
 
-[node name="Floor" parent="Environment" instance=ExtResource("4_t4fso")]
+[node name="Floor" parent="Environment" instance=ExtResource("4_4u2y6")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
@@ -158,7 +154,7 @@ use_collision = true
 size = Vector3(2.64182, 2.52142, 2.30997)
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.1256, -0.241718, 7.14677)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.1256, 0.335247, 7.14677)
 use_collision = true
 size = Vector3(3.80964, 1.67049, 0.932048)
 
@@ -173,6 +169,6 @@ use_collision = true
 size = Vector3(4.03502, 1.27695, 5.2198)
 
 [node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.90576, 0.0440434, 8.36617)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.04727, 0.0440434, 8.36617)
 use_collision = true
 size = Vector3(4.57784, 1.08809, 3.11285)

@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://bulsh7s0ibmao"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="1_6hh6c"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8efyg"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2cfaw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ldp"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[node name="PlayerCharacterBody3D2" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.083587, 0.507, 2.05493)
+script = ExtResource("1_6hh6c")
+metadata/_edit_group_ = true
+
+[node name="PlayerArea3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_8efyg")
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_8efyg")
+
+[node name="PlayerVisual" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="PlayerModel" type="MeshInstance3D" parent="PlayerVisual"]
+mesh = SubResource("CapsuleMesh_2cfaw")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_r3ldp")

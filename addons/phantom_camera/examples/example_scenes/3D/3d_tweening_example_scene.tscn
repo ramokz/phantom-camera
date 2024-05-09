@@ -1,25 +1,21 @@
-[gd_scene load_steps=19 format=3 uid="uid://5xtssqdfilal"]
+[gd_scene load_steps=22 format=3 uid="uid://5xtssqdfilal"]
 
-[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3DPrototypeCubeDark.tscn" id="1_ydeog"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="1_ydeog"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_b2yrt"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="3_m2w30"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="4_68dqc"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3D_trigger_area.gd" id="5_h0ouh"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_m2w30"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="4_425ma"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_cn3g7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3d_trigger_area.gd" id="5_h0ouh"]
+[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="6_gcjyn"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_wup4d"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="8_60rny"]
 
-[sub_resource type="Resource" id="Resource_d76g4"]
-script = ExtResource("6_wup4d")
-duration = 0.6
-transition = 3
-ease = 2
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_qde4k"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ks21f"]
-albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_12ynn"]
+[sub_resource type="Resource" id="Resource_0dtvs"]
+script = ExtResource("5_cn3g7")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j6fha"]
 size = Vector3(5, 0.1, 4)
@@ -37,11 +33,25 @@ duration = 0.6
 transition = 0
 ease = 2
 
+[sub_resource type="Resource" id="Resource_kmep1"]
+script = ExtResource("5_cn3g7")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
 [sub_resource type="Resource" id="Resource_uxg44"]
 script = ExtResource("6_wup4d")
 duration = 0.3
 transition = 1
 ease = 2
+
+[sub_resource type="Resource" id="Resource_eu3bc"]
+script = ExtResource("5_cn3g7")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [sub_resource type="Resource" id="Resource_0nci0"]
 script = ExtResource("6_wup4d")
@@ -49,11 +59,25 @@ duration = 0.3
 transition = 8
 ease = 2
 
+[sub_resource type="Resource" id="Resource_u0lff"]
+script = ExtResource("5_cn3g7")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
+
 [sub_resource type="Resource" id="Resource_50m5g"]
 script = ExtResource("6_wup4d")
 duration = 1.2
 transition = 10
 ease = 2
+
+[sub_resource type="Resource" id="Resource_rexf8"]
+script = ExtResource("5_cn3g7")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+fov = 75.0
 
 [node name="Root" type="Node3D"]
 
@@ -69,7 +93,7 @@ metadata/_edit_lock_ = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0.083587, 2.507, 4.05493)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("2_b2yrt")
@@ -78,38 +102,23 @@ script = ExtResource("2_b2yrt")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, -0.0548701, 2.5, 5.82771)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0.083587, 2.507, 4.05493)
 script = ExtResource("3_m2w30")
 priority = 3
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D")
-tween_resource = SubResource("Resource_d76g4")
-tween_onload = false
-follow_damping = true
+follow_target = NodePath("../PlayerCharacterBody3D2/PlayerVisual")
+tween_resource = ExtResource("4_425ma")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_0dtvs")
 follow_offset = Vector3(0, 2, 2)
+follow_damping = true
 
-[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0548701, 0.5, 3.82771)
-script = ExtResource("4_68dqc")
-metadata/_edit_group_ = true
-
-[node name="PlayerModel" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
-unique_name_in_owner = true
-mesh = SubResource("CapsuleMesh_qde4k")
-surface_material_override/0 = SubResource("StandardMaterial3D_ks21f")
-
-[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D"]
-shape = SubResource("CapsuleShape3D_12ynn")
-
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
-shape = SubResource("CapsuleShape3D_12ynn")
+[node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("6_gcjyn")]
 
 [node name="-------------------" type="Node" parent="."]
 
 [node name="Tweening Example" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.97)
 
 [node name="Linear" type="Node3D" parent="Tweening Example"]
 
@@ -132,6 +141,7 @@ metadata/_edit_group_ = true
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
 tween_resource = SubResource("Resource_v8ndi")
+camera_3d_resource = SubResource("Resource_kmep1")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Linear"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -165,6 +175,7 @@ metadata/_edit_group_ = true
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
 tween_resource = SubResource("Resource_uxg44")
+camera_3d_resource = SubResource("Resource_eu3bc")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Sine"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -198,6 +209,7 @@ metadata/_edit_group_ = true
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 4.8, 3.3)
 script = ExtResource("3_m2w30")
 tween_resource = SubResource("Resource_0nci0")
+camera_3d_resource = SubResource("Resource_u0lff")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Circ"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, -1.8, 0.5, 0)
@@ -231,6 +243,7 @@ metadata/_edit_group_ = true
 transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, -0.8, 4.8, 3.3)
 script = ExtResource("3_m2w30")
 tween_resource = SubResource("Resource_50m5g")
+camera_3d_resource = SubResource("Resource_rexf8")
 
 [node name="TweenNameLabel" type="Label3D" parent="Tweening Example/Back"]
 transform = Transform3D(1, 0, 0, 0, 0.695913, 0.718126, 0, -0.718126, 0.695913, 1.7, 0.5, 0)
@@ -241,3 +254,5 @@ Duration:
 1.2s"
 font = ExtResource("8_60rny")
 font_size = 48
+
+[editable path="PlayerCharacterBody3D2"]

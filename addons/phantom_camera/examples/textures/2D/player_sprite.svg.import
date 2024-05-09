@@ -1,0 +1,54 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+<<<<<<<< HEAD:addons/phantom_camera/icons/phantom_camera_2d.svg.import
+uid="uid://cmcvv0edbbpv4"
+path="res://.godot/imported/phantom_camera_2d.svg-e5483cbc858fc5f95f7210b1649dff0d.ctex"
+|||||||| 6f7fc92:addons/phantom_camera/icons/PhantomCameraIcon.svg.import
+uid="uid://b5d72pljpr1in"
+path="res://.godot/imported/PhantomCameraIcon.svg-9ffbadad50d28833b951e45d8f266e31.ctex"
+========
+uid="uid://ci76plsequlrq"
+path="res://.godot/imported/player_sprite.svg-8862ecb19e12152eb892607676f3831f.ctex"
+>>>>>>>> refs/heads/main:addons/phantom_camera/examples/textures/2D/player_sprite.svg.import
+metadata={
+"has_editor_variant": true,
+"vram_texture": false
+}
+
+[deps]
+
+<<<<<<<< HEAD:addons/phantom_camera/icons/phantom_camera_2d.svg.import
+source_file="res://addons/phantom_camera/icons/phantom_camera_2d.svg"
+dest_files=["res://.godot/imported/phantom_camera_2d.svg-e5483cbc858fc5f95f7210b1649dff0d.ctex"]
+|||||||| 6f7fc92:addons/phantom_camera/icons/PhantomCameraIcon.svg.import
+source_file="res://addons/phantom_camera/icons/PhantomCameraIcon.svg"
+dest_files=["res://.godot/imported/PhantomCameraIcon.svg-9ffbadad50d28833b951e45d8f266e31.ctex"]
+========
+source_file="res://addons/phantom_camera/examples/textures/2D/player_sprite.svg"
+dest_files=["res://.godot/imported/player_sprite.svg-8862ecb19e12152eb892607676f3831f.ctex"]
+>>>>>>>> refs/heads/main:addons/phantom_camera/examples/textures/2D/player_sprite.svg.import
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=false
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1
+svg/scale=8.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=true

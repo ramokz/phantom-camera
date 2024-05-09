@@ -61,7 +61,6 @@ var _decay_time: float = 0
 var _noise_duration: float = 1
 var _noise_loop: bool = false
 
-# Viewfinder
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
 
@@ -125,7 +124,6 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	if not is_instance_valid(_active_pcam): return
-
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam.get_global_transform()
 	else:
@@ -173,6 +171,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	if _is_2D:
 		_camera_zoom = camera_2d.get_zoom()
+		_camera_zoom = camera_2d.get_zoom()
 		if _active_pcam.get_noise_active():
 			_noise_2d = _active_pcam.noise
 			_noise_2d_pcam = _active_pcam.noise
@@ -193,7 +192,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	_tween_duration = 0
 
-	if pcam.tween_onload or not pcam.get_has_tweened():
+	if pcam.tween_on_load or not pcam.get_has_tweened():
 		_trigger_pcam_tween = true
 
 
@@ -232,11 +231,11 @@ func _pcam_tween(delta: float) -> void:
 		camera_3d.global_position = \
 			_tween_interpolate_value(_prev_active_pcam_3d_transform.origin, _active_pcam_3d_glob_transform.origin)
 
-		var prev_active_pcam_3d_basis = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
+		var prev_active_pcam_3d_quat: Quaternion = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
 		camera_3d.quaternion = \
 			Tween.interpolate_value(
-				prev_active_pcam_3d_basis, \
-				prev_active_pcam_3d_basis.inverse() * Quaternion(_active_pcam_3d_glob_transform.basis.orthonormalized()),
+				prev_active_pcam_3d_quat, \
+				prev_active_pcam_3d_quat.inverse() * Quaternion(_active_pcam_3d_glob_transform.basis.orthonormalized()),
 				_tween_duration, \
 				_active_pcam.get_tween_duration(), \
 				_active_pcam.get_tween_transition(),
@@ -280,13 +279,7 @@ func _pcam_follow(delta: float) -> void:
 			camera_2d.global_transform = snap_to_pixel_glob_transform
 		else:
 			camera_2d.global_transform =_active_pcam_2d_glob_transform
-		if _active_pcam.get_has_multiple_follow_targets():
-			if _active_pcam.follow_damping:
-				camera_2d.zoom = camera_2d.zoom.lerp(_active_pcam.zoom, delta * _active_pcam.follow_damping_value)
-			else:
-				camera_2d.zoom = _active_pcam.zoom
-		else:
-			camera_2d.zoom = _active_pcam.zoom
+		camera_2d.zoom = _active_pcam.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
@@ -296,16 +289,20 @@ func _process_pcam(delta: float) -> void:
 	# When following
 	if not _trigger_pcam_tween:
 		_pcam_follow(delta)
+
 		if _viewfinder_needed_check:
 			_show_viewfinder_in_play()
 			_viewfinder_needed_check = false
-		if Engine.is_editor_hint(): # NOTE - Should be able to find a more efficient way
+
+		# TODO - Should be able to find a more efficient way
+		if Engine.is_editor_hint():
 			if not _is_2D:
 				if _active_pcam.get_camera_3d_resource():
 					camera_3d.cull_mask = _active_pcam.get_cull_mask()
 					camera_3d.fov = _active_pcam.get_fov()
 					camera_3d.h_offset =_active_pcam.get_h_offset()
 					camera_3d.v_offset = _active_pcam.get_v_offset()
+
 	# When tweening
 	else:
 		if _tween_duration + delta <= _active_pcam.get_tween_duration():
@@ -346,6 +343,7 @@ func _process(delta):
 	if _active_pcam.get_noise_active():
 		_add_noise(delta)
 
+#endregion
 
 func _add_noise(delta: float) -> void:
 	_noise_time += delta
@@ -405,7 +403,6 @@ func _get_noise_from_seed(noise: PhantomCameraNoise3D, seed: int) -> float:
 	noise.noise_algorithm.seed = seed
 	return noise.noise_algorithm.get_noise_1d(_noise_time * noise.intensity)
 
-
 func _show_viewfinder_in_play() -> void:
 	if _active_pcam.show_viewfinder_in_play:
 		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
@@ -423,9 +420,10 @@ func _show_viewfinder_in_play() -> void:
 		if is_instance_valid(_viewfinder_node):
 			_viewfinder_node.visible = false
 
-#endregion
 
-
+## Called when a [param PhantomCamera] is added to the scene.[br]
+## [b]Note:[/b] This can only be called internally from a
+## [param PhantomCamera] node.
 #region Public Functions
 func add_trauma_3D(trauma_amount: float, noise_resource: PhantomCameraNoise3D, caller: Node):
 	if caller is PhantomCamera3D:
@@ -445,8 +443,8 @@ func pcam_added_to_scene(pcam: Node) -> void:
 	if is_instance_of(pcam, PhantomCamera2D) or is_instance_of(pcam, PhantomCamera3D):
 		_pcam_list.append(pcam)
 
-		if not pcam.tween_onload:
-			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority onload
+		if not pcam.tween_on_load:
+			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority on load
 
 		_find_pcam_with_highest_priority()
 
