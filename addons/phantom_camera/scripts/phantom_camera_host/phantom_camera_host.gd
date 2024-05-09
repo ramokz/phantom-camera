@@ -335,10 +335,7 @@ func _show_viewfinder_in_play() -> void:
 	if !_active_pcam.show_viewfinder_in_play:
 		return
 
-	var _typed_active_pcam = (_active_pcam as PhantomCamera2D) if _is_2D else (_active_pcam as PhantomCamera3D)
-	assert(_typed_active_pcam != null, "The current active PCam couldn't be properly type-cast")
-
-	if _typed_active_pcam.follow_mode != _typed_active_pcam.FollowMode.FRAMED:
+	if _active_pcam.follow_mode != _active_pcam.FollowMode.FRAMED:
 		return
 
 	var canvas_layer: CanvasLayer = CanvasLayer.new()
