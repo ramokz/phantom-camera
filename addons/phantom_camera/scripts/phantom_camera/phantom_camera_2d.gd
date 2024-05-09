@@ -1041,7 +1041,7 @@ func set_limit(side: int, value: int) -> void:
 		SIDE_RIGHT: 	limit_right = value
 		SIDE_BOTTOM: 	limit_bottom = value
 		_:				printerr("Not a valid Side.")
-## Gets the limit side 
+## Gets the limit side
 func get_limit(value: int) -> int:
 	match value:
 		SIDE_LEFT: 		return limit_left

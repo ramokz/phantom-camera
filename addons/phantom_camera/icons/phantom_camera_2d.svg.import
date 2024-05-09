@@ -2,33 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-<<<<<<<< HEAD:addons/phantom_camera/icons/phantom_camera_3d.svg.import
-uid="uid://bf8bxgxx71qki"
-path="res://.godot/imported/phantom_camera_3d.svg-41ed612e834470377fb56eebffa083fe.ctex"
-|||||||| 6f7fc92:addons/phantom_camera/icons/Chevron.svg.import
-uid="uid://y4mdbb804sw0"
-path="res://.godot/imported/Chevron.svg-93f7d046492ad140824afb8ee9e4ac3b.ctex"
-========
-uid="uid://cmcvv0edbbpv4"
+uid="uid://dchkkx4v3ikpw"
 path="res://.godot/imported/phantom_camera_2d.svg-e5483cbc858fc5f95f7210b1649dff0d.ctex"
->>>>>>>> refs/heads/main:addons/phantom_camera/icons/phantom_camera_2d.svg.import
 metadata={
-"has_editor_variant": true,
 "vram_texture": false
 }
 
 [deps]
 
-<<<<<<<< HEAD:addons/phantom_camera/icons/phantom_camera_3d.svg.import
-source_file="res://addons/phantom_camera/icons/phantom_camera_3d.svg"
-dest_files=["res://.godot/imported/phantom_camera_3d.svg-41ed612e834470377fb56eebffa083fe.ctex"]
-|||||||| 6f7fc92:addons/phantom_camera/icons/Chevron.svg.import
-source_file="res://addons/phantom_camera/icons/Chevron.svg"
-dest_files=["res://.godot/imported/Chevron.svg-93f7d046492ad140824afb8ee9e4ac3b.ctex"]
-========
 source_file="res://addons/phantom_camera/icons/phantom_camera_2d.svg"
 dest_files=["res://.godot/imported/phantom_camera_2d.svg-e5483cbc858fc5f95f7210b1649dff0d.ctex"]
->>>>>>>> refs/heads/main:addons/phantom_camera/icons/phantom_camera_2d.svg.import
 
 [params]
 
@@ -51,4 +34,4 @@ process/size_limit=0
 detect_3d/compress_to=1
 svg/scale=1.0
 editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=true
+editor/convert_colors_with_editor_theme=false

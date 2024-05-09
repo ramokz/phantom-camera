@@ -30,13 +30,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		if velocity != Vector3.ZERO:
 			if event.keycode == KEY_SHIFT:
 				if event.is_pressed():
-					speed = 5
+					SPEED = 5
 					#_player_pcam.noise.intensity = 50
 					#_player_pcam.noise.max_x = 15
 					#_player_pcam.noise.max_y = 15
 
 				elif event.is_released():
-					speed = 3
+					SPEED = 3
 					#_player_pcam.noise.intensity = 75
 					#_player_pcam.noise.max_x = 5
 					#_player_pcam.noise.max_y = 5

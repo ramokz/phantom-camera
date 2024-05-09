@@ -389,6 +389,17 @@ var _follow_spring_arm: SpringArm3D
 
 var _current_rotation: Vector3
 
+@export_group("Noise")
+## Defines the noise, or shake, of a camera.[br]
+## By default, no noise sis being applied.
+@export var noise: PhantomCameraNoise3D:
+	set = set_noise,
+	get = get_noise
+
+var _noise_active: bool = false:
+	set = set_noise_active,
+	get = get_noise_active
+
 #endregion
 
 
