@@ -324,21 +324,31 @@ func _process(delta):
 #region Public Functions
 
 func _show_viewfinder_in_play() -> void:
-	if _active_pcam.show_viewfinder_in_play:
-		if not Engine.is_editor_hint() && OS.has_feature("editor"): # Only appears when running in the editor
-			var canvas_layer: CanvasLayer = CanvasLayer.new()
-			get_tree().get_root().get_child(0).add_child(canvas_layer)
+	# Don't show the viewfinder in the actual editor or project builds
+	if Engine.is_editor_hint() or !OS.has_feature("editor"):
+		return
 
-			if not is_instance_valid(_viewfinder_node):
-				var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
-				_viewfinder_node = _viewfinder_scene.instantiate()
-				canvas_layer.add_child(_viewfinder_node)
-			else:
-				_viewfinder_node.visible = true
-				_viewfinder_node.update_dead_zone()
-	else:
-		if is_instance_valid(_viewfinder_node):
-			_viewfinder_node.visible = false
+	# We default the viewfinder node to hidden
+	if is_instance_valid(_viewfinder_node):
+		_viewfinder_node.visible = false
+
+	if !_active_pcam.show_viewfinder_in_play:
+		return
+
+	if _active_pcam.follow_mode != _active_pcam.FollowMode.FRAMED:
+		return
+
+	var canvas_layer: CanvasLayer = CanvasLayer.new()
+	get_tree().get_root().get_child(0).add_child(canvas_layer)
+
+	# Instantiate the viewfinder scene if it isn't already
+	if !is_instance_valid(_viewfinder_node):
+		var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+		_viewfinder_node = _viewfinder_scene.instantiate()
+		canvas_layer.add_child(_viewfinder_node)
+
+	_viewfinder_node.visible = true
+	_viewfinder_node.update_dead_zone()
 
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
