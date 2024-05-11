@@ -51,7 +51,6 @@ var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled = true ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works seamlessly
 
 var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
 var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
@@ -198,9 +197,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				_follow_target_physics_based = true
 				_active_pcam.set_follow_target_physics_based(true, self)
 				## TODO - Temporary solution to support Godot 4.2
-				## Remove string-based caller and setter below and uncomment the following once Godot 4.3 is min verison.
+				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_2d.call("reset_physics_interpolation")
 				camera_2d.set("physics_interpolation_mode", 1)
+				#camera_2d.reset_physics_interpolation()
 				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
 			else:
 				_follow_target_physics_based = false
