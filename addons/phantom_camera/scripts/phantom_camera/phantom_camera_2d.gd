@@ -140,9 +140,7 @@ var pcam_host_owner: PhantomCameraHost = null:
 	get = get_follow_target
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
-var follow_target_physics_based: bool = false:
-	set = set_follow_target_physics_based,
-	get = get_follow_target_physics_based
+var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
@@ -480,12 +478,12 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
-	if follow_target_physics_based: return
+	if _follow_target_physics_based: return
 	_process_logic(delta)
 
 
 func _physics_process(delta: float):
-	if not follow_target_physics_based: return
+	if not _follow_target_physics_based: return
 	_process_logic(delta)
 
 
@@ -541,7 +539,8 @@ func _follow_logic(delta: float) -> void:
 							auto_zoom_margin.x,
 							auto_zoom_margin.y,
 							auto_zoom_margin.z,
-							auto_zoom_margin.w)
+							auto_zoom_margin.w
+						)
 #						else:
 #							rect = rect.grow_individual(-80, 0, 0, 0)
 				if auto_zoom:
@@ -922,10 +921,9 @@ func get_follow_mode() -> int:
 func set_follow_target(value: Node2D) -> void:
 	if follow_target == value: return
 	follow_target = value
+	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
-
-		follow_target_physics_based = false
 		_check_physics_body(value)
 	else:
 		_should_follow = false
@@ -936,6 +934,7 @@ func erase_follow_target() -> void:
 	if follow_target == null: return
 	_should_follow = false
 	follow_target = null
+	_follow_target_physics_based = false
 	follow_target_changed.emit()
 ## Gets the current [member follow_target].
 func get_follow_target() -> Node2D:
@@ -951,6 +950,81 @@ func erase_follow_path() -> void:
 ## Gets the current [Path2D] from the [member follow_path].
 func get_follow_path() -> Path2D:
 	return follow_path
+
+
+## Assigns a new [param follow_targets] array value.
+func set_follow_targets(value: Array[Node2D]) -> void:
+	if follow_targets == value: return
+
+	follow_targets = value
+
+	if follow_targets.is_empty():
+		_should_follow = false
+		_has_multiple_follow_targets = false
+		return
+
+	_follow_target_physics_based = false
+	var valid_instances: int = 0
+	for target in follow_targets:
+		if is_instance_valid(target):
+			_should_follow = true
+			valid_instances += 1
+
+			_check_physics_body(target)
+
+			if valid_instances > 1:
+				_has_multiple_follow_targets = true
+## Appends a single [Node2D] to [member follow_targets].
+func append_follow_targets(value: Node2D) -> void:
+	if not is_instance_valid(value):
+		printerr(value, " is not a valid Node2D instance.")
+		return
+	if not follow_targets.has(value):
+		follow_targets.append(value)
+		_should_follow = true
+		_has_multiple_follow_targets = true
+		_check_physics_body(value)
+	else:
+		printerr(value, " is already part of Follow Group")
+## Adds an Array of type [Node2D] to [member follow_targets].
+func append_follow_targets_array(value: Array[Node2D]) -> void:
+	for target in value:
+		if not is_instance_valid(target): continue
+		if not follow_targets.has(target):
+			follow_targets.append(target)
+			_should_follow = true
+			_check_physics_body(target)
+			if follow_targets.size() > 1:
+				_has_multiple_follow_targets = true
+		else:
+			printerr(value, " is already part of Follow Group")
+## Removes a [Node2D] from [member follow_targets] array.
+func erase_follow_targets(value: Node2D) -> void:
+	follow_targets.erase(value)
+	_follow_target_physics_based = false
+	for target in follow_targets:
+		_check_physics_body(target)
+	if follow_targets.size() < 2:
+		_has_multiple_follow_targets = false
+	if follow_targets.size() < 1:
+		_should_follow = false
+## Gets all [Node2D] from [member follow_targets] array.
+func get_follow_targets() -> Array[Node2D]:
+	return follow_targets
+
+func _check_physics_body(target: Node2D) -> void:
+	if target is PhysicsBody2D:
+		## NOTE - Feature Toggle
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 3:
+			print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
+			print_rich("Once Godot 4.3 is released, will strongly recommend upgrading to that as it has built-in support for 2D Physics Interpolation.")
+			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+			return
+		## NOTE - Only supported in Godot 4.3 or above
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+				printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+		_follow_target_physics_based = true
 
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
@@ -986,84 +1060,6 @@ func set_snap_to_pixel(value: bool) -> void:
 func get_snap_to_pixel() -> bool:
 	return snap_to_pixel
 
-## Assigns a new [param follow_targets] array value.
-func set_follow_targets(value: Array[Node2D]) -> void:
-	if follow_targets == value: return
-
-	follow_targets = value
-	follow_target_physics_based = false
-
-	if follow_targets.is_empty():
-		_should_follow = false
-		_has_multiple_follow_targets = false
-		return
-
-	var valid_instances: int = 0
-	for target in follow_targets:
-		if is_instance_valid(target):
-			_should_follow = true
-			valid_instances += 1
-
-			_check_physics_body(target)
-
-			if valid_instances > 1:
-				_has_multiple_follow_targets = true
-## Appends a single [Node2D] to [member follow_targets].
-func append_follow_targets(value: Node2D) -> void:
-	if not is_instance_valid(value):
-		printerr(value, " is not a valid instance")
-		return
-	if not follow_targets.has(value):
-		follow_targets.append(value)
-		_should_follow = true
-		_has_multiple_follow_targets = true
-
-		_check_physics_body(value)
-
-	else:
-		printerr(value, " is already part of Follow Group")
-## Adds an Array of type [Node2D] to [member follow_targets].
-func append_follow_targets_array(value: Array[Node2D]) -> void:
-	for val in value:
-		if not is_instance_valid(val): continue
-		if not follow_targets.has(val):
-			follow_targets.append(val)
-			_should_follow = true
-			if follow_targets.size() > 1:
-				_has_multiple_follow_targets = true
-
-			_check_physics_body(val)
-
-		else:
-			printerr(value, " is already part of Follow Group")
-## Removes a [Node2D] from [member follow_targets] array.
-func erase_follow_targets(value: Node2D) -> void:
-	follow_targets.erase(value)
-	if follow_targets.size() < 1:
-		_should_follow = false
-		_has_multiple_follow_targets = false
-
-	follow_target_physics_based = false
-	for target in follow_targets:
-		_check_physics_body(target)
-## Gets all Node2D from Follow Group array.
-func get_follow_targets() -> Array[Node2D]:
-	return follow_targets
-
-func _check_physics_body(target: Node2D) -> void:
-	if target is PhysicsBody2D:
-		## NOTE - Feature Toggle
-		follow_target_physics_based = true
-		if Engine.get_version_info().major == 4 and \
-		Engine.get_version_info().minor < 3:
-			print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
-			print_rich("Will strongly recommend upgrading to Godot 4.3 as it has built-in support for 2D Physics Interpolation.")
-			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-		else:
-			## NOTE - Only supported in Godot 4.3 or above
-			if not ProjectSettings.get_setting("physics/common/physics_interpolation"):
-				printerr("Phantom Camera: Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics movement")
-		follow_target_physics_based = true
 
 ## Returns true if the [param PhantomCamera2D] has more than one member in the
 ## [follow_targets] array.
@@ -1225,9 +1221,12 @@ func set_inactive_update_mode(value: int) -> void:
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
-func set_follow_target_physics_based(value: bool) -> void:
-	follow_target_physics_based = value
+func set_follow_target_physics_based(value: bool, caller: Node) -> void:
+	if is_instance_of(caller, PhantomCameraHost):
+		_follow_target_physics_based = value
+	else:
+		printerr("set_follow_target_physics_based() is for internal use only.")
 func get_follow_target_physics_based() -> bool:
-	return follow_target_physics_based
+	return _follow_target_physics_based
 
 #endregion
