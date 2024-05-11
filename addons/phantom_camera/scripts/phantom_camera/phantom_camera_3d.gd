@@ -674,7 +674,7 @@ func _follow_logic(delta: float) -> void:
 						_follow_framed_offset = global_position - _get_target_position_offset()
 						_current_rotation = global_rotation
 				else:
-					global_position = _get_position_offset_distance()
+					follow_position = _get_position_offset_distance()
 					var unprojected_position: Vector2 = _get_raw_unprojected_position()
 					var viewport_width: float = get_viewport().size.x
 					var viewport_height: float = get_viewport().size.y
