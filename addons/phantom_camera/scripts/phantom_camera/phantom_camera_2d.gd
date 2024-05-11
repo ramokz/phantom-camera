@@ -489,25 +489,17 @@ func _physics_process(delta: float):
 
 func _process_logic(delta: float) -> void:
 	if not _is_active:
-		_inactive_update_mode_checker()
-		return
-	_limit_checker()
-	if not _should_follow: return
-	_follow_logic(delta)
-
-
-func _inactive_update_mode_checker() -> void:
 		match inactive_update_mode:
-			InactiveUpdateMode.NEVER:
-				return
+			InactiveUpdateMode.NEVER: return
 			InactiveUpdateMode.ALWAYS:
 				# Only triggers if limit isn't default
 				if _limit_inactive_pcam:
-					set_global_position(
-						_set_limit_clamp_position(global_position)
-					)
+					global_position = _set_limit_clamp_position(global_position)
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
+	_limit_checker()
+	if _should_follow:
+		_follow(delta)
 
 
 func _limit_checker() -> void:
@@ -517,7 +509,7 @@ func _limit_checker() -> void:
 			update_limit_all_sides()
 
 
-func _follow_logic(delta: float) -> void:
+func _follow(delta: float) -> void:
 	var follow_position: Vector2
 
 	match follow_mode:

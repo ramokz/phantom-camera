@@ -566,24 +566,17 @@ func _physics_process(delta: float):
 
 func _process_logic(delta: float) -> void:
 	if not _is_active:
-		_inactive_update_mode_checker()
-
-	if _should_follow:
-		_follow_logic(delta)
-
-	if _should_look_at:
-		_look_at_logic()
-
-func _inactive_update_mode_checker() -> void:
-	if not _is_active:
 		match inactive_update_mode:
-			InactiveUpdateMode.NEVER:
-				return
-#			InactiveUpdateMode.EXPONENTIALLY:
-#				TODO - Trigger positional updates less frequently as more Pcams gets added
+			InactiveUpdateMode.NEVER:	return
+			# InactiveUpdateMode.EXPONENTIALLY:
+			# TODO - Trigger positional updates less frequently as more Pcams gets added
+	if _should_follow:
+		_follow(delta)
+	if _should_look_at:
+		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
 
 
-func _follow_logic(delta: float) -> void:
+func _follow(delta: float) -> void:
 	var follow_position: Vector3
 	var follow_target_node: Node3D = self
 
@@ -707,7 +700,7 @@ func _follow_logic(delta: float) -> void:
 
 	_interpolate_position(follow_position, delta, follow_target_node)
 
-func _look_at_logic() -> void:
+func _look_at() -> void:
 	match look_at_mode:
 		LookAtMode.MIMIC:
 			global_rotation = look_at_target.global_rotation
