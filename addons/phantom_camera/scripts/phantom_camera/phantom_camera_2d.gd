@@ -581,6 +581,7 @@ func _follow_logic(delta: float) -> void:
 							follow_position = target_position
 					else:
 						_follow_framed_offset = global_position - _target_position_with_offset()
+						return
 				else:
 					follow_position = _target_position_with_offset()
 
