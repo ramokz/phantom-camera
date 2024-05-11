@@ -999,17 +999,10 @@ func set_follow_target(value: Node3D) -> void:
 	if follow_target == value: return
 	follow_target = value
 
+	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
-
-		if follow_target is PhysicsBody3D:
-			#_follow_target_physics_based = true
-			print_rich("Following a [b]PhysicsBody3D[/b] node will likely result in jitter.")
-			print_rich("Will have proper support once Godot support 3D Physics Interpolation.")
-			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-			_follow_target_physics_based = true
-		else:
-			_follow_target_physics_based = false
+		_check_physics_body(value)
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
@@ -1017,6 +1010,7 @@ func set_follow_target(value: Node3D) -> void:
 ## Removes the current [Node3D] [member follow_target].
 func erase_follow_target() -> void:
 	if follow_target == null: return
+	_follow_target_physics_based = false
 	_should_follow = false
 	follow_target = null
 	follow_target_changed.emit()
@@ -1024,8 +1018,6 @@ func erase_follow_target() -> void:
 func get_follow_target() -> Node3D:
 	return follow_target
 
-func _jitter_documentation() -> void:
-	OS.shell_open("https://phantom-camera.dev")
 
 ## Assigns a new [Path3D] to the [member follow_path] property.
 func set_follow_path(value: Path3D) -> void:
@@ -1036,6 +1028,89 @@ func erase_follow_path() -> void:
 ## Gets the current [Path3D] from the [member follow_path] property.
 func get_follow_path() -> Path3D:
 	return follow_path
+
+
+## Assigns a new [param follow_targets] array value.
+func set_follow_targets(value: Array[Node3D]) -> void:
+	if follow_targets == value: return
+
+	follow_targets = value
+
+	if follow_targets.is_empty():
+		_should_follow = false
+		_has_multiple_follow_targets = false
+		_follow_target_physics_based = false
+		return
+
+	var valid_instances: int
+	_follow_target_physics_based = false
+	for target in follow_targets:
+		if is_instance_valid(target):
+			_should_follow = true
+			valid_instances += 1
+
+			_check_physics_body(target)
+
+			if valid_instances > 1:
+				_has_multiple_follow_targets = true
+## Adds a single [Node3D] to [member follow_targets] array.
+func append_follow_targets(value: Node3D) -> void:
+	if not is_instance_valid(value):
+		printerr(value, " is not a valid instance")
+		return
+
+	if not follow_targets.has(value):
+		follow_targets.append(value)
+		_should_follow = true
+		_has_multiple_follow_targets = true
+		_check_physics_body(value)
+	else:
+		printerr(value, " is already part of Follow Group")
+## Adds an Array of type [Node3D] to [member follow_targets] array.
+func append_follow_targets_array(value: Array[Node3D]) -> void:
+	for target in value:
+		if not is_instance_valid(target): continue
+		if not follow_targets.has(target):
+			follow_targets.append(target)
+			_should_follow = true
+			_check_physics_body(target)
+			if follow_targets.size() > 1:
+				_has_multiple_follow_targets = true
+		else:
+			printerr(value, " is already part of Follow Group")
+## Removes [Node3D] from [member follow_targets].
+func erase_follow_targets(value: Node3D) -> void:
+	follow_targets.erase(value)
+	_follow_target_physics_based = false
+	for target in follow_targets:
+		_check_physics_body(target)
+
+	if follow_targets.size() < 2:
+		_has_multiple_follow_targets = false
+	if follow_targets.size() < 1:
+		_should_follow = false
+## Gets all [Node3D] from [follow_targets].
+func get_follow_targets() -> Array[Node3D]:
+	return follow_targets
+
+## Returns true if the [param PhantomCamera3D] has more than one member in the
+## [member follow_targets] array.
+func get_has_multiple_follow_targets() -> bool:
+	return _has_multiple_follow_targets
+
+func _check_physics_body(target: Node3D) -> void:
+	if target is PhysicsBody3D:
+		## NOTE - Feature Toggle
+		#if Engine.get_version_info().major == 4 and \
+		#Engine.get_version_info().minor < XX:
+			print_rich("Following a [b]PhysicsBody3D[/b] node will likely result in jitter.")
+			print_rich("Will have proper support once 3D Physics Interpolation becomes part of the core Godot engine.")
+			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+			return
+		## TODO - Enable once Godot supports 3D Physics Interpolation
+		#elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+				#printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+		#_follow_target_physics_based = true
 
 
 ## Assigns a new [param Vector3] for the [param follow_offset] property.
@@ -1075,66 +1150,6 @@ func set_follow_distance(value: float) -> void:
 ## Gets [member follow_distance] value.
 func get_follow_distance() -> float:
 	return follow_distance
-
-## Assigns a new [param follow_targets] array value.
-func set_follow_targets(value: Array[Node3D]) -> void:
-	if follow_targets == value: return
-
-	follow_targets = value
-
-	if follow_targets.is_empty():
-		_should_follow = false
-		_has_multiple_follow_targets = false
-		return
-
-	var valid_instances: int
-	for target in follow_targets:
-		if is_instance_valid(target):
-			_should_follow = true
-			_has_multiple_follow_targets = true
-			return
-		else:
-			_should_follow = false
-			_has_multiple_follow_targets = false
-
-## Adds a single [Node3D] to [member follow_targets] array.
-func append_follow_targets(value: Node3D) -> void:
-	if not is_instance_valid(value):
-		printerr(value, " is not a valid instance")
-		return
-
-	if not follow_targets.has(value):
-		follow_targets.append(value)
-		_should_follow = true
-		_has_multiple_follow_targets = true
-	else:
-		printerr(value, " is already part of Follow Group")
-## Adds an Array of type [Node3D] to [member follow_targets] array.
-func append_follow_targets_array(value: Array[Node3D]) -> void:
-	for val in value:
-		if not is_instance_valid(val): continue
-		if not follow_targets.has(val):
-			follow_targets.append(val)
-			_should_follow = true
-			if follow_targets.size() > 1:
-				_has_multiple_follow_targets = true
-		else:
-			printerr(value, " is already part of Follow Group")
-## Removes [Node3D] from [member follow_targets].
-func erase_follow_targets(value: Node3D) -> void:
-	follow_targets.erase(value)
-	if follow_targets.size() < 2:
-		_has_multiple_follow_targets = false
-	if follow_targets.size() < 1:
-		_should_follow = false
-## Gets all [Node3D] from [follow_targets].
-func get_follow_targets() -> Array[Node3D]:
-	return follow_targets
-
-## Returns true if the [param PhantomCamera3D] has more than one member in the
-## [member follow_targets] array.
-func get_has_multiple_follow_targets() -> bool:
-	return _has_multiple_follow_targets
 
 
 ## Enables or disables [member auto_follow_distance] when using Group Follow.
@@ -1395,5 +1410,14 @@ func set_fov(value: float) -> void:
 ## Gets the [member Camera3D.fov] value assigned to the [param Camera3DResource].
 func get_fov() -> float:
 	return camera_3d_resource.fov
+
+
+func set_follow_target_physics_based(value: bool, caller: Node) -> void:
+	if is_instance_of(caller, PhantomCameraHost):
+		_follow_target_physics_based = value
+	else:
+		printerr("set_follow_target_physics_based is for internal use only.")
+func get_follow_target_physics_based() -> bool:
+	return _follow_target_physics_based
 
 #endregion
