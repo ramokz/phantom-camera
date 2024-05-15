@@ -507,11 +507,10 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	add_to_group(_constants.PCAM_GROUP_NAME)
+	PhantomCameraManager.pcam_added(self)
 
-	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
-	if pcam_host.size() > 0:
-		set_pcam_host_owner(pcam_host[0])
+	if not PhantomCameraManager.get_phantom_camera_hosts().is_empty():
+		set_pcam_host_owner(PhantomCameraManager.get_phantom_camera_hosts()[0])
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
@@ -529,7 +528,7 @@ func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
-	remove_from_group(_constants.PCAM_GROUP_NAME)
+	PhantomCameraManager.pcam_removed(self)
 
 
 func _ready():
