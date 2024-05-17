@@ -1041,7 +1041,7 @@ func set_limit(side: int, value: int) -> void:
 		SIDE_RIGHT: 	limit_right = value
 		SIDE_BOTTOM: 	limit_bottom = value
 		_:				printerr("Not a valid Side.")
-## Gets the limit side 
+## Gets the limit side
 func get_limit(value: int) -> int:
 	match value:
 		SIDE_LEFT: 		return limit_left
@@ -1119,9 +1119,16 @@ func set_limit_target(value: NodePath) -> void:
 				reset_limit()
 				limit_target = null
 				return
-	else:
+		else:
+			printerr("Limit Target is not a TileMap or CollisionShape2D node")
+			return
+
+	elif value == NodePath(""):
 		reset_limit()
 		limit_target = null
+	else:
+		printerr("Limit Target cannot be found")
+		return
 
 	_limit_node = get_node_or_null(value)
 
