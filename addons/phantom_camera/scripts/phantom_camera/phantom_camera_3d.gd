@@ -1305,7 +1305,9 @@ func append_look_at_target(value: Node3D) -> void:
 	if not look_at_targets.has(value):
 		look_at_targets.append(value)
 		_valid_look_at_targets.append(value)
-		_multiple_look_at_targets = true
+		_check_physics_body(value)
+		if look_at_targets.size() > 1:
+			_multiple_look_at_targets = true
 	else:
 		printerr(value, " is already part of Look At Group")
 ## Appends an array of type [Node3D] to [member look_at_targets] array.
@@ -1321,6 +1323,7 @@ func append_look_at_targets_array(value: Array[NodePath]) -> void:
 func erase_look_at_targets_member(value: Node3D) -> void:
 	look_at_targets.erase(value)
 	_valid_look_at_targets.erase(value)
+	_check_physics_body(value)
 	if look_at_targets.size() < 1:
 		_multiple_look_at_targets = false
 ## Gets all the [Node3D] instances in [member look_at_targets].
