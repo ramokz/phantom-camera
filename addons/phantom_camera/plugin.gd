@@ -62,6 +62,11 @@ func _enter_tree() -> void:
 		ProjectSettings.set_setting(updater_constants.setting_updater_notify_release, true)
 	ProjectSettings.set_initial_value(updater_constants.setting_updater_notify_release, true)
 
+	## Enables or disable
+	if not ProjectSettings.has_setting("phantom_camera/tips/show_jitter_tips"):
+		ProjectSettings.set_setting("phantom_camera/tips/show_jitter_tips", true)
+	ProjectSettings.set_initial_value("phantom_camera/tips/show_jitter_tips", true)
+
 func btn_toggled(toggled_on: bool):
 	if toggled_on:
 		editor_panel_instance.viewfinder.viewfinder_visible = true

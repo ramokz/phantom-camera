@@ -1097,10 +1097,12 @@ func _check_physics_body(target: Node3D) -> void:
 		## NOTE - Feature Toggle
 		#if Engine.get_version_info().major == 4 and \
 		#Engine.get_version_info().minor < XX:
-			print_rich("Following a [b]PhysicsBody3D[/b] node will likely result in jitter.")
+		if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+			print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter.")
 			print_rich("Will have proper support once 3D Physics Interpolation becomes part of the core Godot engine.")
 			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-			return
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		return
 		## TODO - Enable once Godot supports 3D Physics Interpolation
 		#elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
 				#printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
@@ -1126,7 +1128,6 @@ func get_follow_damping() -> bool:
 
 ## Assigns new [member follow_damping_value] value.
 func set_follow_damping_value(value: Vector3) -> void:
-
 	## TODO - Should be using @export_range once minimum version support is Godot 4.3
 	if value.x < 0: value.x = 0
 	elif value.y < 0: value.y = 0
@@ -1259,6 +1260,7 @@ func get_look_at_mode() -> int:
 ## Assigns new [Node3D] as [member look_at_target].
 func set_look_at_target(value: Node3D) -> void:
 	look_at_target = value
+	_check_physics_body(value)
 	#_look_at_target_node = get_node_or_null(value)
 	look_at_target_changed
 	if is_instance_valid(look_at_target):
@@ -1289,6 +1291,7 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 				valid_instances += 1
 				_should_look_at = true
 				_valid_look_at_targets.append(target)
+				_check_physics_body(target)
 
 			if valid_instances > 1:
 				_multiple_look_at_targets = true
