@@ -1098,7 +1098,7 @@ func _check_physics_body(target: Node3D) -> void:
 		#if Engine.get_version_info().major == 4 and \
 		#Engine.get_version_info().minor < XX:
 		if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
-			print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter.")
+			print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter - on lower physics ticks in particular.")
 			print_rich("Will have proper support once 3D Physics Interpolation becomes part of the core Godot engine.")
 			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
