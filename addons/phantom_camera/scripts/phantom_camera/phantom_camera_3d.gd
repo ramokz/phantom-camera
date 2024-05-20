@@ -151,7 +151,6 @@ var _is_active: bool = false
 	get:
 		return follow_mode
 
-var _should_follow: bool = false
 
 ## Determines which target should be followed.
 ## The [param Camera3D] will follow the position of the Follow Target based on
@@ -159,6 +158,9 @@ var _should_follow: bool = false
 @export var follow_target: Node3D = null:
 	set = set_follow_target,
 	get = get_follow_target
+var _should_follow: bool = false
+var _follow_target_physics_based: bool = false
+var _physics_interpolation_enabled = false ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
 @export var follow_targets: Array[Node3D] = []:
@@ -418,12 +420,13 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_damping_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
+	if property.name == "follow_offset":
+		if follow_mode == FollowMode.PATH or \
+		follow_mode == FollowMode.GLUED:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
+
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
 		if not follow_mode == FollowMode.FRAMED:
@@ -552,162 +555,166 @@ func _ready():
 
 
 func _process(delta: float) -> void:
+	if not _follow_target_physics_based:
+		_process_logic(delta)
+
+
+func _physics_process(delta: float):
+	if _follow_target_physics_based:
+		_process_logic(delta)
+
+
+func _process_logic(delta: float) -> void:
 	if not _is_active:
 		match inactive_update_mode:
-			InactiveUpdateMode.NEVER:
-				return
-#			InactiveUpdateMode.EXPONENTIALLY:
-#				TODO - Trigger positional updates less frequently as more Pcams gets added
-
+			InactiveUpdateMode.NEVER:	return
+			# InactiveUpdateMode.EXPONENTIALLY:
+			# TODO - Trigger positional updates less frequently as more Pcams gets added
 	if _should_follow:
-		match follow_mode:
-			FollowMode.GLUED:
-				if follow_target:
-					_interpolate_position(
-						follow_target.global_position
-					)
-			FollowMode.SIMPLE:
-				if follow_target:
-					_interpolate_position(
-						_get_target_position_offset()
-					)
-			FollowMode.GROUP:
-				if follow_targets:
-					if follow_targets.size() == 1:
-						_interpolate_position(
-							follow_targets[0].global_position +
-							follow_offset +
-							get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
-						)
-					elif follow_targets.size() > 1:
-						var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
-						for node in follow_targets:
-							if is_instance_valid(node):
-								bounds = bounds.expand(node.global_position)
-
-						var distance: float
-						if auto_follow_distance:
-							distance = lerp(auto_follow_distance_min, auto_follow_distance_max, bounds.get_longest_axis_size() / auto_follow_distance_divisor)
-							distance = clamp(distance, auto_follow_distance_min, auto_follow_distance_max)
-						else:
-							distance = follow_distance
-
-						_interpolate_position(
-							bounds.get_center() +
-							follow_offset +
-							get_transform().basis.z * Vector3(distance, distance, distance)
-						)
-			FollowMode.PATH:
-				if follow_target and follow_path:
-					var path_position: Vector3 = follow_path.global_position
-					_interpolate_position(
-						follow_path.curve.get_closest_point(follow_target.global_position - path_position) + path_position
-					)
-			FollowMode.FRAMED:
-				if follow_target:
-					if not Engine.is_editor_hint():
-						if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
-							_interpolate_position(
-								_get_position_offset_distance()
-							)
-							return
-
-						viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
-						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-						viewport_position = viewport_position / visible_rect_size
-						_current_rotation = global_rotation
-
-						if _current_rotation != global_rotation:
-							_interpolate_position(
-								_get_position_offset_distance()
-							)
-
-						if _get_framed_side_offset() != Vector2.ZERO:
-							var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
-							var glo_pos: Vector3
-
-							if dead_zone_width == 0 || dead_zone_height == 0:
-								if dead_zone_width == 0 && dead_zone_height != 0:
-									glo_pos = _get_position_offset_distance()
-									glo_pos.z = target_position.z
-									_interpolate_position(
-										glo_pos
-									)
-								elif dead_zone_width != 0 && dead_zone_height == 0:
-									glo_pos = _get_position_offset_distance()
-									glo_pos.x = target_position.x
-									_interpolate_position(
-										glo_pos
-									)
-								else:
-									_interpolate_position(
-										_get_position_offset_distance()
-									)
-							else:
-								if _current_rotation != global_rotation:
-									var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
-									glo_pos.y = _get_target_position_offset().y + opposite
-									glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
-									glo_pos.x = global_position.x
-
-									_interpolate_position(
-										glo_pos
-									)
-									_current_rotation = global_rotation
-								else:
-									_interpolate_position(
-										target_position
-									)
-						else:
-							_follow_framed_offset = global_position - _get_target_position_offset()
-							_current_rotation = global_rotation
-					else:
-						global_position = _get_position_offset_distance()
-						var unprojected_position: Vector2 = _get_raw_unprojected_position()
-						var viewport_width: float = get_viewport().size.x
-						var viewport_height: float = get_viewport().size.y
-						var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-						var visible_rect_size: Vector2 = get_viewport().get_viewport().size
-
-						unprojected_position = unprojected_position - visible_rect_size / 2
-						if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-	#							Landscape View
-							var aspect_ratio_scale: float = viewport_width / viewport_height
-							unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-							unprojected_position.y = (unprojected_position.y + 1) / 2
-						else:
-	#							Portrait View
-							var aspect_ratio_scale: float = viewport_height / viewport_width
-							unprojected_position.x = (unprojected_position.x + 1) / 2
-							unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
-
-						viewport_position = unprojected_position
-			FollowMode.THIRD_PERSON:
-				if follow_target:
-					if not Engine.is_editor_hint():
-						if is_instance_valid(follow_target) and is_instance_valid(_follow_spring_arm):
-							_interpolate_position(
-								_get_target_position_offset(),
-								_follow_spring_arm
-							)
-					else:
-						global_position = _get_position_offset_distance()
-
+		_follow(delta)
 	if _should_look_at:
-		match look_at_mode:
-			LookAtMode.MIMIC:
-				global_rotation = look_at_target.global_rotation
-			LookAtMode.SIMPLE:
-				_interpolate_rotation(look_at_target.global_position)
-			LookAtMode.GROUP:
-				if not _multiple_look_at_targets:
-					if look_at_targets.size() == 0: return
-					_interpolate_rotation(look_at_targets[0].global_position)
+		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
+
+
+func _follow(delta: float) -> void:
+	var follow_position: Vector3
+	var follow_target_node: Node3D = self
+
+	match follow_mode:
+		FollowMode.GLUED:
+			if follow_target:
+				follow_position = follow_target.global_position
+		FollowMode.SIMPLE:
+			if follow_target:
+				follow_position = _get_target_position_offset()
+		FollowMode.GROUP:
+			if follow_targets:
+				if follow_targets.size() == 1:
+					follow_position = \
+						follow_targets[0].global_position + \
+						follow_offset + \
+						get_transform().basis.z * \
+						Vector3(follow_distance, follow_distance, follow_distance)
+
+				elif follow_targets.size() > 1:
+					var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
+					for node in follow_targets:
+						if is_instance_valid(node):
+							bounds = bounds.expand(node.global_position)
+
+					var distance: float
+					if auto_follow_distance:
+						distance = lerp(auto_follow_distance_min, auto_follow_distance_max, bounds.get_longest_axis_size() / auto_follow_distance_divisor)
+						distance = clamp(distance, auto_follow_distance_min, auto_follow_distance_max)
+					else:
+						distance = follow_distance
+
+					follow_position = \
+						bounds.get_center() + \
+						follow_offset + \
+						get_transform().basis.z * \
+						Vector3(distance, distance, distance)
+		FollowMode.PATH:
+			if follow_target and follow_path:
+				var path_position: Vector3 = follow_path.global_position
+				follow_position = \
+					follow_path.curve.get_closest_point(
+						follow_target.global_position - path_position
+					) + path_position
+		FollowMode.FRAMED:
+			if follow_target:
+				if not Engine.is_editor_hint():
+					if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
+						follow_position = _get_position_offset_distance()
+						_interpolate_position(follow_position, delta)
+						return
+
+					viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
+					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+					viewport_position = viewport_position / visible_rect_size
+					_current_rotation = global_rotation
+
+					if _current_rotation != global_rotation:
+						follow_position = _get_position_offset_distance()
+
+					if _get_framed_side_offset() != Vector2.ZERO:
+						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
+						var glo_pos: Vector3
+
+						if dead_zone_width == 0 || dead_zone_height == 0:
+							if dead_zone_width == 0 && dead_zone_height != 0:
+								glo_pos = _get_position_offset_distance()
+								glo_pos.z = target_position.z
+								follow_position = glo_pos
+							elif dead_zone_width != 0 && dead_zone_height == 0:
+								glo_pos = _get_position_offset_distance()
+								glo_pos.x = target_position.x
+								follow_position = glo_pos
+							else:
+								follow_position = _get_position_offset_distance()
+						else:
+							if _current_rotation != global_rotation:
+								var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
+								glo_pos.y = _get_target_position_offset().y + opposite
+								glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
+								glo_pos.x = global_position.x
+
+								follow_position = glo_pos
+								_current_rotation = global_rotation
+							else:
+								follow_position = target_position
+					else:
+						_follow_framed_offset = global_position - _get_target_position_offset()
+						_current_rotation = global_rotation
+						return
 				else:
-					var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
-					for node in look_at_targets:
-						bounds = bounds.expand(node.global_position)
-					_interpolate_rotation(bounds.get_center())
+					follow_position = _get_position_offset_distance()
+					var unprojected_position: Vector2 = _get_raw_unprojected_position()
+					var viewport_width: float = get_viewport().size.x
+					var viewport_height: float = get_viewport().size.y
+					var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+					var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+
+					unprojected_position = unprojected_position - visible_rect_size / 2
+					if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+#							Landscape View
+						var aspect_ratio_scale: float = viewport_width / viewport_height
+						unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+						unprojected_position.y = (unprojected_position.y + 1) / 2
+					else:
+#							Portrait View
+						var aspect_ratio_scale: float = viewport_height / viewport_width
+						unprojected_position.x = (unprojected_position.x + 1) / 2
+						unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+					viewport_position = unprojected_position
+		FollowMode.THIRD_PERSON:
+			if follow_target:
+				if not Engine.is_editor_hint():
+					if is_instance_valid(follow_target) and is_instance_valid(_follow_spring_arm):
+						follow_position = _get_target_position_offset()
+						follow_target_node = _follow_spring_arm
+
+				else:
+					global_position = _get_position_offset_distance()
+
+	_interpolate_position(follow_position, delta, follow_target_node)
+
+func _look_at() -> void:
+	match look_at_mode:
+		LookAtMode.MIMIC:
+			global_rotation = look_at_target.global_rotation
+		LookAtMode.SIMPLE:
+			_interpolate_rotation(look_at_target.global_position)
+		LookAtMode.GROUP:
+			if not _multiple_look_at_targets:
+				if look_at_targets.size() == 0: return
+				_interpolate_rotation(look_at_targets[0].global_position)
+			else:
+				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
+				for node in look_at_targets:
+					bounds = bounds.expand(node.global_position)
+				_interpolate_rotation(bounds.get_center())
 
 
 func _get_target_position_offset() -> Vector3:
@@ -721,7 +728,7 @@ func _get_position_offset_distance() -> Vector3:
 
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
-func _interpolate_position(target_position: Vector3, camera_target: Node3D = self) -> void:
+func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
 	if follow_damping:
 		for index in 3:
 			camera_target.global_position[index] = _smooth_damp(
@@ -985,8 +992,11 @@ func get_follow_mode() -> int:
 func set_follow_target(value: Node3D) -> void:
 	if follow_target == value: return
 	follow_target = value
+
+	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
+		_check_physics_body(value)
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
@@ -994,6 +1004,7 @@ func set_follow_target(value: Node3D) -> void:
 ## Removes the current [Node3D] [member follow_target].
 func erase_follow_target() -> void:
 	if follow_target == null: return
+	_follow_target_physics_based = false
 	_should_follow = false
 	follow_target = null
 	follow_target_changed.emit()
@@ -1011,6 +1022,91 @@ func erase_follow_path() -> void:
 ## Gets the current [Path3D] from the [member follow_path] property.
 func get_follow_path() -> Path3D:
 	return follow_path
+
+
+## Assigns a new [param follow_targets] array value.
+func set_follow_targets(value: Array[Node3D]) -> void:
+	if follow_targets == value: return
+
+	follow_targets = value
+
+	if follow_targets.is_empty():
+		_should_follow = false
+		_has_multiple_follow_targets = false
+		_follow_target_physics_based = false
+		return
+
+	var valid_instances: int
+	_follow_target_physics_based = false
+	for target in follow_targets:
+		if is_instance_valid(target):
+			_should_follow = true
+			valid_instances += 1
+
+			_check_physics_body(target)
+
+			if valid_instances > 1:
+				_has_multiple_follow_targets = true
+## Adds a single [Node3D] to [member follow_targets] array.
+func append_follow_targets(value: Node3D) -> void:
+	if not is_instance_valid(value):
+		printerr(value, " is not a valid instance")
+		return
+
+	if not follow_targets.has(value):
+		follow_targets.append(value)
+		_should_follow = true
+		_has_multiple_follow_targets = true
+		_check_physics_body(value)
+	else:
+		printerr(value, " is already part of Follow Group")
+## Adds an Array of type [Node3D] to [member follow_targets] array.
+func append_follow_targets_array(value: Array[Node3D]) -> void:
+	for target in value:
+		if not is_instance_valid(target): continue
+		if not follow_targets.has(target):
+			follow_targets.append(target)
+			_should_follow = true
+			_check_physics_body(target)
+			if follow_targets.size() > 1:
+				_has_multiple_follow_targets = true
+		else:
+			printerr(value, " is already part of Follow Group")
+## Removes [Node3D] from [member follow_targets].
+func erase_follow_targets(value: Node3D) -> void:
+	follow_targets.erase(value)
+	_follow_target_physics_based = false
+	for target in follow_targets:
+		_check_physics_body(target)
+
+	if follow_targets.size() < 2:
+		_has_multiple_follow_targets = false
+	if follow_targets.size() < 1:
+		_should_follow = false
+## Gets all [Node3D] from [follow_targets].
+func get_follow_targets() -> Array[Node3D]:
+	return follow_targets
+
+## Returns true if the [param PhantomCamera3D] has more than one member in the
+## [member follow_targets] array.
+func get_has_multiple_follow_targets() -> bool:
+	return _has_multiple_follow_targets
+
+func _check_physics_body(target: Node3D) -> void:
+	if target is PhysicsBody3D:
+		## NOTE - Feature Toggle
+		#if Engine.get_version_info().major == 4 and \
+		#Engine.get_version_info().minor < XX:
+		if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+			print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter.")
+			print_rich("Will have proper support once 3D Physics Interpolation becomes part of the core Godot engine.")
+			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		return
+		## TODO - Enable once Godot supports 3D Physics Interpolation
+		#elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+				#printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+		#_follow_target_physics_based = true
 
 
 ## Assigns a new [param Vector3] for the [param follow_offset] property.
@@ -1032,7 +1128,6 @@ func get_follow_damping() -> bool:
 
 ## Assigns new [member follow_damping_value] value.
 func set_follow_damping_value(value: Vector3) -> void:
-
 	## TODO - Should be using @export_range once minimum version support is Godot 4.3
 	if value.x < 0: value.x = 0
 	elif value.y < 0: value.y = 0
@@ -1050,66 +1145,6 @@ func set_follow_distance(value: float) -> void:
 ## Gets [member follow_distance] value.
 func get_follow_distance() -> float:
 	return follow_distance
-
-## Assigns a new [param follow_targets] array value.
-func set_follow_targets(value: Array[Node3D]) -> void:
-	if follow_targets == value: return
-
-	follow_targets = value
-
-	if follow_targets.is_empty():
-		_should_follow = false
-		_has_multiple_follow_targets = false
-		return
-
-	var valid_instances: int
-	for target in follow_targets:
-		if is_instance_valid(target):
-			_should_follow = true
-			_has_multiple_follow_targets = true
-			return
-		else:
-			_should_follow = false
-			_has_multiple_follow_targets = false
-
-## Adds a single [Node3D] to [member follow_targets] array.
-func append_follow_targets(value: Node3D) -> void:
-	if not is_instance_valid(value):
-		printerr(value, " is not a valid instance")
-		return
-
-	if not follow_targets.has(value):
-		follow_targets.append(value)
-		_should_follow = true
-		_has_multiple_follow_targets = true
-	else:
-		printerr(value, " is already part of Follow Group")
-## Adds an Array of type [Node3D] to [member follow_targets] array.
-func append_follow_targets_array(value: Array[Node3D]) -> void:
-	for val in value:
-		if not is_instance_valid(val): continue
-		if not follow_targets.has(val):
-			follow_targets.append(val)
-			_should_follow = true
-			if follow_targets.size() > 1:
-				_has_multiple_follow_targets = true
-		else:
-			printerr(value, " is already part of Follow Group")
-## Removes [Node3D] from [member follow_targets].
-func erase_follow_targets(value: Node3D) -> void:
-	follow_targets.erase(value)
-	if follow_targets.size() < 2:
-		_has_multiple_follow_targets = false
-	if follow_targets.size() < 1:
-		_should_follow = false
-## Gets all [Node3D] from [follow_targets].
-func get_follow_targets() -> Array[Node3D]:
-	return follow_targets
-
-## Returns true if the [param PhantomCamera3D] has more than one member in the
-## [member follow_targets] array.
-func get_has_multiple_follow_targets() -> bool:
-	return _has_multiple_follow_targets
 
 
 ## Enables or disables [member auto_follow_distance] when using Group Follow.
@@ -1225,6 +1260,7 @@ func get_look_at_mode() -> int:
 ## Assigns new [Node3D] as [member look_at_target].
 func set_look_at_target(value: Node3D) -> void:
 	look_at_target = value
+	_check_physics_body(value)
 	#_look_at_target_node = get_node_or_null(value)
 	look_at_target_changed
 	if is_instance_valid(look_at_target):
@@ -1255,6 +1291,7 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 				valid_instances += 1
 				_should_look_at = true
 				_valid_look_at_targets.append(target)
+				_check_physics_body(target)
 
 			if valid_instances > 1:
 				_multiple_look_at_targets = true
@@ -1268,22 +1305,27 @@ func append_look_at_target(value: Node3D) -> void:
 	if not look_at_targets.has(value):
 		look_at_targets.append(value)
 		_valid_look_at_targets.append(value)
-		_multiple_look_at_targets = true
+		_check_physics_body(value)
+		if look_at_targets.size() > 1:
+			_multiple_look_at_targets = true
 	else:
 		printerr(value, " is already part of Look At Group")
 ## Appends an array of type [Node3D] to [member look_at_targets] array.
-func append_look_at_targets_array(value: Array[NodePath]) -> void:
+func append_look_at_targets_array(value: Array[Node3D]) -> void:
 	for val in value:
 		if not look_at_targets.has(val):
 			look_at_targets.append(val)
 			_valid_look_at_targets.append(val)
-			_multiple_look_at_targets = true
+			_check_physics_body(val)
+			if look_at_targets.size() > 1:
+				_multiple_look_at_targets = true
 		else:
 			printerr(val, " is already part of Look At Group")
 ## Removes [Node3D] from [member look_at_targets] array.
 func erase_look_at_targets_member(value: Node3D) -> void:
 	look_at_targets.erase(value)
 	_valid_look_at_targets.erase(value)
+	_check_physics_body(value)
 	if look_at_targets.size() < 1:
 		_multiple_look_at_targets = false
 ## Gets all the [Node3D] instances in [member look_at_targets].
@@ -1370,5 +1412,14 @@ func set_fov(value: float) -> void:
 ## Gets the [member Camera3D.fov] value assigned to the [param Camera3DResource].
 func get_fov() -> float:
 	return camera_3d_resource.fov
+
+
+func set_follow_target_physics_based(value: bool, caller: Node) -> void:
+	if is_instance_of(caller, PhantomCameraHost):
+		_follow_target_physics_based = value
+	else:
+		printerr("set_follow_target_physics_based is for internal use only.")
+func get_follow_target_physics_based() -> bool:
+	return _follow_target_physics_based
 
 #endregion

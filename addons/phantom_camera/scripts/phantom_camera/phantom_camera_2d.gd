@@ -140,7 +140,8 @@ var pcam_host_owner: PhantomCameraHost = null:
 	get = get_follow_target
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
-var _is_physics_node: bool = false
+var _follow_target_physics_based: bool = false
+var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -387,14 +388,19 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Parameters
 	####################
-	elif property.name == "follow_offset":
-		if follow_mode == FollowMode.GLUED or \
-		follow_mode == FollowMode.NONE:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	elif property.name == "follow_damping" and \
-	follow_mode == FollowMode.NONE:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if follow_mode == FollowMode.NONE:
+		match property.name:
+			"follow_offset", \
+			"follow_damping", \
+			"follow_damping_value":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "follow_offset":
+		if follow_mode == FollowMode.PATH or \
+		follow_mode == FollowMode.GLUED:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -472,36 +478,50 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
+	if _follow_target_physics_based: return
+	_process_logic(delta)
+
+
+func _physics_process(delta: float):
+	if not _follow_target_physics_based: return
+	_process_logic(delta)
+
+
+func _process_logic(delta: float) -> void:
 	if not _is_active:
 		match inactive_update_mode:
-			InactiveUpdateMode.NEVER:
-				return
+			InactiveUpdateMode.NEVER: return
 			InactiveUpdateMode.ALWAYS:
 				# Only triggers if limit isn't default
 				if _limit_inactive_pcam:
-					set_global_position(
-						_set_limit_clamp_position(global_position)
-					)
+					global_position = _set_limit_clamp_position(global_position)
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
+	_limit_checker()
+	if _should_follow:
+		_follow(delta)
 
+
+func _limit_checker() -> void:
 	## TODO - Needs to see if this can be triggerd only from CollisionShape2D Transform changes
 	if Engine.is_editor_hint():
 		if draw_limits:
 			update_limit_all_sides()
 
-	if not _should_follow: return
+
+func _follow(delta: float) -> void:
+	var follow_position: Vector2
 
 	match follow_mode:
 		FollowMode.GLUED:
 			if follow_target:
-				_interpolate_position(follow_target.global_position)
+				follow_position = follow_target.global_position
 		FollowMode.SIMPLE:
 			if follow_target:
-				_interpolate_position(_target_position_with_offset())
+				follow_position = _target_position_with_offset()
 		FollowMode.GROUP:
 			if follow_targets.size() == 1:
-				_interpolate_position(follow_targets[0].global_position)
+				follow_position = follow_targets[0].global_position
 			elif _has_multiple_follow_targets and follow_targets.size() > 1:
 				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
 				for node in follow_targets:
@@ -511,7 +531,8 @@ func _process(delta: float) -> void:
 							auto_zoom_margin.x,
 							auto_zoom_margin.y,
 							auto_zoom_margin.z,
-							auto_zoom_margin.w)
+							auto_zoom_margin.w
+						)
 #						else:
 #							rect = rect.grow_individual(-80, 0, 0, 0)
 				if auto_zoom:
@@ -520,15 +541,16 @@ func _process(delta: float) -> void:
 						zoom = clamp(screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
-				_interpolate_position(rect.get_center())
+				follow_position = rect.get_center()
 		FollowMode.PATH:
 				if follow_target and follow_path:
 					var path_position: Vector2 = follow_path.global_position
-					_interpolate_position(
+
+					follow_position = \
 						follow_path.curve.get_closest_point(
 							_target_position_with_offset() - path_position
 						) + path_position
-					)
+
 		FollowMode.FRAMED:
 			if follow_target:
 				if not Engine.is_editor_hint():
@@ -540,25 +562,29 @@ func _process(delta: float) -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								_interpolate_position(_target_position_with_offset())
+								follow_position = _target_position_with_offset()
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _target_position_with_offset()
 								glo_pos.x += target_position.x - global_position.x
-								_interpolate_position(glo_pos)
+								follow_position = glo_pos
 							else:
-								_interpolate_position(_target_position_with_offset())
+								follow_position = _target_position_with_offset()
 						else:
-							_interpolate_position(target_position)
+							follow_position = target_position
 					else:
 						_follow_framed_offset = global_position - _target_position_with_offset()
+						return
 				else:
-					_interpolate_position(_target_position_with_offset())
+					follow_position = _target_position_with_offset()
+
+	_interpolate_position(follow_position, delta)
 
 
 func _set_velocity(index: int, value: float):
 	_velocity_ref[index] = value
 
-func _interpolate_position(target_position: Vector2) -> void:
+
+func _interpolate_position(target_position: Vector2, delta: float) -> void:
 	if _limit_inactive_pcam and not _has_tweened:
 		target_position = _set_limit_clamp_position(target_position)
 
@@ -571,16 +597,17 @@ func _interpolate_position(target_position: Vector2) -> void:
 					index,
 					_velocity_ref[index],
 					_set_velocity,
-					follow_damping_value[index]
+					follow_damping_value[index],
+					delta
 				)
 	else:
 		global_position = target_position
 
 
-func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float) -> float:
+func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
-		var x: float = omega * get_process_delta_time()
+		var x: float = omega * delta
 		var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
 		var diff: float = self_axis - target_axis
 		var _target_axis: float = target_axis
@@ -589,14 +616,14 @@ func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velo
 		diff = clampf(diff, -max_change, max_change)
 		target_axis = self_axis - diff
 
-		var temp: float = (current_velocity + omega * diff) * get_process_delta_time()
+		var temp: float = (current_velocity + omega * diff) * delta
 		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
 		var output: float = target_axis + (diff + temp) * exponential
 
 		## To prevent overshooting
 		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
 			output = _target_axis
-			set_velocity.call(index, (output - _target_axis) / get_process_delta_time())
+			set_velocity.call(index, (output - _target_axis) / delta)
 
 		return output
 
@@ -887,16 +914,20 @@ func get_follow_mode() -> int:
 func set_follow_target(value: Node2D) -> void:
 	if follow_target == value: return
 	follow_target = value
+	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
+		_check_physics_body(value)
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
+	notify_property_list_changed()
 ## Erases the current [member follow_target].
 func erase_follow_target() -> void:
 	if follow_target == null: return
 	_should_follow = false
 	follow_target = null
+	_follow_target_physics_based = false
 	follow_target_changed.emit()
 ## Gets the current [member follow_target].
 func get_follow_target() -> Node2D:
@@ -912,6 +943,84 @@ func erase_follow_path() -> void:
 ## Gets the current [Path2D] from the [member follow_path].
 func get_follow_path() -> Path2D:
 	return follow_path
+
+
+## Assigns a new [param follow_targets] array value.
+func set_follow_targets(value: Array[Node2D]) -> void:
+	if follow_targets == value: return
+
+	follow_targets = value
+
+	if follow_targets.is_empty():
+		_should_follow = false
+		_has_multiple_follow_targets = false
+		return
+
+	_follow_target_physics_based = false
+	var valid_instances: int = 0
+	for target in follow_targets:
+		if is_instance_valid(target):
+			_should_follow = true
+			valid_instances += 1
+
+			_check_physics_body(target)
+
+			if valid_instances > 1:
+				_has_multiple_follow_targets = true
+## Appends a single [Node2D] to [member follow_targets].
+func append_follow_targets(value: Node2D) -> void:
+	if not is_instance_valid(value):
+		printerr(value, " is not a valid Node2D instance.")
+		return
+	if not follow_targets.has(value):
+		follow_targets.append(value)
+		_should_follow = true
+		_has_multiple_follow_targets = true
+		_check_physics_body(value)
+	else:
+		printerr(value, " is already part of Follow Group")
+## Adds an Array of type [Node2D] to [member follow_targets].
+func append_follow_targets_array(value: Array[Node2D]) -> void:
+	for target in value:
+		if not is_instance_valid(target): continue
+		if not follow_targets.has(target):
+			follow_targets.append(target)
+			_should_follow = true
+			_check_physics_body(target)
+			if follow_targets.size() > 1:
+				_has_multiple_follow_targets = true
+		else:
+			printerr(value, " is already part of Follow Group")
+## Removes a [Node2D] from [member follow_targets] array.
+func erase_follow_targets(value: Node2D) -> void:
+	follow_targets.erase(value)
+	_follow_target_physics_based = false
+	for target in follow_targets:
+		_check_physics_body(target)
+	if follow_targets.size() < 2:
+		_has_multiple_follow_targets = false
+	if follow_targets.size() < 1:
+		_should_follow = false
+## Gets all [Node2D] from [member follow_targets] array.
+func get_follow_targets() -> Array[Node2D]:
+	return follow_targets
+
+func _check_physics_body(target: Node2D) -> void:
+	if target is PhysicsBody2D:
+		## NOTE - Feature Toggle
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 3:
+			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
+				print_rich("Once Godot 4.3 is released, will strongly recommend upgrading to that as it has built-in support for 2D Physics Interpolation.")
+				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+			return
+		## NOTE - Only supported in Godot 4.3 or above
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation") and ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		_follow_target_physics_based = true
 
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
@@ -947,56 +1056,6 @@ func set_snap_to_pixel(value: bool) -> void:
 func get_snap_to_pixel() -> bool:
 	return snap_to_pixel
 
-## Assigns a new [param follow_targets] array value.
-func set_follow_targets(value: Array[Node2D]) -> void:
-	if follow_targets == value: return
-
-	follow_targets = value
-
-	if follow_targets.is_empty():
-		_should_follow = false
-		_has_multiple_follow_targets = false
-		return
-
-	var valid_instances: int = 0
-	for target in follow_targets:
-		if is_instance_valid(target):
-			_should_follow = true
-			valid_instances += 1
-
-			if valid_instances > 1:
-				_has_multiple_follow_targets = true
-## Appends a single [Node2D] to [member follow_targets].
-func append_follow_targets(value: Node2D) -> void:
-	if not is_instance_valid(value):
-		printerr(value, " is not a valid instance")
-		return
-	if not follow_targets.has(value):
-		follow_targets.append(value)
-		_should_follow = true
-		_has_multiple_follow_targets = true
-	else:
-		printerr(value, " is already part of Follow Group")
-## Adds an Array of type [Node2D] to [member follow_targets].
-func append_follow_targets_array(value: Array[Node2D]) -> void:
-	for val in value:
-		if not is_instance_valid(val): continue
-		if not follow_targets.has(val):
-			follow_targets.append(val)
-			_should_follow = true
-			if follow_targets.size() > 1:
-				_has_multiple_follow_targets = true
-		else:
-			printerr(value, " is already part of Follow Group")
-## Removes a [Node2D] from [member follow_targets] array.
-func erase_follow_targets(value: Node2D) -> void:
-	follow_targets.erase(value)
-	if follow_targets.size() < 1:
-		_should_follow = false
-		_has_multiple_follow_targets = false
-## Gets all Node2D from Follow Group array.
-func get_follow_targets() -> Array[Node2D]:
-	return follow_targets
 
 ## Returns true if the [param PhantomCamera2D] has more than one member in the
 ## [follow_targets] array.
@@ -1164,5 +1223,13 @@ func set_inactive_update_mode(value: int) -> void:
 ## Gets [enum InactiveUpdateMode] value.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
+
+func set_follow_target_physics_based(value: bool, caller: Node) -> void:
+	if is_instance_of(caller, PhantomCameraHost):
+		_follow_target_physics_based = value
+	else:
+		printerr("set_follow_target_physics_based() is for internal use only.")
+func get_follow_target_physics_based() -> bool:
+	return _follow_target_physics_based
 
 #endregion
