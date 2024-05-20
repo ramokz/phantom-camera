@@ -448,6 +448,7 @@ func pcam_removed_from_scene(pcam: Node) -> void:
 	else:
 		printerr("This function should only be called from PhantomCamera scripts")
 
+
 ## Triggers a recalculation to determine which PhantomCamera has the highest
 ## priority.
 func pcam_priority_updated(pcam: Node) -> void:
@@ -488,6 +489,7 @@ func pcam_priority_override_disabled() -> void:
 ## Returns the currently active [param PhantomCamera]
 func get_active_pcam() -> Node:
 	return _active_pcam
+
 
 ## Returns whether if a [param PhantomCamera] should tween when it becomes
 ## active. If it's already active, the value will always be false.

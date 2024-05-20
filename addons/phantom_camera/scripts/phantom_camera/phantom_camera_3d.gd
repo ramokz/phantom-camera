@@ -1112,6 +1112,7 @@ func _check_physics_body(target: Node3D) -> void:
 ## Assigns a new [param Vector3] for the [param follow_offset] property.
 func set_follow_offset(value: Vector3) -> void:
 	follow_offset = value
+
 ## Gets the current [param Vector3] for the [param follow_offset] property.
 func get_follow_offset() -> Vector3:
 	return follow_offset
@@ -1121,6 +1122,7 @@ func get_follow_offset() -> Vector3:
 func set_follow_damping(value: bool) -> void:
 	follow_damping = value
 	notify_property_list_changed()
+
 ## Gets the currents [member follow_damping] property.
 func get_follow_damping() -> bool:
 	return follow_damping
@@ -1132,8 +1134,8 @@ func set_follow_damping_value(value: Vector3) -> void:
 	if value.x < 0: value.x = 0
 	elif value.y < 0: value.y = 0
 	elif value.z < 0: value.z = 0
-
 	follow_damping_value = value
+
 ## Gets the currents [member follow_damping_value] value.
 func get_follow_damping_value() -> Vector3:
 	return follow_damping_value
@@ -1142,6 +1144,7 @@ func get_follow_damping_value() -> Vector3:
 ## Assigns a new [member follow_distance] value.
 func set_follow_distance(value: float) -> void:
 	follow_distance = value
+
 ## Gets [member follow_distance] value.
 func get_follow_distance() -> float:
 	return follow_distance
@@ -1151,16 +1154,20 @@ func get_follow_distance() -> float:
 func set_auto_follow_distance(value: bool) -> void:
 	auto_follow_distance = value
 	notify_property_list_changed()
+
 ## Gets [member auto_follow_distance] state.
 func get_auto_follow_distance() -> bool:
 	return auto_follow_distance
 
+
 ## Assigns new [member auto_follow_distance_min] value.
 func set_auto_follow_distance_min(value: float) -> void:
 	auto_follow_distance_min = value
+
 ## Gets [member auto_follow_distance_min] value.
 func get_auto_follow_distance_min() -> float:
 	return auto_follow_distance_min
+
 
 ## Assigns new [member auto_follow_distance_max] value.
 func set_auto_follow_distance_max(value: float) -> void:
@@ -1169,47 +1176,60 @@ func set_auto_follow_distance_max(value: float) -> void:
 func get_auto_follow_distance_max() -> float:
 	return auto_follow_distance_max
 
+
 ## Assigns new [member auto_follow_distance_divisor] value.
 func set_auto_follow_distance_divisor(value: float) -> void:
 	auto_follow_distance_divisor = value
+
 ## Gets [member auto_follow_distance_divisor] value.
 func get_auto_follow_distance_divisor() -> float:
 	return auto_follow_distance_divisor
+
 
 ## Assigns new rotation (in radians) value to [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func set_third_person_rotation(value: Vector3) -> void:
 	_follow_spring_arm.rotation = value
+
 ## Gets the rotation value (in radians) from the [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func get_third_person_rotation() -> Vector3:
 	return _follow_spring_arm.rotation
+
+
 ## Assigns new rotation (in degrees) value to [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func set_third_person_rotation_degrees(value: Vector3) -> void:
 	_follow_spring_arm.rotation_degrees = value
+
 ## Gets the rotation value (in degrees) from the [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func get_third_person_rotation_degrees() -> Vector3:
 	return _follow_spring_arm.rotation_degrees
+
+
 ## Assigns new [Quaternion] value to [SpringArm3D] for [param ThirdPerson]
 ## [enum FollowMode].
 func set_third_person_quaternion(value: Quaternion) -> void:
 	_follow_spring_arm.quaternion = value
+
 ## Gets the [Quaternion] value of the [SpringArm3D] for [param ThirdPerson]
 ## [enum Follow mode].
 func get_third_person_quaternion() -> Quaternion:
 	return _follow_spring_arm.quaternion
+
 
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
 	if is_instance_valid(_follow_spring_arm):
 		_follow_spring_arm.spring_length = value
+
 ## Gets the [member SpringArm3D.length]
 ## from a [param ThirdPerson] [enum follow_mode] instance.
 func get_spring_length() -> float:
 	return follow_distance
+
 
 ## Assigns a new [member collision_mask] to the [SpringArm3D] when [enum FollowMode]
 ## is set to [param ThirdPerson].
@@ -1217,16 +1237,19 @@ func set_collision_mask(value: int) -> void:
 	collision_mask = value
 	if is_instance_valid(_follow_spring_arm):
 		_follow_spring_arm.collision_mask = collision_mask
+
 ## Enables or disables a specific [member collision_mask] layer for the
 ## [SpringArm3D] when [enum FollowMode] is set to [param ThirdPerson].
 func set_collision_mask_value(value: int, enabled: bool) -> void:
 	collision_mask = _set_layer(collision_mask, value, enabled)
 	if is_instance_valid(_follow_spring_arm):
 		_follow_spring_arm.collision_mask = collision_mask
+
 ## Gets [member collision_mask] from the [SpringArm3D] when [enum FollowMode]
 ## is set to [param ThirdPerson].
 func get_collision_mask() -> int:
 	return collision_mask
+
 
 ## Assigns a new [SpringArm3D.shape] when [enum FollowMode]
 ## is set to [param ThirdPerson].
@@ -1234,9 +1257,11 @@ func set_shape(value: Shape3D) -> void:
 	shape = value
 	if is_instance_valid(_follow_spring_arm):
 		_follow_spring_arm.shape = shape
+
 ## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
 	return shape
+
 
 ## Assigns a new [member SpringArm3D.margin] value when [enum FollowMode]
 ## is set to [param ThirdPerson].
@@ -1244,6 +1269,7 @@ func set_margin(value: float) -> void:
 	margin = value
 	if is_instance_valid(_follow_spring_arm):
 		_follow_spring_arm.margin = margin
+
 ## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
 ## [param ThirdPerson].
 func get_margin() -> float:
@@ -1257,6 +1283,7 @@ func get_margin() -> float:
 func get_look_at_mode() -> int:
 	return look_at_mode
 
+
 ## Assigns new [Node3D] as [member look_at_target].
 func set_look_at_target(value: Node3D) -> void:
 	look_at_target = value
@@ -1268,10 +1295,10 @@ func set_look_at_target(value: Node3D) -> void:
 	else:
 		_should_look_at = false
 	notify_property_list_changed()
+
 ## Gets current [Node3D] from [member look_at_target] property.
 func get_look_at_target():
 	return look_at_target
-
 
 
 ## Sets an array of type [Node3D] to [member set_look_at_targets].
@@ -1298,8 +1325,8 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 			elif valid_instances == 0:
 				_should_look_at = false
 				_multiple_look_at_targets = false
-
 	notify_property_list_changed()
+
 ## Appends a [Node3D] to [member look_at_targets] array.
 func append_look_at_target(value: Node3D) -> void:
 	if not look_at_targets.has(value):
@@ -1310,6 +1337,7 @@ func append_look_at_target(value: Node3D) -> void:
 			_multiple_look_at_targets = true
 	else:
 		printerr(value, " is already part of Look At Group")
+
 ## Appends an array of type [Node3D] to [member look_at_targets] array.
 func append_look_at_targets_array(value: Array[Node3D]) -> void:
 	for val in value:
@@ -1321,6 +1349,7 @@ func append_look_at_targets_array(value: Array[Node3D]) -> void:
 				_multiple_look_at_targets = true
 		else:
 			printerr(val, " is already part of Look At Group")
+
 ## Removes [Node3D] from [member look_at_targets] array.
 func erase_look_at_targets_member(value: Node3D) -> void:
 	look_at_targets.erase(value)
@@ -1328,32 +1357,44 @@ func erase_look_at_targets_member(value: Node3D) -> void:
 	_check_physics_body(value)
 	if look_at_targets.size() < 1:
 		_multiple_look_at_targets = false
+
 ## Gets all the [Node3D] instances in [member look_at_targets].
 func get_look_at_targets() -> Array[Node3D]:
 	return look_at_targets
 
+
 ## Assigns a new [Vector3] to the [member look_at_offset] value.
 func set_look_at_offset(value: Vector3) -> void:
 	look_at_offset = value
+
 ## Gets the current [member look_at_offset] value.
 func get_look_at_offset() -> Vector3:
 	return look_at_offset
 
 
+## Enables or disables [member look_at_damping].
 func set_look_at_damping(value: bool) -> void:
 	look_at_damping = value
 	notify_property_list_changed()
+
+## Gets the currents [member look_at_damping] property.
 func get_look_at_damping() -> bool:
 	return look_at_damping
 
+
+## Assigns new [member look_at_damping_value] value.
 func set_look_at_damping_value(value: float) -> void:
 	look_at_damping_value = value
+
+## Gets the currents [member look_at_damping_value] value.
 func get_look_at_damping_value() -> float:
 	return look_at_damping_value
+
 
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
 	inactive_update_mode = value
+
 ## Gets [member inactive_update_mode] property.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
@@ -1362,9 +1403,11 @@ func get_inactive_update_mode() -> int:
 ## Assigns a [Camera3DResource].
 func set_camera_3d_resource(value: Camera3DResource) -> void:
 	camera_3d_resource = value
+
 ## Gets the [Camera3DResource]
 func get_camera_3d_resource() -> Camera3DResource:
 	return camera_3d_resource
+
 
 ## Assigns a new [member Camera3D.cull_mask] value.[br]
 ## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
@@ -1372,6 +1415,7 @@ func get_camera_3d_resource() -> Camera3DResource:
 func set_cull_mask(value: int) -> void:
 	camera_3d_resource.cull_mask = value
 	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = value
+
 ## Enables or disables a specific [member Camera3D.cull_mask] layer.[br]
 ## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
 ## this [param PhantomCamera3D].
@@ -1379,9 +1423,11 @@ func set_cull_mask_value(layer_number: int, value: bool) -> void:
 	var mask: int = _set_layer(get_cull_mask(), layer_number, value)
 	camera_3d_resource.cull_mask = mask
 	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = mask
+
 ## Gets the [member Camera3D.cull_mask] value assigned to the [Camera3DResource].
 func get_cull_mask() -> int:
 	return camera_3d_resource.cull_mask
+
 
 ## Assigns a new [member Camera3D.h_offset] value.[br]
 ## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
@@ -1389,9 +1435,11 @@ func get_cull_mask() -> int:
 func set_h_offset(value: float) -> void:
 	camera_3d_resource.h_offset = value
 	if _is_active: get_pcam_host_owner().camera_3d.h_offset = value
+
 ## Gets the [member Camera3D.h_offset] value assigned to the [param Camera3DResource].
 func get_h_offset() -> float:
 	return camera_3d_resource.h_offset
+
 
 ## Assigns a new [Camera3D.v_offset] value.[br]
 ## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
@@ -1399,9 +1447,11 @@ func get_h_offset() -> float:
 func set_v_offset(value: float) -> void:
 	camera_3d_resource.v_offset = value
 	if _is_active: get_pcam_host_owner().camera_3d.v_offset = value
+
 ## Gets the Camera3D fov value assigned to the [param Camera3DResource].
 func get_v_offset() -> float:
 	return camera_3d_resource.v_offset
+
 
 ## Assigns a new [member Camera3D.fov] value.[br]
 ## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
@@ -1409,6 +1459,7 @@ func get_v_offset() -> float:
 func set_fov(value: float) -> void:
 	camera_3d_resource.fov = value
 	if _is_active: get_pcam_host_owner().camera_3d.fov = value
+
 ## Gets the [member Camera3D.fov] value assigned to the [param Camera3DResource].
 func get_fov() -> float:
 	return camera_3d_resource.fov
@@ -1419,6 +1470,7 @@ func set_follow_target_physics_based(value: bool, caller: Node) -> void:
 		_follow_target_physics_based = value
 	else:
 		printerr("set_follow_target_physics_based is for internal use only.")
+
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
 
