@@ -1178,9 +1178,16 @@ func set_limit_target(value: NodePath) -> void:
 				reset_limit()
 				limit_target = null
 				return
-	else:
+		else:
+			printerr("Limit Target is not a TileMap or CollisionShape2D node")
+			return
+
+	elif value == NodePath(""):
 		reset_limit()
 		limit_target = null
+	else:
+		printerr("Limit Target cannot be found")
+		return
 
 	_limit_node = get_node_or_null(value)
 
