@@ -58,7 +58,7 @@ var root_node: Node
 
 #region Public variables
 
-var pcam_host_group: Array[Node]
+var pcam_host_group: Array[PhantomCameraHost]
 
 var is_scene: bool
 
@@ -232,7 +232,7 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 					pcam_host = cam_child
 
 				if pcam_host:
-					if get_tree().get_nodes_in_group(Constants.PCAM_GROUP_NAME):
+					if PhantomCameraManager.get_phantom_camera_2ds() or PhantomCameraManager.get_phantom_camera_3ds():
 						# Pcam exists in tree
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
@@ -336,7 +336,7 @@ func _instantiate_node(root: Node, node: Node, name: String) -> void:
 
 
 func _set_viewfinder(root: Node, editor: bool) -> void:
-	pcam_host_group = root.get_tree().get_nodes_in_group(Constants.PCAM_HOST_GROUP_NAME)
+	pcam_host_group = PhantomCameraManager.get_phantom_camera_hosts()
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
@@ -349,7 +349,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 					_camera_2d.zoom = pcam_host.camera_2d.zoom
 					_camera_2d.offset = pcam_host.camera_2d.offset
 					_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
-
 
 					sub_viewport.world_2d = pcam_host.camera_2d.get_world_2d()
 					sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
@@ -380,9 +379,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 
 			if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 				_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
-		else:
-			for pcam_host in pcam_host_group:
-				print(pcam_host, " is in a scene")
 
 
 func _resized() -> void:
