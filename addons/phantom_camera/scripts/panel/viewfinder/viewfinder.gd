@@ -232,7 +232,7 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 					pcam_host = cam_child
 
 				if pcam_host:
-					if PhantomCameraManager.get_phantom_camera_hosts():
+					if PhantomCameraManager.get_phantom_camera_2ds() or PhantomCameraManager.get_phantom_camera_3ds():
 						# Pcam exists in tree
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():

@@ -262,7 +262,8 @@ func _find_pcam_with_highest_priority() -> void:
 
 
 func _process(delta: float):
-	if _follow_target_physics_based: return
+	if _follow_target_physics_based or _active_pcam_missing: return
+
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
 	else:
@@ -275,7 +276,7 @@ func _process(delta: float):
 
 
 func _physics_process(delta: float):
-	if not _follow_target_physics_based: return
+	if not _follow_target_physics_based or _active_pcam_missing: return
 
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
