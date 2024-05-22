@@ -122,7 +122,6 @@ func _enter_tree() -> void:
 				for pcam in PhantomCameraManager.get_phantom_camera_2ds():
 					pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
-					print(pcam)
 		else:
 			if not PhantomCameraManager.get_phantom_camera_3ds().is_empty():
 				for pcam in PhantomCameraManager.get_phantom_camera_3ds():
