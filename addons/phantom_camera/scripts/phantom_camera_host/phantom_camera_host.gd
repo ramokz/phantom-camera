@@ -581,6 +581,7 @@ func get_active_pcam() -> Node:
 	else:
 		return _active_pcam_3d
 
+
 ## Returns whether if a [param PhantomCamera] should tween when it becomes
 ## active. If it's already active, the value will always be false.
 ## [b]Note:[/b] This can only be called internally from a

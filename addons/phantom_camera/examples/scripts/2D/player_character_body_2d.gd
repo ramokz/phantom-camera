@@ -61,6 +61,8 @@ func _ready() -> void:
 		InputMap.add_action(action_val)
 		InputMap.action_add_event(action_val, movement_input)
 
+	_player_visuals.top_level = true
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _is_interactive:
@@ -109,7 +111,6 @@ func _interactive_node_logic() -> void:
 
 
 func _physics_process(delta: float) -> void:
-
 	_physics_body_trans_last = _physics_body_trans_current
 	_physics_body_trans_current = global_transform
 

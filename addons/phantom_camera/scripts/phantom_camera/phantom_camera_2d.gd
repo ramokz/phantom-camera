@@ -825,10 +825,12 @@ func set_pcam_host_owner(value: PhantomCameraHost) -> void:
 func get_pcam_host_owner() -> PhantomCameraHost:
 	return pcam_host_owner
 
+
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
 	zoom = value
 	queue_redraw()
+
 ## Gets current Zoom value.
 func get_zoom() -> Vector2:
 	return zoom
@@ -837,9 +839,9 @@ func get_zoom() -> Vector2:
 ## Assigns new Priority value.
 func set_priority(value: int) -> void:
 	priority = abs(value)
-
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_priority_updated(self)
+
 ## Gets current Priority value.
 func get_priority() -> int:
 	return priority
@@ -848,36 +850,44 @@ func get_priority() -> int:
 ## Assigns a new PhantomCameraTween resource to the PhantomCamera2D
 func set_tween_resource(value: PhantomCameraTween) -> void:
 	tween_resource = value
+
 ## Gets the PhantomCameraTween resource assigned to the PhantomCamera2D
 ## Returns null if there's nothing assigned to it.
 func get_tween_resource() -> PhantomCameraTween:
 	return tween_resource
 
+
 ## Assigns a new [param Tween Duration] to the [member tween_resource] value.[br]
 ## The duration value is in seconds.
 func set_tween_duration(value: float) -> void:
 	tween_resource.duration = value
+
 ## Gets the current [param Tween Duration] value inside the
 ## [member tween_resource].[br]
 ## The duration value is in seconds.
 func get_tween_duration() -> float:
 	return tween_resource.duration
 
+
 ## Assigns a new [param Tween Transition] value inside the
 ## [member tween_resource].
 func set_tween_transition(value: int) -> void:
 	tween_resource.transition = value
+
 ## Gets the current [param Tween Transition] value  inside the
 ## [member tween_resource].
 func get_tween_transition() -> int:
 	return tween_resource.transition
 
+
 ## Assigns a new [param Tween Ease] value inside the [member tween_resource].
 func set_tween_ease(value: int) -> void:
 	tween_resource.ease = value
+
 ## Gets the current [param Tween Ease] value inside the [member tween_resource].
 func get_tween_ease() -> int:
 	return tween_resource.ease
+
 
 ## Sets the [param PhantomCamera2D] active state.[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
@@ -887,6 +897,7 @@ func set_is_active(node, value) -> void:
 		_is_active = value
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
+
 ## Gets current active state of the [param PhantomCamera2D].
 ## If it returns true, it means the [param PhantomCamera2D] is what the
 ## [param Camera2D] is currently following.
@@ -897,6 +908,7 @@ func is_active() -> bool:
 ## Enables or disables the [member tween_on_load].
 func set_tween_on_load(value: bool) -> void:
 	tween_on_load = value
+
 ## Gets the current [member tween_on_load] value.
 func get_tween_on_load() -> bool:
 	return tween_on_load
@@ -921,6 +933,7 @@ func set_follow_target(value: Node2D) -> void:
 		_should_follow = false
 	follow_target_changed.emit()
 	notify_property_list_changed()
+
 ## Erases the current [member follow_target].
 func erase_follow_target() -> void:
 	if follow_target == null: return
@@ -928,6 +941,7 @@ func erase_follow_target() -> void:
 	follow_target = null
 	_follow_target_physics_based = false
 	follow_target_changed.emit()
+
 ## Gets the current [member follow_target].
 func get_follow_target() -> Node2D:
 	return follow_target
@@ -936,9 +950,11 @@ func get_follow_target() -> Node2D:
 ## Assigns a new [Path2D] to the [member follow_path].
 func set_follow_path(value: Path2D) -> void:
 	follow_path = value
+
 ## Erases the current [Path2D] from the [member follow_path] property.
 func erase_follow_path() -> void:
 	follow_path = null
+
 ## Gets the current [Path2D] from the [member follow_path].
 func get_follow_path() -> Path2D:
 	return follow_path
@@ -966,6 +982,7 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 
 			if valid_instances > 1:
 				_has_multiple_follow_targets = true
+
 ## Appends a single [Node2D] to [member follow_targets].
 func append_follow_targets(value: Node2D) -> void:
 	if not is_instance_valid(value):
@@ -978,6 +995,7 @@ func append_follow_targets(value: Node2D) -> void:
 		_check_physics_body(value)
 	else:
 		printerr(value, " is already part of Follow Group")
+
 ## Adds an Array of type [Node2D] to [member follow_targets].
 func append_follow_targets_array(value: Array[Node2D]) -> void:
 	for target in value:
@@ -990,6 +1008,7 @@ func append_follow_targets_array(value: Array[Node2D]) -> void:
 				_has_multiple_follow_targets = true
 		else:
 			printerr(value, " is already part of Follow Group")
+
 ## Removes a [Node2D] from [member follow_targets] array.
 func erase_follow_targets(value: Node2D) -> void:
 	follow_targets.erase(value)
@@ -1000,28 +1019,34 @@ func erase_follow_targets(value: Node2D) -> void:
 		_has_multiple_follow_targets = false
 	if follow_targets.size() < 1:
 		_should_follow = false
+
 ## Gets all [Node2D] from [member follow_targets] array.
 func get_follow_targets() -> Array[Node2D]:
 	return follow_targets
+
 
 func _check_physics_body(target: Node2D) -> void:
 	if target is PhysicsBody2D:
 		## NOTE - Feature Toggle
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor < 3:
-			print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter.")
-			print_rich("Once Godot 4.3 is released, will strongly recommend upgrading to that as it has built-in support for 2D Physics Interpolation.")
-			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter - on lower physics ticks in particular.")
+				print_rich("Once Godot 4.3 is released, will strongly recommend upgrading to that as it has built-in support for 2D Physics Interpolation.")
+				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
 			return
 		## NOTE - Only supported in Godot 4.3 or above
-		elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation") and ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
 				printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
 		_follow_target_physics_based = true
 
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
 func set_follow_offset(value: Vector2) -> void:
 	follow_offset = value
+
 ## Gets the current Vector2 for the Follow Target Offset property.
 func get_follow_offset() -> Vector2:
 	return follow_offset
@@ -1031,9 +1056,11 @@ func get_follow_offset() -> Vector2:
 func set_follow_damping(value: bool) -> void:
 	follow_damping = value
 	notify_property_list_changed()
+
 ## Gets the current Follow Damping property.
 func get_follow_damping() -> bool:
 	return follow_damping
+
 
 ## Assigns new Damping value.
 func set_follow_damping_value(value: Vector2) -> void:
@@ -1041,13 +1068,16 @@ func set_follow_damping_value(value: Vector2) -> void:
 	if value.x < 0: value.x = 0
 	elif value.y < 0: value.y = 0
 	follow_damping_value = value
+
 ## Gets the current Follow Damping value.
 func get_follow_damping_value() -> Vector2:
 	return follow_damping_value
 
+
 ## Enables or disables [member snap_to_pixel].
 func set_snap_to_pixel(value: bool) -> void:
 	snap_to_pixel = value
+
 ## Gets the current [member snap_to_pixel] value.
 func get_snap_to_pixel() -> bool:
 	return snap_to_pixel
@@ -1058,34 +1088,43 @@ func get_snap_to_pixel() -> bool:
 func get_has_multiple_follow_targets() -> bool:
 	return _has_multiple_follow_targets
 
+
 ## Enables or disables Auto zoom when using Group Follow.
 func set_auto_zoom(value: bool) -> void:
 	auto_zoom = value
 	notify_property_list_changed()
+
 ## Gets Auto Zoom state.
 func get_auto_zoom() -> bool:
 	return auto_zoom
 
+
 ## Assigns new Min Auto Zoom value.
 func set_auto_zoom_min(value: float) -> void:
 	auto_zoom_min = value
+
 ## Gets Min Auto Zoom value.
 func get_auto_zoom_min() -> float:
 	return auto_zoom_min
 
+
 ## Assigns new Max Auto Zoom value.
 func set_auto_zoom_max(value: float) -> void:
 	auto_zoom_max = value
+
 ## Gets Max Auto Zoom value.
 func get_auto_zoom_max() -> float:
 	return auto_zoom_max
 
+
 ## Assigns new Zoom Auto Margin value.
 func set_auto_zoom_margin(value: Vector4) -> void:
 	auto_zoom_margin = value
+
 ## Gets Zoom Auto Margin value.
 func get_auto_zoom_margin() -> Vector4:
 	return auto_zoom_margin
+
 
 ## Sets a limit side based on the side parameter.[br]
 ## It's recommended to pass the [enum Side] enum as the sid parameter.
@@ -1096,6 +1135,7 @@ func set_limit(side: int, value: int) -> void:
 		SIDE_RIGHT: 	limit_right = value
 		SIDE_BOTTOM: 	limit_bottom = value
 		_:				printerr("Not a valid Side.")
+
 ## Gets the limit side
 func get_limit(value: int) -> int:
 	match value:
@@ -1107,47 +1147,57 @@ func get_limit(value: int) -> int:
 						printerr("Not a valid Side.")
 						return -1
 
+
 ## Assign a the Camera2D Left Limit Side value.
 func set_limit_left(value: int) -> void:
 	_limit_target_exist_error()
 	limit_left = value
 	update_limit_all_sides()
+
 ## Gets the Camera2D Left Limit value.
 func get_limit_left() -> int:
 	return limit_left
+
 
 ## Assign a the Camera2D Top Limit Side value.
 func set_limit_top(value: int) -> void:
 	_limit_target_exist_error()
 	limit_top = value
 	update_limit_all_sides()
+
 ## Gets the Camera2D Top Limit value.
 func get_limit_top() -> int:
 	return limit_top
+
 
 ## Assign a the Camera2D Right Limit Side value.
 func set_limit_right(value: int) -> void:
 	_limit_target_exist_error()
 	limit_right = value
 	update_limit_all_sides()
+
 ## Gets the Camera2D Right Limit value.
 func get_limit_right() -> int:
 	return limit_right
+
 
 ## Assign a the Camera2D Bottom Limit Side value.
 func set_limit_bottom(value: int) -> void:
 	_limit_target_exist_error()
 	limit_bottom = value
 	update_limit_all_sides()
+
 ## Gets the Camera2D Bottom Limit value.
 func get_limit_bottom() -> int:
 	return limit_bottom
+
 
 func _limit_target_exist_error() -> void:
 	if not limit_target.is_empty():
 		printerr("Unable to set Limit Side due to Limit Target ", _limit_node.name,  " being assigned")
 
-# Set Limit Target.
+
+# Sets a [memeber limit_target] node.
 func set_limit_target(value: NodePath) -> void:
 	limit_target = value
 
@@ -1174,20 +1224,29 @@ func set_limit_target(value: NodePath) -> void:
 				reset_limit()
 				limit_target = null
 				return
-	else:
+		else:
+			printerr("Limit Target is not a TileMap or CollisionShape2D node")
+			return
+
+	elif value == NodePath(""):
 		reset_limit()
 		limit_target = null
+	else:
+		printerr("Limit Target cannot be found")
+		return
 
 	_limit_node = get_node_or_null(value)
 
 	notify_property_list_changed()
 	update_limit_all_sides()
-## Get Limit Target
+
+## Get [member limit_target] node.
 func get_limit_target() -> NodePath:
 	if not limit_target: # TODO - Fixes an spam error if if limit_taret is empty
 		return NodePath("")
 	else:
 		return limit_target
+
 
 ## Set Tile Map Limit Margin.
 func set_limit_margin(value: Vector4i) -> void:
@@ -1196,6 +1255,7 @@ func set_limit_margin(value: Vector4i) -> void:
 ## Get Tile Map Limit Margin.
 func get_limit_margin() -> Vector4i:
 	return limit_margin
+
 
 ### Enables or disables the Limit Smoothing beaviour.
 #func set_limit_smoothing(value: bool) -> void:
@@ -1206,12 +1266,15 @@ func get_limit_margin() -> Vector4i:
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed
 
+
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
 	inactive_update_mode = value
+
 ## Gets [enum InactiveUpdateMode] value.
 func get_inactive_update_mode() -> int:
 	return inactive_update_mode
+
 
 func set_follow_target_physics_based(value: bool, caller: Node) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
