@@ -379,9 +379,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 
 			if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 				_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
-		else:
-			for pcam_host in pcam_host_group:
-				print(pcam_host, " is in a scene")
 
 
 func _resized() -> void:
