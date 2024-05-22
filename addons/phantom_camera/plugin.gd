@@ -71,7 +71,6 @@ func _enter_tree() -> void:
 		ProjectSettings.set_setting("phantom_camera/tips/show_jitter_tips", true)
 	ProjectSettings.set_initial_value("phantom_camera/tips/show_jitter_tips", true)
 
-func btn_toggled(toggled_on: bool):
 
 func _btn_toggled(toggled_on: bool):
 	if toggled_on:
