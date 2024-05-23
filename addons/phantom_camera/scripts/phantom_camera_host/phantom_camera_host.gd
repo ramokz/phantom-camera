@@ -89,6 +89,21 @@ var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 		#property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
+func _get_configuration_warnings() -> PackedStringArray:
+	var parent = get_parent()
+
+	if _is_2D:
+		if not parent is Camera2D:
+			return ["Needs to be a child of a Camera2D in order to work."]
+		else:
+			return []
+	else:
+		if not parent is Camera3D:
+			return ["Needs to be a child of a Camera3D in order to work."]
+		else:
+			return []
+
+
 func _enter_tree() -> void:
 	var parent = get_parent()
 
@@ -127,8 +142,6 @@ func _enter_tree() -> void:
 				for pcam in PhantomCameraManager.get_phantom_camera_3ds():
 					pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
-	else:
-		printerr(name, " is not a child of a Camera2D or Camera3D")
 
 
 func _exit_tree() -> void:
