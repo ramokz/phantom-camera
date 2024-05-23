@@ -165,24 +165,46 @@ func _settings_changed() -> void:
 	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
 	# TODO - Add resizer for Framed Viewfinder
 
+
 func _node_added_or_removed(_node: Node) -> void:
 	visibility_check()
+
 
 func visibility_check() -> void:
 	if not viewfinder_visible: return
 
+	var phantom_camera_host: PhantomCameraHost
+	var has_camera: bool = false
+	if not PhantomCameraManager.get_phantom_camera_hosts().is_empty():
+		has_camera = true
+		phantom_camera_host = PhantomCameraManager.get_phantom_camera_hosts()[0]
+
 	var root: Node = EditorInterface.get_edited_scene_root()
 
 	if root is Node2D:
+		var camera_2d: Camera2D
+
+		if has_camera:
+			camera_2d = phantom_camera_host.camera_2d
+		else:
+			camera_2d = _get_camera_2d()
+
 		_is_2d = true
 		is_scene = true
 		_add_node_button.set_visible(true)
-		_check_camera(root, _get_camera_2d(), true)
+		_check_camera(root, camera_2d, true)
 	elif root is Node3D:
+		var camera_3d: Camera3D
+
+		if has_camera:
+			camera_3d = phantom_camera_host.camera_3d
+		else:
+			camera_3d = root.get_viewport().get_camera_3d()
+
 		_is_2d = false
 		is_scene = true
 		_add_node_button.set_visible(true)
-		_check_camera(root, root.get_viewport().get_camera_3d(), false)
+		_check_camera(root, camera_3d, false)
 	else:
 		is_scene = false
 #		Is not a 2D or 3D scene
