@@ -526,7 +526,7 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	PhantomCameraManager.pcam_removed(self)
-	
+
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
@@ -1448,9 +1448,21 @@ func set_v_offset(value: float) -> void:
 	camera_3d_resource.v_offset = value
 	if _is_active: get_pcam_host_owner().camera_3d.v_offset = value
 
-## Gets the Camera3D fov value assigned to the [param Camera3DResource].
+## Gets the [member Camera3D.v_offset] value assigned to the [param Camera3DResource].
 func get_v_offset() -> float:
 	return camera_3d_resource.v_offset
+
+
+## Assigns a new [Camera3D.projection] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
+func set_projection(value: int) -> void:
+	camera_3d_resource.projection = value
+	if _is_active: get_pcam_host_owner().camera_3d.projection = value
+
+## Gets the [member Camera3D.projection] value assigned to the [param Camera3DResource].
+func get_projection() -> int:
+	return camera_3d_resource.projection
 
 
 ## Assigns a new [member Camera3D.fov] value.[br]
@@ -1463,6 +1475,54 @@ func set_fov(value: float) -> void:
 ## Gets the [member Camera3D.fov] value assigned to the [param Camera3DResource].
 func get_fov() -> float:
 	return camera_3d_resource.fov
+
+
+## Assigns a new [member Camera3D.size] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
+func set_size(value: float) -> void:
+	camera_3d_resource.size = value
+	if _is_active: get_pcam_host_owner().camera_3d.size = value
+
+## Gets the [member Camera3D.size] value assigned to the [param Camera3DResource].
+func get_size() -> float:
+	return camera_3d_resource.size
+
+
+## Assigns a new [member Camera3D.frustum_offset] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
+func set_frustum_offset(value: Vector2) -> void:
+	camera_3d_resource.frustum_offset = value
+	if _is_active: get_pcam_host_owner().camera_3d.frustum_offset = value
+
+## Gets the [member Camera3D.frustum_offset] value assigned to the [param Camera3DResource].
+func get_frustum_offset() -> Vector2:
+	return camera_3d_resource.frustum_offset
+
+
+## Assigns a new [member Camera3D.near] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
+func set_near(value: float) -> void:
+	camera_3d_resource.near = value
+	if _is_active: get_pcam_host_owner().camera_3d.near = value
+
+## Gets the [member Camera3D.near] value assigned to the [param Camera3DResource].
+func get_near() -> float:
+	return camera_3d_resource.near
+
+
+## Assigns a new [member Camera3D.far] value.[br]
+## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
+## this [param PhantomCamera3D].
+func set_far(value: float) -> void:
+	camera_3d_resource.far = value
+	if _is_active: get_pcam_host_owner().camera_3d.far = value
+
+## Gets the [member Camera3D.far] value assigned to the [param Camera3DResource].
+func get_far() -> float:
+	return camera_3d_resource.far
 
 
 func set_follow_target_physics_based(value: bool, caller: Node) -> void:
