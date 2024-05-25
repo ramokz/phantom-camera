@@ -72,26 +72,26 @@ var _viewfinder_needed_check: bool = true
 var _camera_zoom: Vector2 = Vector2.ONE
 
 #region Camera3DResource
-var _prev_camera_h_offset: float = 0
-var _camera_h_offset_changed: bool = false
+var _prev_cam_h_offset: float = 0
+var _cam_h_offset_changed: bool = false
 
-var _prev_camera_v_offset: float = 0
-var _camera_v_offset_changed: bool = false
+var _prev_cam_v_offset: float = 0
+var _cam_v_offset_changed: bool = false
 
-var _prev_camera_fov: float = 75
-var _camera_fov_changed: bool = false
+var _prev_cam_fov: float = 75
+var _cam_fov_changed: bool = false
 
-var _prev_camera_size: float = 1
-var _camera_size_changed: bool = false
+var _prev_cam_size: float = 1
+var _cam_size_changed: bool = false
 
-var _prev_camera_frustum_offset: Vector2 = Vector2.ZERO
-var _camera_frustum_offset_changed: bool = false
+var _prev_cam_frustum_offset: Vector2 = Vector2.ZERO
+var _cam_frustum_offset_changed: bool = false
 
-var _prev_camera_near: float = 0.05
-var _camera_near_changed: bool = false
+var _prev_cam_near: float = 0.05
+var _cam_near_changed: bool = false
 
-var _prev_camera_far: float = 4000
-var _camera_far_changed: bool = false
+var _prev_cam_far: float = 4000
+var _cam_far_changed: bool = false
 #endregion
 
 var _active_pcam_2d_glob_transform: Transform2D = Transform2D()
@@ -198,13 +198,13 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		else:
 			_prev_active_pcam_3d_transform = camera_3d.get_global_transform()
 
-			_prev_camera_h_offset = camera_3d.h_offset
-			_prev_camera_v_offset = camera_3d.v_offset
-			_prev_camera_fov = camera_3d.fov
-			_prev_camera_size = camera_3d.size
-			_prev_camera_frustum_offset = camera_3d.frustum_offset
-			_prev_camera_near = camera_3d.near
-			_prev_camera_far = camera_3d.far
+			_prev_cam_h_offset = camera_3d.h_offset
+			_prev_cam_v_offset = camera_3d.v_offset
+			_prev_cam_fov = camera_3d.fov
+			_prev_cam_size = camera_3d.size
+			_prev_cam_frustum_offset = camera_3d.frustum_offset
+			_prev_cam_near = camera_3d.near
+			_prev_cam_far = camera_3d.far
 
 			_active_pcam_3d.set_is_active(self, false)
 			_active_pcam_3d.became_inactive.emit()
@@ -227,20 +227,20 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_tween_duration = _active_pcam_3d.get_tween_duration()
 
 		# Checks if the Camera3DResource has changed from previous Active PCam3D
-		if _prev_camera_h_offset != _active_pcam_3d.get_h_offset():
-			_camera_h_offset_changed = true
-		if _prev_camera_v_offset != _active_pcam_3d.get_v_offset():
-			_camera_v_offset_changed = true
-		if _prev_camera_fov != _active_pcam_3d.get_fov():
-			_camera_fov_changed = true
-		if _prev_camera_size != _active_pcam_3d.get_size():
-			_camera_size_changed = true
-		if _prev_camera_frustum_offset != _active_pcam_3d.get_frustum_offset():
-			_camera_frustum_offset_changed = true
-		if _prev_camera_near != _active_pcam_3d.get_near():
-			_camera_near_changed = true
-		if _prev_camera_far != _active_pcam_3d.get_far():
-			_camera_far_changed = true
+		if _prev_cam_h_offset != _active_pcam_3d.get_h_offset():
+			_cam_h_offset_changed = true
+		if _prev_cam_v_offset != _active_pcam_3d.get_v_offset():
+			_cam_v_offset_changed = true
+		if _prev_cam_fov != _active_pcam_3d.get_fov():
+			_cam_fov_changed = true
+		if _prev_cam_size != _active_pcam_3d.get_size():
+			_cam_size_changed = true
+		if _prev_cam_frustum_offset != _active_pcam_3d.get_frustum_offset():
+			_cam_frustum_offset_changed = true
+		if _prev_cam_near != _active_pcam_3d.get_near():
+			_cam_near_changed = true
+		if _prev_cam_far != _active_pcam_3d.get_far():
+			_cam_far_changed = true
 
 
 	if _is_2D:
@@ -402,13 +402,13 @@ func _pcam_tween(delta: float) -> void:
 			if Engine.is_editor_hint():
 				_active_pcam_2d.queue_redraw()
 		else:
-			_camera_h_offset_changed = false
-			_camera_v_offset_changed = false
-			_camera_fov_changed = false
-			_camera_size_changed = false
-			_camera_frustum_offset_changed = false
-			_camera_near_changed = false
-			_camera_far_changed = false
+			_cam_h_offset_changed = false
+			_cam_v_offset_changed = false
+			_cam_fov_changed = false
+			_cam_size_changed = false
+			_cam_frustum_offset_changed = false
+			_cam_near_changed = false
+			_cam_far_changed = false
 
 			_active_pcam_3d.tween_completed.emit()
 
@@ -474,62 +474,71 @@ func _pcam_tween_properties(delta: float) -> void:
 				_active_pcam_3d.get_tween_ease()
 			)
 
-		if _camera_fov_changed:
+		if _cam_fov_changed:
 			camera_3d.fov = \
 				_tween_interpolate_value(
-					_prev_camera_fov,
+					_prev_cam_fov,
 					_active_pcam_3d.get_fov(),
 					_active_pcam_3d.get_tween_duration(),
 					_active_pcam_3d.get_tween_transition(),
 					_active_pcam_3d.get_tween_ease()
 				)
 
-
-		if _camera_size_changed:
+		if _cam_size_changed:
 			camera_3d.size = \
 				_tween_interpolate_value(
-					_prev_camera_size,
+					_prev_cam_size,
 					_active_pcam_3d.get_size(),
 					_active_pcam_3d.get_tween_duration(),
 					_active_pcam_3d.get_tween_transition(),
 					_active_pcam_3d.get_tween_ease()
 				)
 
-		if _camera_frustum_offset_changed:
+		if _cam_frustum_offset_changed:
 			camera_3d.frustum_offset = \
 				_tween_interpolate_value(
-					_prev_camera_frustum_offset,
+					_prev_cam_frustum_offset,
 					_active_pcam_3d.get_frustum_offset(),
 					_active_pcam_3d.get_tween_duration(),
 					_active_pcam_3d.get_tween_transition(),
 					_active_pcam_3d.get_tween_ease()
 				)
 
-		if _camera_h_offset_changed:
+		if _cam_h_offset_changed:
 			camera_3d.h_offset = \
 				_tween_interpolate_value(
-					_prev_camera_h_offset,
+					_prev_cam_h_offset,
 					_active_pcam_3d.get_h_offset(),
 					_active_pcam_3d.get_tween_duration(),
 					_active_pcam_3d.get_tween_transition(),
 					_active_pcam_3d.get_tween_ease()
 				)
 
-		if _camera_v_offset_changed:
+		if _cam_v_offset_changed:
 			camera_3d.v_offset = \
 				_tween_interpolate_value(
-					_prev_camera_v_offset,
+					_prev_cam_v_offset,
 					_active_pcam_3d.get_v_offset(),
 					_active_pcam_3d.get_tween_duration(),
 					_active_pcam_3d.get_tween_transition(),
 					_active_pcam_3d.get_tween_ease()
 				)
 
-		if _camera_near_changed:
+		if _cam_near_changed:
 			camera_3d.near = \
 				_tween_interpolate_value(
-					_prev_camera_near,
+					_prev_cam_near,
 					_active_pcam_3d.get_near(),
+					_active_pcam_3d.get_tween_duration(),
+					_active_pcam_3d.get_tween_transition(),
+					_active_pcam_3d.get_tween_ease()
+				)
+
+		if _cam_far_changed:
+			camera_3d.far = \
+				_tween_interpolate_value(
+					_prev_cam_far,
+					_active_pcam_3d.get_far(),
 					_active_pcam_3d.get_tween_duration(),
 					_active_pcam_3d.get_tween_transition(),
 					_active_pcam_3d.get_tween_ease()
