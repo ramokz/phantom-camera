@@ -227,21 +227,21 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_tween_duration = _active_pcam_3d.get_tween_duration()
 
 		# Checks if the Camera3DResource has changed from previous Active PCam3D
-		if _prev_cam_h_offset != _active_pcam_3d.get_h_offset():
-			_cam_h_offset_changed = true
-		if _prev_cam_v_offset != _active_pcam_3d.get_v_offset():
-			_cam_v_offset_changed = true
-		if _prev_cam_fov != _active_pcam_3d.get_fov():
-			_cam_fov_changed = true
-		if _prev_cam_size != _active_pcam_3d.get_size():
-			_cam_size_changed = true
-		if _prev_cam_frustum_offset != _active_pcam_3d.get_frustum_offset():
-			_cam_frustum_offset_changed = true
-		if _prev_cam_near != _active_pcam_3d.get_near():
-			_cam_near_changed = true
-		if _prev_cam_far != _active_pcam_3d.get_far():
-			_cam_far_changed = true
-
+		if _active_pcam_3d.get_camera_3d_resource():
+			if _prev_cam_h_offset != _active_pcam_3d.get_h_offset():
+				_cam_h_offset_changed = true
+			if _prev_cam_v_offset != _active_pcam_3d.get_v_offset():
+				_cam_v_offset_changed = true
+			if _prev_cam_fov != _active_pcam_3d.get_fov():
+				_cam_fov_changed = true
+			if _prev_cam_size != _active_pcam_3d.get_size():
+				_cam_size_changed = true
+			if _prev_cam_frustum_offset != _active_pcam_3d.get_frustum_offset():
+				_cam_frustum_offset_changed = true
+			if _prev_cam_near != _active_pcam_3d.get_near():
+				_cam_near_changed = true
+			if _prev_cam_far != _active_pcam_3d.get_far():
+				_cam_far_changed = true
 
 	if _is_2D:
 		if _active_pcam_2d.show_viewfinder_in_play:
