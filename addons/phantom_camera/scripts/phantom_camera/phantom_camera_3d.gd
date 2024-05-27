@@ -1534,4 +1534,12 @@ func set_follow_target_physics_based(value: bool, caller: Node) -> void:
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
 
+
+func get_class() -> String:
+	return "PhantomCamera3D"
+
+
+func is_class(value) -> bool:
+	return value == "PhantomCamera3D"
+
 #endregion

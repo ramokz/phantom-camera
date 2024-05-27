@@ -5,7 +5,7 @@ const PHANTOM_CAMERA_CONSTS = preload("res://addons/phantom_camera/scripts/phant
 
 var _phantom_camera_host_list: Array[PhantomCameraHost]
 var _phantom_camera_2d_list: Array[PhantomCamera2D]
-var _phantom_camera_3d_list: Array[PhantomCamera3D]
+var _phantom_camera_3d_list: Array ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 
 func _enter_tree():
 	Engine.physics_jitter_fix = 0
@@ -24,21 +24,21 @@ func pcam_host_removed(caller: Node) -> void:
 		printerr("This method can only be called from a PhantomCameraHost node")
 
 
-func pcam_added(caller: Node, host_slot: int = 0) -> void:
+func pcam_added(caller, host_slot: int = 0) -> void:
 	if is_instance_of(caller, PhantomCamera2D):
 		_phantom_camera_2d_list.append(caller)
 		#print("Added PCam2D to PCamManager")
-	elif is_instance_of(caller, PhantomCamera3D):
+	elif caller.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_phantom_camera_3d_list.append(caller)
 		#print("Added PCam3D to PCamManager")
 
 	if not _phantom_camera_host_list.is_empty():
 		_phantom_camera_host_list[host_slot].pcam_added_to_scene(caller)
 
-func pcam_removed(caller: Node) -> void:
+func pcam_removed(caller) -> void:
 	if is_instance_of(caller, PhantomCamera2D):
 		_phantom_camera_2d_list.erase(caller)
-	elif is_instance_of(caller, PhantomCamera3D):
+	elif caller.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_phantom_camera_3d_list.erase(caller)
 	else:
 		printerr("This method can only be called from a PhantomCamera node")
@@ -50,7 +50,7 @@ func get_phantom_camera_hosts() -> Array[PhantomCameraHost]:
 func get_phantom_camera_2ds() -> Array[PhantomCamera2D]:
 	return _phantom_camera_2d_list
 
-func get_phantom_camera_3ds() -> Array[PhantomCamera3D]:
+func get_phantom_camera_3ds() -> Array: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 	return _phantom_camera_3d_list
 
 
