@@ -42,12 +42,12 @@ enum InterpolationMode {
 ## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
 var camera_2d: Camera2D = null
 ## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
-var camera_3d: Camera3D = null
+var camera_3d = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 
 var _pcam_list: Array[Node] = []
 
 var _active_pcam_2d: PhantomCamera2D = null
-var _active_pcam_3d: PhantomCamera3D = null
+var _active_pcam_3d = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false
@@ -117,7 +117,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 		else:
 			return []
 	else:
-		if not parent is Camera3D:
+		if not parent.is_class("Camera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 			return ["Needs to be a child of a Camera3D in order to work."]
 		else:
 			return []
@@ -126,13 +126,13 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _enter_tree() -> void:
 	var parent = get_parent()
 
-	if parent is Camera2D or parent is Camera3D:
+	if parent is Camera2D or parent.is_class("Camera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_is_child_of_camera = true
 		if parent is Camera2D:
 			_is_2D = true
 			camera_2d = parent
-			# Force applies position smoothing to be disabled
-			# This is to prevent overlap with the interpolation of the PCam2D.
+			## Force applies position smoothing to be disabled
+			## This is to prevent overlap with the interpolation of the PCam2D.
 			camera_2d.set_position_smoothing_enabled(false)
 		else:
 			_is_2D = false
@@ -595,8 +595,8 @@ func _show_viewfinder_in_play() -> void:
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a
 ## [param PhantomCamera] node.
-func pcam_added_to_scene(pcam: Node) -> void:
-	if is_instance_of(pcam, PhantomCamera2D) or is_instance_of(pcam, PhantomCamera3D):
+func pcam_added_to_scene(pcam) -> void:
+	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_pcam_list.append(pcam)
 
 		if not pcam.tween_on_load:
@@ -611,8 +611,8 @@ func pcam_added_to_scene(pcam: Node) -> void:
 ## Called when a [param PhantomCamera] is removed from the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a
 ## [param PhantomCamera] node.
-func pcam_removed_from_scene(pcam: Node) -> void:
-	if is_instance_of(pcam, PhantomCamera2D) or is_instance_of(pcam, PhantomCamera3D):
+func pcam_removed_from_scene(pcam) -> void:
+	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_pcam_list.erase(pcam)
 		if _is_2D:
 			if pcam == _active_pcam_2d:
