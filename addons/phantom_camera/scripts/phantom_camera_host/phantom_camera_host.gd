@@ -260,12 +260,12 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
 		_camera_zoom = camera_2d.get_zoom()
-		
-		if _active_pcam.get_noise_active():
-			_noise_2d = _active_pcam.noise
-	        _noise_2d_pcam = _active_pcam.noise
-	        _noise_loop = true
-		
+
+		if _active_pcam_2d.get_noise_active():
+			_noise_2d = _active_pcam_2d.noise
+			_noise_2d_pcam = _active_pcam_2d.noise
+			_noise_loop = true
+
 		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
 		var _physics_based: bool
 
@@ -309,10 +309,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _active_pcam_3d.get_camera_3d_resource():
 			camera_3d.cull_mask = _active_pcam_3d.get_cull_mask()
 			camera_3d.projection = _active_pcam_3d.get_projection()
-		if _active_pcam.get_noise_active():
-            _noise_3d = _active_pcam.noise
-            _noise_3d_pcam = _active_pcam.noise
-            _noise_loop = true
+		if _active_pcam_3d.get_noise_active():
+			_noise_3d = _active_pcam_3d.noise
+			_noise_3d_pcam = _active_pcam_3d.noise
+			_noise_loop = true
 
 	if no_previous_pcam:
 		if _is_2D:
@@ -404,8 +404,8 @@ func _pcam_set_position(delta: float) -> void:
 		camera_2d.zoom = _active_pcam_2d.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
-		if _active_pcam.get_noise_active():
-            _add_noise(delta)
+		if _active_pcam_3d.get_noise_active():
+			_add_noise(delta)
 
 
 func _add_noise(delta: float) -> void:
@@ -426,7 +426,7 @@ func _add_noise(delta: float) -> void:
 				Tween.EASE_IN_OUT
 			)
 			if _noise_time >= _noise_3d.duration + _noise_3d.decay:
-				_active_pcam.set_noise_active(false)
+				_active_pcam_3d.set_noise_active(false)
 				print("Done")
 		else:
 			_trauma += 0.1
@@ -439,15 +439,15 @@ func _add_noise(delta: float) -> void:
 
 	camera_3d.quaternion = Quaternion.from_euler(Vector3(
 		deg_to_rad(
-			camera_3d.rotation_degrees.x + _active_pcam.noise.max_rotational_offset_x * \
+			camera_3d.rotation_degrees.x + _active_pcam_3d.noise.max_rotational_offset_x * \
 			intensity * _get_noise_from_seed(_noise_3d, 0 + _noise_3d.seed_offset)
 		),
 		deg_to_rad(
-			camera_3d.rotation_degrees.y + _active_pcam.noise.max_rotational_offset_y * \
+			camera_3d.rotation_degrees.y + _active_pcam_3d.noise.max_rotational_offset_y * \
 			intensity * _get_noise_from_seed(_noise_3d, 1 + _noise_3d.seed_offset)
 		),
 		deg_to_rad(
-			camera_3d.rotation_degrees.z + _active_pcam.noise.max_rotational_offset_z * \
+			camera_3d.rotation_degrees.z + _active_pcam_3d.noise.max_rotational_offset_z * \
 			intensity * _get_noise_from_seed(_noise_3d, 2 + _noise_3d.seed_offset)
 		)
 	))

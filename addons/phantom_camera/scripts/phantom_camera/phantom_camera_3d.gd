@@ -1402,6 +1402,37 @@ func get_look_at_damping_value() -> float:
 	return look_at_damping_value
 
 
+
+## Sets a NoiseResource
+func set_noise(value: PhantomCameraNoise3D) -> void:
+	noise = value
+	#noise.noise_algorithm = FastNoiseLite.new()
+	# Applies a default Noise of Type Perlin
+	#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+	_noise_active = true
+
+	## TBD To be applied for spatial fields
+	#if value:
+		## Applies a new resource algorithm if nothing is not already assigned.
+		#if not noise.noise_algorithm:
+			## Applies a default FastNoiseLite Resource
+			#noise.noise_algorithm = FastNoiseLite.new()
+			## Applies a default Noise of Type Perlin
+			#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+		#_noise_active = true
+	#else:
+		#_noise_active = false
+func get_noise() -> PhantomCameraNoise3D:
+	return noise
+
+
+## TODO - Internal only
+func set_noise_active(value: bool) -> void:
+	_noise_active = value
+func get_noise_active() -> bool:
+	return _noise_active
+
+
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
 	inactive_update_mode = value
