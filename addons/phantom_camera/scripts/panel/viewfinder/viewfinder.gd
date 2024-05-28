@@ -58,7 +58,7 @@ var root_node: Node
 
 #region Public variables
 
-var pcam_host_group: Array[Node]
+var pcam_host_group: Array[PhantomCameraHost]
 
 var is_scene: bool
 
@@ -102,7 +102,7 @@ func _ready() -> void:
 		_empty_state_control.set_visible(false)
 
 	_priority_override_button.set_visible(false)
-	
+
 	# Triggered when viewport size is changed in Project Settings
 	ProjectSettings.settings_changed.connect(_settings_changed)
 
@@ -138,14 +138,14 @@ func _process(_delta: float) -> void:
 
 	if not Engine.is_editor_hint():
 		target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
-	
+
 	if _is_2d:
 		if not is_instance_valid(pcam_host): return
 		if not is_instance_valid(pcam_host.camera_2d): return
-		
+
 		var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
 		sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
-		
+
 		_camera_2d.global_transform = pcam_host.camera_2d.global_transform
 		_camera_2d.offset = pcam_host.camera_2d.offset
 		_camera_2d.zoom = pcam_host.camera_2d.zoom
@@ -165,24 +165,46 @@ func _settings_changed() -> void:
 	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
 	# TODO - Add resizer for Framed Viewfinder
 
+
 func _node_added_or_removed(_node: Node) -> void:
 	visibility_check()
 
+
 func visibility_check() -> void:
 	if not viewfinder_visible: return
-	
+
+	var phantom_camera_host: PhantomCameraHost
+	var has_camera: bool = false
+	if not PhantomCameraManager.get_phantom_camera_hosts().is_empty():
+		has_camera = true
+		phantom_camera_host = PhantomCameraManager.get_phantom_camera_hosts()[0]
+
 	var root: Node = EditorInterface.get_edited_scene_root()
 
 	if root is Node2D:
+		var camera_2d: Camera2D
+
+		if has_camera:
+			camera_2d = phantom_camera_host.camera_2d
+		else:
+			camera_2d = _get_camera_2d()
+
 		_is_2d = true
 		is_scene = true
 		_add_node_button.set_visible(true)
-		_check_camera(root, _get_camera_2d(), true)
+		_check_camera(root, camera_2d, true)
 	elif root is Node3D:
+		var camera_3d: Camera3D
+
+		if has_camera:
+			camera_3d = phantom_camera_host.camera_3d
+		else:
+			camera_3d = root.get_viewport().get_camera_3d()
+
 		_is_2d = false
 		is_scene = true
 		_add_node_button.set_visible(true)
-		_check_camera(root, root.get_viewport().get_camera_3d(), false)
+		_check_camera(root, camera_3d, false)
 	else:
 		is_scene = false
 #		Is not a 2D or 3D scene
@@ -232,7 +254,7 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 					pcam_host = cam_child
 
 				if pcam_host:
-					if get_tree().get_nodes_in_group(Constants.PCAM_GROUP_NAME):
+					if PhantomCameraManager.get_phantom_camera_2ds() or PhantomCameraManager.get_phantom_camera_3ds():
 						# Pcam exists in tree
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
@@ -336,7 +358,7 @@ func _instantiate_node(root: Node, node: Node, name: String) -> void:
 
 
 func _set_viewfinder(root: Node, editor: bool) -> void:
-	pcam_host_group = root.get_tree().get_nodes_in_group(Constants.PCAM_HOST_GROUP_NAME)
+	pcam_host_group = PhantomCameraManager.get_phantom_camera_hosts()
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
@@ -349,8 +371,7 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 					_camera_2d.zoom = pcam_host.camera_2d.zoom
 					_camera_2d.offset = pcam_host.camera_2d.offset
 					_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
-					
-					
+
 					sub_viewport.world_2d = pcam_host.camera_2d.get_world_2d()
 					sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 					sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
@@ -380,9 +401,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 
 			if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 				_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
-		else:
-			for pcam_host in pcam_host_group:
-				print(pcam_host, " is in a scene")
 
 
 func _resized() -> void:
@@ -396,7 +414,7 @@ func _on_dead_zone_changed() -> void:
 	# Waits until the camera_viewport_panel has been resized when launching the game
 	if camera_viewport_panel.size.x == 0:
 		await camera_viewport_panel.resized
-	
+
 	#print(_active_pcam.get_pcam_host_owner())
 	if is_instance_valid(_active_pcam.get_pcam_host_owner()):
 		pcam_host = _active_pcam.get_pcam_host_owner()
