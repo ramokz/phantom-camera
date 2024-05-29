@@ -368,6 +368,19 @@ var _limit_node: Node2D
 	#get = get_limit_smoothing
 var _limit_inactive_pcam: bool
 
+
+@export_group("Noise")
+## Defines the noise, or shake, of a camera.[br]
+## By default, no noise sis being applied.
+@export var noise: PhantomCameraNoise2D:
+	set = set_noise,
+	get = get_noise
+
+var _noise_active: bool = false:
+	set = set_noise_active,
+	get = get_noise_active
+
+
 #endregion
 
 
@@ -1265,6 +1278,36 @@ func get_limit_margin() -> Vector4i:
 ### Returns the Limit Smoothing beaviour.
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed
+
+
+## Sets a NoiseResource
+func set_noise(value: PhantomCameraNoise2D) -> void:
+	noise = value
+	#noise.noise_algorithm = FastNoiseLite.new()
+	# Applies a default Noise of Type Perlin
+	#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+	_noise_active = true
+
+	## TBD To be applied for spatial fields
+	#if value:
+		## Applies a new resource algorithm if nothing is not already assigned.
+		#if not noise.noise_algorithm:
+			## Applies a default FastNoiseLite Resource
+			#noise.noise_algorithm = FastNoiseLite.new()
+			## Applies a default Noise of Type Perlin
+			#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+		#_noise_active = true
+	#else:
+		#_noise_active = false
+func get_noise() -> PhantomCameraNoise2D:
+	return noise
+
+
+## TODO - Internal only
+func set_noise_active(value: bool) -> void:
+	_noise_active = value
+func get_noise_active() -> bool:
+	return _noise_active
 
 
 ## Sets [member inactive_update_mode] property.

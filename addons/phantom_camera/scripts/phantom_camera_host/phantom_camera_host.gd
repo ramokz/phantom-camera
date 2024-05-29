@@ -67,7 +67,7 @@ var _is_2D: bool = false
 
 # Camera Noise
 var _noise_2d: PhantomCameraNoise2D = null
-var _noise_2d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
+var _noise_2d_pcam: PhantomCameraNoise2D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
 var _noise_3d: PhantomCameraNoise3D = null
 var _noise_3d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
 var _trauma: float = 0
