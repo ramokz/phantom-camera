@@ -580,7 +580,7 @@ func _show_viewfinder_in_play() -> void:
 			return
 
 	var canvas_layer: CanvasLayer = CanvasLayer.new()
-	get_tree().get_root().get_child(0).add_child(canvas_layer)
+	get_tree().get_root().add_child(canvas_layer)
 
 	# Instantiate the viewfinder scene if it isn't already
 	if !is_instance_valid(_viewfinder_node):

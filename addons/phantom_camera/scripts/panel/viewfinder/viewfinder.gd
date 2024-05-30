@@ -81,11 +81,10 @@ func _ready() -> void:
 		set_process(true)
 		camera_viewport_panel.self_modulate.a = 0
 
-#	TODO - Don't think this is needed / does anything?
-	root_node = get_tree().get_root().get_child(0)
-	if root_node is Node3D || root_node is Node2D:
-		%SubViewportContainer.set_visible(false)
+	root_node = get_tree().current_scene
 
+	if root_node is Node2D || root_node is Node3D:
+		%SubViewportContainer.set_visible(false)
 		if root_node is Node2D:
 			_is_2d = true
 		else:
