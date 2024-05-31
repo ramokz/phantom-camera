@@ -358,7 +358,7 @@ func _pcam_follow(delta: float) -> void:
 		_show_viewfinder_in_play()
 		_viewfinder_needed_check = false
 
-	# TODO - Should be able to find a more efficient way
+	# TODO - Should be able to find a more efficient way using signals
 	if Engine.is_editor_hint():
 		if not _is_2D:
 			if _active_pcam_3d.get_camera_3d_resource():
@@ -398,7 +398,6 @@ func _pcam_tween(delta: float) -> void:
 		if _is_2D:
 			_active_pcam_2d.update_limit_all_sides()
 			_active_pcam_2d.tween_completed.emit()
-
 			if Engine.is_editor_hint():
 				_active_pcam_2d.queue_redraw()
 		else:
@@ -562,8 +561,7 @@ func _tween_interpolate_value(from: Variant, to: Variant, duration: float, trans
 
 func _show_viewfinder_in_play() -> void:
 	# Don't show the viewfinder in the actual editor or project builds
-	if Engine.is_editor_hint() or !OS.has_feature("editor"):
-		return
+	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
 
 	# We default the viewfinder node to hidden
 	if is_instance_valid(_viewfinder_node):
@@ -571,19 +569,20 @@ func _show_viewfinder_in_play() -> void:
 
 	if _is_2D:
 		if not _active_pcam_2d.show_viewfinder_in_play: return
-		if _active_pcam_2d.follow_mode != _active_pcam_2d.FollowMode.FRAMED:
-			return
+		if _active_pcam_2d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
 	else:
-		if not _active_pcam_3d.show_viewfinder_in_play:
-			return
-		if _active_pcam_3d.follow_mode != _active_pcam_2d.FollowMode.FRAMED:
-			return
+		if not _active_pcam_3d.show_viewfinder_in_play: return
+		if _active_pcam_3d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
+
+	#if _is_2D:
+		#await _active_pcam_2d.tween_completed
+
 
 	var canvas_layer: CanvasLayer = CanvasLayer.new()
 	get_tree().get_root().add_child(canvas_layer)
 
 	# Instantiate the viewfinder scene if it isn't already
-	if !is_instance_valid(_viewfinder_node):
+	if not is_instance_valid(_viewfinder_node):
 		var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 		_viewfinder_node = _viewfinder_scene.instantiate()
 		canvas_layer.add_child(_viewfinder_node)
