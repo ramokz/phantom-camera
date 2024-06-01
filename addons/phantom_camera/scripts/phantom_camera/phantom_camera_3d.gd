@@ -1339,7 +1339,7 @@ func append_look_at_target(value: Node3D) -> void:
 		printerr(value, " is already part of Look At Group")
 
 ## Appends an array of type [Node3D] to [member look_at_targets] array.
-func append_look_at_targets_array(value: Array[Node3D]) -> void:
+func append_look_at_targets_array(value: Array[NodePath]) -> void:
 	for val in value:
 		if not look_at_targets.has(get_node(val)):
 			var node: Node3D = get_node(val)
