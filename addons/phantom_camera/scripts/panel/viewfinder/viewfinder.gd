@@ -102,7 +102,7 @@ func _ready() -> void:
 		_empty_state_control.set_visible(false)
 
 	_priority_override_button.set_visible(false)
-	
+
 	# Triggered when viewport size is changed in Project Settings
 	ProjectSettings.settings_changed.connect(_settings_changed)
 
@@ -138,14 +138,14 @@ func _process(_delta: float) -> void:
 
 	if not Engine.is_editor_hint():
 		target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
-	
+
 	if _is_2d:
 		if not is_instance_valid(pcam_host): return
 		if not is_instance_valid(pcam_host.camera_2d): return
-		
+
 		var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
 		sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
-		
+
 		_camera_2d.global_transform = pcam_host.camera_2d.global_transform
 		_camera_2d.offset = pcam_host.camera_2d.offset
 		_camera_2d.zoom = pcam_host.camera_2d.zoom
@@ -170,7 +170,7 @@ func _node_added_or_removed(_node: Node) -> void:
 
 func visibility_check() -> void:
 	if not viewfinder_visible: return
-	
+
 	var root: Node = EditorInterface.get_edited_scene_root()
 
 	if root is Node2D:
@@ -349,8 +349,8 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 					_camera_2d.zoom = pcam_host.camera_2d.zoom
 					_camera_2d.offset = pcam_host.camera_2d.offset
 					_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
-					
-					
+
+
 					sub_viewport.world_2d = pcam_host.camera_2d.get_world_2d()
 					sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 					sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
@@ -396,7 +396,7 @@ func _on_dead_zone_changed() -> void:
 	# Waits until the camera_viewport_panel has been resized when launching the game
 	if camera_viewport_panel.size.x == 0:
 		await camera_viewport_panel.resized
-	
+
 	#print(_active_pcam.get_pcam_host_owner())
 	if is_instance_valid(_active_pcam.get_pcam_host_owner()):
 		pcam_host = _active_pcam.get_pcam_host_owner()
