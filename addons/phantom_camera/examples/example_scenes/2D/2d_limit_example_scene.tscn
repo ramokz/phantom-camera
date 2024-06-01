@@ -640,11 +640,11 @@ position = Vector2(66, -50)
 
 [node name="RoomLeftPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(66, -113)
+position = Vector2(66, -113.205)
 script = ExtResource("4_4b648")
 priority = 5
 follow_mode = 2
-follow_target = NodePath("../CharacterBody2D")
+follow_target = NodePath("../CharacterBody2D/PlayerVisuals")
 zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_ct1eh")
 follow_offset = Vector2(0, -63.205)
@@ -703,7 +703,7 @@ follow_damping = true
 draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(66, -113)
+position = Vector2(66, -113.205)
 zoom = Vector2(2, 2)
 limit_left = -387
 limit_top = -528

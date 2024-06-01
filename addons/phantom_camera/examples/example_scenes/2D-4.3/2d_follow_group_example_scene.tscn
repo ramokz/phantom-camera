@@ -1,17 +1,18 @@
-[gd_scene load_steps=13 format=3 uid="uid://brrncnp26lrco"]
+[gd_scene load_steps=14 format=3 uid="uid://bio6mao7gtru2"]
 
-[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_5kqbp"]
-[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="2_xmntp"]
-[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/ui_sign.tscn" id="3_8dojy"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_2efwt"]
-[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/phantom_camera_2d_sprite.png" id="5_0v2cd"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="6_diuy4"]
-[ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="7_ybwrw"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_wk0p3"]
-[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="12_uvcwb"]
+[ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_8rflf"]
+[ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="2_tafwr"]
+[ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/ui_sign.tscn" id="3_37c7w"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_dxiro"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="5_gaaip"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="6_ojk83"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="7_awenl"]
+[ext_resource type="Texture2D" uid="uid://cwep0on2tthn7" path="res://addons/phantom_camera/examples/textures/2D/phantom_camera_2d_sprite.png" id="8_ys0m4"]
+[ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="9_witv0"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d_4.3.gd" id="10_aivri"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_easgx"]
-texture = ExtResource("1_5kqbp")
+texture = ExtResource("1_8rflf")
 0:0/0 = 0
 0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 0:0/0/physics_layer_0/angular_velocity = 0.0
@@ -562,7 +563,7 @@ custom_data_layer_0/type = 21
 sources/0 = SubResource("TileSetAtlasSource_easgx")
 
 [sub_resource type="Resource" id="Resource_spy00"]
-script = ExtResource("9_wk0p3")
+script = ExtResource("7_awenl")
 duration = 0.3
 transition = 4
 ease = 2
@@ -599,11 +600,11 @@ layer_1/tile_data = PackedInt32Array(1, 720896, 0, 2, 720896, 0, 3, 720896, 0, 4
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="UIInventory" parent="UI" instance=ExtResource("2_xmntp")]
+[node name="UIInventory" parent="UI" instance=ExtResource("2_tafwr")]
 unique_name_in_owner = true
 visible = false
 
-[node name="UISign" parent="UI" instance=ExtResource("3_8dojy")]
+[node name="UISign" parent="UI" instance=ExtResource("3_37c7w")]
 unique_name_in_owner = true
 visible = false
 
@@ -612,7 +613,7 @@ position = Vector2(107, -172.5)
 position_smoothing_speed = 8.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
-script = ExtResource("4_2efwt")
+script = ExtResource("4_dxiro")
 
 [node name="Label" type="Label" parent="."]
 offset_left = 167.0
@@ -620,16 +621,16 @@ offset_top = -133.0
 offset_right = 332.0
 offset_bottom = -69.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("12_uvcwb")
+theme_override_fonts/font = ExtResource("5_gaaip")
 text = "[WASD] to move
 [Space] to jump"
 
 [node name="PhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_targets")]
 position = Vector2(107, -172.5)
-script = ExtResource("6_diuy4")
+script = ExtResource("6_ojk83")
 priority = 10
 follow_mode = 3
-follow_targets = [NodePath("../GroupNPCSprite"), NodePath("../CharacterBody2D/PlayerVisuals")]
+follow_targets = [NodePath("../GroupNPCSprite"), NodePath("../CharacterBody2D")]
 tween_resource = SubResource("Resource_spy00")
 tween_on_load = false
 follow_damping = true
@@ -640,9 +641,8 @@ draw_limits = true
 [node name="GroupNPCSprite" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(107, -316)
-texture = ExtResource("5_0v2cd")
+texture = ExtResource("8_ys0m4")
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("7_ybwrw")]
+[node name="CharacterBody2D" parent="." instance=ExtResource("9_witv0")]
 position = Vector2(265, -29)
-
-[editable path="CharacterBody2D"]
+script = ExtResource("10_aivri")
