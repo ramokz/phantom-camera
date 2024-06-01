@@ -61,7 +61,7 @@ func _ready() -> void:
 	if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor < 3:
 			printerr("This scene is designed to only work properly in Godot 4.3 or later that supports 2D Physics Interpolation.")
-			printerr("Please run the other 2D example scenes, in the other directory, for functional Godot 2D examples.")
+			printerr("Please run the other 2D example scenes in the other directory.")
 
 
 func _unhandled_input(event: InputEvent) -> void:
