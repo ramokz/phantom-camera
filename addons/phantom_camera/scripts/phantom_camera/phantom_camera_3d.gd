@@ -1341,10 +1341,11 @@ func append_look_at_target(value: Node3D) -> void:
 ## Appends an array of type [Node3D] to [member look_at_targets] array.
 func append_look_at_targets_array(value: Array[Node3D]) -> void:
 	for val in value:
-		if not look_at_targets.has(val):
-			look_at_targets.append(val)
-			_valid_look_at_targets.append(val)
-			_check_physics_body(val)
+		if not look_at_targets.has(get_node(val)):
+			var node: Node3D = get_node(val)
+			look_at_targets.append(node)
+			_valid_look_at_targets.append(node)
+			_check_physics_body(node)
 			if look_at_targets.size() > 1:
 				_multiple_look_at_targets = true
 		else:
