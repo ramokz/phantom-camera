@@ -127,6 +127,11 @@ var pcam_host_owner: PhantomCameraHost = null:
 		else:
 			if dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+		if follow_mode == FollowMode.NONE:
+			_should_follow = false
+		elif follow_mode == FollowMode.GROUP and follow_targets or follow_target:
+			_should_follow = true
 		notify_property_list_changed()
 	get:
 		return follow_mode
