@@ -692,9 +692,8 @@ func _follow(delta: float) -> void:
 					if is_instance_valid(follow_target) and is_instance_valid(_follow_spring_arm):
 						follow_position = _get_target_position_offset()
 						follow_target_node = _follow_spring_arm
-
 				else:
-					global_position = _get_position_offset_distance()
+					follow_position = _get_position_offset_distance()
 
 	_interpolate_position(follow_position, delta, follow_target_node)
 
