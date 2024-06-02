@@ -301,9 +301,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_active_pcam_3d_transform = _active_pcam_3d.get_global_transform()
 
 	_tween_elapsed_time = 0
-
-	if pcam.tween_on_load or not pcam.get_has_tweened():
+	if not pcam.get_has_tweened():
 		_trigger_pcam_tween = true
+	else:
+		_trigger_pcam_tween = false
 
 
 func _find_pcam_with_highest_priority() -> void:
@@ -596,13 +597,11 @@ func _show_viewfinder_in_play() -> void:
 ## [param PhantomCamera] node.
 func pcam_added_to_scene(pcam) -> void:
 	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-		_pcam_list.append(pcam)
-
-		if not pcam.tween_on_load:
-			pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority on load
-
-		_find_pcam_with_highest_priority()
-
+		if not _pcam_list.has(pcam):
+			_pcam_list.append(pcam)
+			if not pcam.tween_on_load:
+				pcam.set_has_tweened(self, true) # Skips its tween if it has the highest priority on load
+			_find_pcam_with_highest_priority()
 	else:
 		printerr("This function should only be called from PhantomCamera scripts")
 
