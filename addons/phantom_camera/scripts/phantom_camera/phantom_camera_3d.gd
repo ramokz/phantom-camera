@@ -544,8 +544,6 @@ func _ready():
 				_follow_spring_arm.collision_mask = collision_mask
 				_follow_spring_arm.shape = shape
 				_follow_spring_arm.margin = margin
-				if not tween_on_load:
-					_has_tweened = true
 				get_parent().add_child.call_deferred(_follow_spring_arm)
 				reparent.call_deferred(_follow_spring_arm)
 	if follow_mode == FollowMode.FRAMED:
