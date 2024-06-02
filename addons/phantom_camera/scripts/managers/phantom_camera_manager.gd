@@ -3,9 +3,21 @@ extends Node
 
 const PHANTOM_CAMERA_CONSTS = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
+var phantom_camera_hosts: Array[PhantomCameraHost]:
+	get:
+		return _phantom_camera_host_list
 var _phantom_camera_host_list: Array[PhantomCameraHost]
+
+var phantom_camera_2ds: Array[PhantomCamera2D]:
+	get:
+		return _phantom_camera_2d_list
 var _phantom_camera_2d_list: Array[PhantomCamera2D]
+
+var phantom_camera_3ds: Array: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+	get:
+		return _phantom_camera_3d_list
 var _phantom_camera_3d_list: Array ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+
 
 func _enter_tree():
 	Engine.physics_jitter_fix = 0
