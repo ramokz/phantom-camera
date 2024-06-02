@@ -147,6 +147,12 @@ var _is_active: bool = false
 		else:
 			if  dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+		if follow_mode == FollowMode.NONE:
+			_should_follow = false
+		elif follow_mode == FollowMode.GROUP and follow_targets or follow_target:
+			_should_follow = true
+
 		notify_property_list_changed()
 	get:
 		return follow_mode
@@ -187,6 +193,12 @@ var _has_multiple_follow_targets: bool = false
 		look_at_mode = value
 		if look_at_target is Node3D:
 			_should_look_at = true
+
+		if look_at_mode == LookAtMode.NONE:
+			_should_look_at = false
+		elif  look_at_mode == LookAtMode.GROUP and look_at_targets or look_at_target:
+			_should_look_at = true
+
 		notify_property_list_changed()
 	get:
 		return look_at_mode
@@ -576,6 +588,7 @@ func _process_logic(delta: float) -> void:
 
 func _follow(delta: float) -> void:
 	var follow_position: Vector3
+
 	var follow_target_node: Node3D = self
 
 	match follow_mode:
@@ -696,6 +709,7 @@ func _follow(delta: float) -> void:
 					follow_position = _get_position_offset_distance()
 
 	_interpolate_position(follow_position, delta, follow_target_node)
+
 
 func _look_at() -> void:
 	match look_at_mode:
