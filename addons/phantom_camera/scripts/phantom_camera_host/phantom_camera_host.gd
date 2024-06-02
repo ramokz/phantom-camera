@@ -575,10 +575,6 @@ func _show_viewfinder_in_play() -> void:
 		if not _active_pcam_3d.show_viewfinder_in_play: return
 		if _active_pcam_3d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
 
-	#if _is_2D:
-		#await _active_pcam_2d.tween_completed
-
-
 	var canvas_layer: CanvasLayer = CanvasLayer.new()
 	get_tree().get_root().add_child(canvas_layer)
 
