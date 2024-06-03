@@ -127,6 +127,11 @@ var pcam_host_owner: PhantomCameraHost = null:
 		else:
 			if dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+		if follow_mode == FollowMode.NONE:
+			_should_follow = false
+		elif follow_mode == FollowMode.GROUP and follow_targets or follow_target:
+			_should_follow = true
 		notify_property_list_changed()
 	get:
 		return follow_mode
@@ -462,19 +467,18 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	add_to_group(_constants.PCAM_GROUP_NAME)
+	PhantomCameraManager.pcam_added(self)
 	update_limit_all_sides()
 
-	var pcam_host: Array[Node] = get_tree().get_nodes_in_group("phantom_camera_host_group")
-	if pcam_host.size() > 0:
-		set_pcam_host_owner(pcam_host[0])
+	if not PhantomCameraManager.get_phantom_camera_hosts().is_empty():
+		set_pcam_host_owner(PhantomCameraManager.get_phantom_camera_hosts()[0])
 
 
 func _exit_tree() -> void:
+	PhantomCameraManager.pcam_removed(self)
+
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
-
-	remove_from_group(_constants.PCAM_GROUP_NAME)
 
 
 func _process(delta: float) -> void:
@@ -1284,5 +1288,13 @@ func set_follow_target_physics_based(value: bool, caller: Node) -> void:
 		printerr("set_follow_target_physics_based() is for internal use only.")
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
+
+
+func get_class() -> String:
+	return "PhantomCamera2D"
+
+
+func is_class(value) -> bool:
+	return value == "PhantomCamera2D"
 
 #endregion
