@@ -147,7 +147,7 @@ func _enter_tree() -> void:
 			printerr(
 				"Only one PhantomCameraHost can exist in a scene",
 				"\n",
-				"Multiple PhantomCameraHosts will be supported in https://github.com/MarcusSkov/phantom-camera/issues/26"
+				"Multiple PhantomCameraHosts will be supported in https://github.com/ramokz/phantom-camera/issues/26"
 			)
 			queue_free()
 
