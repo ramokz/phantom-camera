@@ -391,6 +391,10 @@ func _pcam_tween(delta: float) -> void:
 	if _tween_elapsed_time + delta <= _tween_duration:
 		_pcam_tween_properties(delta)
 	else: # First frame when tweening completes
+		#Ensure tween ends on correct values
+		_tween_elapsed_time = _tween_duration
+		_pcam_tween_properties(0)
+		
 		_tween_elapsed_time = 0
 		_trigger_pcam_tween = false
 		#_show_viewfinder_in_play() # NOTE - Likely not needed
