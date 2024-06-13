@@ -388,7 +388,7 @@ func _pcam_set_position(delta: float) -> void:
 
 
 func _pcam_tween(delta: float) -> void:
-	if _tween_elapsed_time + delta <= _tween_duration:
+	if _tween_elapsed_time < _tween_duration:
 		_pcam_tween_properties(delta)
 	else: # First frame when tweening completes
 		_tween_elapsed_time = 0
@@ -422,7 +422,7 @@ func _pcam_tween_properties(delta: float) -> void:
 		else:
 			_active_pcam_3d.tween_started.emit()
 
-	_tween_elapsed_time += delta
+	_tween_elapsed_time = min(_tween_duration, _tween_elapsed_time + delta)
 
 	if _is_2D:
 		_active_pcam_2d.is_tweening.emit()
