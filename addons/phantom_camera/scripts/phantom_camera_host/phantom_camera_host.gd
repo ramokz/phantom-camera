@@ -309,12 +309,30 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 func _find_pcam_with_highest_priority() -> void:
 	for pcam in _pcam_list:
+		if not pcam.visible: continue # Prevents hidden PCams from becoming active
 		if pcam.get_priority() > _active_pcam_priority:
 			_assign_new_active_pcam(pcam)
 
 		pcam.set_has_tweened(self, false)
 
 		_active_pcam_missing = false
+
+## TODO - For 0.8 release
+#func _find_pcam_with_highest_priority() -> void:
+	#var highest_priority_pcam: Node
+	#for pcam in _pcam_list:
+		#if not pcam.visible: continue # Prevents hidden PCams from becoming active
+		#if pcam.priority > _active_pcam_priority:
+			#_active_pcam_priority = pcam.priority
+			#highest_priority_pcam = pcam
+		#pcam.set_has_tweened(self, false)
+#
+		#_active_pcam_missing = false
+#
+	#if is_instance_valid(highest_priority_pcam):
+		#_assign_new_active_pcam(highest_priority_pcam)
+	#else:
+		#_active_pcam_missing = true
 
 
 func _process(delta: float):
@@ -688,6 +706,13 @@ func get_active_pcam() -> Node:
 ## [param PhantomCamera] node.
 func get_trigger_pcam_tween() -> bool:
 	return _trigger_pcam_tween
+
+
+## Refreshes the [param PhantomCamera] list and checks for the highest priority. [br]
+## [b]Note:[/b] This should [b]not[/b] be necessary to call manually.
+func refresh_pcam_list_priorty() -> void:
+	_active_pcam_priority = -1
+	_find_pcam_with_highest_priority()
 
 #func set_interpolation_mode(value: int) -> void:
 	#interpolation_mode = value
