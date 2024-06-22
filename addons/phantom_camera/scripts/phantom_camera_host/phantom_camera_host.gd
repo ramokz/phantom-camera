@@ -99,6 +99,8 @@ var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 
 #endregion
 
+# NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
+var _phantom_camera_manager: Node
 
 #region Private Functions
 
@@ -124,6 +126,8 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _enter_tree() -> void:
+	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
+
 	var parent = get_parent()
 
 	if parent is Camera2D or parent.is_class("Camera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
@@ -138,7 +142,7 @@ func _enter_tree() -> void:
 			_is_2D = false
 			camera_3d = parent
 
-		PhantomCameraManager.pcam_host_added(self)
+		_phantom_camera_manager.pcam_host_added(self)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
 
 		_check_camera_host_amount()
@@ -152,19 +156,19 @@ func _enter_tree() -> void:
 			queue_free()
 
 		if _is_2D:
-			if not PhantomCameraManager.get_phantom_camera_2ds().is_empty():
-				for pcam in PhantomCameraManager.get_phantom_camera_2ds():
+			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
+				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
 					pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
 		else:
-			if not PhantomCameraManager.get_phantom_camera_3ds().is_empty():
-				for pcam in PhantomCameraManager.get_phantom_camera_3ds():
+			if not _phantom_camera_manager.get_phantom_camera_3ds().is_empty():
+				for pcam in _phantom_camera_manager.get_phantom_camera_3ds():
 					pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
 
 
 func _exit_tree() -> void:
-	PhantomCameraManager.pcam_host_removed(self)
+	_phantom_camera_manager.pcam_host_removed(self)
 	_check_camera_host_amount()
 
 
@@ -177,7 +181,7 @@ func _ready() -> void:
 
 
 func _check_camera_host_amount() -> void:
-	if PhantomCameraManager.get_phantom_camera_hosts().size() > 1:
+	if _phantom_camera_manager.get_phantom_camera_hosts().size() > 1:
 		_multiple_pcam_hosts = true
 	else:
 		_multiple_pcam_hosts = false

@@ -8,6 +8,7 @@ extends RefCounted
 const CAMERA_2D_NODE_NAME: StringName = "Camera2D"
 const CAMERA_3D_NODE_NAME: StringName = "Camera3D"
 const PCAM_HOST_NODE_NAME: StringName = "PhantomCameraHost"
+const PCAM_MANAGER_NODE_NAME: String = "PhantomCameraManager" # TODO - Convert to StringName once https://github.com/godotengine/godot/pull/72702 is merged
 const PCAM_2D_NODE_NAME: StringName = "PhantomCamera2D"
 const PCAM_3D_NODE_NAME: StringName = "PhantomCamera3D"
 const PCAM_HOST: StringName = "phantom_camera_host"
