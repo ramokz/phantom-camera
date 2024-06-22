@@ -375,6 +375,9 @@ var _limit_inactive_pcam: bool
 
 #endregion
 
+# NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
+var _phantom_camera_manager: Node
+
 
 func _validate_property(property: Dictionary) -> void:
 	################
@@ -467,15 +470,16 @@ func _validate_property(property: Dictionary) -> void:
 #region Private Functions
 
 func _enter_tree() -> void:
-	PhantomCameraManager.pcam_added(self)
+	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
+	_phantom_camera_manager.pcam_added(self)
 	update_limit_all_sides()
 
-	if not PhantomCameraManager.get_phantom_camera_hosts().is_empty():
-		set_pcam_host_owner(PhantomCameraManager.get_phantom_camera_hosts()[0])
+	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
+		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 
 func _exit_tree() -> void:
-	PhantomCameraManager.pcam_removed(self)
+	_phantom_camera_manager.pcam_removed(self)
 
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)

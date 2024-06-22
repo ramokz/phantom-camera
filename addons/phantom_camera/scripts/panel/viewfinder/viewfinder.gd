@@ -3,7 +3,7 @@ extends Control
 
 #region Constants
 
-const Constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
+const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 # TODO - Should be in a central location
 const _camera_2d_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/Camera2DIcon.svg")
@@ -174,9 +174,9 @@ func visibility_check() -> void:
 
 	var phantom_camera_host: PhantomCameraHost
 	var has_camera: bool = false
-	if not PhantomCameraManager.get_phantom_camera_hosts().is_empty():
+	if not get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 		has_camera = true
-		phantom_camera_host = PhantomCameraManager.get_phantom_camera_hosts()[0]
+		phantom_camera_host = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()[0]
 
 	var root: Node = EditorInterface.get_edited_scene_root()
 
@@ -233,15 +233,15 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 	var pcam_icon: CompressedTexture2D
 
 	if is_2D:
-		camera_string = Constants.CAMERA_2D_NODE_NAME
-		pcam_string = Constants.PCAM_2D_NODE_NAME
-		color = Constants.COLOR_2D
+		camera_string = _constants.CAMERA_2D_NODE_NAME
+		pcam_string = _constants.PCAM_2D_NODE_NAME
+		color = _constants.COLOR_2D
 		camera_icon = _camera_2d_icon
 		pcam_icon = _pcam_2D_icon
 	else:
-		camera_string = Constants.CAMERA_3D_NODE_NAME
-		pcam_string = Constants.PCAM_3D_NODE_NAME
-		color = Constants.COLOR_3D
+		camera_string = _constants.CAMERA_3D_NODE_NAME
+		pcam_string = _constants.PCAM_3D_NODE_NAME
+		color = _constants.COLOR_3D
 		camera_icon = _camera_3d_icon
 		pcam_icon = _pcam_3D_icon
 
@@ -253,7 +253,8 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 					pcam_host = cam_child
 
 				if pcam_host:
-					if PhantomCameraManager.get_phantom_camera_2ds() or PhantomCameraManager.get_phantom_camera_3ds():
+					if get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_2ds() or \
+					get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_3ds():
 						# Pcam exists in tree
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
@@ -269,12 +270,12 @@ func _check_camera(root: Node, camera: Node, is_2D: bool) -> void:
 						_set_empty_viewfinder_state(pcam_string, pcam_icon)
 				else:
 #					No PCamHost in scene
-					_update_button(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
-					_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
+					_update_button(_constants.PCAM_HOST_NODE_NAME, _pcam_host_icon, _constants.PCAM_HOST_COLOR)
+					_set_empty_viewfinder_state(_constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 		else:
 #			No PCamHost in scene
-			_update_button(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon, Constants.PCAM_HOST_COLOR)
-			_set_empty_viewfinder_state(Constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
+			_update_button(_constants.PCAM_HOST_NODE_NAME, _pcam_host_icon, _constants.PCAM_HOST_COLOR)
+			_set_empty_viewfinder_state(_constants.PCAM_HOST_NODE_NAME, _pcam_host_icon)
 	else:
 #		No Camera
 		_update_button(camera_string, camera_icon, color)
@@ -325,15 +326,15 @@ func _add_node(node_type: String) -> void:
 	match node_type:
 		_no_open_scene_string:
 			pass
-		Constants.CAMERA_2D_NODE_NAME:
+		_constants.CAMERA_2D_NODE_NAME:
 			var camera: Camera2D = Camera2D.new()
-			_instantiate_node(root, camera, Constants.CAMERA_2D_NODE_NAME)
-		Constants.CAMERA_3D_NODE_NAME:
+			_instantiate_node(root, camera, _constants.CAMERA_2D_NODE_NAME)
+		_constants.CAMERA_3D_NODE_NAME:
 			var camera: Camera3D = Camera3D.new()
-			_instantiate_node(root, camera, Constants.CAMERA_3D_NODE_NAME)
-		Constants.PCAM_HOST_NODE_NAME:
+			_instantiate_node(root, camera, _constants.CAMERA_3D_NODE_NAME)
+		_constants.PCAM_HOST_NODE_NAME:
 			var pcam_host: PhantomCameraHost = PhantomCameraHost.new()
-			pcam_host.set_name(Constants.PCAM_HOST_NODE_NAME)
+			pcam_host.set_name(_constants.PCAM_HOST_NODE_NAME)
 			if _is_2d:
 #				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
 				_get_camera_2d().add_child(pcam_host)
@@ -342,12 +343,12 @@ func _add_node(node_type: String) -> void:
 #				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
 				get_tree().get_edited_scene_root().get_viewport().get_camera_3d().add_child(pcam_host)
 				pcam_host.set_owner(get_tree().get_edited_scene_root())
-		Constants.PCAM_2D_NODE_NAME:
+		_constants.PCAM_2D_NODE_NAME:
 			var pcam_2D: PhantomCamera2D = PhantomCamera2D.new()
-			_instantiate_node(root, pcam_2D, Constants.PCAM_2D_NODE_NAME)
-		Constants.PCAM_3D_NODE_NAME:
+			_instantiate_node(root, pcam_2D, _constants.PCAM_2D_NODE_NAME)
+		_constants.PCAM_3D_NODE_NAME:
 			var pcam_3D: PhantomCamera3D = PhantomCamera3D.new()
-			_instantiate_node(root, pcam_3D, Constants.PCAM_3D_NODE_NAME)
+			_instantiate_node(root, pcam_3D, _constants.PCAM_3D_NODE_NAME)
 
 
 func _instantiate_node(root: Node, node: Node, name: String) -> void:
@@ -357,7 +358,7 @@ func _instantiate_node(root: Node, node: Node, name: String) -> void:
 
 
 func _set_viewfinder(root: Node, editor: bool) -> void:
-	pcam_host_group = PhantomCameraManager.get_phantom_camera_hosts()
+	pcam_host_group = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()
 	if pcam_host_group.size() != 0:
 		if pcam_host_group.size() == 1:
 			var pcam_host: PhantomCameraHost = pcam_host_group[0]
