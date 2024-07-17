@@ -17,7 +17,11 @@ export_presets.cfg
 
 .godot/
 
-# Docs specic ignores
+# CSharp Dev
+*.csproj
+*.sln
+
+# Docs specific ignores
 #/docs/
 node_modules
 cache
