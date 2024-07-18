@@ -1,0 +1,83 @@
+[gd_scene load_steps=14 format=3 uid="uid://brb8fl27ofqhv"]
+
+[ext_resource type="Script" path="res://dev_scenes/3d/scripts/DevSceneCSharp3D.cs" id="1_fd2f4"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_m8s1w"]
+[ext_resource type="Script" path="res://dev_scenes/3d/scripts/DevPlayer.cs" id="3_45c2y"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_xni2u"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_c7bav"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_jea0a"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vuocs"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_evu1o"]
+sky_material = SubResource("ProceduralSkyMaterial_vuocs")
+
+[sub_resource type="Environment" id="Environment_5sile"]
+background_mode = 2
+sky = SubResource("Sky_evu1o")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_vcumb"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_04sci"]
+
+[sub_resource type="Resource" id="Resource_nsh7j"]
+script = ExtResource("4_c7bav")
+duration = 1.0
+transition = 0
+ease = 2
+
+[sub_resource type="Resource" id="Resource_ujhhy"]
+script = ExtResource("5_jea0a")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_fd2f4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_5sile")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25252, 4)
+
+[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
+script = ExtResource("2_m8s1w")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.514567, 0)
+use_collision = true
+size = Vector3(10, 1, 10)
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25252, 0)
+script = ExtResource("3_45c2y")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("CapsuleMesh_vcumb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_04sci")
+
+[node name="PlayerCam" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4)
+script = ExtResource("3_xni2u")
+follow_mode = 6
+follow_target = NodePath("..")
+tween_resource = SubResource("Resource_nsh7j")
+camera_3d_resource = SubResource("Resource_ujhhy")
+follow_offset = Vector3(0, 1, 3)
