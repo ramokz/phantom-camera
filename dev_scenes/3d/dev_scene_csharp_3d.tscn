@@ -1,8 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://brb8fl27ofqhv"]
+[gd_scene load_steps=13 format=3 uid="uid://brb8fl27ofqhv"]
 
 [ext_resource type="Script" path="res://dev_scenes/3d/scripts/DevSceneCSharp3D.cs" id="1_fd2f4"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_m8s1w"]
-[ext_resource type="Script" path="res://dev_scenes/3d/scripts/DevPlayer.cs" id="3_45c2y"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_xni2u"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_c7bav"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_jea0a"]
@@ -65,7 +64,6 @@ size = Vector3(10, 1, 10)
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25252, 0)
-script = ExtResource("3_45c2y")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
 mesh = SubResource("CapsuleMesh_vcumb")
