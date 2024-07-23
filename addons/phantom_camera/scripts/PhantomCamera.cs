@@ -60,13 +60,12 @@ public enum ProjectionType
     Frustum
 }
 
-// TODO: For Godot 4.3
-// public enum InterpolationMode
-// {
-//     Auto,
-//     Idle,
-//     Physics
-// }
+public enum InterpolationMode
+{
+    Auto,
+    Idle,
+    Physics
+}
 
 public static class PhantomCameraExtension
 {
@@ -78,6 +77,11 @@ public static class PhantomCameraExtension
     public static PhantomCamera2D AsPhantomCamera2D(this Node2D node2D)
     {
         return new PhantomCamera2D(node2D);
+    }
+
+    public static PhantomCameraHost AsPhantomCameraHost(this Node node)
+    {
+        return new PhantomCameraHost(node);
     }
 }
 
@@ -237,7 +241,6 @@ public abstract class PhantomCamera
     public delegate void BecameActiveEventHandler();
     public delegate void BecameInactiveEventHandler();
     public delegate void FollowTargetChangedEventHandler();
-    public delegate void LookAtTargetChangedEventHandler();
     public delegate void DeadZoneChangedEventHandler();
     public delegate void TweenStartedEventHandler();
     public delegate void IsTweeningEventHandler();
@@ -246,7 +249,6 @@ public abstract class PhantomCamera
     public event BecameActiveEventHandler? BecameActive;
     public event BecameInactiveEventHandler? BecameInactive;
     public event FollowTargetChangedEventHandler? FollowTargetChanged;
-    public event LookAtTargetChangedEventHandler? LookAtTargetChanged;
     public event DeadZoneChangedEventHandler? DeadZoneChanged;
     public event TweenStartedEventHandler? TweenStarted;
     public event IsTweeningEventHandler? IsTweening;
@@ -255,7 +257,6 @@ public abstract class PhantomCamera
     private readonly Callable _callableBecameActive;
     private readonly Callable _callableBecameInactive;
     private readonly Callable _callableFollowTargetChanged;
-    private readonly Callable _callableLookAtTargetChanged;
     private readonly Callable _callableDeadZoneChanged;
     private readonly Callable _callableTweenStarted;
     private readonly Callable _callableIsTweening;
@@ -296,7 +297,6 @@ public abstract class PhantomCamera
         _callableBecameActive = Callable.From(() => BecameActive?.Invoke());
         _callableBecameInactive = Callable.From(() => BecameInactive?.Invoke());
         _callableFollowTargetChanged = Callable.From(() => FollowTargetChanged?.Invoke());
-        _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
         _callableDeadZoneChanged = Callable.From(() => DeadZoneChanged?.Invoke());
         _callableTweenStarted = Callable.From(() => TweenStarted?.Invoke());
         _callableIsTweening = Callable.From(() => IsTweening?.Invoke());
@@ -305,7 +305,6 @@ public abstract class PhantomCamera
         Node.Connect(SignalName.BecameActive, _callableBecameActive);
         Node.Connect(SignalName.BecameInactive, _callableBecameInactive);
         Node.Connect(SignalName.FollowTargetChanged, _callableFollowTargetChanged);
-        Node.Connect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
         Node.Connect(SignalName.DeadZoneChanged, _callableDeadZoneChanged);
         Node.Connect(SignalName.TweenStarted, _callableTweenStarted);
         Node.Connect(SignalName.IsTweening, _callableIsTweening);
@@ -317,7 +316,6 @@ public abstract class PhantomCamera
         Node.Disconnect(SignalName.BecameActive, _callableBecameActive);
         Node.Disconnect(SignalName.BecameInactive, _callableBecameInactive);
         Node.Disconnect(SignalName.FollowTargetChanged, _callableFollowTargetChanged);
-        Node.Disconnect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
         Node.Disconnect(SignalName.DeadZoneChanged, _callableDeadZoneChanged);
         Node.Disconnect(SignalName.TweenStarted, _callableTweenStarted);
         Node.Disconnect(SignalName.IsTweening, _callableIsTweening);
@@ -473,10 +471,13 @@ public class PhantomCamera3D : PhantomCamera
 {
     public Node3D Node3D => (Node3D)Node;
     
+    public delegate void LookAtTargetChangedEventHandler();
     public delegate void TweenInterruptedEventHandler(Node3D pCam);
     
+    public event LookAtTargetChangedEventHandler? LookAtTargetChanged;
     public event TweenInterruptedEventHandler? TweenInterrupted;
     
+    private readonly Callable _callableLookAtTargetChanged;
     private readonly Callable _callableTweenInterrupted;
     
     public LookAtMode LookAtMode => (LookAtMode)(int)Node.Call(MethodName.GetLookAtMode);
@@ -516,12 +517,16 @@ public class PhantomCamera3D : PhantomCamera
 
     public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
     {
+        _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
         _callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
+        
+        Node.Connect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
         Node.Connect(SignalName.TweenInterrupted, _callableTweenInterrupted);
     }
     
     ~PhantomCamera3D()
     {
+        Node.Disconnect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
         Node.Disconnect(SignalName.TweenInterrupted, _callableTweenInterrupted);
     }
 
@@ -554,7 +559,7 @@ public class ActivePhantomCameraQueryResult
 
     public bool Is3D => _obj.IsClass("Node3D");
 
-    public ActivePhantomCameraQueryResult(GodotObject godotOject) => _obj = godotOject;
+    public ActivePhantomCameraQueryResult(GodotObject godotObject) => _obj = godotObject;
 
     public PhantomCamera2D? AsPhantomCamera2D()
     {
@@ -569,7 +574,7 @@ public class ActivePhantomCameraQueryResult
 
 public class PhantomCameraHost
 {
-    public readonly Node Node;
+    public Node Node { get; }
 
     // TODO: For Godot 4.3
     // public InterpolationMode InterpolationMode
@@ -578,9 +583,9 @@ public class PhantomCameraHost
     //     set => Node.Call(MethodName.SetInterpolationMode, (int)value);
     // }
 
-    public Camera2D Camera2D => (Camera2D)Node.Call(MethodName.GetCamera2D);
+    public Camera2D? Camera2D => (Camera2D?)Node.Get(PropertyName.Camera2D);
 
-    public Camera3D Camera3D => (Camera3D)Node.Call(MethodName.GetCamera3D);
+    public Camera3D? Camera3D => (Camera3D?)Node.Get(PropertyName.Camera3D);
 
     public bool TriggerPhantomCameraTween => (bool)Node.Call(MethodName.GetTriggerPhantomCameraTween);
 
@@ -591,26 +596,28 @@ public class PhantomCameraHost
         var result = Node.Call(MethodName.GetActivePhantomCamera);
         return result.VariantType == Variant.Type.Nil ? null : new ActivePhantomCameraQueryResult(result.AsGodotObject());
     }
+
+    public static class PropertyName
+    {
+        public const string Camera2D = "camera_2d";
+        public const string Camera3D = "camera_3d";
+    }
     
     public static class MethodName
     {
-        public const string GetCamera2D = "get_camera_2d";
-        public const string GetCamera3D = "get_camera_3d";
-        
         public const string GetActivePhantomCamera = "get_active_pcam";
         public const string GetTriggerPhantomCameraTween = "get_trigger_pcam_tween";
 
-        // TODO: For Godot 4.3
-        // public const string GetInterpolationMode = "get_interpolation_mode";
-        // public const string SetInterpolationMode = "set_interpolation_mode";
+        public const string GetInterpolationMode = "get_interpolation_mode";
+        public const string SetInterpolationMode = "set_interpolation_mode";
     }
 }
 
 public static class PhantomCameraManager
 {
     private static GodotObject? _instance;
-    
-    private static GodotObject Instance => _instance ??= Engine.GetSingleton("PhantomCameraManager");
+
+    public static GodotObject Instance => _instance ??= Engine.GetSingleton("PhantomCameraManager");
 
     public static PhantomCamera2D[] PhantomCamera2Ds =>
         Instance.Call(MethodName.GetPhantomCamera2Ds).AsGodotArray<Node2D>()

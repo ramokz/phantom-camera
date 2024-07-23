@@ -18,8 +18,6 @@ export_presets.cfg
 .godot/
 
 # CSharp Dev
-*.csproj
-*.sln
 *.DotSettings
 
 # Docs specific ignores

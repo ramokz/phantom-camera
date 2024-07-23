@@ -8,5 +8,7 @@ public partial class DevSceneCSharp3D : Node3D
         var pCam = GetNode<Node3D>("Player/PlayerCam").AsPhantomCamera3D();
         
         GD.Print(pCam.Node3D);
+        
+        
     }
 }
