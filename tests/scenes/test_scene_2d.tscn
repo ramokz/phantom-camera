@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bx61t0ytiwtwm"]
+[gd_scene load_steps=7 format=3 uid="uid://bx61t0ytiwtwm"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_qr8fr"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="2_53jhm"]
@@ -10,6 +10,10 @@ duration = 1.0
 transition = 0
 ease = 2
 
+[sub_resource type="TileSet" id="TileSet_lpbxs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4v04e"]
+
 [node name="TestScene2D" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -20,3 +24,12 @@ script = ExtResource("1_qr8fr")
 [node name="PhantomCamera2D" type="Node2D" parent="."]
 script = ExtResource("2_53jhm")
 tween_resource = SubResource("Resource_f0onm")
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_lpbxs")
+format = 2
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_4v04e")
