@@ -104,7 +104,7 @@ public partial class TestPhantomCameraWrapper: Node
         var snapToPixel = camera.SnapToPixel;
         camera.SnapToPixel = !camera.SnapToPixel;
         Debug.Assert(camera.SnapToPixel != snapToPixel);
-
+        
         camera.LimitLeft = 2;
         camera.LimitTop = 3;
         camera.LimitRight = 4;

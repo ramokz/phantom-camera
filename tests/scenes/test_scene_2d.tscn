@@ -33,3 +33,5 @@ format = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_4v04e")
+
+[node name="Marker2D" type="Marker2D" parent="."]

@@ -1,21 +1,6 @@
-﻿using Godot;
+﻿using System.Linq;
+using Godot;
 using PhantomCamera.Resources;
-
-// TODO: missing shared properties
-// - get/set follow_distance (3d only)
-// - get/set auto_follow_distance (3d only)
-// - get/set auto_follow_distance_min (3d only)
-// - get/set auto_follow_distance_max (3d only)
-// - get/set auto_follow_distance_divisor (3d only)
-// - get/set look_at_target (3d only)
-// - get/set look_at_targets (3d only)
-// - get/set viewport_position (3d only)
-// - get/set collision_mask (3d only)
-// - get/set shape (3d only)
-// - get/set margin (3d only)
-// - get/set look_at_offset (3d only)
-// - get/set look_at_damping (3d only)
-// - get/set look_at_damping_value (3d only)
 
 #nullable enable
 
@@ -33,7 +18,37 @@ public class PhantomCamera3D : PhantomCamera
     
     private readonly Callable _callableLookAtTargetChanged;
     private readonly Callable _callableTweenInterrupted;
+
+    public Node3D FollowTarget
+    {
+        get => (Node3D)Node3D.Call(PhantomCamera.MethodName.GetFollowTarget);
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowTarget, value);
+    }
     
+    public Node3D[] FollowTargets
+    {
+        get => Node3D.Call(PhantomCamera.MethodName.GetFollowTargets).AsGodotArray<Node3D>().ToArray();
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
+    }
+    
+    public Path3D FollowPath
+    {
+        get => (Path3D)Node3D.Call(PhantomCamera.MethodName.GetFollowPath);
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowPath, value);
+    }
+    
+    public Vector3 FollowOffset
+    {
+        get => (Vector3)Node3D.Call(PhantomCamera.MethodName.GetFollowOffset);
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowOffset, value);
+    }
+    
+    public Vector3 FollowDampingValue
+    {
+        get => (Vector3)Node3D.Call(PhantomCamera.MethodName.GetFollowDampingValue);
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowDampingValue, value);
+    }
+
     public LookAtMode LookAtMode => (LookAtMode)(int)Node.Call(MethodName.GetLookAtMode);
 
     public Camera3DResource Camera3DResource
@@ -65,6 +80,91 @@ public class PhantomCamera3D : PhantomCamera
         get => (float)Node.Call(MethodName.GetSpringLength);
         set => Node.Call(MethodName.SetSpringLength, value);
     }
+    
+    public float FollowDistance
+    {
+        get => (float)Node3D.Call(MethodName.GetFollowDistance);
+        set => Node3D.Call(MethodName.SetFollowDistance, value);
+    }
+        
+    public bool AutoFollowDistance
+    {
+        get => (bool)Node3D.Call(MethodName.GetAutoFollowDistance);
+        set => Node3D.Call(MethodName.SetAutoFollowDistance, value);
+    }
+        
+    public float AutoFollowDistanceMin
+    {
+        get => (float)Node3D.Call(MethodName.GetAutoFollowDistanceMin);
+        set => Node3D.Call(MethodName.SetAutoFollowDistanceMin, value);
+    }
+        
+    public float AutoFollowDistanceMax
+    {
+        get => (float)Node3D.Call(MethodName.GetAutoFollowDistanceMax);
+        set => Node3D.Call(MethodName.SetAutoFollowDistanceMax, value);
+    }
+        
+    public float AutoFollowDistanceDivisor
+    {
+        get => (float)Node3D.Call(MethodName.GetAutoFollowDistanceDivisor);
+        set => Node3D.Call(MethodName.SetAutoFollowDistanceDivisor, value);
+    }
+        
+    public Node3D LookAtTarget
+    {
+        get => (Node3D)Node3D.Call(MethodName.GetLookAtTarget);
+        set => Node3D.Call(MethodName.SetLookAtTarget, value);
+    }
+        
+    public Node3D[] LookAtTargets
+    {
+        get => Node3D.Call(MethodName.GetLookAtTargets).AsGodotArray<Node3D>().ToArray();
+        set => Node3D.Call(MethodName.SetLookAtTargets, value);
+    }
+        
+    public Vector2 ViewportPosition
+    {
+        get => (Vector2)Node3D.Call(MethodName.GetViewportPosition);
+        set => Node3D.Call(MethodName.SetViewportPosition, value);
+    }
+        
+    public int CollisionMask
+    {
+        get => (int)Node3D.Call(MethodName.GetCollisionMask);
+        set => Node3D.Call(MethodName.SetCollisionMask, value);
+    }
+        
+    public Shape3D Shape
+    {
+        get => (Shape3D)Node3D.Call(MethodName.GetShape);
+        set => Node3D.Call(MethodName.SetShape, value);
+    }
+        
+    public float Margin
+    {
+        get => (float)Node3D.Call(MethodName.GetMargin);
+        set => Node3D.Call(MethodName.SetMargin, value);
+    }
+        
+    public Vector3 LookAtOffset
+    {
+        get => (Vector3)Node3D.Call(MethodName.GetLookAtOffset);
+        set => Node3D.Call(MethodName.SetLookAtOffset, value);
+    }
+        
+    public bool LookAtDamping
+    {
+        get => (bool)Node3D.Call(MethodName.GetLookAtDamping);
+        set => Node3D.Call(MethodName.SetLookAtDamping, value);
+    }
+        
+    public float LookAtDampingValue
+    {
+        get => (float)Node3D.Call(MethodName.GetLookAtDampingValue);
+        set => Node3D.Call(MethodName.SetLookAtDampingValue, value);
+    }
+        
     
     public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
@@ -102,5 +202,47 @@ public class PhantomCamera3D : PhantomCamera
         
         public const string GetSpringLength = "get_spring_length";
         public const string SetSpringLength = "set_spring_length";
+        
+        public const string GetFollowDistance = "get_follow_distance";
+        public const string SetFollowDistance = "set_follow_distance";
+        
+        public const string GetAutoFollowDistance = "get_auto_follow_distance";
+        public const string SetAutoFollowDistance = "set_auto_follow_distance";
+        
+        public const string GetAutoFollowDistanceMin = "get_auto_follow_distance_min";
+        public const string SetAutoFollowDistanceMin = "set_auto_follow_distance_min";
+        
+        public const string GetAutoFollowDistanceMax = "get_auto_follow_distance_max";
+        public const string SetAutoFollowDistanceMax = "set_auto_follow_distance_max";
+        
+        public const string GetAutoFollowDistanceDivisor = "get_auto_follow_distance_divisor";
+        public const string SetAutoFollowDistanceDivisor = "set_auto_follow_distance_divisor";
+        
+        public const string GetLookAtTarget = "get_look_at_target";
+        public const string SetLookAtTarget = "set_look_at_target";
+        
+        public const string GetLookAtTargets = "get_look_at_targets";
+        public const string SetLookAtTargets = "set_look_at_targets";
+        
+        public const string GetViewportPosition = "get_viewport_position";
+        public const string SetViewportPosition = "set_viewport_position";
+        
+        public const string GetCollisionMask = "get_collision_mask";
+        public const string SetCollisionMask = "set_collision_mask";
+        
+        public const string GetShape = "get_shape";
+        public const string SetShape = "set_shape";
+        
+        public const string GetMargin = "get_margin";
+        public const string SetMargin = "set_margin";
+        
+        public const string GetLookAtOffset = "get_look_at_offset";
+        public const string SetLookAtOffset = "set_look_at_offset";
+        
+        public const string GetLookAtDamping = "get_look_at_damping";
+        public const string SetLookAtDamping = "set_look_at_damping";
+        
+        public const string GetLookAtDampingValue = "get_look_at_damping_value";
+        public const string SetLookAtDampingValue = "set_look_at_damping_value";
     }
 }

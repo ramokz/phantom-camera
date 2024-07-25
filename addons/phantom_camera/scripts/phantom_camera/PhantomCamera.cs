@@ -1,16 +1,6 @@
 ﻿using Godot;
+using PhantomCamera.Hosts;
 using PhantomCamera.Resources;
-
-// TODO: missing shared properties
-// - get/set pcam_host_owner
-// - get/set follow_target
-// - get/set follow_targets
-// - get/set follow_path
-// - get/set follow_offset
-// - get/set follow_damping
-// - get/set follow_damping_value
-// - dead_zone_width
-// - dead_zone_height
 
 #nullable enable
 
@@ -41,7 +31,7 @@ public enum InactiveUpdateMode
     Never
 }
 
-public abstract class PhantomCamera // TODO: FollowTarget, LookAtTarget
+public abstract class PhantomCamera
 {
     protected readonly GodotObject Node;
     
@@ -78,6 +68,30 @@ public abstract class PhantomCamera // TODO: FollowTarget, LookAtTarget
     public FollowMode FollowMode => (FollowMode)(int)Node.Call(MethodName.GetFollowMode);
     
     public bool IsActive => (bool)Node.Call(MethodName.IsActive);
+
+    public PhantomCameraHost PhantomCameraHostOwner
+    {
+        get => new((Node)Node.Call(MethodName.GetPCamHostOwner));
+        set => Node.Call(MethodName.SetPCamHostOwner, value.Node);
+    }
+    
+    public bool FollowDamping
+    {
+        get => (bool)Node.Call(MethodName.GetFollowDamping);
+        set => Node.Call(MethodName.SetFollowDamping, value);
+    }
+
+    public float DeadZoneWidth
+    {
+        get => (float)Node.Get(PropertyName.DeadZoneWidth);
+        set => Node.Set(PropertyName.DeadZoneWidth, value);
+    }
+    
+    public float DeadZoneHeight
+    {
+        get => (float)Node.Get(PropertyName.DeadZoneHeight);
+        set => Node.Set(PropertyName.DeadZoneHeight, value);
+    }
 
     public PhantomCameraTween TweenResource
     {
@@ -136,6 +150,28 @@ public abstract class PhantomCamera // TODO: FollowTarget, LookAtTarget
         
         public const string GetPriority = "get_priority";
         public const string SetPriority = "set_priority";
+        
+        public const string GetPCamHostOwner = "get_pcam_host_owner";
+        public const string SetPCamHostOwner = "set_pcam_host_owner";
+        
+        public const string GetFollowTarget = "get_follow_target";
+        public const string SetFollowTarget = "set_follow_target";
+        
+        public const string GetFollowTargets = "get_follow_targets";
+        public const string SetFollowTargets = "set_follow_targets";
+        
+        public const string GetFollowPath = "get_follow_path";
+        public const string SetFollowPath = "set_follow_path";
+        
+        public const string GetFollowOffset = "get_follow_offset";
+        public const string SetFollowOffset = "set_follow_offset";
+        
+        public const string GetFollowDamping = "get_follow_damping";
+        public const string SetFollowDamping = "set_follow_damping";
+        
+        public const string GetFollowDampingValue = "get_follow_damping_value";
+        public const string SetFollowDampingValue = "set_follow_damping_value";
+        
 
         public const string GetTweenResource = "get_tween_resource";
         public const string SetTweenResource = "set_tween_resource";
@@ -145,6 +181,12 @@ public abstract class PhantomCamera // TODO: FollowTarget, LookAtTarget
 
         public const string GetInactiveUpdateMode = "get_inactive_update_mode";
         public const string SetInactiveUpdateMode = "set_inactive_update_mode";
+    }
+
+    public static class PropertyName
+    {
+        public const string DeadZoneWidth = "dead_zone_width";
+        public const string DeadZoneHeight = "dead_zone_height";
     }
 
     public static class SignalName

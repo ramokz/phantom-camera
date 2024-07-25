@@ -1,11 +1,5 @@
-﻿using Godot;
-
-// TODO: missing 2d properties
-// - get/set auto_zoom (2d only)
-// - get/set auto_zoom_min (2d only)
-// - get/set auto_zoom_max (2d only)
-// - get/set auto_zoom_margin (2d only)
-// - draw_limits (2d only)
+﻿using System.Linq;
+using Godot;
 
 #nullable enable
 
@@ -21,6 +15,36 @@ public class PhantomCamera2D : PhantomCamera
     
     private readonly Callable _callableTweenInterrupted;
 
+    public Node2D FollowTarget
+    {
+        get => (Node2D)Node2D.Call(PhantomCamera.MethodName.GetFollowTarget);
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowTarget, value);
+    }
+    
+    public Node2D[] FollowTargets
+    {
+        get => Node2D.Call(PhantomCamera.MethodName.GetFollowTargets).AsGodotArray<Node2D>().ToArray();
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
+    }
+    
+    public Path2D FollowPath
+    {
+        get => (Path2D)Node2D.Call(PhantomCamera.MethodName.GetFollowPath);
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowPath, value);
+    }
+    
+    public Vector2 FollowOffset
+    {
+        get => (Vector2)Node2D.Call(PhantomCamera.MethodName.GetFollowOffset);
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowOffset, value);
+    }
+    
+    public Vector2 FollowDampingValue
+    {
+        get => (Vector2)Node2D.Call(PhantomCamera.MethodName.GetFollowDampingValue);
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowDampingValue, value);
+    }
+    
     public Vector2 Zoom
     {
         get => (Vector2)Node.Call(MethodName.GetZoom);
@@ -56,11 +80,41 @@ public class PhantomCamera2D : PhantomCamera
         get => (int)Node.Call(MethodName.GetLimitBottom);
         set => Node.Call(MethodName.SetLimitBottom, value);
     }
-
+    
     public Vector4I LimitMargin
     {
         get => (Vector4I)Node.Call(MethodName.GetLimitMargin);
         set => Node.Call(MethodName.SetLimitMargin, value);
+    }
+    
+    public bool AutoZoom
+    {
+        get => (bool)Node2D.Call(MethodName.GetAutoZoom);
+        set => Node2D.Call(MethodName.SetAutoZoom, value);
+    }
+
+    public float AutoZoomMin
+    {
+        get => (float)Node2D.Call(MethodName.GetAutoZoomMin);
+        set => Node2D.Call(MethodName.SetAutoZoomMin, value);
+    }
+
+    public float AutoZoomMax
+    {
+        get => (float)Node2D.Call(MethodName.GetAutoZoomMax);
+        set => Node2D.Call(MethodName.SetAutoZoomMax, value);
+    }
+
+    public Vector4 AutoZoomMargin
+    {
+        get => (Vector4)Node2D.Call(MethodName.GetAutoZoomMargin);
+        set => Node2D.Call(MethodName.SetAutoZoomMargin, value);
+    }
+
+    public bool DrawLimits
+    {
+        get => (bool)Node2D.Get(PropertyName.DrawLimits);
+        set => Node2D.Set(PropertyName.DrawLimits, value);
     }
     
     public static PhantomCamera2D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
@@ -131,6 +185,23 @@ public class PhantomCamera2D : PhantomCamera
 
         public const string GetLimitMargin = "get_limit_margin";
         public const string SetLimitMargin = "set_limit_margin";
+        
+        public const string GetAutoZoom = "get_auto_zoom";
+        public const string SetAutoZoom = "set_auto_zoom";
+        
+        public const string GetAutoZoomMin = "get_auto_zoom_min";
+        public const string SetAutoZoomMin = "set_auto_zoom_min";
+        
+        public const string GetAutoZoomMax = "get_auto_zoom_max";
+        public const string SetAutoZoomMax = "set_auto_zoom_max";
+        
+        public const string GetAutoZoomMargin = "get_auto_zoom_margin";
+        public const string SetAutoZoomMargin = "set_auto_zoom_margin";
+    }
+
+    public new static class PropertyName
+    {
+        public const string DrawLimits = "draw_limits";
     }
 }
 
