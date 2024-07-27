@@ -201,7 +201,7 @@ var _has_follow_path: bool = false
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var _has_tweened: bool = false
+var _tween_skip: bool = false
 
 ## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -593,7 +593,7 @@ func _set_velocity(index: int, value: float):
 
 
 func _interpolate_position(target_position: Vector2, delta: float) -> void:
-	if _limit_inactive_pcam and not _has_tweened:
+	if _limit_inactive_pcam and not _tween_skip:
 		target_position = _set_limit_clamp_position(target_position)
 
 	if follow_damping:
@@ -800,14 +800,14 @@ func reset_limit() -> void:
 ## Assigns the value of the [param has_tweened] property.
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
-func set_has_tweened(caller: Node, value: bool) -> void:
+func set_tween_skip(caller: Node, value: bool) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
-		_has_tweened = value
+		_tween_skip = value
 	else:
 		printerr("Can only be called PhantomCameraHost class")
 ## Returns the current [param has_tweened] value.
-func get_has_tweened() -> bool:
-	return _has_tweened
+func get_tween_skip() -> bool:
+	return _tween_skip
 
 #endregion
 
