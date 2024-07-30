@@ -261,7 +261,7 @@ var _tween_skip: bool = false
 	set = set_environment,
 	get = get_environment
 
-## Overrides the [member Camera3D.CameraAttributes] resource property.
+## Overrides the [member Camera3D.attribuets] resource property.
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes

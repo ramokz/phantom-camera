@@ -216,6 +216,8 @@ func _enter_tree() -> void:
 		else:
 			_is_2D = false
 			camera_3d = parent
+			
+			## Clears existing resource on Camera3D to prevent potentially messing with external Attribute resource
 			if camera_3d.attributes != null and not Engine.is_editor_hint():
 				camera_3d.attributes = null
 
@@ -577,13 +579,9 @@ func _pcam_follow(delta: float) -> void:
 
 			if _active_pcam_3d.attributes != null:
 				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
-			#else:
-				#camera_3d.attributes = null
 
 			if _active_pcam_3d.environment != null:
 				camera_3d.environment = _active_pcam_3d.environment.duplicate()
-			#else:
-				#camera_3d.environment = null
 
 
 func _pcam_tween(delta: float) -> void:
