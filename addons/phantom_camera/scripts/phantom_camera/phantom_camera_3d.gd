@@ -539,6 +539,9 @@ func _enter_tree() -> void:
 	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
+	if not visibility_changed.is_connected(_check_visibility):
+		visibility_changed.connect(_check_visibility)
+
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -875,6 +878,11 @@ func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
 	if not is_instance_valid(get_pcam_host_owner().camera_3d): return false
 	return true
+
+
+func _check_visibility() -> void:
+	if not is_instance_valid(pcam_host_owner): return
+	pcam_host_owner.refresh_pcam_list_priorty()
 
 #endregion
 
