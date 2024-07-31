@@ -187,4 +187,3 @@ func _hide_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 			_interactive_UI = null
 			_interactive_object = InteractiveType.NONE
 			_active_pcam = null
-

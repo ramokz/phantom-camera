@@ -1,5 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://dd4sd404yydqk"]
+[gd_scene load_steps=13 format=3 uid="uid://dd4sd404yydqk"]
 
+[ext_resource type="Script" path="res://dev_scenes/2d/scripts/dev_scene_2d.gd" id="1_0ispe"]
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_11grc"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_g1jp6"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_tm0ws"]
@@ -561,11 +562,18 @@ sources/0 = SubResource("TileSetAtlasSource_easgx")
 
 [sub_resource type="Resource" id="Resource_f4kig"]
 script = ExtResource("4_qq8ep")
-duration = 1.0
-transition = 0
+duration = 0.6
+transition = 3
+ease = 2
+
+[sub_resource type="Resource" id="Resource_0f6ky"]
+script = ExtResource("4_qq8ep")
+duration = 0.6
+transition = 3
 ease = 2
 
 [node name="Node2D" type="Node2D"]
+script = ExtResource("1_0ispe")
 
 [node name="Background" type="CanvasLayer" parent="."]
 layer = -3
@@ -628,5 +636,14 @@ visible = false
 [node name="UISign" parent="UI" instance=ExtResource("7_ot6g8")]
 unique_name_in_owner = true
 visible = false
+
+[node name="PhantomCamera2D" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(685, -158)
+script = ExtResource("3_tm0ws")
+priority = 1
+zoom = Vector2(0.75, 0.75)
+tween_resource = SubResource("Resource_0f6ky")
+draw_limits = true
 
 [editable path="CharacterBody2D"]
