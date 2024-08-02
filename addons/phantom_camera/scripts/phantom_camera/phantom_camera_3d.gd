@@ -297,6 +297,10 @@ var frustum_offset: Vector2:
 	set = set_frustum_offset,
 	get = get_frustum_offset
 	
+var far: float:
+	set = set_far,
+	get = get_far
+	
 var near: float:
 	set = set_near,
 	get = get_near
