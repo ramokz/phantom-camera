@@ -521,7 +521,12 @@ func _process_logic(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
 	_limit_checker()
+	
 	if _should_follow:
+		if not follow_mode == FollowMode.GROUP:
+			if follow_target.is_queued_for_deletion():
+				follow_target = null
+				return
 		_follow(delta)
 
 
