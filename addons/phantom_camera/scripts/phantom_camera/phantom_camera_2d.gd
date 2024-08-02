@@ -203,6 +203,18 @@ var _has_follow_path: bool = false
 	get = get_tween_resource
 var _tween_skip: bool = false
 
+var tween_duration: float:
+	set = set_tween_duration,
+	get = get_tween_duration
+
+var tween_transition: PhantomCameraTween.TransitionType:
+	set = set_tween_transition,
+	get = get_tween_transition
+
+var tween_ease: PhantomCameraTween.EaseType:
+	set = set_tween_ease,
+	get = get_tween_ease
+
 ## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
 ## This is most obvious if a [param PhantomCamera3D] has a long duration and
