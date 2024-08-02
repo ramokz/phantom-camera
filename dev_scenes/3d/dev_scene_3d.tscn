@@ -17,24 +17,6 @@ fog_density = 0.0392
 adjustment_enabled = true
 adjustment_contrast = 1.19
 
-[sub_resource type="Resource" id="Resource_sj6ok"]
-script = ExtResource("6_pmc8r")
-duration = 0.6
-transition = 2
-ease = 2
-
-[sub_resource type="Resource" id="Resource_a3u85"]
-script = ExtResource("7_fioii")
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 10.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.08
-far = 6000.0
-
 [sub_resource type="Resource" id="Resource_6c6yi"]
 script = ExtResource("6_pmc8r")
 duration = 1.0
@@ -42,6 +24,24 @@ transition = 2
 ease = 2
 
 [sub_resource type="Resource" id="Resource_j8csy"]
+script = ExtResource("7_fioii")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 2000.0
+
+[sub_resource type="Resource" id="Resource_sj6ok"]
+script = ExtResource("6_pmc8r")
+duration = 0.6
+transition = 2
+ease = 2
+
+[sub_resource type="Resource" id="Resource_a3u85"]
 script = ExtResource("7_fioii")
 cull_mask = 1048575
 h_offset = 0.0
@@ -78,14 +78,6 @@ environment = SubResource("Environment_0s7cr")
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, -2.58262, 0)
 metadata/_edit_lock_ = true
 
-[node name="ScenePhantomCamera3D" type="Node3D" parent="."]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
-script = ExtResource("3_4sdb7")
-priority = 10
-tween_resource = SubResource("Resource_sj6ok")
-camera_3d_resource = SubResource("Resource_a3u85")
-
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.5, 2)
@@ -98,5 +90,13 @@ tween_on_load = false
 camera_3d_resource = SubResource("Resource_j8csy")
 follow_offset = Vector3(0, 2, 2)
 follow_damping = true
+
+[node name="ScenePhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
+script = ExtResource("3_4sdb7")
+priority = 10
+tween_resource = SubResource("Resource_sj6ok")
+camera_3d_resource = SubResource("Resource_a3u85")
 
 [editable path="PlayerCharacterBody3D"]
