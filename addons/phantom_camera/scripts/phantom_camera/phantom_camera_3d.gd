@@ -304,7 +304,6 @@ var far: float:
 var near: float:
 	set = set_near,
 	get = get_near
-
 #endregion
 
 ## Overrides the [member Camera3D.environment] resource property.
