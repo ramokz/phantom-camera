@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_8von1"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_o1fj6"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_amcmx"]
-[ext_resource type="Texture2D" path="res://target_PNG15.png" id="8_rjcgw"]
+[ext_resource type="Texture2D" uid="uid://c3mskbmvnpwux" path="res://addons/phantom_camera/examples/textures/3D/target.png" id="8_rjcgw"]
 
 [sub_resource type="Resource" id="Resource_8fhct"]
 script = ExtResource("2_m2d6w")
@@ -58,7 +58,7 @@ dof_blur_far_distance = 31.1
 dof_blur_near_enabled = true
 dof_blur_near_distance = 1.79
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ji5bn"]
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gwbyx"]
 dof_blur_far_enabled = true
 dof_blur_far_distance = 5.99
 dof_blur_near_enabled = true
@@ -135,7 +135,7 @@ transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 9.63713)
-attributes = SubResource("CameraAttributesPractical_ji5bn")
+attributes = SubResource("CameraAttributesPractical_gwbyx")
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("5_8von1")
