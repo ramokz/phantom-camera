@@ -16,14 +16,24 @@ script = ExtResource("4_m2vbn")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="Resource" id="Resource_o161n"]
 script = ExtResource("4_m2vbn")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_7tjw4"]
 size = Vector3(2, 0.5, 4)
@@ -53,7 +63,12 @@ script = ExtResource("4_m2vbn")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wcrbb"]
 size = Vector3(6.8, 0.1, 5.4)
@@ -69,7 +84,12 @@ script = ExtResource("4_m2vbn")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ctyr8"]
 size = Vector3(7.4, 0.1, 3.6)
@@ -85,7 +105,12 @@ script = ExtResource("4_m2vbn")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ua072"]
 size = Vector3(6.8, 0.1, 3.6)

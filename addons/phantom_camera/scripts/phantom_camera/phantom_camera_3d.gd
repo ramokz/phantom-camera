@@ -229,7 +229,19 @@ var _valid_look_at_targets: Array[Node3D] = []
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var _has_tweened: bool = false
+var _tween_skip: bool = false
+
+var tween_duration: float:
+	set = set_tween_duration,
+	get = get_tween_duration
+
+var tween_transition: PhantomCameraTween.TransitionType:
+	set = set_tween_transition,
+	get = get_tween_transition
+
+var tween_ease: PhantomCameraTween.EaseType:
+	set = set_tween_ease,
+	get = get_tween_ease
 
 ## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -255,6 +267,54 @@ var _has_tweened: bool = false
 @export var camera_3d_resource: Camera3DResource = Camera3DResource.new():
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
+
+#region Camera3DResouce property getters
+var cull_mask: int:
+	set = set_cull_mask,
+	get = get_cull_mask
+
+var h_offset: float:
+	set = set_h_offset,
+	get = get_h_offset
+	
+var v_offset: float:
+	set = set_v_offset,
+	get = get_v_offset
+
+var projection: Camera3DResource.ProjectionType:
+	set = set_projection,
+	get = get_projection
+
+var fov: float:
+	set = set_fov,
+	get = get_fov
+
+var size: float:
+	set = set_size,
+	get = get_size
+
+var frustum_offset: Vector2:
+	set = set_frustum_offset,
+	get = get_frustum_offset
+	
+var far: float:
+	set = set_far,
+	get = get_far
+	
+var near: float:
+	set = set_near,
+	get = get_near
+#endregion
+
+## Overrides the [member Camera3D.environment] resource property.
+@export var environment: Environment = null:
+	set = set_environment,
+	get = get_environment
+
+## Overrides the [member Camera3D.attribuets] resource property.
+@export var attributes: CameraAttributes = null:
+	set = set_attributes,
+	get = get_attributes
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
@@ -529,6 +589,9 @@ func _enter_tree() -> void:
 	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
+	if not visibility_changed.is_connected(_check_visibility):
+		visibility_changed.connect(_check_visibility)
+
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -584,10 +647,17 @@ func _process_logic(delta: float) -> void:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER:	return
 			# InactiveUpdateMode.EXPONENTIALLY:
-			# TODO - Trigger positional updates less frequently as more Pcams gets added
+			# TODO - Trigger positional updates less frequently as more PCams gets added
 	if _should_follow:
+		if not follow_mode == FollowMode.GROUP:
+			if follow_target.is_queued_for_deletion():
+				follow_target = null
+				return
 		_follow(delta)
 	if _should_look_at:
+		if look_at_target.is_queued_for_deletion():
+			look_at_target = null
+			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
 
 
@@ -866,6 +936,11 @@ func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner().camera_3d): return false
 	return true
 
+
+func _check_visibility() -> void:
+	if not is_instance_valid(pcam_host_owner): return
+	pcam_host_owner.refresh_pcam_list_priorty()
+
 #endregion
 
 # TBD
@@ -896,14 +971,14 @@ func _has_valid_pcam_owner() -> bool:
 ## Assigns the value of the [param has_tweened] property.[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
-func set_has_tweened(caller: Node, value: bool) -> void:
+func set_tween_skip(caller: Node, value: bool) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
-		_has_tweened = value
+		_tween_skip = value
 	else:
 		printerr("Can only be called PhantomCameraHost class")
 ## Returns the current [param has_tweened] value.
-func get_has_tweened() -> bool:
-	return _has_tweened
+func get_tween_skip() -> bool:
+	return _tween_skip
 
 
 ## Assigns the [param PhantomCamera3D] to a new [PhantomCameraHost].[br]
@@ -1444,6 +1519,24 @@ func set_cull_mask_value(layer_number: int, value: bool) -> void:
 ## Gets the [member Camera3D.cull_mask] value assigned to the [Camera3DResource].
 func get_cull_mask() -> int:
 	return camera_3d_resource.cull_mask
+
+
+## Assigns a new [Environment] resource to the [Camera3DResource].
+func set_environment(value: Environment):
+	environment = value
+
+## Gets the [Camera3D.environment] value assigned to the [Camera3DResource].
+func get_environment() -> Environment:
+	return environment
+
+
+## Assigns a new [CameraAttributes] resource to the [Camera3DResource].
+func set_attributes(value: CameraAttributes):
+	attributes = value
+
+## Gets the [Camera3D.attributes] value assigned to the [Camera3DResource].
+func get_attributes() -> CameraAttributes:
+	return attributes
 
 
 ## Assigns a new [member Camera3D.h_offset] value.[br]

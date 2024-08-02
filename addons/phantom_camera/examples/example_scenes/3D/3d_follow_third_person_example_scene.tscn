@@ -11,7 +11,7 @@
 [sub_resource type="Resource" id="Resource_8fhct"]
 script = ExtResource("2_47xf2")
 duration = 0.3
-transition = 3
+transition = 2
 ease = 1
 
 [sub_resource type="Resource" id="Resource_7m0fv"]
@@ -19,7 +19,12 @@ script = ExtResource("5_jt2lp")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="Resource" id="Resource_e7t18"]
 script = ExtResource("2_47xf2")
@@ -32,7 +37,12 @@ script = ExtResource("5_jt2lp")
 cull_mask = 1048575
 h_offset = 1.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 10, 20)
@@ -46,12 +56,17 @@ duration = 0.6
 transition = 3
 ease = 1
 
-[sub_resource type="Resource" id="Resource_y5dqe"]
+[sub_resource type="Resource" id="Resource_ioijp"]
 script = ExtResource("5_jt2lp")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [node name="Root" type="Node3D"]
 
@@ -63,7 +78,7 @@ priority = 10
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = SubResource("Resource_8fhct")
-tween_on_load = null
+tween_on_load = false
 camera_3d_resource = SubResource("Resource_7m0fv")
 follow_damping = true
 follow_distance = 3.5
@@ -71,15 +86,14 @@ spring_length = 3.5
 
 [node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35923, 1.41338)
+transform = Transform3D(0.953716, -0.0104945, 0.300522, 0, 0.99939, 0.0348995, -0.300706, -0.0332842, 0.953135, 0.431374, 1.35923, 1.01438)
 script = ExtResource("2_whx47")
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
 tween_resource = SubResource("Resource_e7t18")
-tween_on_load = null
+tween_on_load = false
 camera_3d_resource = SubResource("Resource_jogxh")
-follow_offset = Vector3(0, 0.8, 0)
-follow_damping = true
+follow_offset = Vector3(0, 0.8, -0.399)
 follow_distance = 1.5
 spring_length = 1.5
 
@@ -89,7 +103,6 @@ unique_name_in_owner = true
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
-current = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("5_oc4q1")
@@ -144,8 +157,7 @@ unique_name_in_owner = true
 transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 13.366, -0.162648)
 script = ExtResource("2_whx47")
 tween_resource = SubResource("Resource_afrr1")
-tween_on_load = null
-camera_3d_resource = SubResource("Resource_y5dqe")
+camera_3d_resource = SubResource("Resource_ioijp")
 
 [node name="MovementInstructionsLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0505604, -0.484909, 1.44357)
