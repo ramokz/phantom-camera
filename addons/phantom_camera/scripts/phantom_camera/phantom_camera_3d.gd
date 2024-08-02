@@ -256,6 +256,41 @@ var _tween_skip: bool = false
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
+#region Camera3DResouce property getters
+var cull_mask: int:
+	set = set_cull_mask,
+	get = get_cull_mask
+
+var h_offset: float:
+	set = set_h_offset,
+	get = get_h_offset
+	
+var v_offset: float:
+	set = set_v_offset,
+	get = get_v_offset
+
+var projection: Camera3DResource.ProjectionType:
+	set = set_projection,
+	get = get_projection
+
+var fov: float:
+	set = set_fov,
+	get = get_fov
+
+var size: float:
+	set = set_size,
+	get = get_size
+
+var frustum_offset: Vector2:
+	set = set_frustum_offset,
+	get = get_frustum_offset
+	
+var near: float:
+	set = set_near,
+	get = get_near
+
+#endregion
+
 ## Overrides the [member Camera3D.environment] resource property.
 @export var environment: Environment = null:
 	set = set_environment,
