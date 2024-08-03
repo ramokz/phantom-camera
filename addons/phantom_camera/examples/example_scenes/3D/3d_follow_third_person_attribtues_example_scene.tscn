@@ -1,0 +1,214 @@
+[gd_scene load_steps=21 format=3 uid="uid://5pjtxclcnx4f"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="1_s26cy"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_m2d6w"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="3_l7kg8"]
+[ext_resource type="PackedScene" uid="uid://mskcwn1a1v6d" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_third_person_3d.tscn" id="4_qcyfd"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_8von1"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_o1fj6"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_amcmx"]
+[ext_resource type="Texture2D" uid="uid://c3mskbmvnpwux" path="res://addons/phantom_camera/examples/textures/3D/target.png" id="8_rjcgw"]
+
+[sub_resource type="Resource" id="Resource_8fhct"]
+script = ExtResource("2_m2d6w")
+duration = 0.3
+transition = 2
+ease = 1
+
+[sub_resource type="Resource" id="Resource_7m0fv"]
+script = ExtResource("3_l7kg8")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_i42vj"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 5.99
+dof_blur_near_enabled = true
+dof_blur_near_distance = 0.05
+dof_blur_amount = 0.21
+
+[sub_resource type="Resource" id="Resource_e7t18"]
+script = ExtResource("2_m2d6w")
+duration = 0.4
+transition = 2
+ease = 1
+
+[sub_resource type="Resource" id="Resource_jogxh"]
+script = ExtResource("3_l7kg8")
+cull_mask = 1048575
+h_offset = 1.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_fvhx5"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 31.1
+dof_blur_near_enabled = true
+dof_blur_near_distance = 1.79
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gwbyx"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 5.99
+dof_blur_near_enabled = true
+dof_blur_near_distance = 0.05
+dof_blur_amount = 0.21
+
+[sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
+size = Vector3(1, 10, 20)
+
+[sub_resource type="Resource" id="Resource_afrr1"]
+script = ExtResource("2_m2d6w")
+duration = 0.6
+transition = 3
+ease = 1
+
+[sub_resource type="Resource" id="Resource_unpfd"]
+script = ExtResource("3_l7kg8")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_sm466"]
+top_radius = 1.51
+height = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hp48l"]
+transparency = 1
+albedo_texture = ExtResource("8_rjcgw")
+uv1_scale = Vector3(1.91, 1.91, 1.91)
+uv1_offset = Vector3(0.025, -0.927, 0)
+
+[node name="Root" type="Node3D"]
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 9.63713)
+script = ExtResource("1_s26cy")
+priority = 10
+follow_mode = 6
+follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+tween_resource = SubResource("Resource_8fhct")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_7m0fv")
+attributes = SubResource("CameraAttributesPractical_i42vj")
+follow_damping = true
+follow_distance = 3.5
+spring_length = 3.5
+
+[node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(0.953716, -0.0418501, 0.297778, 0, 0.990266, 0.139173, -0.300705, -0.132731, 0.944432, 0.427258, 1.68564, 7.6237)
+script = ExtResource("1_s26cy")
+follow_mode = 6
+follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+tween_resource = SubResource("Resource_e7t18")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_jogxh")
+attributes = SubResource("CameraAttributesPractical_fvhx5")
+follow_offset = Vector3(0, 0.97, -0.399)
+follow_damping_value = Vector3(0, 0, 0)
+follow_distance = 1.5
+spring_length = 1.5
+
+[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("4_qcyfd")]
+unique_name_in_owner = true
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 6.60605)
+
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 9.63713)
+attributes = SubResource("CameraAttributesPractical_gwbyx")
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+script = ExtResource("5_8von1")
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="Floor" parent="Environment" instance=ExtResource("6_o1fj6")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="Wall" parent="Environment" instance=ExtResource("6_o1fj6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 4.5, 0)
+mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
+
+[node name="Wall2" parent="Environment" instance=ExtResource("6_o1fj6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 4.5, 0)
+mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
+
+[node name="Wall3" parent="Environment" instance=ExtResource("6_o1fj6")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 4.5, 10.5)
+mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
+
+[node name="Wall4" parent="Environment" instance=ExtResource("6_o1fj6")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 4.5, -9.5)
+mesh = SubResource("BoxMesh_wsigl")
+metadata/_edit_lock_ = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="CeilingPhantomCamera3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-4.37114e-08, -1, 2.98023e-08, 0, 2.98023e-08, 1, -1, 4.37114e-08, -1.3027e-15, -0.200665, 13.366, -0.162648)
+script = ExtResource("1_s26cy")
+tween_resource = SubResource("Resource_afrr1")
+camera_3d_resource = SubResource("Resource_unpfd")
+
+[node name="MovementInstructionsLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0505604, -0.484909, 1.44357)
+visible = false
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[WASD] to move"
+font = ExtResource("7_amcmx")
+font_size = 48
+
+[node name="MovementInstructionsLabel3" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0505604, -0.484909, 0.817134)
+visible = false
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[Right Mouse Click] to \"aim\""
+font = ExtResource("7_amcmx")
+font_size = 48
+
+[node name="MovementInstructionsLabel2" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0440154, -0.490478, -6.30248)
+visible = false
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[Space] to toggle PCam"
+font = ExtResource("7_amcmx")
+font_size = 48
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.260217, 1.60477, -9.07797)
+mesh = SubResource("CylinderMesh_sm466")
+surface_material_override/0 = SubResource("StandardMaterial3D_hp48l")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0.0525861, 1.60477, 9.98156)
+mesh = SubResource("CylinderMesh_sm466")
+surface_material_override/0 = SubResource("StandardMaterial3D_hp48l")
+
+[editable path="PlayerCharacterBody3D"]

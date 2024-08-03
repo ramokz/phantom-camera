@@ -34,6 +34,8 @@ var panel_button: Button
 #region Private Functions
 
 func _enter_tree() -> void:
+	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
+
 	# Phantom Camera Nodes
 	add_custom_type(PCAM_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
 	add_custom_type(PCAM_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
@@ -42,6 +44,7 @@ func _enter_tree() -> void:
 	add_custom_type(PCAM_NOISE_EMITTER_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd"),  preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg"))
 
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
+
 
 	# Phantom Camera 3D Gizmo
 	add_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
@@ -85,28 +88,22 @@ func _btn_toggled(toggled_on: bool):
 
 
 func _exit_tree() -> void:
-	remove_custom_type(PCAM_2D)
-	remove_custom_type(PCAM_3D)
-	remove_custom_type(PCAM_HOST)
-
-	remove_custom_type(PCAM_NOISE_EMITTER_2D)
-	remove_custom_type(PCAM_NOISE_EMITTER_3D)
-
-	remove_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
-
-	remove_control_from_bottom_panel(editor_panel_instance)
-	editor_panel_instance.queue_free()
-#	if framed_viewfinder_panel_instance:
-	scene_changed.disconnect(_scene_changed)
-
-	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
-
 	panel_button.toggled.disconnect(_btn_toggled)
 	scene_changed.disconnect(editor_panel_instance.viewfinder.scene_changed)
 	scene_changed.disconnect(_scene_changed)
 
-#func _has_main_screen():
-#	return true;
+	remove_control_from_bottom_panel(editor_panel_instance)
+	editor_panel_instance.queue_free()
+
+	remove_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
+
+	remove_custom_type(PCAM_2D)
+	remove_custom_type(PCAM_3D)
+	remove_custom_type(PCAM_HOST)
+	remove_custom_type(PCAM_NOISE_EMITTER_2D)
+	remove_custom_type(PCAM_NOISE_EMITTER_3D)
+
+	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 
 
 func _make_visible(visible):

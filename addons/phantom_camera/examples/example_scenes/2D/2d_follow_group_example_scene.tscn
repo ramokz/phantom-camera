@@ -609,7 +609,6 @@ visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(107, -172.5)
-zoom = Vector2(1.3375, 1.3375)
 position_smoothing_speed = 8.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
@@ -631,7 +630,6 @@ script = ExtResource("6_diuy4")
 priority = 10
 follow_mode = 3
 follow_targets = [NodePath("../GroupNPCSprite"), NodePath("../CharacterBody2D/PlayerVisuals")]
-zoom = Vector2(1.3375, 1.3375)
 tween_resource = SubResource("Resource_spy00")
 tween_on_load = false
 follow_damping = true
