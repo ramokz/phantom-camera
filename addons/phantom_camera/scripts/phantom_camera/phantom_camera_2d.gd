@@ -597,7 +597,13 @@ func _follow(delta: float) -> void:
 								follow_position = glo_pos
 							else:
 								follow_position = _target_position_with_offset()
-						else:
+						elif _get_framed_side_offset().x != 0  and _get_framed_side_offset().y == 0:
+							follow_position = target_position
+							_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
+						elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
+							follow_position = target_position
+							_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
+						else : 
 							follow_position = target_position
 					else:
 						_follow_framed_offset = global_position - _target_position_with_offset()
