@@ -68,15 +68,15 @@ var _is_child_of_camera: bool = false
 var _is_2D: bool = false
 
 # Camera Noise
-var _noise_2d: PhantomCameraNoise2D = null
-var _noise_2d_pcam: PhantomCameraNoise2D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
-var _noise_3d: PhantomCameraNoise3D = null
-var _noise_3d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
-var _trauma: float = 0
-var _noise_time: float = 0
-var _decay_time: float = 0
-var _noise_duration: float = 1
-var _noise_loop: bool = false
+#var _noise_2d: PhantomCameraNoise2D = null
+#var _noise_2d_pcam: PhantomCameraNoise2D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
+#var _noise_3d: PhantomCameraNoise3D = null
+#var _noise_3d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
+#var _trauma: float = 0
+#var _noise_time: float = 0
+#var _decay_time: float = 0
+#var _noise_duration: float = 1
+#var _noise_loop: bool = false
 
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
@@ -226,7 +226,7 @@ func _enter_tree() -> void:
 		else:
 			_is_2D = false
 			camera_3d = parent
-			
+
 			## Clears existing resource on Camera3D to prevent potentially messing with external Attribute resource
 			if camera_3d.attributes != null and not Engine.is_editor_hint():
 				camera_3d.attributes = null
@@ -462,12 +462,12 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
 		_camera_zoom = camera_2d.zoom
-		
-		if _active_pcam_2d.get_noise_active():
-			_noise_2d = _active_pcam_2d.noise
-			_noise_2d_pcam = _active_pcam_2d.noise
-			_noise_loop = true
-		
+
+		#if _active_pcam_2d.get_noise_active():
+			#_noise_2d = _active_pcam_2d.noise
+			#_noise_2d_pcam = _active_pcam_2d.noise
+			#_noise_loop = true
+
 		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
 		var _physics_based: bool
 
@@ -511,10 +511,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _active_pcam_3d.camera_3d_resource:
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
-		if _active_pcam_3d.get_noise_active():
-			_noise_3d = _active_pcam_3d.noise
-			_noise_3d_pcam = _active_pcam_3d.noise
-			_noise_loop = true
+		#if _active_pcam_3d.get_noise_active():
+			#_noise_3d = _active_pcam_3d.noise
+			#_noise_3d_pcam = _active_pcam_3d.noise
+			#_noise_loop = true
 	if no_previous_pcam:
 		if _is_2D:
 			_prev_active_pcam_2d_transform = _active_pcam_2d.global_transform
@@ -570,6 +570,7 @@ func _tween_follow_checker(delta: float):
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
 	else:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.get_global_transform()
+		#_active_pcam_3d.process(delta<)
 
 	if _trigger_pcam_tween:
 		_pcam_tween(delta)
@@ -594,11 +595,13 @@ func _pcam_follow(delta: float) -> void:
 			camera_2d.global_transform =_active_pcam_2d_glob_transform
 		camera_2d.zoom = _active_pcam_2d.zoom
 		if _active_pcam_2d.get_noise_active():
-			_add_noise(delta)
+			pass
 	else:
-		camera_3d.global_transform = _active_pcam_3d_glob_transform
-		if _active_pcam_3d.get_noise_active():
-			_add_noise(delta)
+		if not _active_pcam_3d.get_noise_active():
+			camera_3d.global_transform = _active_pcam_3d_glob_transform
+		else:
+			camera_3d.global_transform = _active_pcam_3d.noise_transform
+
 	if _viewfinder_needed_check:
 		_show_viewfinder_in_play()
 		_viewfinder_needed_check = false
@@ -622,66 +625,6 @@ func _pcam_follow(delta: float) -> void:
 
 			if _active_pcam_3d.environment != null:
 				camera_3d.environment = _active_pcam_3d.environment.duplicate()
-
-
-func _add_noise(delta: float) -> void:
-	_noise_time += delta
-	if not _noise_loop:
-		if _noise_time >= _noise_3d.duration:
-			_decay_time += delta
-			#lerpf(_trauma, 0, 1 (_noise _noise_3d.duration))
-			#lerpf(_trauma, 0, delta * _noise_3d.decay)
-			#_trauma = max(_trauma - delta * _noise_3d.decay, 0)
-			print("Decaying")
-			Tween.interpolate_value(
-				_trauma,
-				0 - _trauma,
-				_decay_time,
-				_noise_3d.decay,
-				Tween.TRANS_LINEAR,
-				Tween.EASE_IN_OUT
-			)
-			if _noise_time >= _noise_3d.duration + _noise_3d.decay:
-				_active_pcam_3d.set_noise_active(false)
-				print("Done")
-		else:
-			_trauma += 0.1
-	else:
-		_trauma += 0.1
-
-	_trauma = clampf(_trauma + delta, 0, 1)
-	#_trauma = max(_trauma - delta * _noise_3d.decay, 0)
-	var intensity: float = pow(_trauma, 2)
-
-	camera_3d.quaternion = Quaternion.from_euler(Vector3(
-		deg_to_rad(
-			camera_3d.rotation_degrees.x + _active_pcam_3d.noise.max_rotational_offset_x * \
-			intensity * _get_noise_from_seed(_noise_3d, 0 + _noise_3d.seed_offset)
-		),
-		deg_to_rad(
-			camera_3d.rotation_degrees.y + _active_pcam_3d.noise.max_rotational_offset_y * \
-			intensity * _get_noise_from_seed(_noise_3d, 1 + _noise_3d.seed_offset)
-		),
-		deg_to_rad(
-			camera_3d.rotation_degrees.z + _active_pcam_3d.noise.max_rotational_offset_z * \
-			intensity * _get_noise_from_seed(_noise_3d, 2 + _noise_3d.seed_offset)
-		)
-	))
-
-	camera_3d.position = Vector3(
-		camera_3d.position.x + _noise_3d.max_position_offset_x * \
-		intensity * _get_noise_from_seed(_noise_3d, 0 + _noise_3d.seed_offset),
-		camera_3d.position.y + _noise_3d.max_position_offset_y * \
-		intensity * _get_noise_from_seed(_noise_3d, 1 + _noise_3d.seed_offset),
-		camera_3d.position.z + _noise_3d.max_position_offset_z * \
-		intensity * _get_noise_from_seed(_noise_3d, 2 + _noise_3d.seed_offset),
-	)
-
-
-func _get_noise_from_seed(noise: PhantomCameraNoise3D, seed: int) -> float:
-	noise.noise_algorithm.seed = seed
-	return noise.noise_algorithm.get_noise_1d(_noise_time * noise.intensity)
-
 
 
 func _pcam_tween(delta: float) -> void:
@@ -1044,21 +987,6 @@ func _show_viewfinder_in_play() -> void:
 
 	_viewfinder_node.visible = true
 	_viewfinder_node.update_dead_zone()
-
-
-## Called when a [param PhantomCamera] is added to the scene.[br]
-## [b]Note:[/b] This can only be called internally from a
-## [param PhantomCamera] node.
-#region Public Functions
-func add_trauma_3D(trauma_amount: float, noise_resource: PhantomCameraNoise3D, caller: Node):
-	if caller is PhantomCamera3D:
-		print("Adding trauma")
-		_noise_3d = noise_resource
-		_noise_time = 0
-		_trauma = clampf(_trauma + trauma_amount, 0, 1)
-	else:
-		printerr("This method can only be called from a PhantomCamera3D node. \n
-		Call `add_trauma()` from your PhantomCamera3D instance instead.")
 
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]

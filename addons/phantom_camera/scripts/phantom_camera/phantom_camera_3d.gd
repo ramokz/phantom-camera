@@ -48,6 +48,8 @@ signal tween_interrupted(pcam_3d: PhantomCamera3D)
 ## [param PhantomCamera3D].
 signal tween_completed
 
+signal noise_triggered(noise_layer: int)
+
 #endregion
 
 
@@ -264,7 +266,7 @@ var tween_ease: PhantomCameraTween.EaseType:
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
-@export var camera_3d_resource: Camera3DResource = Camera3DResource.new():
+@export var camera_3d_resource: Camera3DResource: # = Camera3DResource.new():
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
@@ -276,7 +278,7 @@ var cull_mask: int:
 var h_offset: float:
 	set = set_h_offset,
 	get = get_h_offset
-	
+
 var v_offset: float:
 	set = set_v_offset,
 	get = get_v_offset
@@ -296,11 +298,11 @@ var size: float:
 var frustum_offset: Vector2:
 	set = set_frustum_offset,
 	get = get_frustum_offset
-	
+
 var far: float:
 	set = set_far,
 	get = get_far
-	
+
 var near: float:
 	set = set_near,
 	get = get_near
@@ -315,6 +317,7 @@ var near: float:
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes
+
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
@@ -463,16 +466,41 @@ var _follow_spring_arm: SpringArm3D
 
 var _current_rotation: Vector3
 
+
 @export_group("Noise")
-## Defines the noise, or shake, of a camera.[br]
-## By default, no noise sis being applied.
+
+## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_layers]
+## to make this PhantomCamera3D be affect by it.
+@export_flags_3d_render var noise_emitter_layers: int
+
+## Defines the noise, or shake, of a Camera3D.[br]
+## By default, no noise is being applied.
 @export var noise: PhantomCameraNoise3D:
 	set = set_noise,
 	get = get_noise
+var _noise_active: bool = false
+var _noise_continuous: bool = false
 
-var _noise_active: bool = false:
-	set = set_noise_active,
-	get = get_noise_active
+var camera_transform: Transform3D
+
+var noise_transform: Transform3D:
+	set(value):
+		noise_transform = value
+	get:
+		return noise_transform
+
+var noise_rotation: Quaternion:
+	set(value):
+		noise_rotation = value
+	get:
+		return noise_rotation
+var noise_position: Vector3:
+	set(value):
+		noise_position = value
+	get:
+		return noise_position
+
+
 
 #endregion
 
@@ -498,7 +526,6 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Parameters
 	####################
-
 	if follow_mode == FollowMode.NONE:
 		match property.name:
 			"follow_offset", \
@@ -622,6 +649,7 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_removed(self)
 
+
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
@@ -644,6 +672,8 @@ func _ready():
 		if not Engine.is_editor_hint():
 			_follow_framed_offset = global_position - _get_target_position_offset()
 			_current_rotation = global_rotation
+
+	_phantom_camera_manager.noise_emitter_3d_triggered.connect(_noise_triggered)
 
 
 func _process(delta: float) -> void:
@@ -673,6 +703,11 @@ func _process_logic(delta: float) -> void:
 			look_at_target = null
 			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
+
+	camera_transform = global_transform
+
+	if _noise_active:
+		noise_transform = noise.get_noise_transform(global_rotation_degrees, global_position, delta)
 
 
 func _follow(delta: float) -> void:
@@ -828,6 +863,8 @@ func _get_position_offset_distance() -> Vector3:
 
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
+
+
 func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
 	if follow_damping:
 		for index in 3:
@@ -955,7 +992,16 @@ func _check_visibility() -> void:
 	if not is_instance_valid(pcam_host_owner): return
 	pcam_host_owner.refresh_pcam_list_priorty()
 
+
+func _noise_triggered(emitter_noise: PhantomCameraNoise3D, delta: float) -> void:
+	pass
+	#print("Noise triggered from emitter")
+	var noise_emit_output: Transform3D = emitter_noise.get_noise_transform(global_rotation_degrees, global_position, delta)
+	#noise_transform.origin += noise_emit_output.origin
+	noise_transform.basis = Basis(noise_transform.basis.get_rotation_quaternion() + noise_emit_output.basis.get_rotation_quaternion())
+	#noise_transform = emitter_noise.get_noise_transform(global_rotation_degrees, global_position, delta)
 #endregion
+
 
 # TBD
 #func get_unprojected_position() -> Vector2:
@@ -1500,22 +1546,13 @@ func get_look_at_damping_value() -> float:
 ## Sets a NoiseResource
 func set_noise(value: PhantomCameraNoise3D) -> void:
 	noise = value
-	#noise.noise_algorithm = FastNoiseLite.new()
-	# Applies a default Noise of Type Perlin
-	#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
-	_noise_active = true
+	if value != null:
+		_noise_active = true
+		noise.set_trauma(1)
+	else:
+		noise.set_trauma(0)
+		_noise_active = false
 
-	## TBD To be applied for spatial fields
-	#if value:
-		## Applies a new resource algorithm if nothing is not already assigned.
-		#if not noise.noise_algorithm:
-			## Applies a default FastNoiseLite Resource
-			#noise.noise_algorithm = FastNoiseLite.new()
-			## Applies a default Noise of Type Perlin
-			#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
-		#_noise_active = true
-	#else:
-		#_noise_active = false
 func get_noise() -> PhantomCameraNoise3D:
 	return noise
 
