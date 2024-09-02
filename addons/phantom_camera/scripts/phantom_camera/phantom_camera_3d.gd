@@ -680,15 +680,25 @@ func _process_logic(delta: float) -> void:
 				follow_target = null
 				return
 		_follow(delta)
+	else:
+		transform_output.origin = global_transform.origin
 
 	if _should_look_at:
 		if look_at_target.is_queued_for_deletion():
 			look_at_target = null
 			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
+	else:
+		transform_output.basis = global_transform.basis
 
 	if _noise_active:
-		transform_output = noise.get_noise_transform(global_rotation_degrees, global_position, delta)
+		transform_output = noise.get_noise_transform(
+			Vector3(
+				rad_to_deg(transform_output.basis.get_euler().x),
+				rad_to_deg(transform_output.basis.get_euler().y),
+				rad_to_deg(transform_output.basis.get_euler().z)
+			),
+			transform_output.origin, delta)
 
 
 func _follow(delta: float) -> void:

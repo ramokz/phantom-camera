@@ -19,6 +19,7 @@ var noise_algorithm: FastNoiseLite = FastNoiseLite.new()
 @export var has_rotational_noise: bool = true:
 	set(value):
 		has_rotational_noise = value
+		notify_property_list_changed()
 	get:
 		return has_rotational_noise
 
