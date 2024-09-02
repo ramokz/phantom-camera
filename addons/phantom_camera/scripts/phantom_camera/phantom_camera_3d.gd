@@ -468,39 +468,18 @@ var _current_rotation: Vector3
 
 
 @export_group("Noise")
-
-## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_layers]
-## to make this PhantomCamera3D be affect by it.
-@export_flags_3d_render var noise_emitter_layers: int
+## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
+## to make this [PhantomCamera3D] be affect by it.
+@export_flags_3d_render var noise_emitter_layer: int
 
 ## Defines the noise, or shake, of a Camera3D.[br]
-## By default, no noise is being applied.
+## Once set, the noise will run continuously.
 @export var noise: PhantomCameraNoise3D:
 	set = set_noise,
 	get = get_noise
 var _noise_active: bool = false
-var _noise_continuous: bool = false
 
-var camera_transform: Transform3D
-
-var noise_transform: Transform3D:
-	set(value):
-		noise_transform = value
-	get:
-		return noise_transform
-
-var noise_rotation: Quaternion:
-	set(value):
-		noise_rotation = value
-	get:
-		return noise_rotation
-var noise_position: Vector3:
-	set(value):
-		noise_position = value
-	get:
-		return noise_position
-
-
+var transform_output: Transform3D
 
 #endregion
 
@@ -673,6 +652,8 @@ func _ready():
 			_follow_framed_offset = global_position - _get_target_position_offset()
 			_current_rotation = global_rotation
 
+	transform_output = global_transform
+
 	_phantom_camera_manager.noise_emitter_3d_triggered.connect(_noise_triggered)
 
 
@@ -692,6 +673,9 @@ func _process_logic(delta: float) -> void:
 			InactiveUpdateMode.NEVER:	return
 			# InactiveUpdateMode.EXPONENTIALLY:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
+
+	transform_output = global_transform
+
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
 			if follow_target.is_queued_for_deletion():
@@ -704,10 +688,8 @@ func _process_logic(delta: float) -> void:
 			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
 
-	camera_transform = global_transform
-
 	if _noise_active:
-		noise_transform = noise.get_noise_transform(global_rotation_degrees, global_position, delta)
+		transform_output = noise.get_noise_transform(global_rotation_degrees, global_position, delta)
 
 
 func _follow(delta: float) -> void:
@@ -867,17 +849,19 @@ func _set_follow_velocity(index: int, value: float) -> void:
 
 func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
 	if follow_damping:
-		for index in 3:
-			camera_target.global_position[index] = _smooth_damp(
-				target_position[index],
-				camera_target.global_position[index],
-				index,
-				_follow_velocity_ref[index],
+		for i in 3:
+			transform_output.origin[i] = _smooth_damp(
+				target_position[i],
+				transform_output.origin[i],
+				i,
+				_follow_velocity_ref[i],
 				_set_follow_velocity,
-				follow_damping_value[index]
+				follow_damping_value[i]
 			)
 	else:
-		camera_target.global_position = target_position
+		transform_output.origin = target_position
+
+	camera_target.global_position = target_position
 
 
 func _interpolate_rotation(target_trans: Vector3) -> void:
@@ -909,9 +893,12 @@ func _interpolate_rotation(target_trans: Vector3) -> void:
 		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
 		var ratio_b: float = sin_theta / sin_theta_total
 
-		quaternion = current_quat * ratio_a + target_quat * ratio_b
+		#quaternion = current_quat * ratio_a + target_quat * ratio_b
+		transform_output.basis = Basis(current_quat * ratio_a + target_quat * ratio_b)
 	else:
-		quaternion = target_quat
+		transform_output.basis = Basis(target_quat)
+
+	quaternion = target_quat
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, rot: bool = false) -> float:
@@ -993,13 +980,14 @@ func _check_visibility() -> void:
 	pcam_host_owner.refresh_pcam_list_priorty()
 
 
-func _noise_triggered(emitter_noise: PhantomCameraNoise3D, delta: float) -> void:
-	pass
-	#print("Noise triggered from emitter")
-	var noise_emit_output: Transform3D = emitter_noise.get_noise_transform(global_rotation_degrees, global_position, delta)
-	#noise_transform.origin += noise_emit_output.origin
-	noise_transform.basis = Basis(noise_transform.basis.get_rotation_quaternion() + noise_emit_output.basis.get_rotation_quaternion())
-	#noise_transform = emitter_noise.get_noise_transform(global_rotation_degrees, global_position, delta)
+#func _noise_triggered(emitter_noise: PhantomCameraNoise3D, delta: float) -> void:
+func _noise_triggered(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
+	if noise_emitter_layer & emitter_layer != 0:
+		transform_output = Transform3D(
+			transform_output.basis * emitter_noise_output.basis,
+			transform_output.origin + emitter_noise_output.origin
+		)
+
 #endregion
 
 
@@ -1550,7 +1538,6 @@ func set_noise(value: PhantomCameraNoise3D) -> void:
 		_noise_active = true
 		noise.set_trauma(1)
 	else:
-		noise.set_trauma(0)
 		_noise_active = false
 
 func get_noise() -> PhantomCameraNoise3D:

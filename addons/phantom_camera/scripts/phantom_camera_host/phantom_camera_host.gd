@@ -67,17 +67,6 @@ var _multiple_pcam_hosts: bool = false
 var _is_child_of_camera: bool = false
 var _is_2D: bool = false
 
-# Camera Noise
-#var _noise_2d: PhantomCameraNoise2D = null
-#var _noise_2d_pcam: PhantomCameraNoise2D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
-#var _noise_3d: PhantomCameraNoise3D = null
-#var _noise_3d_pcam: PhantomCameraNoise3D = null # Noise assigned directly to the PCam. Cached to allow for external noise events to temporarily trigger.
-#var _trauma: float = 0
-#var _noise_time: float = 0
-#var _decay_time: float = 0
-#var _noise_duration: float = 1
-#var _noise_loop: bool = false
-
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
 
@@ -267,6 +256,7 @@ func _ready() -> void:
 		_active_pcam_2d_glob_transform = _active_pcam_2d.global_transform
 	else:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.global_transform
+		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
 
 func _check_camera_host_amount() -> void:
@@ -463,11 +453,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_2d.became_active.emit()
 		_camera_zoom = camera_2d.zoom
 
-		#if _active_pcam_2d.get_noise_active():
-			#_noise_2d = _active_pcam_2d.noise
-			#_noise_2d_pcam = _active_pcam_2d.noise
-			#_noise_loop = true
-
 		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
 		var _physics_based: bool
 
@@ -511,10 +496,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _active_pcam_3d.camera_3d_resource:
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
-		#if _active_pcam_3d.get_noise_active():
-			#_noise_3d = _active_pcam_3d.noise
-			#_noise_3d_pcam = _active_pcam_3d.noise
-			#_noise_loop = true
 	if no_previous_pcam:
 		if _is_2D:
 			_prev_active_pcam_2d_transform = _active_pcam_2d.global_transform
@@ -569,8 +550,7 @@ func _tween_follow_checker(delta: float):
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.get_global_transform()
-		#_active_pcam_3d.process(delta<)
+		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
 	if _trigger_pcam_tween:
 		_pcam_tween(delta)
@@ -597,10 +577,7 @@ func _pcam_follow(delta: float) -> void:
 		if _active_pcam_2d.get_noise_active():
 			pass
 	else:
-		if not _active_pcam_3d.get_noise_active():
-			camera_3d.global_transform = _active_pcam_3d_glob_transform
-		else:
-			camera_3d.global_transform = _active_pcam_3d.noise_transform
+		camera_3d.global_transform = _active_pcam_3d.transform_output
 
 	if _viewfinder_needed_check:
 		_show_viewfinder_in_play()

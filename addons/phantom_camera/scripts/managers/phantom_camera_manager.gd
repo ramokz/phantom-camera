@@ -5,7 +5,7 @@ const PHANTOM_CAMERA_CONSTS = preload("res://addons/phantom_camera/scripts/phant
 
 
 signal noise_emitter_2d_triggered(noise_output: Transform2D)
-signal noise_emitter_3d_triggered(noise_output: PhantomCameraNoise3D, delta: float)
+signal noise_emitter_3d_triggered(noise_output: Transform3D, emitter_layer: int)
 
 
 var phantom_camera_hosts: Array[PhantomCameraHost]:

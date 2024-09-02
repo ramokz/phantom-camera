@@ -19,7 +19,6 @@ var noise_algorithm: FastNoiseLite = FastNoiseLite.new()
 @export var has_rotational_noise: bool = true:
 	set(value):
 		has_rotational_noise = value
-		notify_property_list_changed()
 	get:
 		return has_rotational_noise
 
@@ -56,7 +55,7 @@ var noise_algorithm: FastNoiseLite = FastNoiseLite.new()
 	get:
 		return max_rotational_offset_z
 
-var _noise_max_rotational_offset: Vector3
+var _noise_max_rotational_offset: Vector3 = Vector3(max_rotational_offset_x, max_rotational_offset_y, max_rotational_offset_z)
 
 
 @export_group("Max Positional Offset")
@@ -130,13 +129,6 @@ func _noise_output(origin: Vector3, offset: Vector3) -> Vector3:
 		output[i] = origin[0] + offset[i] * \
 		intensity * _get_noise_from_seed(i + seed)
 
-	#print(intensity)
-	#noise_rotation[i] = \
-					#deg_to_rad(
-						#camera_3d.rotation_degrees[i] + noise_max_rotation_offset[i] * \
-						#1 # * _get_noise_from_seed(_noise_3d, i + _noise_3d.seed)
-				#)
-
 	return output
 
 
@@ -175,78 +167,5 @@ func get_noise_transform(pcam_rotation: Vector3, pcam_position: Vector3, delta: 
 			pow(_trauma, 2) * _get_noise_from_seed(i + seed)
 
 	return Transform3D(Quaternion.from_euler(output_rotation), output_position)
-
-
-func get_noise_position(camera_position: Vector3, _intensity: float, delta: float, is_rotation: bool = true) -> Vector3:
-	var output: Vector3
-	var offset: Vector3
-
-	if is_rotation:
-		offset = Vector3(
-			max_rotational_offset_x,
-			max_rotational_offset_y,
-			max_rotational_offset_z
-		)
-	else:
-		offset = Vector3(
-			max_position_offset_x,
-			max_position_offset_y,
-			max_position_offset_z,
-		)
-
-	return _noise_output(camera_position, offset)
-
-
-
-func get_noise_rotation(camera_rotation: Vector3, delta: float) -> Quaternion:
-	#var output: Vector3
-	var output_rotation_degrees: Vector3
-	for i in 3:
-		#output_rotation_degrees[i] = camera_rotation[i] + _noise_max_position_offset[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
-		output_rotation_degrees[i] = deg_to_rad(
-			output_rotation_degrees[i] + _noise_max_rotational_offset[i] * \
-			pow(_trauma, 2) * _get_noise_from_seed(i + seed)
-		)
-
-	return Quaternion.from_euler(output_rotation_degrees)
-
-
-func noise_rotation(camera_rotation: Vector3, delta: float) -> Quaternion:
-	_noise_time += delta
-	_trauma = 1
-	#_trauma = maxf(_trauma - delta * decay_time, 0.0)
-
-	var rot_degrees: Vector3
-
-	for i in 3:
-		rot_degrees[i] = deg_to_rad(
-			camera_rotation[i] + _noise_max_position_offset[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
-		)
-		#rot_degrees[i] = camera_rotation[i] + _noise_max_position_offset[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
-	#print(_trauma)
-	#print( _get_noise_from_seed(2 + seed))
-	#print(_noise_time)
-	#print(camera_rotation[2])
-	return Quaternion.from_euler(rot_degrees)
-	#return Quaternion.from_euler(rot_degrees)
-
-
-	#var rotation_degrees: Vector3 = _noise_output(camera_rotation, max_offset)
-#
-	#var noise_rotation: Vector3
-#
-	#for i in 3:
-		#noise_rotation[i] = \
-			#deg_to_rad(
-				#camera_rotation[i] + max_offset[i] * \
-				#1 * _get_noise_from_seed(i + seed)
-		#)
-
-	#print(noise_rotation)1
-
-	#print("Noise Resource is:")
-	#print("FROM RESOURCE")
-	#print(output)
-	#return Quaternion.from_euler(noise_rotation)
 
 #endregion

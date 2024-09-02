@@ -1,6 +1,6 @@
 @tool
 class_name PhantomCameraNoiseEmitter3D
-extends Node
+extends Node3D
 
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
@@ -11,14 +11,13 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 
 		if play:
 			_should_grow = true
-			_duration_countdown = false
+			_start_duration_countdown = false
 			_should_decay = false
 			_elasped_play_time = 0
 		else:
-			_should_decay = false
+			_should_decay = true
 	get:
 		return play
-
 
 ## If true, repeats the noise indefinitely once started.Otherwise, it will only be triggered once. [br]
 ## [b]Note:[/b] This will always be enabled if the resource is assigned the the [PhantomCamera3D]'s
@@ -29,7 +28,6 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 		notify_property_list_changed()
 	get:
 		return continous
-
 
 ## Sets the duration for the camera noise if [member loop] is set to false.[br]
 ## If the duration is [param 0] then [member continous] becomes enabled.[br]
@@ -44,37 +42,30 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 	get:
 		return duration
 
-
 ## Determines how long the noise should take to reach full [member intensity] once started.[br]
 ## The value is set in [b]seconds[/b].
 @export_exp_easing("positive_only") var growth_time: float = 0
-
 
 ## Determines how long the noise should take to come to a full stop.[br]
 ## The value is set in [b]seconds[/b].
 @export_exp_easing("attenuation", "positive_only") var decay_time: float = 0
 
-
 ## Enabled layers will affect [PhantomCamera3D] nodes with at least one corresponding layer enabled.[br]
 ## Enabling multiple corresponding layers on the same [PhantomCamera3D] causes no additional effect.
-@export_flags_3d_render var noise_emitter_layers = 1
-
-
-## If true, will only be triggered once the parent PCam has become active.
-## This property is only visible if the emitter is a child of a PCam.
-@export var trigger_after_tween: bool
-
+@export_flags_3d_render var noise_emitter_layer = 1
 
 ## The resource that defines the noise pattern.[br]
 ## [b]Note:[/b] This is a required property and so will always have a default value.
 @export var noise: PhantomCameraNoise3D:
 	set(value):
 		noise = value
-		notify_property_list_changed()
+		update_configuration_warnings()
 	get:
 		return noise
 
-var _duration_countdown: bool = false
+
+var _start_duration_countdown: bool = false
+var _decay_countdown: float = 0
 
 var _should_grow: bool = false
 var _should_decay: bool = false
@@ -110,34 +101,38 @@ func _enter_tree() -> void:
 
 func _process(delta: float) -> void:
 	if not play and not _should_decay: return
+	if noise == null:
+		printerr("Noise resource missing in ", name)
+		play = false
+		return
 
 	_elasped_play_time += delta
 
 	if _should_grow:
 		noise.set_trauma(minf(_elasped_play_time / growth_time, 1))
 		if _elasped_play_time >= growth_time:
-			print("Finished growth")
 			_should_grow = false
-			_duration_countdown = true
+			_start_duration_countdown = true
 			noise.set_trauma(1)
 
 	if not continous:
-		if _duration_countdown:
+		if _start_duration_countdown:
 			if _elasped_play_time >= duration + growth_time:
-				print("Finished duration")
 				_should_decay = true
-				_duration_countdown = false
+				_start_duration_countdown = false
 
 	if _should_decay:
-		noise.set_trauma(maxf(1 - (_elasped_play_time - decay_time) / (duration + growth_time), 0))
-		if _elasped_play_time >= duration + growth_time + decay_time:
-			print("Finished decay")
+		_decay_countdown += delta
+		noise.set_trauma(maxf(1 - (_decay_countdown / decay_time), 0))
+		if _decay_countdown >= decay_time:
 			noise.set_trauma(0)
 			play = false
 			_should_decay = false
 			_elasped_play_time = 0
+			_decay_countdown = 0
 
-	_phantom_camera_manager.noise_emitter_3d_triggered.emit(noise, delta)
+	_noise_output = noise.get_noise_transform(Vector3.ZERO, Vector3.ZERO, delta)
+	_phantom_camera_manager.noise_emitter_3d_triggered.emit(_noise_output, noise_emitter_layer)
 
 #endregion
 
@@ -148,16 +143,14 @@ func assign_noise_resource(resource: PhantomCameraNoise3D) -> void:
 	noise = resource
 
 
-	#if noise.rotational_noise:
-		#_pcam_parent.noise_rotation = noise.noise_rotation(_pcam_parent.rotation_degrees, delta)
-		##_pcam_parent
-#
-	#if noise.positional_noise:
+func play_noise() -> void:
+	play = true
 
 
-## TODO MIGHT NOT BE NEEDED
-#func enable_continous(caller: Node, value: bool) -> void:
-	#if caller.is_class("PhantomCamera3D"):
-		#_stay_continous = value
+func stop_noise(should_decay: bool = true) -> void:
+	if should_decay:
+		_should_decay = true
+	else:
+		play = false
 
 #endregion
