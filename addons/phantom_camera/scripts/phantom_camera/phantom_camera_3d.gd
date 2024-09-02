@@ -674,14 +674,13 @@ func _process_logic(delta: float) -> void:
 			# InactiveUpdateMode.EXPONENTIALLY:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
-	transform_output = global_transform
-
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
 			if follow_target.is_queued_for_deletion():
 				follow_target = null
 				return
 		_follow(delta)
+
 	if _should_look_at:
 		if look_at_target.is_queued_for_deletion():
 			look_at_target = null
