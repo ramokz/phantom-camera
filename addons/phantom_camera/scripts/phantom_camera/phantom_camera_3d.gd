@@ -477,7 +477,9 @@ var _current_rotation: Vector3
 @export var noise: PhantomCameraNoise3D:
 	set = set_noise,
 	get = get_noise
-var _noise_active: bool = false
+var _has_noise_resource: bool = false
+var _has_noise_emitted: bool = false
+var _noise_emitted_transform: Transform3D
 
 var transform_output: Transform3D
 
@@ -654,7 +656,7 @@ func _ready():
 
 	transform_output = global_transform
 
-	_phantom_camera_manager.noise_emitter_3d_triggered.connect(_noise_triggered)
+	_phantom_camera_manager.noise_3d_emitted.connect(_noise_emitted)
 
 
 func _process(delta: float) -> void:
@@ -691,14 +693,23 @@ func _process_logic(delta: float) -> void:
 	else:
 		transform_output.basis = global_transform.basis
 
-	if _noise_active:
+	if _has_noise_resource:
 		transform_output = noise.get_noise_transform(
 			Vector3(
 				rad_to_deg(transform_output.basis.get_euler().x),
 				rad_to_deg(transform_output.basis.get_euler().y),
 				rad_to_deg(transform_output.basis.get_euler().z)
 			),
-			transform_output.origin, delta)
+			transform_output.origin,
+			delta
+		)
+
+	if _has_noise_emitted:
+		transform_output = Transform3D(
+			transform_output.basis * _noise_emitted_transform.basis,
+			transform_output.origin + _noise_emitted_transform.origin
+		)
+		_noise_emitted_transform = Transform3D()
 
 
 func _follow(delta: float) -> void:
@@ -990,12 +1001,13 @@ func _check_visibility() -> void:
 
 
 #func _noise_triggered(emitter_noise: PhantomCameraNoise3D, delta: float) -> void:
-func _noise_triggered(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
+func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
-		transform_output = Transform3D(
-			transform_output.basis * emitter_noise_output.basis,
-			transform_output.origin + emitter_noise_output.origin
+		_noise_emitted_transform = Transform3D(
+			_noise_emitted_transform.basis * emitter_noise_output.basis,
+			_noise_emitted_transform.origin + emitter_noise_output.origin
 		)
+		_has_noise_emitted = true
 
 #endregion
 
@@ -1544,20 +1556,13 @@ func get_look_at_damping_value() -> float:
 func set_noise(value: PhantomCameraNoise3D) -> void:
 	noise = value
 	if value != null:
-		_noise_active = true
+		_has_noise_resource = true
 		noise.set_trauma(1)
 	else:
-		_noise_active = false
+		_has_noise_resource = false
 
 func get_noise() -> PhantomCameraNoise3D:
 	return noise
-
-
-## TODO - Internal only
-func set_noise_active(value: bool) -> void:
-	_noise_active = value
-func get_noise_active() -> bool:
-	return _noise_active
 
 
 ## Sets [member inactive_update_mode] property.

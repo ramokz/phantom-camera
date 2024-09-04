@@ -255,7 +255,6 @@ func _ready() -> void:
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam_2d.global_transform
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.global_transform
 		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
 

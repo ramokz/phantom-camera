@@ -5,19 +5,26 @@ extends Node3D
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 ## If true, previews the noise in the Viewfinder.
-@export var play: bool = false:
+@export var preview: bool = false:
 	set(value):
-		play = value
-
-		if play:
+		preview = value
+		_play = value
+	get:
+		return preview
+var _play: bool = false:
+	set(value):
+		_play = value
+		if value:
+			_elasped_play_time = 0
+			_decay_countdown = 0
+			_play = true
 			_should_grow = true
 			_start_duration_countdown = false
 			_should_decay = false
-			_elasped_play_time = 0
 		else:
 			_should_decay = true
 	get:
-		return play
+		return _play
 
 ## If true, repeats the noise indefinitely once started.Otherwise, it will only be triggered once. [br]
 ## [b]Note:[/b] This will always be enabled if the resource is assigned the the [PhantomCamera3D]'s
@@ -29,6 +36,10 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 	get:
 		return continous
 
+## Determines how long the noise should take to reach full [member intensity] once started.[br]
+## The value is set in [b]seconds[/b].
+@export_exp_easing("positive_only") var growth_time: float = 0
+
 ## Sets the duration for the camera noise if [member loop] is set to false.[br]
 ## If the duration is [param 0] then [member continous] becomes enabled.[br]
 ## The value is set in [b]seconds[/b].
@@ -36,15 +47,9 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 	set(value):
 		duration = value
 		if duration == 0:
-			continous = true
-			notify_property_list_changed()
-			duration = 1.0
+			duration = 0.001
 	get:
 		return duration
-
-## Determines how long the noise should take to reach full [member intensity] once started.[br]
-## The value is set in [b]seconds[/b].
-@export_exp_easing("positive_only") var growth_time: float = 0
 
 ## Determines how long the noise should take to come to a full stop.[br]
 ## The value is set in [b]seconds[/b].
@@ -72,9 +77,6 @@ var _should_decay: bool = false
 
 var _elasped_play_time: float = 0
 
-var _pcam_parent: PhantomCamera3D
-var _has_parent_pcam: bool = true
-
 var _noise_output: Transform3D
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
@@ -99,11 +101,15 @@ func _enter_tree() -> void:
 	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
 
 
+#func _ready() -> void:
+	#stop_noise(false)
+
+
 func _process(delta: float) -> void:
-	if not play and not _should_decay: return
+	if not _play and not _should_decay: return
 	if noise == null:
 		printerr("Noise resource missing in ", name)
-		play = false
+		_play = false
 		return
 
 	_elasped_play_time += delta
@@ -126,13 +132,14 @@ func _process(delta: float) -> void:
 		noise.set_trauma(maxf(1 - (_decay_countdown / decay_time), 0))
 		if _decay_countdown >= decay_time:
 			noise.set_trauma(0)
-			play = false
+			_play = false
+			preview = false
 			_should_decay = false
 			_elasped_play_time = 0
 			_decay_countdown = 0
 
 	_noise_output = noise.get_noise_transform(Vector3.ZERO, Vector3.ZERO, delta)
-	_phantom_camera_manager.noise_emitter_3d_triggered.emit(_noise_output, noise_emitter_layer)
+	_phantom_camera_manager.noise_3d_emitted.emit(_noise_output, noise_emitter_layer)
 
 #endregion
 
@@ -143,14 +150,21 @@ func assign_noise_resource(resource: PhantomCameraNoise3D) -> void:
 	noise = resource
 
 
-func play_noise() -> void:
-	play = true
+func play() -> void:
+	if _play:
+		_play = false
+
+	_play = true
 
 
-func stop_noise(should_decay: bool = true) -> void:
+func stop(should_decay: bool = true) -> void:
 	if should_decay:
 		_should_decay = true
 	else:
-		play = false
+		_play = false
+
+
+func toggle() -> void:
+	_play = !_play
 
 #endregion

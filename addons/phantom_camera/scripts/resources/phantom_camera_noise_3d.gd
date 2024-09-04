@@ -147,26 +147,24 @@ func set_trauma(value: float) -> void:
 
 #region Public Functions
 
-func get_noise_transform(pcam_rotation: Vector3, pcam_position: Vector3, delta: float) -> Transform3D:
+
+func get_noise_transform(rotation: Vector3, position: Vector3, delta: float) -> Transform3D:
 	var output_rotation: Vector3
-	var output_position: Vector3 = pcam_position
-
+	var output_position: Vector3
 	_noise_time += delta
-
 	_trauma = maxf(_trauma, 0.0)
 
 	for i in 3:
 		if has_rotational_noise:
 			output_rotation[i] = deg_to_rad(
-				pcam_rotation[i] + _noise_max_rotational_offset[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
+				rotation[i] + _noise_max_rotational_offset[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
 			)
-		else:
-			output_rotation[i] = deg_to_rad(pcam_rotation[i])
 
 		if has_positional_noise:
 			output_position[i] += _noise_max_position_offset[i] * \
 			pow(_trauma, 2) * _get_noise_from_seed(i + seed)
 
 	return Transform3D(Quaternion.from_euler(output_rotation), output_position)
+
 
 #endregion
