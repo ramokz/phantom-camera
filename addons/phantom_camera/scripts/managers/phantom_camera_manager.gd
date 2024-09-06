@@ -4,7 +4,7 @@ extends Node
 const PHANTOM_CAMERA_CONSTS = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 
-signal noise_2d_emitted(noise_output: Transform2D)
+signal noise_2d_emitted(noise_output: Transform2D, emitter_layer: int)
 signal noise_3d_emitted(noise_output: Transform3D, emitter_layer: int)
 
 

@@ -6,6 +6,7 @@ extends CharacterBody2D
 @onready var _interaction_prompt: Panel = %InteractionPrompt
 @onready var _ui_sign: Control
 @onready var _dark_overlay: ColorRect = %DarkOverlay
+@onready var _noise_emitter: PhantomCameraNoiseEmitter2D
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"
@@ -87,6 +88,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.is_physical_key_pressed(KEY_ESCAPE) and _movement_disabled:
 			_hide_interactive_node(_interactive_UI)
 			_interactive_node_logic()
+
+	if event.keycode == KEY_Q and event.is_pressed():
+		if get_node_or_null("%PlayerPhantomCameraNoiseEmitter2D"):
+			%PlayerPhantomCameraNoiseEmitter2D.emit()
 
 
 func _show_interactive_node(UI: Control) -> void:

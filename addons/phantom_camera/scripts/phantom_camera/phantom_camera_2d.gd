@@ -215,9 +215,9 @@ var tween_ease: PhantomCameraTween.EaseType:
 	set = set_tween_ease,
 	get = get_tween_ease
 
-## If enabled, the moment a [param PhantomCamera3D] is instantiated into
+## If enabled, the moment a [param PhantomCamera2D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
-## This is most obvious if a [param PhantomCamera3D] has a long duration and
+## This is most obvious if a [param PhantomCamera2D] has a long duration and
 ## is attached to a playable character that can be moved the moment a scene
 ## is loaded. Disabling the [param tween_on_load] property will
 ## disable this behaviour and skip the tweening entirely when instantiated.
@@ -385,17 +385,21 @@ var _limit_node: Node2D
 	#get = get_limit_smoothing
 var _limit_inactive_pcam: bool
 
-
 @export_group("Noise")
-## Defines the noise, or shake, of a camera.[br]
-## By default, no noise sis being applied.
+## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter2D.noise_emitter_layer]
+## to make this [PhantomCamera2D] be affect by it.
+@export_flags_2d_render var noise_emitter_layer: int
+
+## Defines the noise, or shake, of a Camera2D.[br]
+## Once set, the noise will run continuously.
 @export var noise: PhantomCameraNoise2D:
 	set = set_noise,
 	get = get_noise
+var _has_noise_resource: bool = false
+var _has_noise_emitted: bool = false
+var _noise_emitted_transform: Transform2D
 
-var _noise_active: bool = false:
-	set = set_noise_active,
-	get = get_noise_active
+var transform_output: Transform2D
 
 
 #endregion
@@ -513,6 +517,11 @@ func _exit_tree() -> void:
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
 
+func _ready() -> void:
+	transform_output = global_transform
+	_phantom_camera_manager.noise_2d_emitted.connect(_noise_emitted)
+
+
 func _process(delta: float) -> void:
 	if _follow_target_physics_based: return
 	_process_logic(delta)
@@ -534,13 +543,31 @@ func _process_logic(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
 	_limit_checker()
-	
+
+	transform_output = Transform2D(global_rotation, transform_output.origin)
+
+	#if _is_act2nsform_output
+
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
 			if follow_target.is_queued_for_deletion():
 				follow_target = null
 				return
 		_follow(delta)
+
+
+	if _has_noise_resource:
+		transform_output = noise.get_noise_transform(
+			rad_to_deg(transform_output.get_rotation()),
+			transform_output.origin,
+			delta
+		)
+
+	if _has_noise_emitted:
+		transform_output = transform_output.translated(_noise_emitted_transform.origin)
+		transform_output = transform_output.rotated(_noise_emitted_transform.get_rotation())
+		_noise_emitted_transform = Transform2D()
+		_has_noise_emitted = false
 
 
 func _limit_checker() -> void:
@@ -629,12 +656,14 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 	if _limit_inactive_pcam and not _tween_skip:
 		target_position = _set_limit_clamp_position(target_position)
 
+	global_position = target_position
+
 	if follow_damping:
 		for index in 2:
-			global_position[index] = \
+			transform_output.origin[index] = \
 				_smooth_damp(
 					target_position[index],
-					global_position[index],
+					transform_output.origin[index],
 					index,
 					_velocity_ref[index],
 					_set_velocity,
@@ -642,8 +671,7 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 					delta
 				)
 	else:
-		global_position = target_position
-
+		transform_output.origin = target_position
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
@@ -755,6 +783,13 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 func _check_visibility() -> void:
 	if not is_instance_valid(pcam_host_owner): return
 	pcam_host_owner.refresh_pcam_list_priorty()
+
+
+func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
+	if noise_emitter_layer & emitter_layer != 0:
+		_noise_emitted_transform = _noise_emitted_transform.translated(emitter_noise_output.origin)
+		_noise_emitted_transform = _noise_emitted_transform.rotated(emitter_noise_output.get_rotation())
+		_has_noise_emitted = true
 
 #endregion
 
@@ -971,6 +1006,7 @@ func get_follow_mode() -> int:
 ## Assigns a new [Node2D] as the [member follow_target].
 func set_follow_target(value: Node2D) -> void:
 	if follow_target == value: return
+
 	follow_target = value
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
@@ -1314,34 +1350,17 @@ func get_limit_margin() -> Vector4i:
 	#return limit_smoothed
 
 
-## Sets a NoiseResource
+## Sets a [PhantomCameraNoise2D] resource
 func set_noise(value: PhantomCameraNoise2D) -> void:
 	noise = value
-	#noise.noise_algorithm = FastNoiseLite.new()
-	# Applies a default Noise of Type Perlin
-	#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
-	_noise_active = true
+	if value != null:
+		_has_noise_resource = true
+		noise.set_trauma(1)
+	else:
+		_has_noise_resource = false
 
-	## TBD To be applied for spatial fields
-	#if value:
-		## Applies a new resource algorithm if nothing is not already assigned.
-		#if not noise.noise_algorithm:
-			## Applies a default FastNoiseLite Resource
-			#noise.noise_algorithm = FastNoiseLite.new()
-			## Applies a default Noise of Type Perlin
-			#noise.noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
-		#_noise_active = true
-	#else:
-		#_noise_active = false
 func get_noise() -> PhantomCameraNoise2D:
 	return noise
-
-
-## TODO - Internal only
-func set_noise_active(value: bool) -> void:
-	_noise_active = value
-func get_noise_active() -> bool:
-	return _noise_active
 
 
 ## Sets [member inactive_update_mode] property.

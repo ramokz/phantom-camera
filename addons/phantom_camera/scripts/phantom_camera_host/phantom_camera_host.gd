@@ -253,7 +253,7 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	if not is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d): return
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.global_transform
+		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
 	else:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
@@ -497,7 +497,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			camera_3d.projection = _active_pcam_3d.projection
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2d_transform = _active_pcam_2d.global_transform
+			_prev_active_pcam_2d_transform = _active_pcam_2d.transform_output
 		else:
 			_prev_active_pcam_3d_transform = _active_pcam_3d.global_transform
 
@@ -548,6 +548,7 @@ func _physics_process(delta: float):
 func _tween_follow_checker(delta: float):
 	if _is_2D:
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
+		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
 	else:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
@@ -573,10 +574,8 @@ func _pcam_follow(delta: float) -> void:
 		else:
 			camera_2d.global_transform =_active_pcam_2d_glob_transform
 		camera_2d.zoom = _active_pcam_2d.zoom
-		if _active_pcam_2d.get_noise_active():
-			pass
 	else:
-		camera_3d.global_transform = _active_pcam_3d.transform_output
+		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
 	if _viewfinder_needed_check:
 		_show_viewfinder_in_play()
