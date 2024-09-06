@@ -96,9 +96,6 @@ var _trauma: float = 0.0:
 
 var _noise_time: float = 0.0
 
-
-signal emit_noise(duration: float, time: float)
-
 #region Private Functions
 
 func _init():
@@ -147,7 +144,6 @@ func set_trauma(value: float) -> void:
 
 #region Public Functions
 
-
 func get_noise_transform(rotation: Vector3, position: Vector3, delta: float) -> Transform3D:
 	var output_rotation: Vector3
 	var output_position: Vector3
@@ -165,6 +161,5 @@ func get_noise_transform(rotation: Vector3, position: Vector3, delta: float) -> 
 			pow(_trauma, 2) * _get_noise_from_seed(i + seed)
 
 	return Transform3D(Quaternion.from_euler(output_rotation), output_position)
-
 
 #endregion

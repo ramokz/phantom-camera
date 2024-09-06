@@ -150,7 +150,7 @@ func assign_noise_resource(resource: PhantomCameraNoise3D) -> void:
 	noise = resource
 
 
-func play() -> void:
+func emit() -> void:
 	if _play:
 		_play = false
 

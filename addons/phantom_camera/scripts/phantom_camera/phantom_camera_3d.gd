@@ -710,6 +710,7 @@ func _process_logic(delta: float) -> void:
 			transform_output.origin + _noise_emitted_transform.origin
 		)
 		_noise_emitted_transform = Transform3D()
+		_has_noise_emitted = false
 
 
 func _follow(delta: float) -> void:
@@ -868,6 +869,8 @@ func _set_follow_velocity(index: int, value: float) -> void:
 
 
 func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
+	camera_target.global_position = target_position
+
 	if follow_damping:
 		for i in 3:
 			transform_output.origin[i] = _smooth_damp(
@@ -879,9 +882,14 @@ func _interpolate_position(target_position: Vector3, delta: float, camera_target
 				follow_damping_value[i]
 			)
 	else:
-		transform_output.origin = target_position
+		transform_output.origin = global_position
+		#transform_output.origin = target_position
+		#camera_target.global_position = target_position
+	#if is_active() and not Engine.is_editor_hint():
+		#print(target_position)
+		#print(global_position)
 
-	camera_target.global_position = target_position
+	#camera_target.global_position = target_position
 
 
 func _interpolate_rotation(target_trans: Vector3) -> void:
@@ -1000,7 +1008,6 @@ func _check_visibility() -> void:
 	pcam_host_owner.refresh_pcam_list_priorty()
 
 
-#func _noise_triggered(emitter_noise: PhantomCameraNoise3D, delta: float) -> void:
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
 		_noise_emitted_transform = Transform3D(
@@ -1151,6 +1158,7 @@ func get_follow_mode() -> int:
 ## Assigns a new [Node3D] as the [member follow_target].
 func set_follow_target(value: Node3D) -> void:
 	if follow_target == value: return
+
 	follow_target = value
 
 	_follow_target_physics_based = false
@@ -1552,7 +1560,7 @@ func get_look_at_damping_value() -> float:
 	return look_at_damping_value
 
 
-## Sets a NoiseResource
+## Sets a [PhantomCameraNoise3D] resource
 func set_noise(value: PhantomCameraNoise3D) -> void:
 	noise = value
 	if value != null:

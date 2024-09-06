@@ -10,6 +10,27 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_n8u0x"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="6_vpla5"]
 
+[sub_resource type="Resource" id="Resource_t3bgw"]
+script = ExtResource("4_poyyk")
+intensity = 1000.0
+seed = 0
+has_rotational_noise = true
+has_positional_noise = false
+max_rotational_offset_x = 10.0
+max_rotational_offset_y = 10.0
+max_rotational_offset_z = 5.0
+max_position_offset_x = 0.0
+max_position_offset_y = 0.0
+max_position_offset_z = 0.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_yvgu3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vc6km"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_lsrh7"]
+radius = 0.269454
+
 [sub_resource type="Resource" id="Resource_lhgur"]
 script = ExtResource("3_f8fcw")
 duration = 1.0
@@ -28,39 +49,31 @@ frustum_offset = Vector2(0, 0)
 near = 0.05
 far = 4000.0
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_t0x8u"]
-seed = 2
-
-[sub_resource type="Resource" id="Resource_irqt8"]
+[sub_resource type="Resource" id="Resource_6tnhy"]
 script = ExtResource("4_poyyk")
-intensity = 50.0
-noise_algorithm = SubResource("FastNoiseLite_t0x8u")
-seed_offset = 0
-max_rotational_offset_x = 10.0
+intensity = 400.0
+seed = 0
+has_rotational_noise = true
+has_positional_noise = false
+max_rotational_offset_x = 63.5
 max_rotational_offset_y = 10.0
 max_rotational_offset_z = 5.0
-max_position_offset_x = 0.0
+max_position_offset_x = 1.1
 max_position_offset_y = 0.0
 max_position_offset_z = 0.0
 
-[sub_resource type="Resource" id="Resource_t3bgw"]
+[sub_resource type="Resource" id="Resource_wm2yt"]
 script = ExtResource("4_poyyk")
-intensity = 1000.0
-seed_offset = 0
-max_rotational_offset_x = 10.0
+intensity = 56.847
+seed = 0
+has_rotational_noise = false
+has_positional_noise = true
+max_rotational_offset_x = 118.3
 max_rotational_offset_y = 10.0
 max_rotational_offset_z = 5.0
-max_position_offset_x = 0.0
-max_position_offset_y = 0.0
+max_position_offset_x = 4.0
+max_position_offset_y = 2.1
 max_position_offset_z = 0.0
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_yvgu3"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vc6km"]
-albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_lsrh7"]
-radius = 0.269454
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qi01t"]
 albedo_texture = ExtResource("6_vpla5")
@@ -71,32 +84,16 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.0451811, 0.0614972, 0.997081, -0.0214755, 0.99793, -0.0605764, -0.998746, -0.0186759, 0.0464083, -16.4602, 0.507079, 4.24898)
+transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_ggfbg")
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
-unique_name_in_owner = true
-transform = Transform3D(-4.37113e-08, 0, 0.999997, 0, 0.999997, 0, -0.999998, 0, -4.37112e-08, -16.4602, 0.507079, 4.24898)
-script = ExtResource("2_dreow")
-priority = 10
-follow_mode = 1
-follow_target = NodePath("../PlayerCharacterBody3D")
-tween_resource = SubResource("Resource_lhgur")
-camera_3d_resource = SubResource("Resource_ghjuj")
-noise = SubResource("Resource_irqt8")
-
-[node name="PhantomCameraNoiseEmitter3D" type="Node3D" parent="PlayerPhantomCamera3D"]
-unique_name_in_owner = true
-script = ExtResource("6_n8u0x")
-
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.4602, 0.507079, 4.24898)
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.46, 0.503767, 4.249)
 script = ExtResource("6_fbad7")
 run_noise = SubResource("Resource_t3bgw")
-metadata/_edit_group_ = true
 
 [node name="PlayerVisual" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
 unique_name_in_owner = true
@@ -110,6 +107,33 @@ shape = SubResource("CapsuleShape3D_lsrh7")
 
 [node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
 shape = SubResource("CapsuleShape3D_lsrh7")
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
+script = ExtResource("2_dreow")
+priority = 10
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+tween_resource = SubResource("Resource_lhgur")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_ghjuj")
+noise_emitter_layer = 1
+
+[node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="PlayerPhantomCamera3D"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, -3.55271e-15, 0, 1, 0, 0, 0)
+script = ExtResource("6_n8u0x")
+growth_time = 1e-05
+duration = 0.077
+decay_time = 0.1
+noise = SubResource("Resource_6tnhy")
+
+[node name="RunningPhantomCameraNoiseEmitter3D" type="Node3D" parent="PlayerPhantomCamera3D"]
+script = ExtResource("6_n8u0x")
+duration = 2.0
+decay_time = 1.0
+noise = SubResource("Resource_wm2yt")
 
 [node name="Environment" type="Node" parent="."]
 
@@ -141,6 +165,6 @@ use_collision = true
 size = Vector3(178.429, 14.0773, 1)
 material = SubResource("StandardMaterial3D_qi01t")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
 metadata/_edit_lock_ = true

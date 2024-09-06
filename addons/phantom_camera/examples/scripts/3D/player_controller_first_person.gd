@@ -4,8 +4,6 @@ extends "player_controller.gd"
 
 @onready var _player_character: CharacterBody3D = %PlayerCharacterBody3D
 
-@onready var _noise_resource: PhantomCameraNoiseEmitter3D = %PhantomCameraNoiseEmitter3D
-
 @export var mouse_sensitivity: float = 0.05
 
 @export var min_pitch: float = -89.9
@@ -27,25 +25,9 @@ func _physics_process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
-		if velocity != Vector3.ZERO:
-			if event.keycode == KEY_SHIFT:
-				if event.is_pressed():
-					SPEED = 5
-					#_player_pcam.noise.intensity = 50
-					#_player_pcam.noise.max_x = 15
-					#_player_pcam.noise.max_y = 15
-
-				elif event.is_released():
-					SPEED = 3
-					#_player_pcam.noise.intensity = 75
-					#_player_pcam.noise.max_x = 5
-					#_player_pcam.noise.max_y = 5
-
-		if event.keycode == KEY_SPACE and event.is_pressed():
-			#_player_pcam.add_noise_trauma(0.1, run_noise)
-			#_player_pcam.get_noise_active()
-			#_player_pcam.
-			pass
+		if get_node_or_null("%PlayerPhantomCameraNoiseEmitter3D"):
+			if event.keycode == KEY_Q and event.is_pressed():
+				%PlayerPhantomCameraNoiseEmitter3D.emit()
 
 	if event is InputEventMouseMotion:
 		var pcam_rotation_degrees: Vector3
