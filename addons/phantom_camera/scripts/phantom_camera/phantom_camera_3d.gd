@@ -660,16 +660,18 @@ func _ready():
 
 
 func _process(delta: float) -> void:
+	if is_active(): return
 	if not _follow_target_physics_based:
-		_process_logic(delta)
+		process_logic(delta)
 
 
 func _physics_process(delta: float):
+	if is_active(): return
 	if _follow_target_physics_based:
-		_process_logic(delta)
+		process_logic(delta)
 
 
-func _process_logic(delta: float) -> void:
+func process_logic(delta: float) -> void:
 	if not _is_active:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER:	return

@@ -257,6 +257,9 @@ func _ready() -> void:
 	else:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
+	process_priority = 300
+	process_physics_priority = 300
+
 
 func _check_camera_host_amount() -> void:
 	if _phantom_camera_manager.get_phantom_camera_hosts().size() > 1:
@@ -547,9 +550,10 @@ func _physics_process(delta: float):
 
 func _tween_follow_checker(delta: float):
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
+		_active_pcam_2d.process_logic(delta)
 		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
 	else:
+		_active_pcam_3d.process_logic(delta)
 		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
 	if _trigger_pcam_tween:
