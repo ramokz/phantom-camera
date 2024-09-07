@@ -165,13 +165,13 @@ sources/0 = SubResource("TileSetAtlasSource_easgx")
 
 [sub_resource type="Resource" id="Resource_rmnw1"]
 script = ExtResource("11_d6abr")
-intensity = 100.0
-seed = 1
+intensity = 800.0
+seed = 3
 has_rotational_noise = true
 has_positional_noise = true
 max_rotational_offset = 10.0
-max_position_offset_x = 4.0
-max_position_offset_y = 4.0
+max_position_offset_x = 30.0
+max_position_offset_y = 30.0
 
 [node name="ExampleScene2D2" type="Node2D"]
 
