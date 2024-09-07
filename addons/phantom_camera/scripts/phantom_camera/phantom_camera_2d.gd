@@ -675,6 +675,7 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 	else:
 		transform_output.origin = target_position
 
+
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
 		var omega: float = 2 / damping_time
@@ -789,8 +790,10 @@ func _check_visibility() -> void:
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
-		_noise_emitted_transform = _noise_emitted_transform.translated(emitter_noise_output.origin)
-		_noise_emitted_transform = _noise_emitted_transform.rotated(emitter_noise_output.get_rotation())
+		_noise_emitted_transform = Transform2D(
+			_noise_emitted_transform.get_rotation() * emitter_noise_output.get_rotation(),
+			_noise_emitted_transform.origin + emitter_noise_output.origin
+		)
 		_has_noise_emitted = true
 
 #endregion
