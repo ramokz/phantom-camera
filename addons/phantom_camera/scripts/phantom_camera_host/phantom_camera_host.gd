@@ -502,7 +502,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _is_2D:
 			_prev_active_pcam_2d_transform = _active_pcam_2d.transform_output
 		else:
-			_prev_active_pcam_3d_transform = _active_pcam_3d.global_transform
+			_prev_active_pcam_3d_transform = _active_pcam_3d.transform_output
 
 	if pcam.get_tween_skip():
 		_tween_elapsed_time = pcam.tween_duration
