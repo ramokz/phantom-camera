@@ -159,6 +159,7 @@ var _is_active: bool = false
 	get:
 		return follow_mode
 
+var _is_third_person_follow: bool = false
 
 ## Determines which target should be followed.
 ## The [param Camera3D] will follow the position of the Follow Target based on
@@ -637,6 +638,7 @@ func _exit_tree() -> void:
 
 func _ready():
 	if follow_mode == FollowMode.THIRD_PERSON:
+		_is_third_person_follow = true
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(_follow_spring_arm):
 				_follow_spring_arm = SpringArm3D.new()
@@ -647,7 +649,8 @@ func _ready():
 				_follow_spring_arm.collision_mask = collision_mask
 				_follow_spring_arm.shape = shape
 				_follow_spring_arm.margin = margin
-				get_parent().add_child.call_deferred(_follow_spring_arm)
+				_follow_spring_arm.add_excluded_object(follow_target)
+				get_tree().root.add_child.call_deferred(_follow_spring_arm)
 				reparent.call_deferred(_follow_spring_arm)
 	if follow_mode == FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
@@ -693,7 +696,7 @@ func process_logic(delta: float) -> void:
 			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
 	else:
-		transform_output.basis = global_transform.basis
+		transform_output.basis = global_basis
 
 	if _has_noise_resource:
 		transform_output = noise.get_noise_transform(
@@ -871,27 +874,34 @@ func _set_follow_velocity(index: int, value: float) -> void:
 
 
 func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
-	camera_target.global_position = target_position
-
 	if follow_damping:
-		for i in 3:
-			transform_output.origin[i] = _smooth_damp(
-				target_position[i],
-				transform_output.origin[i],
-				i,
-				_follow_velocity_ref[i],
-				_set_follow_velocity,
-				follow_damping_value[i]
-			)
+		if not _is_third_person_follow:
+			camera_target.global_position = target_position
+			for i in 3:
+				transform_output.origin[i] = _smooth_damp(
+					global_position[i],
+					transform_output.origin[i],
+					i,
+					_follow_velocity_ref[i],
+					_set_follow_velocity,
+					follow_damping_value[i]
+				)
+		else:
+			for i in 3:
+				if _is_third_person_follow:
+					camera_target.global_position[i] = _smooth_damp(
+						target_position[i],
+						camera_target.global_position[i],
+						i,
+						_follow_velocity_ref[i],
+						_set_follow_velocity,
+						follow_damping_value[i]
+					)
+					transform_output.origin = global_position
+					transform_output.basis = global_basis
 	else:
+		camera_target.global_position = target_position
 		transform_output.origin = global_position
-		#transform_output.origin = target_position
-		#camera_target.global_position = target_position
-	#if is_active() and not Engine.is_editor_hint():
-		#print(target_position)
-		#print(global_position)
-
-	#camera_target.global_position = target_position
 
 
 func _interpolate_rotation(target_trans: Vector3) -> void:
