@@ -546,7 +546,7 @@ func process_logic(delta: float) -> void:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
 	_limit_checker()
 
-	transform_output = Transform2D(global_rotation, transform_output.origin)
+	transform_output = Transform2D(global_rotation, global_transform.origin)
 
 	#if _is_act2nsform_output
 
