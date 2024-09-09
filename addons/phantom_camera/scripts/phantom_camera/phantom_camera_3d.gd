@@ -48,6 +48,8 @@ signal tween_interrupted(pcam_3d: PhantomCamera3D)
 ## [param PhantomCamera3D].
 signal tween_completed
 
+signal noise_triggered(noise_layer: int)
+
 #endregion
 
 
@@ -157,6 +159,7 @@ var _is_active: bool = false
 	get:
 		return follow_mode
 
+var _is_third_person_follow: bool = false
 
 ## Determines which target should be followed.
 ## The [param Camera3D] will follow the position of the Follow Target based on
@@ -166,7 +169,7 @@ var _is_active: bool = false
 	get = get_follow_target
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled = false ## TOOD - Should be anbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
+var _physics_interpolation_enabled = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
 @export var follow_targets: Array[Node3D] = []:
@@ -264,7 +267,7 @@ var tween_ease: PhantomCameraTween.EaseType:
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
-@export var camera_3d_resource: Camera3DResource = Camera3DResource.new():
+@export var camera_3d_resource: Camera3DResource: # = Camera3DResource.new():
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
@@ -276,7 +279,7 @@ var cull_mask: int:
 var h_offset: float:
 	set = set_h_offset,
 	get = get_h_offset
-	
+
 var v_offset: float:
 	set = set_v_offset,
 	get = get_v_offset
@@ -296,11 +299,11 @@ var size: float:
 var frustum_offset: Vector2:
 	set = set_frustum_offset,
 	get = get_frustum_offset
-	
+
 var far: float:
 	set = set_far,
 	get = get_far
-	
+
 var near: float:
 	set = set_near,
 	get = get_near
@@ -315,6 +318,7 @@ var near: float:
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes
+
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
@@ -463,6 +467,23 @@ var _follow_spring_arm: SpringArm3D
 
 var _current_rotation: Vector3
 
+
+@export_group("Noise")
+## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
+## to make this [PhantomCamera3D] be affect by it.
+@export_flags_3d_render var noise_emitter_layer: int
+
+## Defines the noise, or shake, of a Camera3D.[br]
+## Once set, the noise will run continuously.
+@export var noise: PhantomCameraNoise3D:
+	set = set_noise,
+	get = get_noise
+var _has_noise_resource: bool = false
+var _has_noise_emitted: bool = false
+var _noise_emitted_transform: Transform3D
+
+var transform_output: Transform3D
+
 #endregion
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
@@ -487,7 +508,6 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Parameters
 	####################
-
 	if follow_mode == FollowMode.NONE:
 		match property.name:
 			"follow_offset", \
@@ -502,6 +522,10 @@ func _validate_property(property: Dictionary) -> void:
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "follow_offset":
+		if follow_mode == FollowMode.PATH:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
 		if not follow_mode == FollowMode.FRAMED:
@@ -607,13 +631,14 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_removed(self)
 
+
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
 
-
 func _ready():
 	if follow_mode == FollowMode.THIRD_PERSON:
+		_is_third_person_follow = true
 		if not Engine.is_editor_hint():
 			if not is_instance_valid(_follow_spring_arm):
 				_follow_spring_arm = SpringArm3D.new()
@@ -624,41 +649,73 @@ func _ready():
 				_follow_spring_arm.collision_mask = collision_mask
 				_follow_spring_arm.shape = shape
 				_follow_spring_arm.margin = margin
-				get_parent().add_child.call_deferred(_follow_spring_arm)
+				_follow_spring_arm.add_excluded_object(follow_target)
+				get_tree().root.add_child.call_deferred(_follow_spring_arm)
 				reparent.call_deferred(_follow_spring_arm)
 	if follow_mode == FollowMode.FRAMED:
 		if not Engine.is_editor_hint():
 			_follow_framed_offset = global_position - _get_target_position_offset()
 			_current_rotation = global_rotation
 
+	transform_output = global_transform
+
+	_phantom_camera_manager.noise_3d_emitted.connect(_noise_emitted)
+
 
 func _process(delta: float) -> void:
+	if is_active(): return
 	if not _follow_target_physics_based:
-		_process_logic(delta)
+		process_logic(delta)
 
 
 func _physics_process(delta: float):
+	if is_active(): return
 	if _follow_target_physics_based:
-		_process_logic(delta)
+		process_logic(delta)
 
 
-func _process_logic(delta: float) -> void:
+func process_logic(delta: float) -> void:
 	if not _is_active:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER:	return
 			# InactiveUpdateMode.EXPONENTIALLY:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
+
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
 			if follow_target.is_queued_for_deletion():
 				follow_target = null
 				return
 		_follow(delta)
+	else:
+		transform_output.origin = global_transform.origin
+
 	if _should_look_at:
 		if look_at_target.is_queued_for_deletion():
 			look_at_target = null
 			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
+	else:
+		transform_output.basis = global_basis
+
+	if _has_noise_resource:
+		transform_output = noise.get_noise_transform(
+			Vector3(
+				rad_to_deg(transform_output.basis.get_euler().x),
+				rad_to_deg(transform_output.basis.get_euler().y),
+				rad_to_deg(transform_output.basis.get_euler().z)
+			),
+			transform_output.origin,
+			delta
+		)
+
+	if _has_noise_emitted:
+		transform_output = Transform3D(
+			transform_output.basis * _noise_emitted_transform.basis,
+			transform_output.origin + _noise_emitted_transform.origin
+		)
+		_noise_emitted_transform = Transform3D()
+		_has_noise_emitted = false
 
 
 func _follow(delta: float) -> void:
@@ -814,19 +871,37 @@ func _get_position_offset_distance() -> Vector3:
 
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
+
+
 func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
 	if follow_damping:
-		for index in 3:
-			camera_target.global_position[index] = _smooth_damp(
-				target_position[index],
-				camera_target.global_position[index],
-				index,
-				_follow_velocity_ref[index],
-				_set_follow_velocity,
-				follow_damping_value[index]
-			)
+		if not _is_third_person_follow:
+			camera_target.global_position = target_position
+			for i in 3:
+				transform_output.origin[i] = _smooth_damp(
+					global_position[i],
+					transform_output.origin[i],
+					i,
+					_follow_velocity_ref[i],
+					_set_follow_velocity,
+					follow_damping_value[i]
+				)
+		else:
+			for i in 3:
+				if _is_third_person_follow:
+					camera_target.global_position[i] = _smooth_damp(
+						target_position[i],
+						camera_target.global_position[i],
+						i,
+						_follow_velocity_ref[i],
+						_set_follow_velocity,
+						follow_damping_value[i]
+					)
+					transform_output.origin = global_position
+					transform_output.basis = global_basis
 	else:
 		camera_target.global_position = target_position
+		transform_output.origin = global_position
 
 
 func _interpolate_rotation(target_trans: Vector3) -> void:
@@ -858,9 +933,12 @@ func _interpolate_rotation(target_trans: Vector3) -> void:
 		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
 		var ratio_b: float = sin_theta / sin_theta_total
 
-		quaternion = current_quat * ratio_a + target_quat * ratio_b
+		#quaternion = current_quat * ratio_a + target_quat * ratio_b
+		transform_output.basis = Basis(current_quat * ratio_a + target_quat * ratio_b)
 	else:
-		quaternion = target_quat
+		transform_output.basis = Basis(target_quat)
+
+	quaternion = target_quat
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, rot: bool = false) -> float:
@@ -941,7 +1019,17 @@ func _check_visibility() -> void:
 	if not is_instance_valid(pcam_host_owner): return
 	pcam_host_owner.refresh_pcam_list_priorty()
 
+
+func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
+	if noise_emitter_layer & emitter_layer != 0:
+		_noise_emitted_transform = Transform3D(
+			_noise_emitted_transform.basis * emitter_noise_output.basis,
+			_noise_emitted_transform.origin + emitter_noise_output.origin
+		)
+		_has_noise_emitted = true
+
 #endregion
+
 
 # TBD
 #func get_unprojected_position() -> Vector2:
@@ -1082,6 +1170,7 @@ func get_follow_mode() -> int:
 ## Assigns a new [Node3D] as the [member follow_target].
 func set_follow_target(value: Node3D) -> void:
 	if follow_target == value: return
+
 	follow_target = value
 
 	_follow_target_physics_based = false
@@ -1481,6 +1570,19 @@ func set_look_at_damping_value(value: float) -> void:
 ## Gets the currents [member look_at_damping_value] value.
 func get_look_at_damping_value() -> float:
 	return look_at_damping_value
+
+
+## Sets a [PhantomCameraNoise3D] resource
+func set_noise(value: PhantomCameraNoise3D) -> void:
+	noise = value
+	if value != null:
+		_has_noise_resource = true
+		noise.set_trauma(1)
+	else:
+		_has_noise_resource = false
+
+func get_noise() -> PhantomCameraNoise3D:
+	return noise
 
 
 ## Sets [member inactive_update_mode] property.

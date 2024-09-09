@@ -67,7 +67,6 @@ var _multiple_pcam_hosts: bool = false
 var _is_child_of_camera: bool = false
 var _is_2D: bool = false
 
-
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
 
@@ -216,7 +215,7 @@ func _enter_tree() -> void:
 		else:
 			_is_2D = false
 			camera_3d = parent
-			
+
 			## Clears existing resource on Camera3D to prevent potentially messing with external Attribute resource
 			if camera_3d.attributes != null and not Engine.is_editor_hint():
 				camera_3d.attributes = null
@@ -254,9 +253,12 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	if not is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d): return
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.global_transform
+		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.global_transform
+		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
+
+	process_priority = 300
+	process_physics_priority = 300
 
 
 func _check_camera_host_amount() -> void:
@@ -452,6 +454,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
 		_camera_zoom = camera_2d.zoom
+
 		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
 		var _physics_based: bool
 
@@ -495,12 +498,11 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _active_pcam_3d.camera_3d_resource:
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
-
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2d_transform = _active_pcam_2d.global_transform
+			_prev_active_pcam_2d_transform = _active_pcam_2d.transform_output
 		else:
-			_prev_active_pcam_3d_transform = _active_pcam_3d.global_transform
+			_prev_active_pcam_3d_transform = _active_pcam_3d.transform_output
 
 	if pcam.get_tween_skip():
 		_tween_elapsed_time = pcam.tween_duration
@@ -548,9 +550,11 @@ func _physics_process(delta: float):
 
 func _tween_follow_checker(delta: float):
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
+		_active_pcam_2d.process_logic(delta)
+		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.get_global_transform()
+		_active_pcam_3d.process_logic(delta)
+		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
 
 	if _trigger_pcam_tween:
 		_pcam_tween(delta)
@@ -1071,6 +1075,7 @@ func get_trigger_pcam_tween() -> bool:
 func refresh_pcam_list_priorty() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
+
 
 #func set_interpolation_mode(value: int) -> void:
 	#interpolation_mode = value
