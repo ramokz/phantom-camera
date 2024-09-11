@@ -683,7 +683,7 @@ func process_logic(delta: float) -> void:
 
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
-			if follow_target.is_queued_for_deletion():
+			if _queued_for_exit:
 				follow_target = null
 				return
 		_follow(delta)
@@ -1020,6 +1020,12 @@ func _check_visibility() -> void:
 	pcam_host_owner.refresh_pcam_list_priorty()
 
 
+func _follow_target_tree_exiting(target: Node) -> void:
+	if target == follow_target:
+		print("Is True")
+		_queued_for_exit = true
+
+
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
 		_noise_emitted_transform = Transform3D(
@@ -1176,7 +1182,10 @@ func set_follow_target(value: Node3D) -> void:
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
+		_queued_for_exit = false
 		_check_physics_body(value)
+		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
+			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
