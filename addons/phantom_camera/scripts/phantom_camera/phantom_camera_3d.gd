@@ -684,19 +684,11 @@ func process_logic(delta: float) -> void:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
 	if _should_follow:
-		if not follow_mode == FollowMode.GROUP:
-			if _follow_target_is_tree_exiting:
-				follow_target = null
-				return
 		_follow(delta)
 	else:
 		transform_output.origin = global_transform.origin
 
 	if _should_look_at:
-		if not look_at_mode == LookAtMode.GROUP:
-			if _look_at_target_is_tree_exiting:
-				look_at_target = null
-				return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
 	else:
 		transform_output.basis = global_basis
@@ -1026,12 +1018,16 @@ func _check_visibility() -> void:
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
 		_follow_target_is_tree_exiting = true
-
+		follow_target = null
+	if follow_targets.has(target):
+		follow_targets.erase(target)
 
 func _look_at_target_tree_exiting(target: Node) -> void:
 	if target == look_at_target:
-		print("sdad")
 		_look_at_target_is_tree_exiting = true
+		look_at_target = null
+	if look_at_targets.has(target):
+		look_at_targets.erase(target)
 
 
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
@@ -1195,7 +1191,8 @@ func set_follow_target(value: Node3D) -> void:
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
 			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
 	else:
-		_should_follow = false
+		if not follow_mode == FollowMode.GROUP:
+			_should_follow = false
 	follow_target_changed.emit()
 	notify_property_list_changed()
 ## Removes the current [Node3D] [member follow_target].
@@ -1209,9 +1206,11 @@ func get_follow_target() -> Node3D:
 ## Assigns a new [Path3D] to the [member follow_path] property.
 func set_follow_path(value: Path3D) -> void:
 	follow_path = value
+
 ## Erases the current [Path3D] from [member follow_path] property.
 func erase_follow_path() -> void:
 	follow_path = null
+
 ## Gets the current [Path3D] from the [member follow_path] property.
 func get_follow_path() -> Path3D:
 	return follow_path
@@ -1223,18 +1222,23 @@ func set_follow_targets(value: Array[Node3D]) -> void:
 
 	follow_targets = value
 
-	if follow_targets.is_empty():
+	if follow_targets.is_empty() and follow_mode == FollowMode.GROUP:
+		_should_follow = false
 		_should_follow = false
 		_has_multiple_follow_targets = false
 		_follow_target_physics_based = false
 		return
 
-	var valid_instances: int
 	_follow_target_physics_based = false
+
+	var valid_instances: int
 	for target in follow_targets:
 		if is_instance_valid(target):
 			_should_follow = true
 			valid_instances += 1
+
+			if not target.tree_exiting.is_connected(_follow_target_tree_exiting):
+				target.tree_exiting.connect(_follow_target_tree_exiting.bind(target))
 
 			_check_physics_body(target)
 

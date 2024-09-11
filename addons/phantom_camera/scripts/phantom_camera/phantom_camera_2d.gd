@@ -549,15 +549,8 @@ func process_logic(delta: float) -> void:
 
 	transform_output = Transform2D(global_rotation, global_transform.origin)
 
-	#if _is_act2nsform_output
-
 	if _should_follow:
-		if not follow_mode == FollowMode.GROUP:
-			if _follow_target_is_tree_exiting:
-				follow_target = null
-				return
 		_follow(delta)
-
 
 	if _has_noise_resource:
 		transform_output = noise.get_noise_transform(
@@ -798,6 +791,9 @@ func _check_visibility() -> void:
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
 		_follow_target_is_tree_exiting = true
+		follow_target = null
+	if follow_targets.has(target):
+		follow_targets.erase(target)
 
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
@@ -1075,11 +1071,15 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 		return
 
 	_follow_target_physics_based = false
+
 	var valid_instances: int = 0
 	for target in follow_targets:
 		if is_instance_valid(target):
 			_should_follow = true
 			valid_instances += 1
+
+			if not target.tree_exiting.is_connected(_follow_target_tree_exiting):
+				target.tree_exiting.connect(_follow_target_tree_exiting.bind(target))
 
 			_check_physics_body(target)
 
