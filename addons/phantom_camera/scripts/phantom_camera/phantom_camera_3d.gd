@@ -1491,7 +1491,8 @@ func set_look_at_target(value: Node3D) -> void:
 		if not look_at_target.tree_exiting.is_connected(_look_at_target_tree_exiting):
 			look_at_target.tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_target))
 	else:
-		_should_look_at = false
+		if not look_at_mode == LookAtMode.GROUP:
+			_should_look_at = false
 	look_at_target_changed.emit()
 	notify_property_list_changed()
 
