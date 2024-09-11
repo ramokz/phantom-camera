@@ -170,6 +170,7 @@ var _is_third_person_follow: bool = false
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
+var _follow_target_is_tree_exiting: bool = false
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
 @export var follow_targets: Array[Node3D] = []:
@@ -683,7 +684,7 @@ func process_logic(delta: float) -> void:
 
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
-			if _queued_for_exit:
+			if _follow_target_is_tree_exiting:
 				follow_target = null
 				return
 		_follow(delta)
@@ -1022,8 +1023,7 @@ func _check_visibility() -> void:
 
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
-		print("Is True")
-		_queued_for_exit = true
+		_follow_target_is_tree_exiting = true
 
 
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
@@ -1182,7 +1182,7 @@ func set_follow_target(value: Node3D) -> void:
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
-		_queued_for_exit = false
+		_follow_target_is_tree_exiting = false
 		_check_physics_body(value)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
 			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))

@@ -147,7 +147,7 @@ var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
-var _queued_for_exit: bool = false
+var _follow_target_is_tree_exiting: bool = false
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -553,7 +553,7 @@ func process_logic(delta: float) -> void:
 
 	if _should_follow:
 		if not follow_mode == FollowMode.GROUP:
-			if _queued_for_exit:
+			if _follow_target_is_tree_exiting:
 				follow_target = null
 				return
 		_follow(delta)
@@ -797,7 +797,7 @@ func _check_visibility() -> void:
 
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
-		_queued_for_exit = true
+		_follow_target_is_tree_exiting = true
 
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
@@ -1028,7 +1028,7 @@ func set_follow_target(value: Node2D) -> void:
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
-		_queued_for_exit = false
+		_follow_target_is_tree_exiting = false
 		_check_physics_body(value)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
 			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
