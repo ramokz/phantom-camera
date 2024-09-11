@@ -30,6 +30,8 @@ signal follow_target_changed
 ## Emitted when dead zones changes.[br]
 ## [b]Note:[/b] Only applicable in [param Framed] [enum FollowMode].
 signal dead_zone_changed
+## Emitted when a target touches the edge of the dead zone in [param Framed] [enum FollowMode].
+signal dead_zone_reached
 
 ## Emitted when the [param Camera2D] starts to tween to another [param PhantomCamera2D].
 signal tween_started
@@ -47,7 +49,7 @@ signal tween_completed
 
 #region Enums
 
-## Determines the positional logic for a given [param PCamPhantomCamera2D]
+## Determines the positional logic for a given [param PhantomCamera2D]
 ## [br][br]
 ## The different modes have different functionalities and purposes, so choosing
 ## the correct one depends on what each [param PhantomCamera2D] is meant to do.
@@ -634,9 +636,11 @@ func _follow(delta: float) -> void:
 							else:
 								follow_position = _target_position_with_offset()
 						elif _get_framed_side_offset().x != 0  and _get_framed_side_offset().y == 0:
+							dead_zone_reached.emit()
 							follow_position = target_position
 							_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
 						elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
+							dead_zone_reached.emit()
 							follow_position = target_position
 							_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
 						else:

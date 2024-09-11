@@ -33,6 +33,8 @@ signal look_at_target_changed
 ## Emitted when dead zones changes. [br]
 ## [b]Note:[/b] Only applicable in [param Framed] [member FollowMode].
 signal dead_zone_changed
+## Emitted when a target touches the edge of the dead zone in [param Framed] [enum FollowMode].
+signal dead_zone_reached
 
 ## Emitted when the [param Camera3D] starts to tween to another
 ## [param PhantomCamera3D].
@@ -800,6 +802,7 @@ func _follow(delta: float) -> void:
 								follow_position = glo_pos
 								_current_rotation = global_rotation
 							else:
+								dead_zone_reached.emit()
 								follow_position = target_position
 					else:
 						_follow_framed_offset = global_position - _get_target_position_offset()
