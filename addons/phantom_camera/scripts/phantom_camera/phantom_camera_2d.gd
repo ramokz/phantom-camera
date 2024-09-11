@@ -147,6 +147,7 @@ var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
+var _follow_target_is_tree_exiting: bool = false
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
@@ -548,15 +549,8 @@ func process_logic(delta: float) -> void:
 
 	transform_output = Transform2D(global_rotation, global_transform.origin)
 
-	#if _is_act2nsform_output
-
 	if _should_follow:
-		if not follow_mode == FollowMode.GROUP:
-			if follow_target.is_queued_for_deletion():
-				follow_target = null
-				return
 		_follow(delta)
-
 
 	if _has_noise_resource:
 		transform_output = noise.get_noise_transform(
@@ -645,7 +639,7 @@ func _follow(delta: float) -> void:
 						elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
 							follow_position = target_position
 							_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
-						else : 
+						else:
 							follow_position = target_position
 					else:
 						_follow_framed_offset = global_position - _target_position_with_offset()
@@ -792,6 +786,14 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 func _check_visibility() -> void:
 	if not is_instance_valid(pcam_host_owner): return
 	pcam_host_owner.refresh_pcam_list_priorty()
+
+
+func _follow_target_tree_exiting(target: Node) -> void:
+	if target == follow_target:
+		_follow_target_is_tree_exiting = true
+		follow_target = null
+	if follow_targets.has(target):
+		follow_targets.erase(target)
 
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
@@ -1022,7 +1024,10 @@ func set_follow_target(value: Node2D) -> void:
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
+		_follow_target_is_tree_exiting = false
 		_check_physics_body(value)
+		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
+			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
 	else:
 		_should_follow = false
 	follow_target_changed.emit()
@@ -1066,11 +1071,15 @@ func set_follow_targets(value: Array[Node2D]) -> void:
 		return
 
 	_follow_target_physics_based = false
+
 	var valid_instances: int = 0
 	for target in follow_targets:
 		if is_instance_valid(target):
 			_should_follow = true
 			valid_instances += 1
+
+			if not target.tree_exiting.is_connected(_follow_target_tree_exiting):
+				target.tree_exiting.connect(_follow_target_tree_exiting.bind(target))
 
 			_check_physics_body(target)
 

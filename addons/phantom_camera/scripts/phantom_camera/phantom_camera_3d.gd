@@ -170,6 +170,7 @@ var _is_third_person_follow: bool = false
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
+var _follow_target_is_tree_exiting: bool = false
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
 @export var follow_targets: Array[Node3D] = []:
@@ -207,6 +208,7 @@ var _has_multiple_follow_targets: bool = false
 		return look_at_mode
 var _should_look_at: bool = false
 var _multiple_look_at_targets: bool = false
+var _look_at_target_is_tree_exiting: bool = false
 
 ## Determines which target should be looked at.
 ## The [param PhantomCamera3D] will update its rotational value as the
@@ -682,18 +684,11 @@ func process_logic(delta: float) -> void:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
 	if _should_follow:
-		if not follow_mode == FollowMode.GROUP:
-			if follow_target.is_queued_for_deletion():
-				follow_target = null
-				return
 		_follow(delta)
 	else:
 		transform_output.origin = global_transform.origin
 
 	if _should_look_at:
-		if look_at_target.is_queued_for_deletion():
-			look_at_target = null
-			return
 		_look_at() # TODO - Delta needs to be applied, pending Godot's 3D Physics Interpolation to be implemented
 	else:
 		transform_output.basis = global_basis
@@ -1020,6 +1015,21 @@ func _check_visibility() -> void:
 	pcam_host_owner.refresh_pcam_list_priorty()
 
 
+func _follow_target_tree_exiting(target: Node) -> void:
+	if target == follow_target:
+		_follow_target_is_tree_exiting = true
+		follow_target = null
+	if follow_targets.has(target):
+		follow_targets.erase(target)
+
+func _look_at_target_tree_exiting(target: Node) -> void:
+	if target == look_at_target:
+		_look_at_target_is_tree_exiting = true
+		look_at_target = null
+	if look_at_targets.has(target):
+		look_at_targets.erase(target)
+
+
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
 		_noise_emitted_transform = Transform3D(
@@ -1176,18 +1186,18 @@ func set_follow_target(value: Node3D) -> void:
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
 		_should_follow = true
+		_follow_target_is_tree_exiting = false
 		_check_physics_body(value)
+		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
+			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
 	else:
-		_should_follow = false
+		if not follow_mode == FollowMode.GROUP:
+			_should_follow = false
 	follow_target_changed.emit()
 	notify_property_list_changed()
 ## Removes the current [Node3D] [member follow_target].
 func erase_follow_target() -> void:
-	if follow_target == null: return
-	_follow_target_physics_based = false
-	_should_follow = false
 	follow_target = null
-	follow_target_changed.emit()
 ## Gets the current Node3D target.
 func get_follow_target() -> Node3D:
 	return follow_target
@@ -1196,9 +1206,11 @@ func get_follow_target() -> Node3D:
 ## Assigns a new [Path3D] to the [member follow_path] property.
 func set_follow_path(value: Path3D) -> void:
 	follow_path = value
+
 ## Erases the current [Path3D] from [member follow_path] property.
 func erase_follow_path() -> void:
 	follow_path = null
+
 ## Gets the current [Path3D] from the [member follow_path] property.
 func get_follow_path() -> Path3D:
 	return follow_path
@@ -1210,18 +1222,23 @@ func set_follow_targets(value: Array[Node3D]) -> void:
 
 	follow_targets = value
 
-	if follow_targets.is_empty():
+	if follow_targets.is_empty() and follow_mode == FollowMode.GROUP:
+		_should_follow = false
 		_should_follow = false
 		_has_multiple_follow_targets = false
 		_follow_target_physics_based = false
 		return
 
-	var valid_instances: int
 	_follow_target_physics_based = false
+
+	var valid_instances: int
 	for target in follow_targets:
 		if is_instance_valid(target):
 			_should_follow = true
 			valid_instances += 1
+
+			if not target.tree_exiting.is_connected(_follow_target_tree_exiting):
+				target.tree_exiting.connect(_follow_target_tree_exiting.bind(target))
 
 			_check_physics_body(target)
 
@@ -1467,13 +1484,16 @@ func get_look_at_mode() -> int:
 ## Assigns new [Node3D] as [member look_at_target].
 func set_look_at_target(value: Node3D) -> void:
 	look_at_target = value
-	_check_physics_body(value)
-	#_look_at_target_node = get_node_or_null(value)
-	look_at_target_changed
 	if is_instance_valid(look_at_target):
 		_should_look_at = true
+		_look_at_target_is_tree_exiting = false
+		_check_physics_body(value)
+		if not look_at_target.tree_exiting.is_connected(_look_at_target_tree_exiting):
+			look_at_target.tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_target))
 	else:
-		_should_look_at = false
+		if not look_at_mode == LookAtMode.GROUP:
+			_should_look_at = false
+	look_at_target_changed.emit()
 	notify_property_list_changed()
 
 ## Gets current [Node3D] from [member look_at_target] property.
