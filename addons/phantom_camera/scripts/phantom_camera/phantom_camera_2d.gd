@@ -766,6 +766,9 @@ func update_limit_all_sides() -> void:
 		_limit_sides.w = limit_bottom
 	elif _limit_node is TileMap or _limit_node.is_class("TileMapLayer"):
 		var tile_map := _limit_node
+
+		if not tile_map.tile_set: return # TODO: This should be removed once https://github.com/godotengine/godot/issues/96898 is resolved
+
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.global_position + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
