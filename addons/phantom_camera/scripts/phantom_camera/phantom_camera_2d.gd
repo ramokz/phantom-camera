@@ -553,6 +553,7 @@ func _follow(delta: float) -> void:
 			elif _has_multiple_follow_targets and follow_targets.size() > 1:
 				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
 				for node in follow_targets:
+					if not node: continue
 					rect = rect.expand(node.global_position)
 					if auto_zoom:
 						rect = rect.grow_individual(
