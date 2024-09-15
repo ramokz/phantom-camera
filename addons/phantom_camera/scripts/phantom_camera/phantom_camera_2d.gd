@@ -362,22 +362,22 @@ var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10
 	set = set_limit_bottom,
 	get = get_limit_bottom
 
-## Allows for setting either a [TileMap] or [CollisionShape2D] node to
+## Allows for setting either a [TileMap], [TileMapLayer] or [CollisionShape2D] node to
 ## automatically apply a limit size instead of manually adjusting the Left,
 ## Top, Right and Left properties.[br][br]
-## [b]TileMap[/b][br]
-## The Limit will update after the [TileSet] of the [TileMap] has changed.[br]
+## [b]TileMap / TileMapLayer[/b][br]
+## The Limit will update after the [TileSet] of the [TileMap] / [TileMapLayer] has changed.[br]
 ## [b]Note:[/b] The limit size will only update after closing the TileMap editor
 ## bottom panel.
 ## [br][br]
 ## [b]CollisionShape2D[/b][br]
 ## The limit will update in realtime as the Shape2D changes its size.
 ## Note: For performance reasons, resizing the [Shape2D] during runtime will not change the Limits sides.
-@export_node_path("TileMap", "CollisionShape2D") var limit_target = NodePath(""):
+@export_node_path("TileMap", "Node2D", "CollisionShape2D") var limit_target = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 var _limit_node: Node2D
-## Applies an offset to the [TileMap] Limit or [Shape2D] Limit.
+## Applies an offset to the [TileMap]/[TileMapLayer] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
 @export var limit_margin: Vector4i:
@@ -823,8 +823,11 @@ func update_limit_all_sides() -> void:
 		_limit_sides.y = limit_top
 		_limit_sides.z = limit_right
 		_limit_sides.w = limit_bottom
-	elif _limit_node is TileMap:
-		var tile_map: TileMap = _limit_node as TileMap
+	elif _limit_node is TileMap or _limit_node.is_class("TileMapLayer"):
+		var tile_map := _limit_node
+
+		if not tile_map.tile_set: return # TODO: This should be removed once https://github.com/godotengine/godot/issues/96898 is resolved
+
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.global_position + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
@@ -1316,11 +1319,12 @@ func set_limit_target(value: NodePath) -> void:
 		var prev_limit_node: Node2D = _limit_node
 		var new_limit_node: Node2D = get_node(value)
 
-		if prev_limit_node is TileMap:
-			if prev_limit_node.changed.is_connected(_on_tile_map_changed):
-				prev_limit_node.changed.disconnect(_on_tile_map_changed)
+		if prev_limit_node:
+			if prev_limit_node is TileMap or prev_limit_node.is_class("TileMapLayer"):
+				if prev_limit_node.changed.is_connected(_on_tile_map_changed):
+					prev_limit_node.changed.disconnect(_on_tile_map_changed)
 
-		if new_limit_node is TileMap:
+		if new_limit_node is TileMap or new_limit_node.is_class("TileMapLayer"):
 			if not new_limit_node.changed.is_connected(_on_tile_map_changed):
 				new_limit_node.changed.connect(_on_tile_map_changed)
 		elif new_limit_node is CollisionShape2D:
@@ -1332,7 +1336,7 @@ func set_limit_target(value: NodePath) -> void:
 				limit_target = null
 				return
 		else:
-			printerr("Limit Target is not a TileMap or CollisionShape2D node")
+			printerr("Limit Target is not a TileMap, TileMapLayer or CollisionShape2D node")
 			return
 
 	elif value == NodePath(""):
