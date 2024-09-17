@@ -122,7 +122,18 @@ var pcam_host_owner: PhantomCameraHost = null:
 	set(value):
 		follow_mode = value
 
-		if value == FollowMode.FRAMED:
+		if follow_mode == FollowMode.NONE:
+			_should_follow = false
+			notify_property_list_changed()
+			return
+
+		if not follow_mode == FollowMode.GROUP:
+			if follow_target is Node2D:
+				_should_follow = true
+		else: # If Follow Group
+			_follow_targets_size_check()
+
+		if follow_mode == FollowMode.FRAMED:
 			if _follow_framed_initial_set and follow_target:
 				_follow_framed_initial_set = false
 				dead_zone_changed.connect(_on_dead_zone_changed)
@@ -130,10 +141,6 @@ var pcam_host_owner: PhantomCameraHost = null:
 			if dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
 
-		if follow_mode == FollowMode.NONE:
-			_should_follow = false
-		elif follow_mode == FollowMode.GROUP and follow_targets or follow_target:
-			_should_follow = true
 		notify_property_list_changed()
 	get:
 		return follow_mode
@@ -156,6 +163,7 @@ var _follow_target_is_tree_exiting: bool = false
 	set = set_follow_targets,
 	get = get_follow_targets
 var _has_multiple_follow_targets: bool = false
+var _follow_targets_single_target_index: int = 0
 
 
 ## Determines the [Path2D] the [param PhantomCamera2D]
@@ -524,6 +532,9 @@ func _ready() -> void:
 	transform_output = global_transform
 	_phantom_camera_manager.noise_2d_emitted.connect(_noise_emitted)
 
+	if follow_mode == FollowMode.GROUP:
+		_follow_targets_size_check()
+
 
 func _process(delta: float) -> void:
 	if _is_active: return
@@ -580,15 +591,13 @@ func _follow(delta: float) -> void:
 
 	match follow_mode:
 		FollowMode.GLUED:
-			if follow_target:
-				follow_position = follow_target.global_position
+			follow_position = follow_target.global_position
+
 		FollowMode.SIMPLE:
-			if follow_target:
-				follow_position = _target_position_with_offset()
+			follow_position = _target_position_with_offset()
+
 		FollowMode.GROUP:
-			if follow_targets.size() == 1:
-				follow_position = follow_targets[0].global_position
-			elif _has_multiple_follow_targets and follow_targets.size() > 1:
+			if _has_multiple_follow_targets:
 				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
 				for node in follow_targets:
 					rect = rect.expand(node.global_position)
@@ -608,48 +617,50 @@ func _follow(delta: float) -> void:
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 				follow_position = rect.get_center()
-		FollowMode.PATH:
-				if follow_target and follow_path:
-					var path_position: Vector2 = follow_path.global_position
+			else:
+				follow_position = follow_targets[_follow_targets_single_target_index].global_position
 
-					follow_position = \
-						follow_path.curve.get_closest_point(
-							_target_position_with_offset() - path_position
-						) + path_position
+		FollowMode.PATH:
+			if follow_target and follow_path:
+				var path_position: Vector2 = follow_path.global_position
+
+				follow_position = \
+					follow_path.curve.get_closest_point(
+						_target_position_with_offset() - path_position
+					) + path_position
 
 		FollowMode.FRAMED:
-			if follow_target:
-				if not Engine.is_editor_hint():
-					viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
+			if not Engine.is_editor_hint():
+				viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
 
-					if _get_framed_side_offset() != Vector2.ZERO:
-						var glo_pos: Vector2
-						var target_position: Vector2 = _target_position_with_offset() + _follow_framed_offset
+				if _get_framed_side_offset() != Vector2.ZERO:
+					var glo_pos: Vector2
+					var target_position: Vector2 = _target_position_with_offset() + _follow_framed_offset
 
-						if dead_zone_width == 0 || dead_zone_height == 0:
-							if dead_zone_width == 0 && dead_zone_height != 0:
-								follow_position = _target_position_with_offset()
-							elif dead_zone_width != 0 && dead_zone_height == 0:
-								glo_pos = _target_position_with_offset()
-								glo_pos.x += target_position.x - global_position.x
-								follow_position = glo_pos
-							else:
-								follow_position = _target_position_with_offset()
-						elif _get_framed_side_offset().x != 0  and _get_framed_side_offset().y == 0:
-							dead_zone_reached.emit()
-							follow_position = target_position
-							_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
-						elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
-							dead_zone_reached.emit()
-							follow_position = target_position
-							_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
+					if dead_zone_width == 0 || dead_zone_height == 0:
+						if dead_zone_width == 0 && dead_zone_height != 0:
+							follow_position = _target_position_with_offset()
+						elif dead_zone_width != 0 && dead_zone_height == 0:
+							glo_pos = _target_position_with_offset()
+							glo_pos.x += target_position.x - global_position.x
+							follow_position = glo_pos
 						else:
-							follow_position = target_position
+							follow_position = _target_position_with_offset()
+					elif _get_framed_side_offset().x != 0  and _get_framed_side_offset().y == 0:
+						dead_zone_reached.emit()
+						follow_position = target_position
+						_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
+					elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
+						dead_zone_reached.emit()
+						follow_position = target_position
+						_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
 					else:
-						_follow_framed_offset = global_position - _target_position_with_offset()
-						return
+						follow_position = target_position
 				else:
-					follow_position = _target_position_with_offset()
+					_follow_framed_offset = global_position - _target_position_with_offset()
+					return
+			else:
+				follow_position = _target_position_with_offset()
 
 	_interpolate_position(follow_position, delta)
 
@@ -794,10 +805,33 @@ func _check_visibility() -> void:
 
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
-		_follow_target_is_tree_exiting = true
-		follow_target = null
+		_should_follow = false
 	if follow_targets.has(target):
-		follow_targets.erase(target)
+		erase_follow_targets(target)
+
+
+func _follow_targets_size_check() -> void:
+	var targets_size: int = 0
+	_follow_target_physics_based = false
+
+	for i in follow_targets.size():
+		if is_instance_valid(follow_targets[i]):
+			targets_size += 1
+			_follow_targets_single_target_index = i
+			_check_physics_body(follow_targets[i])
+			if not follow_targets[i].tree_exiting.is_connected(_follow_target_tree_exiting):
+				follow_targets[i].tree_exiting.connect(_follow_target_tree_exiting.bind(follow_targets[i]))
+
+	match targets_size:
+		0:
+			_should_follow = false
+			_has_multiple_follow_targets = false
+		1:
+			_should_follow = true
+			_has_multiple_follow_targets = false
+		_:
+			_should_follow = true
+			_has_multiple_follow_targets = true
 
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
@@ -1026,7 +1060,6 @@ func get_follow_mode() -> int:
 ## Assigns a new [Node2D] as the [member follow_target].
 func set_follow_target(value: Node2D) -> void:
 	if follow_target == value: return
-
 	follow_target = value
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
@@ -1068,41 +1101,20 @@ func get_follow_path() -> Path2D:
 
 ## Assigns a new [param follow_targets] array value.
 func set_follow_targets(value: Array[Node2D]) -> void:
+	if follow_mode != FollowMode.GROUP: return
 	if follow_targets == value: return
-
 	follow_targets = value
-
-	if follow_targets.is_empty():
-		_should_follow = false
-		_has_multiple_follow_targets = false
-		return
-
-	_follow_target_physics_based = false
-
-	var valid_instances: int = 0
-	for target in follow_targets:
-		if is_instance_valid(target):
-			_should_follow = true
-			valid_instances += 1
-
-			if not target.tree_exiting.is_connected(_follow_target_tree_exiting):
-				target.tree_exiting.connect(_follow_target_tree_exiting.bind(target))
-
-			_check_physics_body(target)
-
-			if valid_instances > 1:
-				_has_multiple_follow_targets = true
+	_follow_targets_size_check()
 
 ## Appends a single [Node2D] to [member follow_targets].
 func append_follow_targets(value: Node2D) -> void:
 	if not is_instance_valid(value):
-		printerr(value, " is not a valid Node2D instance.")
+		printerr(value, " is not a valid Node2D instance")
 		return
+
 	if not follow_targets.has(value):
 		follow_targets.append(value)
-		_should_follow = true
-		_has_multiple_follow_targets = true
-		_check_physics_body(value)
+		_follow_targets_size_check()
 	else:
 		printerr(value, " is already part of Follow Group")
 
@@ -1112,23 +1124,14 @@ func append_follow_targets_array(value: Array[Node2D]) -> void:
 		if not is_instance_valid(target): continue
 		if not follow_targets.has(target):
 			follow_targets.append(target)
-			_should_follow = true
-			_check_physics_body(target)
-			if follow_targets.size() > 1:
-				_has_multiple_follow_targets = true
+			_follow_targets_size_check()
 		else:
 			printerr(value, " is already part of Follow Group")
 
 ## Removes a [Node2D] from [member follow_targets] array.
 func erase_follow_targets(value: Node2D) -> void:
 	follow_targets.erase(value)
-	_follow_target_physics_based = false
-	for target in follow_targets:
-		_check_physics_body(target)
-	if follow_targets.size() < 2:
-		_has_multiple_follow_targets = false
-	if follow_targets.size() < 1:
-		_should_follow = false
+	_follow_targets_size_check()
 
 ## Gets all [Node2D] from [member follow_targets] array.
 func get_follow_targets() -> Array[Node2D]:
@@ -1191,12 +1194,6 @@ func set_snap_to_pixel(value: bool) -> void:
 ## Gets the current [member snap_to_pixel] value.
 func get_snap_to_pixel() -> bool:
 	return snap_to_pixel
-
-
-## Returns true if the [param PhantomCamera2D] has more than one member in the
-## [follow_targets] array.
-func get_has_multiple_follow_targets() -> bool:
-	return _has_multiple_follow_targets
 
 
 ## Enables or disables Auto zoom when using Group Follow.
