@@ -951,13 +951,13 @@ func _interpolate_rotation(target_trans: Vector3, delta: float) -> void:
 
 		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
 		var ratio_b: float = sin_theta / sin_theta_total
+		var output: Quaternion = current_quat * ratio_a + target_quat * ratio_b
 
-		#quaternion = current_quat * ratio_a + target_quat * ratio_b
-		transform_output.basis = Basis(current_quat * ratio_a + target_quat * ratio_b)
+		transform_output.basis = Basis(output)
+		quaternion = output
 	else:
 		transform_output.basis = Basis(target_quat)
-
-	quaternion = target_quat
+		quaternion = target_quat
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
