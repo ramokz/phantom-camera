@@ -149,11 +149,15 @@ var _is_active: bool = false
 			notify_property_list_changed()
 			return
 
-		if not follow_mode == FollowMode.GROUP:
-			if follow_target is Node3D:
-				_should_follow = true
-		else: # If Follow Group
-			_follow_targets_size_check()
+		match follow_mode:
+			FollowMode.PATH:
+				if is_instance_valid(follow_target) and is_instance_valid(follow_path):
+					_should_follow = true
+			FollowMode.GROUP:
+				_follow_targets_size_check()
+			_:
+				if is_instance_valid(follow_target):
+					_should_follow = true
 
 		if follow_mode == FollowMode.FRAMED:
 			if _follow_framed_initial_set and follow_target:
@@ -765,12 +769,11 @@ func _follow(delta: float) -> void:
 					Vector3(follow_distance, follow_distance, follow_distance)
 
 		FollowMode.PATH:
-			if follow_target and follow_path:
-				var path_position: Vector3 = follow_path.global_position
-				follow_position = \
-					follow_path.curve.get_closest_point(
-						follow_target.global_position - path_position
-					) + path_position
+			var path_position: Vector3 = follow_path.global_position
+			follow_position = \
+				follow_path.curve.get_closest_point(
+					follow_target.global_position - path_position
+				) + path_position
 
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
@@ -1268,12 +1271,18 @@ func get_follow_mode() -> int:
 
 ## Assigns a new [Node3D] as the [member follow_target].
 func set_follow_target(value: Node3D) -> void:
-	if follow_mode == FollowMode.NONE: return
+	if follow_mode == FollowMode.NONE or follow_mode == FollowMode.GROUP: return
 	if follow_target == value: return
 	follow_target = value
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
-		_should_follow = true
+		if follow_mode == FollowMode.PATH:
+			if is_instance_valid(follow_path):
+				_should_follow = true
+			else:
+				_should_follow = false
+		else:
+			_should_follow = true
 		_check_physics_body(value)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
 			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
@@ -1293,6 +1302,10 @@ func get_follow_target() -> Node3D:
 ## Assigns a new [Path3D] to the [member follow_path] property.
 func set_follow_path(value: Path3D) -> void:
 	follow_path = value
+	if is_instance_valid(follow_target) and is_instance_valid(follow_path):
+		_should_follow = true
+	else:
+		_should_follow = false
 
 ## Erases the current [Path3D] from [member follow_path] property.
 func erase_follow_path() -> void:
