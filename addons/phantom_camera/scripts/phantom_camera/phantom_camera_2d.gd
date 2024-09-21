@@ -129,13 +129,12 @@ var pcam_host_owner: PhantomCameraHost = null:
 
 		match follow_mode:
 			FollowMode.PATH:
-				if is_instance_valid(follow_target) and is_instance_valid(follow_path):
-					_should_follow = true
+				if is_instance_valid(follow_path):
+					_should_follow_checker()
 			FollowMode.GROUP:
 				_follow_targets_size_check()
 			_:
-				if is_instance_valid(follow_target):
-					_should_follow = true
+				_should_follow_checker()
 
 		if follow_mode == FollowMode.FRAMED:
 			if _follow_framed_initial_set and follow_target:
@@ -265,7 +264,7 @@ var tween_ease: PhantomCameraTween.EaseType:
 @export var follow_damping_value: Vector2 = Vector2(0.1, 0.1):
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
-var _velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
+var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -520,6 +519,8 @@ func _enter_tree() -> void:
 	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
+	_should_follow_checker()
+
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
 
@@ -562,8 +563,6 @@ func process_logic(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
 	_limit_checker()
-
-	transform_output = Transform2D(global_rotation, global_transform.origin)
 
 	if _should_follow:
 		_follow(delta)
@@ -667,8 +666,8 @@ func _follow(delta: float) -> void:
 	_interpolate_position(follow_position, delta)
 
 
-func _set_velocity(index: int, value: float):
-	_velocity_ref[index] = value
+func _set_follow_velocity(index: int, value: float):
+	_follow_velocity_ref[index] = value
 
 
 func _interpolate_position(target_position: Vector2, delta: float) -> void:
@@ -676,19 +675,17 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 		target_position = _set_limit_clamp_position(target_position)
 
 	global_position = target_position
-
 	if follow_damping:
-		for index in 2:
-			transform_output.origin[index] = \
-				_smooth_damp(
-					target_position[index],
-					transform_output.origin[index],
-					index,
-					_velocity_ref[index],
-					_set_velocity,
-					follow_damping_value[index],
-					delta
-				)
+		for i in 2:
+			transform_output.origin[i] = _smooth_damp(
+				global_position[i],
+				transform_output.origin[i],
+				i,
+				_follow_velocity_ref[i],
+				_set_follow_velocity,
+				follow_damping_value[i],
+				delta
+			)
 	else:
 		transform_output.origin = target_position
 
@@ -810,6 +807,14 @@ func _follow_target_tree_exiting(target: Node) -> void:
 		_should_follow = false
 	if follow_targets.has(target):
 		erase_follow_targets(target)
+
+
+func _should_follow_checker() -> void:
+	if follow_mode == FollowMode.NONE:
+		_should_follow = false
+		return
+	if is_instance_valid(follow_target):
+		_should_follow = true
 
 
 func _follow_targets_size_check() -> void:
@@ -1097,8 +1102,8 @@ func get_follow_target() -> Node2D:
 ## Assigns a new [Path2D] to the [member follow_path].
 func set_follow_path(value: Path2D) -> void:
 	follow_path = value
-	if is_instance_valid(follow_target) and is_instance_valid(follow_path):
-		_should_follow = true
+	if is_instance_valid(follow_path):
+		_should_follow_checker()
 	else:
 		_should_follow = false
 

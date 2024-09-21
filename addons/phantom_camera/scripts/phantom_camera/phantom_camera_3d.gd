@@ -151,13 +151,12 @@ var _is_active: bool = false
 
 		match follow_mode:
 			FollowMode.PATH:
-				if is_instance_valid(follow_target) and is_instance_valid(follow_path):
-					_should_follow = true
+				if is_instance_valid(follow_path):
+					_should_follow_checker()
 			FollowMode.GROUP:
 				_follow_targets_size_check()
 			_:
-				if is_instance_valid(follow_target):
-					_should_follow = true
+				_should_follow_checker()
 
 		if follow_mode == FollowMode.FRAMED:
 			if _follow_framed_initial_set and follow_target:
@@ -632,6 +631,7 @@ func _enter_tree() -> void:
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
 
+	_should_follow_checker()
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -676,6 +676,8 @@ func _ready():
 		FollowMode.GROUP:
 			_follow_targets_size_check()
 
+	## NOTE - Only here to set position for Framed View on startup.
+	## Should be removed once https://github.com/ramokz/phantom-camera/issues/161 is complete
 	transform_output = global_transform
 
 	_phantom_camera_manager.noise_3d_emitted.connect(_noise_emitted)
@@ -831,12 +833,12 @@ func _follow(delta: float) -> void:
 
 				unprojected_position = unprojected_position - visible_rect_size / 2
 				if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-#							Landscape View
+					# Landscape View
 					var aspect_ratio_scale: float = viewport_width / viewport_height
 					unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
 					unprojected_position.y = (unprojected_position.y + 1) / 2
 				else:
-#							Portrait View
+					# Portrait View
 					var aspect_ratio_scale: float = viewport_height / viewport_width
 					unprojected_position.x = (unprojected_position.x + 1) / 2
 					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
@@ -887,7 +889,7 @@ func _get_target_position_offset() -> Vector3:
 
 func _get_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
-	get_transform().basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+	transform.basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
 
 func _set_follow_velocity(index: int, value: float) -> void:
@@ -897,7 +899,7 @@ func _set_follow_velocity(index: int, value: float) -> void:
 func _interpolate_position(target_position: Vector3, delta: float, camera_target: Node3D = self) -> void:
 	if follow_damping:
 		if not _is_third_person_follow:
-			camera_target.global_position = target_position
+			global_position = target_position
 			for i in 3:
 				transform_output.origin[i] = _smooth_damp(
 					global_position[i],
@@ -1046,6 +1048,14 @@ func _follow_target_tree_exiting(target: Node) -> void:
 		_should_follow = false
 	if follow_targets.has(target):
 		erase_follow_targets(target)
+
+
+func _should_follow_checker() -> void:
+	if follow_mode == FollowMode.NONE:
+		_should_follow = false
+		return
+	if is_instance_valid(follow_target):
+		_should_follow = true
 
 
 func _follow_targets_size_check() -> void:
@@ -1302,8 +1312,8 @@ func get_follow_target() -> Node3D:
 ## Assigns a new [Path3D] to the [member follow_path] property.
 func set_follow_path(value: Path3D) -> void:
 	follow_path = value
-	if is_instance_valid(follow_target) and is_instance_valid(follow_path):
-		_should_follow = true
+	if is_instance_valid(follow_path):
+		_should_follow_checker()
 	else:
 		_should_follow = false
 
