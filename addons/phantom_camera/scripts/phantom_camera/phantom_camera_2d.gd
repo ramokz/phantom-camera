@@ -31,7 +31,7 @@ signal follow_target_changed
 ## [b]Note:[/b] Only applicable in [param Framed] [enum FollowMode].
 signal dead_zone_changed
 ## Emitted when a target touches the edge of the dead zone in [param Framed] [enum FollowMode].
-signal dead_zone_reached
+signal dead_zone_reached(side: Vector2)
 
 ## Emitted when the [param Camera2D] starts to tween to another [param PhantomCamera2D].
 signal tween_started
@@ -633,8 +633,9 @@ func _follow(delta: float) -> void:
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
 				viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
+				var framed_side_offset: Vector2 = _get_framed_side_offset()
 
-				if _get_framed_side_offset() != Vector2.ZERO:
+				if framed_side_offset != Vector2.ZERO:
 					var glo_pos: Vector2
 					var target_position: Vector2 = _target_position_with_offset() + _follow_framed_offset
 
@@ -647,18 +648,25 @@ func _follow(delta: float) -> void:
 							follow_position = glo_pos
 						else:
 							follow_position = _target_position_with_offset()
-					elif _get_framed_side_offset().x != 0  and _get_framed_side_offset().y == 0:
-						dead_zone_reached.emit()
-						follow_position = target_position
+
+					# If a horizontal dead zone is reached
+					if framed_side_offset.x != 0 and framed_side_offset.y == 0:
+						follow_position.y = transform_output.origin.y
+						follow_position.x = target_position.x
 						_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
-					elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
-						dead_zone_reached.emit()
-						follow_position = target_position
+						dead_zone_reached.emit(Vector2(framed_side_offset.x, 0))
+					# If a vertical dead zone is reached
+					elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
+						follow_position.x = transform_output.origin.x
+						follow_position.y = target_position.y
 						_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
+						dead_zone_reached.emit(Vector2(0, framed_side_offset.y))
+					# If a corner is reached
 					else:
 						follow_position = target_position
+						dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
 				else:
-					_follow_framed_offset = global_position - _target_position_with_offset()
+					_follow_framed_offset = transform_output.origin - _target_position_with_offset()
 					return
 			else:
 				follow_position = _target_position_with_offset()
