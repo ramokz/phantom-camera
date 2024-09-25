@@ -1,6 +1,5 @@
 extends Node3D
 
-@onready var pcam: PhantomCamera3D = %ScenePhantomCamera3D
 @onready var player_pcam: PhantomCamera3D = %PlayerPhantomCamera3D
 
 
