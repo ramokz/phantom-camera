@@ -1,4 +1,5 @@
 @tool
+@icon("res://addons/phantom_camera/icons/phantom_camera_noise_emitter_3d.svg")
 class_name PhantomCameraNoiseEmitter3D
 extends Node3D
 

@@ -1,4 +1,5 @@
 @tool
+@icon("res://addons/phantom_camera/icons/phantom_camera_noise_resource.svg")
 class_name PhantomCameraNoise2D
 extends Resource
 
