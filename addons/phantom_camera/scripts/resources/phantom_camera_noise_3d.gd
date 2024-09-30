@@ -3,20 +3,36 @@
 class_name PhantomCameraNoise3D
 extends Resource
 
-## Sets the velocity of the noise.[br]
-## Lower value = Slower movement[br]
-## Higher value = Faster movement
-@export_range(0, 100, 0.001, "or_greater") var intensity: float = 10
+#region Exported Properties
 
-## Defines the noise pattern. By default, a Noise Type of Perlin is set.[br]
-## [color=yellow]This property is mandatory.[/color]
-var noise_algorithm: FastNoiseLite = FastNoiseLite.new()
+## Defines the size of the noise pattern.[br]
+## Higher values will increase the range the noise can reach.
+@export_range(0, 100, 0.001, "or_greater") var amplitude: float = 10
 
-## The seed within [member noise_algorithm] is automatically being overriden. To change the noise
-## pattern seed, override this value.
+## Sets the density of the noise pattern.[br]
+## Higher values will result in more erratic noise.
+@export_range(0, 10, 0.001, "or_greater") var frequency: float = 0.2:
+	set(value):
+		frequency = value
+		_noise_algorithm.frequency = value
+	get:
+		return frequency
+
+## If enabled, randomizes the noise pattern every time the noise is run.[br]
+## If disabled, [member seed] can be used to define a fixed noise pattern.
+@export var randomize_seed: bool = true:
+	set(value):
+		randomize_seed = value
+		if value: _noise_algorithm.seed = randi()
+		notify_property_list_changed()
+	get:
+		return randomize_seed
+
+## Sets a predetermined seed noise value.[br]
+## Useful if wanting to achieve a persistent noise pattern every time the noise is re-emitted.
 @export var seed: int = 0
 
-## Enables noise changes to the camera rotation.
+## Enables noise changes to the camera's rotation.
 @export var has_rotational_noise: bool = true:
 	set(value):
 		has_rotational_noise = value
@@ -33,61 +49,75 @@ var noise_algorithm: FastNoiseLite = FastNoiseLite.new()
 	get:
 		return has_positional_noise
 
-@export_group("Max Rotational Offset")
+@export_group("Rotational Multiplier")
 ## Defines the max rotational, in [param degrees], change in the X-axis when the noise is active.
-@export_range(0, 360, 0.1, "degrees") var max_rotational_offset_x: float = 10:
+@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_x: float = 1:
 	set(value):
-		max_rotational_offset_x = value
-		_noise_max_rotational_offset.x = value
+		rotational_multiplier_x = value
+		_noise_rotational_multiplier.x = value
 	get:
-		return max_rotational_offset_x
+		return rotational_multiplier_x
 
 ## Defines the max rotational, in [param degrees], change in the y-axis when the noise is active.
-@export_range(0, 360, 0.1, "degrees") var max_rotational_offset_y: float = 10:
+@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_y: float = 1:
 	set(value):
-		max_rotational_offset_y = value
-		_noise_max_rotational_offset.y = value
+		rotational_multiplier_y = value
+		_noise_rotational_multiplier.y = value
 	get:
-		return max_rotational_offset_y
+		return rotational_multiplier_y
+
 ## Defines the max rotational, in [param degrees], change in the z-axis when the noise is active.
-@export_range(0, 360, 0.1, "degrees") var max_rotational_offset_z: float = 5:
+@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_z: float = 0.1:
 	set(value):
-		max_rotational_offset_z = value
-		_noise_max_rotational_offset.z = value
+		rotational_multiplier_z = value
+		_noise_rotational_multiplier.z = value
 	get:
-		return max_rotational_offset_z
+		return rotational_multiplier_z
 
-var _noise_max_rotational_offset: Vector3 = Vector3(max_rotational_offset_x, max_rotational_offset_y, max_rotational_offset_z)
-
-
-@export_group("Max Positional Offset")
+@export_group("Positional Multiplier")
 ## Defines the max positional, in [param degrees], change in the X-axis when the noise is active.[br]
 ## [b]Note:[/b] Rotational Offset is recommended to avoid accidental camera clipping.
-@export_range(0, 10, 0.1, "or_greater") var max_position_offset_x: float = 0:
+@export_range(0, 1, 0.001, "or_greater") var positional_multiplier_x: float = 0.1:
 	set(value):
-		max_position_offset_x = value
-		_noise_max_position_offset.x = value
+		positional_multiplier_x = value
+		_noise_positional_multiplier.x = value
 	get:
-		return max_position_offset_x
+		return positional_multiplier_x
 
 ## Defines the max rotational, in [param degrees], change in the y-axis when the noise is active.
 ## [b]Note:[/b] Rotational Offset is recommended to avoid accidental camera clipping.
-@export_range(0, 10, 0.1, "or_greater") var max_position_offset_y: float = 0:
+@export_range(0, 1, 0.001, "or_greater") var positional_multiplier_y: float = 0.1:
 		set(value):
-			max_position_offset_y = value
-			_noise_max_position_offset.y = value
+			positional_multiplier_y = value
+			_noise_positional_multiplier.y = value
 		get:
-			return max_position_offset_y
+			return positional_multiplier_y
 ## Defines the max rotational, in [param degrees], change in the z-axis when the noise is active.
 ## [b]Note:[/b] Rotational Offset is recommended to avoid accidental camera clipping.
-@export_range(0, 10, 0.1, "or_greater", ) var max_position_offset_z: float = 0:
+@export_range(0, 1, 0.001, "or_greater", ) var positional_multiplier_z: float = 0.1:
 	set(value):
-		max_position_offset_z = value
-		_noise_max_position_offset.z = value
+		positional_multiplier_z = value
+		_noise_positional_multiplier.z = value
 	get:
-		return max_position_offset_z
+		return positional_multiplier_z
 
-var _noise_max_position_offset: Vector3
+#endregion
+
+#region Private Properties
+
+var _noise_algorithm: FastNoiseLite = FastNoiseLite.new()
+
+var _noise_rotational_multiplier: Vector3 = Vector3(
+	rotational_multiplier_x,
+	rotational_multiplier_y,
+	rotational_multiplier_z,
+)
+
+var _noise_positional_multiplier: Vector3 = Vector3(
+	positional_multiplier_x,
+	positional_multiplier_y,
+	positional_multiplier_z,
+)
 
 var _trauma: float = 0.0:
 	set(value):
@@ -97,55 +127,48 @@ var _trauma: float = 0.0:
 
 var _noise_time: float = 0.0
 
+#endregion
+
 #region Private Functions
 
 func _init():
-	noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+	_noise_algorithm.noise_type = FastNoiseLite.TYPE_PERLIN
+
+	if randomize_seed: _noise_algorithm.seed = randi()
+	_noise_algorithm.frequency = frequency
 
 
 func _validate_property(property: Dictionary) -> void:
-	if property.name == "continous":
-		property.usage = PROPERTY_USAGE_READ_ONLY
+	if randomize_seed and property.name == "seed":
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if not has_rotational_noise:
 		match property.name:
-			"max_rotational_offset_x", \
-			"max_rotational_offset_y", \
-			"max_rotational_offset_z":
+			"rotational_multiplier_x", \
+			"rotational_multiplier_y", \
+			"rotational_multiplier_z":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if not has_positional_noise:
 		match property.name:
-			"max_position_offset_x", \
-			"max_position_offset_y", \
-			"max_position_offset_z":
+			"positional_multiplier_x", \
+			"positional_multiplier_y", \
+			"positional_multiplier_z":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
-func _noise_output(origin: Vector3, offset: Vector3) -> Vector3:
-	var output: Vector3
-	for i in 3:
-		output[i] = origin[0] + offset[i] * \
-		intensity * _get_noise_from_seed(i + seed)
-
-	return output
-
-
 func _get_noise_from_seed(seed: int) -> float:
-	noise_algorithm.seed = seed
-	return noise_algorithm.get_noise_1d(_noise_time * intensity)
+	return _noise_algorithm.get_noise_2d(seed, _noise_time) * amplitude
 
 
 func set_trauma(value: float) -> void:
-	pass
-	#var tween: Tween = Node.get_tree
 	_trauma = value
 
 #endregion
 
 #region Public Functions
 
-func get_noise_transform(rotation: Vector3, position: Vector3, delta: float) -> Transform3D:
+func get_noise_transform(delta: float) -> Transform3D:
 	var output_rotation: Vector3
 	var output_position: Vector3
 	_noise_time += delta
@@ -154,13 +177,17 @@ func get_noise_transform(rotation: Vector3, position: Vector3, delta: float) -> 
 	for i in 3:
 		if has_rotational_noise:
 			output_rotation[i] = deg_to_rad(
-				rotation[i] + _noise_max_rotational_offset[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
+				_noise_rotational_multiplier[i] * pow(_trauma, 2) * _get_noise_from_seed(i + seed)
 			)
 
 		if has_positional_noise:
-			output_position[i] += _noise_max_position_offset[i] * \
+			output_position[i] += _noise_positional_multiplier[i] * \
 			pow(_trauma, 2) * _get_noise_from_seed(i + seed)
 
 	return Transform3D(Quaternion.from_euler(output_rotation), output_position)
+
+
+func reset_noise_time() -> void:
+	_noise_time = 0
 
 #endregion

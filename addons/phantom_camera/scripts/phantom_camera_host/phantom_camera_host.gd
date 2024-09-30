@@ -252,9 +252,9 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	if not is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d): return
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
+		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
+		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 	process_priority = 300
 	process_physics_priority = 300
@@ -499,9 +499,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			camera_3d.projection = _active_pcam_3d.projection
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2d_transform = _active_pcam_2d.transform_output
+			_prev_active_pcam_2d_transform = _active_pcam_2d.get_transform_output()
 		else:
-			_prev_active_pcam_3d_transform = _active_pcam_3d.transform_output
+			_prev_active_pcam_3d_transform = _active_pcam_3d.get_transform_output()
 
 	if pcam.get_tween_skip():
 		_tween_elapsed_time = pcam.tween_duration
@@ -550,10 +550,14 @@ func _physics_process(delta: float):
 func _tween_follow_checker(delta: float):
 	if _is_2D:
 		_active_pcam_2d.process_logic(delta)
-		_active_pcam_2d_glob_transform = _active_pcam_2d.transform_output
+		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
+		camera_2d.offset = _active_pcam_2d.get_emit_noise().origin
+		camera_2d.rotation += _active_pcam_2d.get_emit_noise().get_rotation()
 	else:
 		_active_pcam_3d.process_logic(delta)
-		_active_pcam_3d_glob_transform = _active_pcam_3d.transform_output
+		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
+		_active_pcam_3d_glob_transform *= _active_pcam_3d.get_emit_noise()
+
 
 	if _trigger_pcam_tween:
 		_pcam_tween(delta)
@@ -568,7 +572,7 @@ func _pcam_follow(delta: float) -> void:
 		if not is_instance_valid(_active_pcam_3d): return
 
 	if _active_pcam_missing or not _is_child_of_camera: return
-	# When following
+
 	if _is_2D:
 		if _active_pcam_2d.snap_to_pixel:
 			var snap_to_pixel_glob_transform: Transform2D = _active_pcam_2d_glob_transform
@@ -576,9 +580,13 @@ func _pcam_follow(delta: float) -> void:
 			camera_2d.global_transform = snap_to_pixel_glob_transform
 		else:
 			camera_2d.global_transform =_active_pcam_2d_glob_transform
+
+		camera_2d.offset += _active_pcam_2d.get_noise_transform().origin
+		camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation()
 		camera_2d.zoom = _active_pcam_2d.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
+		camera_3d.global_transform *= _active_pcam_3d.get_noise_transform()
 
 	if _viewfinder_needed_check:
 		_show_viewfinder_in_play()

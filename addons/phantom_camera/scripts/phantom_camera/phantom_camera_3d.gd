@@ -484,20 +484,28 @@ var _current_rotation: Vector3
 
 
 @export_group("Noise")
+
+## If true, will trigger the noise while in the editor.[br]
+## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
+## the resource.[br][br]
+## [b]Note:[/b] This property has no effect on runtime behaviour.
+@export var _preview_noise: bool = true
+
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
 ## to make this [PhantomCamera3D] be affect by it.
 @export_flags_3d_render var noise_emitter_layer: int
 
 ## Defines the noise, or shake, of a Camera3D.[br]
-## Once set, the noise will run continuously.
+## Once set, the noise will run continuously after the tween to this instance is complete.
 @export var noise: PhantomCameraNoise3D:
 	set = set_noise,
 	get = get_noise
-var _has_noise_resource: bool = false
-var _has_noise_emitted: bool = false
-var _noise_emitted_transform: Transform3D
 
-var transform_output: Transform3D
+var _has_noise_resource: bool = false
+
+var _transform_output: Transform3D
+var _transform_noise: Transform3D
+var _transform_emitter_noise: Transform3D
 
 #endregion
 
@@ -676,9 +684,12 @@ func _ready():
 		FollowMode.GROUP:
 			_follow_targets_size_check()
 
+	if not Engine.is_editor_hint():
+		_preview_noise = true
+
 	## NOTE - Only here to set position for Framed View on startup.
 	## Should be removed once https://github.com/ramokz/phantom-camera/issues/161 is complete
-	transform_output = global_transform
+	_transform_output = global_transform
 
 	_phantom_camera_manager.noise_3d_emitted.connect(_noise_emitted)
 
@@ -705,31 +716,15 @@ func process_logic(delta: float) -> void:
 	if _should_follow:
 		_follow(delta)
 	else:
-		transform_output.origin = global_transform.origin
+		_transform_output.origin = global_transform.origin
 
 	if _should_look_at:
 		_look_at(delta)
 	else:
-		transform_output.basis = global_basis
+		_transform_output.basis = global_basis
 
-	if _has_noise_resource:
-		transform_output = noise.get_noise_transform(
-			Vector3(
-				rad_to_deg(transform_output.basis.get_euler().x),
-				rad_to_deg(transform_output.basis.get_euler().y),
-				rad_to_deg(transform_output.basis.get_euler().z)
-			),
-			transform_output.origin,
-			delta
-		)
-
-	if _has_noise_emitted:
-		transform_output = Transform3D(
-			transform_output.basis * _noise_emitted_transform.basis,
-			transform_output.origin + _noise_emitted_transform.origin
-		)
-		_noise_emitted_transform = Transform3D()
-		_has_noise_emitted = false
+	if _has_noise_resource and _preview_noise:
+		_transform_noise = noise.get_noise_transform(delta)
 
 
 func _follow(delta: float) -> void:
@@ -901,9 +896,9 @@ func _interpolate_position(target_position: Vector3, delta: float, camera_target
 		if not _is_third_person_follow:
 			global_position = target_position
 			for i in 3:
-				transform_output.origin[i] = _smooth_damp(
+				_transform_output.origin[i] = _smooth_damp(
 					global_position[i],
-					transform_output.origin[i],
+					_transform_output.origin[i],
 					i,
 					_follow_velocity_ref[i],
 					_set_follow_velocity,
@@ -922,11 +917,11 @@ func _interpolate_position(target_position: Vector3, delta: float, camera_target
 						follow_damping_value[i],
 						delta
 					)
-					transform_output.origin = global_position
-					transform_output.basis = global_basis
+					_transform_output.origin = global_position
+					_transform_output.basis = global_basis
 	else:
 		camera_target.global_position = target_position
-		transform_output.origin = global_position
+		_transform_output.origin = global_position
 
 
 func _interpolate_rotation(target_trans: Vector3, delta: float) -> void:
@@ -958,10 +953,10 @@ func _interpolate_rotation(target_trans: Vector3, delta: float) -> void:
 		var ratio_b: float = sin_theta / sin_theta_total
 		var output: Quaternion = current_quat * ratio_a + target_quat * ratio_b
 
-		transform_output.basis = Basis(output)
+		_transform_output.basis = Basis(output)
 		quaternion = output
 	else:
-		transform_output.basis = Basis(target_quat)
+		_transform_output.basis = Basis(target_quat)
 		quaternion = target_quat
 
 
@@ -1116,11 +1111,7 @@ func _look_at_targets_size_check() -> void:
 
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
-		_noise_emitted_transform = Transform3D(
-			_noise_emitted_transform.basis * emitter_noise_output.basis,
-			_noise_emitted_transform.origin + emitter_noise_output.origin
-		)
-		_has_noise_emitted = true
+		_transform_emitter_noise = emitter_noise_output
 
 
 func _check_physics_body(target: Node3D) -> void:
@@ -1165,6 +1156,18 @@ func _check_physics_body(target: Node3D) -> void:
 #
 	#return unprojected_position
 
+func get_transform_output() -> Transform3D:
+	return _transform_output
+
+func set_noise_transform(value: Transform3D) -> void:
+	_transform_noise = value
+func get_noise_transform() -> Transform3D:
+	return _transform_noise
+
+func emit_noise(value: Transform3D) -> void:
+	_transform_emitter_noise = value
+func get_emit_noise() -> Transform3D:
+	return _transform_emitter_noise
 
 #region Setter & Getter Functions
 

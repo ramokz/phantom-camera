@@ -399,21 +399,28 @@ var _limit_node: Node2D
 var _limit_inactive_pcam: bool
 
 @export_group("Noise")
+
+## If true, will trigger the noise while in the editor.[br]
+## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
+## the resource.[br][br]
+## [b]Note:[/b] This property has no effect on runtime behaviour.
+@export var _preview_noise: bool = true
+
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter2D.noise_emitter_layer]
 ## to make this [PhantomCamera2D] be affect by it.
 @export_flags_2d_render var noise_emitter_layer: int
 
 ## Defines the noise, or shake, of a Camera2D.[br]
-## Once set, the noise will run continuously.
+## Once set, the noise will run continuously after the tween to this instance is complete.
 @export var noise: PhantomCameraNoise2D:
 	set = set_noise,
 	get = get_noise
+
+var _transform_output: Transform2D
+var _transform_noise: Transform2D
+var _transform_emitter_noise: Transform2D
+
 var _has_noise_resource: bool = false
-var _has_noise_emitted: bool = false
-var _noise_emitted_transform: Transform2D
-
-var transform_output: Transform2D
-
 
 #endregion
 
@@ -438,8 +445,6 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Parameters
 	####################
-
-
 	if follow_mode == FollowMode.NONE:
 		match property.name:
 			"follow_offset", \
@@ -533,8 +538,11 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
-	transform_output = global_transform
+	_transform_output = global_transform
 	_phantom_camera_manager.noise_2d_emitted.connect(_noise_emitted)
+
+	if not Engine.is_editor_hint():
+		_preview_noise = true
 
 	if follow_mode == FollowMode.GROUP:
 		_follow_targets_size_check()
@@ -566,19 +574,11 @@ func process_logic(delta: float) -> void:
 
 	if _should_follow:
 		_follow(delta)
+	else:
+		_transform_output = global_transform
 
-	if _has_noise_resource:
-		transform_output = noise.get_noise_transform(
-			rad_to_deg(transform_output.get_rotation()),
-			transform_output.origin,
-			delta
-		)
-
-	if _has_noise_emitted:
-		transform_output = transform_output.translated(_noise_emitted_transform.origin)
-		transform_output = transform_output.rotated(_noise_emitted_transform.get_rotation())
-		_noise_emitted_transform = Transform2D()
-		_has_noise_emitted = false
+	if _has_noise_resource and _preview_noise:
+		_transform_noise = noise.get_noise_transform(delta)
 
 
 func _limit_checker() -> void:
@@ -651,22 +651,22 @@ func _follow(delta: float) -> void:
 
 					# If a horizontal dead zone is reached
 					if framed_side_offset.x != 0 and framed_side_offset.y == 0:
-						follow_position.y = transform_output.origin.y
+						follow_position.y = _transform_output.origin.y
 						follow_position.x = target_position.x
 						_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
 						dead_zone_reached.emit(Vector2(framed_side_offset.x, 0))
 					# If a vertical dead zone is reached
 					elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
-						follow_position.x = transform_output.origin.x
+						follow_position.x = _transform_output.origin.x
 						follow_position.y = target_position.y
 						_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
 						dead_zone_reached.emit(Vector2(0, framed_side_offset.y))
-					# If a corner is reached
+					# If a deadzone corner is reached
 					else:
 						follow_position = target_position
 						dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
 				else:
-					_follow_framed_offset = transform_output.origin - _target_position_with_offset()
+					_follow_framed_offset = _transform_output.origin - _target_position_with_offset()
 					return
 			else:
 				follow_position = _target_position_with_offset()
@@ -684,19 +684,20 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 
 	global_position = target_position
 	if follow_damping:
+		var output_position: Vector2
 		for i in 2:
-			transform_output.origin[i] = _smooth_damp(
+			output_position[i] = _smooth_damp(
 				global_position[i],
-				transform_output.origin[i],
+				_transform_output.origin[i],
 				i,
 				_follow_velocity_ref[i],
 				_set_follow_velocity,
 				follow_damping_value[i],
 				delta
 			)
+		_transform_output = Transform2D(global_rotation, output_position)
 	else:
-		transform_output.origin = target_position
-
+		_transform_output = Transform2D(global_rotation, target_position)
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
@@ -851,11 +852,7 @@ func _follow_targets_size_check() -> void:
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
-		_noise_emitted_transform = Transform2D(
-			_noise_emitted_transform.get_rotation() * emitter_noise_output.get_rotation(),
-			_noise_emitted_transform.origin + emitter_noise_output.origin
-		)
-		_has_noise_emitted = true
+		_transform_emitter_noise = emitter_noise_output
 
 #endregion
 
@@ -950,6 +947,22 @@ func set_tween_skip(caller: Node, value: bool) -> void:
 ## Returns the current [param has_tweened] value.
 func get_tween_skip() -> bool:
 	return _tween_skip
+
+
+func get_transform_output() -> Transform2D:
+	return _transform_output
+
+
+func set_noise_transform(value: Transform2D) -> void:
+	_transform_noise = value
+func get_noise_transform() -> Transform2D:
+	return _transform_noise
+
+
+func emit_noise(value: Transform2D) -> void:
+	_transform_emitter_noise = value
+func get_emit_noise() -> Transform2D:
+	return _transform_emitter_noise
 
 #endregion
 
