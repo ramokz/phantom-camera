@@ -67,7 +67,7 @@ extends Resource
 		return rotational_multiplier_y
 
 ## Defines the max rotational, in [param degrees], change in the z-axis when the noise is active.
-@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_z: float = 0.1:
+@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_z: float = 0:
 	set(value):
 		rotational_multiplier_z = value
 		_noise_rotational_multiplier.z = value
