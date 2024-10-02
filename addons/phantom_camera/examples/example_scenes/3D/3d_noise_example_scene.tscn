@@ -100,7 +100,7 @@ expand_margin_bottom = 6.0
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.00585609, -0.00820493, 0.999949, 4.54747e-13, 0.999966, 0.00820507, -0.999983, -4.80496e-05, 0.00585589, -16.46, 0.503767, 4.249)
+transform = Transform3D(0.00345613, -0.00368911, 0.999987, 0, 0.999993, 0.00368913, -0.999994, -1.27501e-05, 0.00345611, -16.46, 0.503767, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_ggfbg")
