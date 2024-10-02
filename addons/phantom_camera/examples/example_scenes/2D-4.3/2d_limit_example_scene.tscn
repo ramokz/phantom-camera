@@ -299,7 +299,7 @@ follow_damping = true
 draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
-physics_interpolation_mode = 1
+physics_interpolation_mode = 2
 position = Vector2(66, -113.205)
 zoom = Vector2(2, 2)
 limit_left = -407
