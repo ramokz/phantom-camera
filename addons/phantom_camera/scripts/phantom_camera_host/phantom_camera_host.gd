@@ -575,7 +575,7 @@ func _process(delta: float) -> void:
 
 	if not _has_noise_emitted: return
 	if _is_2D:
-		camera_2d.offset = _active_pcam_2d.get_noise_transform().origin + _noise_emitted_output_2d.origin
+		camera_2d.offset += _noise_emitted_output_2d.origin
 		camera_2d.rotation += _noise_emitted_output_2d.get_rotation() # + _noise_emitted_output_2d.get_rotation()
 	else:
 		camera_3d.global_transform *= _noise_emitted_output_3d
