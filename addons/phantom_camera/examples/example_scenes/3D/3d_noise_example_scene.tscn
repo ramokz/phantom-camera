@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://p7s5t3tthmo"]
+[gd_scene load_steps=22 format=3 uid="uid://p7s5t3tthmo"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_ggfbg"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_dreow"]
@@ -9,19 +9,23 @@
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="6_fbad7"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_n8u0x"]
 [ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="6_vpla5"]
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="10_0thai"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_i8r8q"]
 
 [sub_resource type="Resource" id="Resource_t3bgw"]
 script = ExtResource("4_poyyk")
-intensity = 1000.0
+amplitude = 30.0
+frequency = 2.0
+randomize_seed = true
 seed = 0
 has_rotational_noise = true
 has_positional_noise = false
-max_rotational_offset_x = 10.0
-max_rotational_offset_y = 10.0
-max_rotational_offset_z = 5.0
-max_position_offset_x = 0.0
-max_position_offset_y = 0.0
-max_position_offset_z = 0.0
+rotational_multiplier_x = 0.1
+rotational_multiplier_y = 0.1
+rotational_multiplier_z = 0.0
+positional_multiplier_x = 0.0
+positional_multiplier_y = 0.0
+positional_multiplier_z = 0.0
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_yvgu3"]
 
@@ -49,42 +53,54 @@ frustum_offset = Vector2(0, 0)
 near = 0.05
 far = 4000.0
 
-[sub_resource type="Resource" id="Resource_6tnhy"]
+[sub_resource type="Resource" id="Resource_2l4w0"]
 script = ExtResource("4_poyyk")
-intensity = 400.0
+amplitude = 35.389
+frequency = 0.2
+randomize_seed = false
 seed = 0
 has_rotational_noise = true
 has_positional_noise = false
-max_rotational_offset_x = 63.5
-max_rotational_offset_y = 10.0
-max_rotational_offset_z = 5.0
-max_position_offset_x = 1.1
-max_position_offset_y = 0.0
-max_position_offset_z = 0.0
+rotational_multiplier_x = 1.0
+rotational_multiplier_y = 1.0
+rotational_multiplier_z = 0.0
+positional_multiplier_x = 0.1
+positional_multiplier_y = 0.1
+positional_multiplier_z = 0.1
 
-[sub_resource type="Resource" id="Resource_wm2yt"]
+[sub_resource type="Resource" id="Resource_6tnhy"]
 script = ExtResource("4_poyyk")
-intensity = 56.847
+amplitude = 10.0
+frequency = 4.2
+randomize_seed = true
 seed = 0
-has_rotational_noise = false
-has_positional_noise = true
-max_rotational_offset_x = 118.3
-max_rotational_offset_y = 10.0
-max_rotational_offset_z = 5.0
-max_position_offset_x = 4.0
-max_position_offset_y = 2.1
-max_position_offset_z = 0.0
+has_rotational_noise = true
+has_positional_noise = false
+rotational_multiplier_x = 1.0
+rotational_multiplier_y = 1.0
+rotational_multiplier_z = 0.1
+positional_multiplier_x = 0.1
+positional_multiplier_y = 0.1
+positional_multiplier_z = 0.1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qi01t"]
 albedo_texture = ExtResource("6_vpla5")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[node name="Node3D" type="Node3D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ey47a"]
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_bottom_right = 20
+expand_margin_bottom = 6.0
+
+[node name="Root" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
+transform = Transform3D(0.00585609, -0.00820493, 0.999949, 4.54747e-13, 0.999966, 0.00820507, -0.999983, -4.80496e-05, 0.00585589, -16.46, 0.503767, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_ggfbg")
@@ -110,30 +126,24 @@ shape = SubResource("CapsuleShape3D_lsrh7")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
+transform = Transform3D(0.00441533, 0, 0.999915, 0, 0.999995, 0, -0.999923, 0, 0.00441529, -16.46, 0.503767, 4.249)
 script = ExtResource("2_dreow")
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_lhgur")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_ghjuj")
 noise_emitter_layer = 1
+noise = SubResource("Resource_2l4w0")
 
-[node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="PlayerPhantomCamera3D"]
+[node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, -3.55271e-15, 0, 1, 0, 0, 0)
+transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
 script = ExtResource("6_n8u0x")
-growth_time = 1e-05
-duration = 0.077
+duration = 0.1
 decay_time = 0.1
 noise = SubResource("Resource_6tnhy")
-
-[node name="RunningPhantomCameraNoiseEmitter3D" type="Node3D" parent="PlayerPhantomCamera3D"]
-script = ExtResource("6_n8u0x")
-duration = 2.0
-decay_time = 1.0
-noise = SubResource("Resource_wm2yt")
 
 [node name="Environment" type="Node" parent="."]
 
@@ -168,3 +178,28 @@ material = SubResource("StandardMaterial3D_qi01t")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
 metadata/_edit_lock_ = true
+
+[node name="EmitterTip" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = -1
+anchor_right = 0.3
+anchor_bottom = 0.1
+theme_override_styles/panel = SubResource("StyleBoxFlat_ey47a")
+
+[node name="Guidance" type="RichTextLabel" parent="EmitterTip"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 8
+theme_override_fonts/normal_font = ExtResource("10_0thai")
+theme_override_fonts/bold_font = ExtResource("11_i8r8q")
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 24
+bbcode_enabled = true
+text = "[center]Press [b]Q[/b] to trigger Noise Emitter"
+fit_content = true
