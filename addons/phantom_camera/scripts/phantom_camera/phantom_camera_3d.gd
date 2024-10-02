@@ -21,6 +21,7 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 
 ## Emitted when the [param PhantomCamera3D] becomes active.
 signal became_active
+
 ## Emitted when the [param PhantomCamera3D] becomes inactive.
 signal became_inactive
 
@@ -33,24 +34,29 @@ signal look_at_target_changed
 ## Emitted when dead zones changes. [br]
 ## [b]Note:[/b] Only applicable in [param Framed] [member FollowMode].
 signal dead_zone_changed
+
 ## Emitted when a target touches the edge of the dead zone in [param Framed] [enum FollowMode].
 signal dead_zone_reached
 
 ## Emitted when the [param Camera3D] starts to tween to another
 ## [param PhantomCamera3D].
 signal tween_started
+
 ## Emitted when the [param Camera3D] is to tweening towards another
 ## [param PhantomCamera3D].
 signal is_tweening
+
 ## Emitted when the tween is interrupted due to another [param PhantomCamera3D]
 ## becoming active. The argument is the [param PhantomCamera3D] that
 ## interrupted the tween.
 signal tween_interrupted(pcam_3d: PhantomCamera3D)
+
 ## Emitted when the [param Camera3D] completes its tween to the
 ## [param PhantomCamera3D].
 signal tween_completed
 
-signal noise_triggered(noise_layer: int)
+## Emitted when Noise should be applied to the Camera3D.
+signal noise_emitted(noise_output: Transform3D)
 
 #endregion
 
@@ -95,14 +101,7 @@ enum InactiveUpdateMode {
 #endregion
 
 
-#region Variables
-
-## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
-var pcam_host_owner: PhantomCameraHost = null:
-	set = set_pcam_host_owner,
-	get = get_pcam_host_owner
-
-var _is_active: bool = false
+#region Exported Properties
 
 ## To quickly preview a [param PhantomCamera3D] without adjusting its
 ## [member Priority], this property allows the selected [param PhantomCamera3D]
@@ -170,24 +169,17 @@ var _is_active: bool = false
 	get:
 		return follow_mode
 
-var _is_third_person_follow: bool = false
-
 ## Determines which target should be followed.
 ## The [param Camera3D] will follow the position of the Follow Target based on
 ## the [member follow_mode] type and its parameters.
 @export var follow_target: Node3D = null:
 	set = set_follow_target,
 	get = get_follow_target
-var _should_follow: bool = false
-var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
 
 ## Defines the targets that the [param PhantomCamera3D] should be following.
 @export var follow_targets: Array[Node3D] = []:
 	set = set_follow_targets,
 	get = get_follow_targets
-var _has_multiple_follow_targets: bool = false
-var _follow_targets_single_target_index: int = 0
 
 ## Determines the [Path3D] node the [param PhantomCamera3D]
 ## should be bound to.
@@ -196,7 +188,6 @@ var _follow_targets_single_target_index: int = 0
 @export var follow_path: Path3D = null:
 	set = set_follow_path,
 	get = get_follow_path
-
 
 ## Determines the rotational logic for a given [param PhantomCamera3D].
 ## The different modes has different functionalities and purposes,
@@ -219,8 +210,6 @@ var _follow_targets_single_target_index: int = 0
 		notify_property_list_changed()
 	get:
 		return look_at_mode
-var _should_look_at: bool = false
-var _look_at_target_physics_based: bool = false
 
 ## Determines which target should be looked at.
 ## The [param PhantomCamera3D] will update its rotational value as the
@@ -234,8 +223,6 @@ var _look_at_target_physics_based: bool = false
 @export var look_at_targets: Array[Node3D] = []:
 	set = set_look_at_targets,
 	get = get_look_at_targets
-var _has_multiple_look_at_targets: bool = false
-var _look_at_targets_single_target_index: int = 0
 
 ## Defines how [param ]PhantomCamera3Ds] transition between one another.
 ## Changing the tween values for a given [param PhantomCamera3D]
@@ -247,19 +234,6 @@ var _look_at_targets_single_target_index: int = 0
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var _tween_skip: bool = false
-
-var tween_duration: float:
-	set = set_tween_duration,
-	get = get_tween_duration
-
-var tween_transition: PhantomCameraTween.TransitionType:
-	set = set_tween_transition,
-	get = get_tween_transition
-
-var tween_ease: PhantomCameraTween.EaseType:
-	set = set_tween_ease,
-	get = get_tween_ease
 
 ## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -285,44 +259,6 @@ var tween_ease: PhantomCameraTween.EaseType:
 @export var camera_3d_resource: Camera3DResource: # = Camera3DResource.new():
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
-
-#region Camera3DResouce property getters
-var cull_mask: int:
-	set = set_cull_mask,
-	get = get_cull_mask
-
-var h_offset: float:
-	set = set_h_offset,
-	get = get_h_offset
-
-var v_offset: float:
-	set = set_v_offset,
-	get = get_v_offset
-
-var projection: Camera3DResource.ProjectionType:
-	set = set_projection,
-	get = get_projection
-
-var fov: float:
-	set = set_fov,
-	get = get_fov
-
-var size: float:
-	set = set_size,
-	get = get_size
-
-var frustum_offset: Vector2:
-	set = set_frustum_offset,
-	get = get_frustum_offset
-
-var far: float:
-	set = set_far,
-	get = get_far
-
-var near: float:
-	set = set_near,
-	get = get_near
-#endregion
 
 ## Overrides the [member Camera3D.environment] resource property.
 @export var environment: Environment = null:
@@ -355,7 +291,6 @@ var near: float:
 @export var follow_damping_value: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
-var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
 
 ## Sets a distance offset from the centre of the target's position.
 ## The distance is applied to the [param PhantomCamera3D]'s local z axis.
@@ -431,12 +366,8 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed].
-var viewport_position: Vector2
-var _follow_framed_initial_set: bool = false
-var _follow_framed_offset: Vector3
 
 @export_subgroup("Spring Arm")
-var _follow_spring_arm: SpringArm3D
 
 ## Defines the [member SpringArm3D.spring_length].
 @export var spring_length: float = 1:
@@ -480,16 +411,17 @@ var _follow_spring_arm: SpringArm3D
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
 
-var _current_rotation: Vector3
-
-
 @export_group("Noise")
 
 ## If true, will trigger the noise while in the editor.[br]
 ## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
 ## the resource.[br][br]
 ## [b]Note:[/b] This property has no effect on runtime behaviour.
-@export var _preview_noise: bool = true
+@export var _preview_noise: bool = true:
+	set(value):
+		_preview_noise = value
+		if not value:
+			_transform_noise = Transform3D()
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
 ## to make this [PhantomCamera3D] be affect by it.
@@ -501,16 +433,96 @@ var _current_rotation: Vector3
 	set = set_noise,
 	get = get_noise
 
+#endregion
+
+#region Private Variables
+
+var _is_active: bool = false
+
+var _is_third_person_follow: bool = false
+
+var _should_follow: bool = false
+var _follow_target_physics_based: bool = false
+var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
+
+var _has_multiple_follow_targets: bool = false
+var _follow_targets_single_target_index: int = 0
+
+var _should_look_at: bool = false
+var _look_at_target_physics_based: bool = false
+
+var _has_multiple_look_at_targets: bool = false
+var _look_at_targets_single_target_index: int = 0
+
+var _tween_skip: bool = false
+
+var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
+
+var _follow_framed_initial_set: bool = false
+var _follow_framed_offset: Vector3
+
+var _follow_spring_arm: SpringArm3D
+
+var _current_rotation: Vector3
+
 var _has_noise_resource: bool = false
 
 var _transform_output: Transform3D
 var _transform_noise: Transform3D
-var _transform_emitter_noise: Transform3D
-
-#endregion
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
 var _phantom_camera_manager: Node
+
+#endregion
+
+#region Public Variables
+
+## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
+var pcam_host_owner: PhantomCameraHost = null:
+	set = set_pcam_host_owner,
+	get = get_pcam_host_owner
+
+var tween_duration: float:
+	set = set_tween_duration,
+	get = get_tween_duration
+var tween_transition: PhantomCameraTween.TransitionType:
+	set = set_tween_transition,
+	get = get_tween_transition
+var tween_ease: PhantomCameraTween.EaseType:
+	set = set_tween_ease,
+	get = get_tween_ease
+
+var cull_mask: int:
+	set = set_cull_mask,
+	get = get_cull_mask
+var h_offset: float:
+	set = set_h_offset,
+	get = get_h_offset
+var v_offset: float:
+	set = set_v_offset,
+	get = get_v_offset
+var projection: Camera3DResource.ProjectionType:
+	set = set_projection,
+	get = get_projection
+var fov: float:
+	set = set_fov,
+	get = get_fov
+var size: float:
+	set = set_size,
+	get = get_size
+var frustum_offset: Vector2:
+	set = set_frustum_offset,
+	get = get_frustum_offset
+var far: float:
+	set = set_far,
+	get = get_far
+var near: float:
+	set = set_near,
+	get = get_near
+
+var viewport_position: Vector2
+
+#endregion
 
 
 #region Property Validator
@@ -655,7 +667,6 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_removed(self)
 
-
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
@@ -695,21 +706,22 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	if is_active(): return
-	if not _follow_target_physics_based:
-		process_logic(delta)
+	if _follow_target_physics_based or _is_active: return
+	process_logic(delta)
 
 
 func _physics_process(delta: float) -> void:
-	if is_active(): return
-	if _follow_target_physics_based:
-		process_logic(delta)
+	if not _follow_target_physics_based or _is_active: return
+	process_logic(delta)
 
 
 func process_logic(delta: float) -> void:
-	if not _is_active:
+	if _is_active:
+		if _has_noise_resource and _preview_noise:
+			_transform_noise = noise.get_noise_transform(delta)
+	else:
 		match inactive_update_mode:
-			InactiveUpdateMode.NEVER:	return
+			InactiveUpdateMode.NEVER: return
 			# InactiveUpdateMode.EXPONENTIALLY:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
@@ -722,9 +734,6 @@ func process_logic(delta: float) -> void:
 		_look_at(delta)
 	else:
 		_transform_output.basis = global_basis
-
-	if _has_noise_resource and _preview_noise:
-		_transform_noise = noise.get_noise_transform(delta)
 
 
 func _follow(delta: float) -> void:
@@ -1111,7 +1120,7 @@ func _look_at_targets_size_check() -> void:
 
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
-		_transform_emitter_noise = emitter_noise_output
+		noise_emitted.emit(emitter_noise_output)
 
 
 func _check_physics_body(target: Node3D) -> void:
@@ -1165,9 +1174,7 @@ func get_noise_transform() -> Transform3D:
 	return _transform_noise
 
 func emit_noise(value: Transform3D) -> void:
-	_transform_emitter_noise = value
-func get_emit_noise() -> Transform3D:
-	return _transform_emitter_noise
+	noise_emitted.emit(value)
 
 #region Setter & Getter Functions
 
@@ -1652,6 +1659,7 @@ func set_noise(value: PhantomCameraNoise3D) -> void:
 		noise.set_trauma(1)
 	else:
 		_has_noise_resource = false
+		_transform_noise = Transform3D()
 
 func get_noise() -> PhantomCameraNoise3D:
 	return noise

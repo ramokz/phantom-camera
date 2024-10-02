@@ -32,7 +32,7 @@ extends Resource
 ## Useful if wanting to achieve a persistent noise pattern every time the noise is re-emitted.
 @export var seed: int = 0
 
-## Enables noise changes to the camera's rotation.
+## Enables noise changes to the [Camera3D]'s rotation.
 @export var has_rotational_noise: bool = true:
 	set(value):
 		has_rotational_noise = value
@@ -103,7 +103,7 @@ extends Resource
 
 #endregion
 
-#region Private Properties
+#region Private Variables
 
 var _noise_algorithm: FastNoiseLite = FastNoiseLite.new()
 

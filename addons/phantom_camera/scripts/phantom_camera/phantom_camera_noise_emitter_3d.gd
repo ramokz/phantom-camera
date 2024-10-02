@@ -59,7 +59,7 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 
 #endregion
 
-#region Private Properties
+#region Private Variables
 
 var _play: bool = false:
 	set(value):
@@ -161,7 +161,6 @@ func assign_noise_resource(resource: PhantomCameraNoise3D) -> void:
 
 func emit() -> void:
 	if _play: _play = false
-
 	_play = true
 
 

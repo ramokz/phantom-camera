@@ -16,7 +16,6 @@ const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/
 
 #endregion
 
-
 #region Signals
 
 ## Emitted when the [param PhantomCamera2D] becomes active.
@@ -30,20 +29,27 @@ signal follow_target_changed
 ## Emitted when dead zones changes.[br]
 ## [b]Note:[/b] Only applicable in [param Framed] [enum FollowMode].
 signal dead_zone_changed
+
 ## Emitted when a target touches the edge of the dead zone in [param Framed] [enum FollowMode].
 signal dead_zone_reached(side: Vector2)
 
 ## Emitted when the [param Camera2D] starts to tween to another [param PhantomCamera2D].
 signal tween_started
+
 ## Emitted when the [param Camera2D] is to tweening towards another [param PhantomCamera2D].
 signal is_tweening
+
 ## Emitted when the tween is interrupted due to another [param PhantomCamera2D]
 ## becoming active. The argument is the [param PhantomCamera2D] that interrupted
 ## the tween.
 signal tween_interrupted(pcam_2d: PhantomCamera2D)
+
 ## Emitted when the [param Camera2D] completes its tween to the
 ## [param PhantomCamera2D].
 signal tween_completed
+
+## Emitted when Noise should be applied to the Camera2D.
+signal noise_emitted(noise_output: Transform2D)
 
 #endregion
 
@@ -74,14 +80,7 @@ enum InactiveUpdateMode {
 
 #endregion
 
-#region Variables
-
-var _is_active: bool = false
-
-## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
-var pcam_host_owner: PhantomCameraHost = null:
-	set = set_pcam_host_owner,
-	get = get_pcam_host_owner
+#region Exported Properties
 
 ## To quickly preview a [param PhantomCamera2D] without adjusting its
 ## [member priority], this property allows the selected PCam to ignore the
@@ -148,25 +147,17 @@ var pcam_host_owner: PhantomCameraHost = null:
 	get:
 		return follow_mode
 
-
 ## Determines which target should be followed.
 ## The [param Camera2D] will follow the position of the Follow Target
 ## based on the [member follow_mode] type and its parameters.
 @export var follow_target: Node2D = null:
 	set = set_follow_target,
 	get = get_follow_target
-var _should_follow: bool = false
-var _follow_framed_offset: Vector2 = Vector2.ZERO
-var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
 ### Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
 	set = set_follow_targets,
 	get = get_follow_targets
-var _has_multiple_follow_targets: bool = false
-var _follow_targets_single_target_index: int = 0
-
 
 ## Determines the [Path2D] the [param PhantomCamera2D]
 ## should be bound to.
@@ -175,7 +166,6 @@ var _follow_targets_single_target_index: int = 0
 @export var follow_path: Path2D = null:
 	set = set_follow_path,
 	get = get_follow_path
-var _has_follow_path: bool = false
 
 ## Applies a zoom level to the [param PhantomCamera2D], which effectively
 ## overrides the [param zoom] property of the [param Camera2D] node.
@@ -214,19 +204,6 @@ var _has_follow_path: bool = false
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var _tween_skip: bool = false
-
-var tween_duration: float:
-	set = set_tween_duration,
-	get = get_tween_duration
-
-var tween_transition: PhantomCameraTween.TransitionType:
-	set = set_tween_transition,
-	get = get_tween_transition
-
-var tween_ease: PhantomCameraTween.EaseType:
-	set = set_tween_ease,
-	get = get_tween_ease
 
 ## If enabled, the moment a [param PhantomCamera2D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -264,7 +241,6 @@ var tween_ease: PhantomCameraTween.EaseType:
 @export var follow_damping_value: Vector2 = Vector2(0.1, 0.1):
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
-var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -330,11 +306,6 @@ var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the veloci
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool = false
 
-## Defines the position of the [member follow_target] within the viewport.[br]
-## This is only used for when [member follow_mode] is set to [param Framed].
-var viewport_position: Vector2
-var _follow_framed_initial_set: bool = false
-
 @export_group("Limit")
 
 ## Shows the [param Camera2D]'s built-in limit border.[br]
@@ -347,10 +318,6 @@ var _follow_framed_initial_set: bool = false
 	get:
 		return _draw_limits
 
-static var _draw_limits: bool
-
-var _limit_sides: Vector4i
-var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10000000)
 ## Defines the left side of the [param Camera2D] limit.
 ## The camera will not be able to move past this point.
 @export var limit_left: int = -10000000:
@@ -386,7 +353,7 @@ var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10
 @export_node_path("TileMap", "Node2D", "CollisionShape2D") var limit_target = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
-var _limit_node: Node2D
+
 ## Applies an offset to the [TileMap]/[TileMapLayer] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
@@ -396,7 +363,6 @@ var _limit_node: Node2D
 #@export var limit_smoothed: bool = false: # TODO - Needs proper support
 	#set = set_limit_smoothing,
 	#get = get_limit_smoothing
-var _limit_inactive_pcam: bool
 
 @export_group("Noise")
 
@@ -404,7 +370,11 @@ var _limit_inactive_pcam: bool
 ## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
 ## the resource.[br][br]
 ## [b]Note:[/b] This property has no effect on runtime behaviour.
-@export var _preview_noise: bool = true
+@export var _preview_noise: bool = true:
+	set(value):
+		_preview_noise = value
+		if not value:
+			_transform_noise = Transform2D()
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter2D.noise_emitter_layer]
 ## to make this [PhantomCamera2D] be affect by it.
@@ -416,16 +386,69 @@ var _limit_inactive_pcam: bool
 	set = set_noise,
 	get = get_noise
 
+
+#region Private Variables
+
+var _is_active: bool = false
+
+## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
+var pcam_host_owner: PhantomCameraHost = null:
+	set = set_pcam_host_owner,
+	get = get_pcam_host_owner
+
+var _should_follow: bool = false
+var _follow_framed_offset: Vector2 = Vector2.ZERO
+var _follow_target_physics_based: bool = false
+var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
+
+var _has_multiple_follow_targets: bool = false
+var _follow_targets_single_target_index: int = 0
+
+var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
+
+var _has_follow_path: bool = false
+
+var _tween_skip: bool = false
+
+## Defines the position of the [member follow_target] within the viewport.[br]
+## This is only used for when [member follow_mode] is set to [param Framed].
+var _follow_framed_initial_set: bool = false
+
+static var _draw_limits: bool
+
+var _limit_sides: Vector4i
+var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10000000)
+
+var _limit_node: Node2D
+
+var _limit_inactive_pcam: bool
+
 var _transform_output: Transform2D
 var _transform_noise: Transform2D
-var _transform_emitter_noise: Transform2D
 
 var _has_noise_resource: bool = false
 
-#endregion
-
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
 var _phantom_camera_manager: Node
+
+#endregion
+
+#region Public Variables
+
+var tween_duration: float:
+	set = set_tween_duration,
+	get = get_tween_duration
+var tween_transition: PhantomCameraTween.TransitionType:
+	set = set_tween_transition,
+	get = get_tween_transition
+var tween_ease: PhantomCameraTween.EaseType:
+	set = set_tween_ease,
+	get = get_tween_ease
+
+var viewport_position: Vector2
+
+#endregion
+
 
 
 func _validate_property(property: Dictionary) -> void:
@@ -549,27 +572,29 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _is_active: return
-	if _follow_target_physics_based: return
+	if _follow_target_physics_based or _is_active: return
 	process_logic(delta)
 
 
 func _physics_process(delta: float):
-	if _is_active: return
-	if not _follow_target_physics_based: return
+	if not _follow_target_physics_based or _is_active: return
 	process_logic(delta)
 
 
 func process_logic(delta: float) -> void:
-	if not _is_active:
+	if _is_active:
+		if _has_noise_resource and _preview_noise:
+			_transform_noise = noise.get_noise_transform(delta)
+	else:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER: return
 			InactiveUpdateMode.ALWAYS:
 				# Only triggers if limit isn't default
 				if _limit_inactive_pcam:
 					global_position = _set_limit_clamp_position(global_position)
-#			InactiveUpdateMode.EXPONENTIALLY:
-#				TODO - Trigger positional updates less frequently as more Pcams gets added
+			# InactiveUpdateMode.EXPONENTIALLY:
+			# TODO - Trigger positional updates less frequently as more PCams gets added
+
 	_limit_checker()
 
 	if _should_follow:
@@ -577,15 +602,12 @@ func process_logic(delta: float) -> void:
 	else:
 		_transform_output = global_transform
 
-	if _has_noise_resource and _preview_noise:
-		_transform_noise = noise.get_noise_transform(delta)
-
 
 func _limit_checker() -> void:
 	## TODO - Needs to see if this can be triggerd only from CollisionShape2D Transform changes
-	if Engine.is_editor_hint():
-		if draw_limits:
-			update_limit_all_sides()
+	if not Engine.is_editor_hint(): return
+	if draw_limits:
+		update_limit_all_sides()
 
 
 func _follow(delta: float) -> void:
@@ -852,7 +874,7 @@ func _follow_targets_size_check() -> void:
 
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
-		_transform_emitter_noise = emitter_noise_output
+		noise_emitted.emit(emitter_noise_output)
 
 #endregion
 
@@ -960,9 +982,8 @@ func get_noise_transform() -> Transform2D:
 
 
 func emit_noise(value: Transform2D) -> void:
-	_transform_emitter_noise = value
-func get_emit_noise() -> Transform2D:
-	return _transform_emitter_noise
+	noise_emitted.emit(value)
+
 
 #endregion
 
@@ -1421,10 +1442,14 @@ func set_noise(value: PhantomCameraNoise2D) -> void:
 		noise.set_trauma(1)
 	else:
 		_has_noise_resource = false
+		_transform_noise = Transform2D()
 
 func get_noise() -> PhantomCameraNoise2D:
 	return noise
 
+## TODO - A small flag to prevent calculating noise transform if the resource is not present here in PCamHost script
+func get_has_noise_resource() -> bool:
+	return _has_noise_resource
 
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
