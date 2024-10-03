@@ -177,8 +177,8 @@ rotational_multiplier = 1.0
 
 [sub_resource type="Resource" id="Resource_rmnw1"]
 script = ExtResource("11_d6abr")
-amplitude = 90.0
-frequency = 8.0
+amplitude = 60.0
+frequency = 2.0
 randomize_seed = false
 seed = 96
 positional_noise = true

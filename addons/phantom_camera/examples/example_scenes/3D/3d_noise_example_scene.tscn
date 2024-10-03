@@ -55,7 +55,7 @@ far = 4000.0
 
 [sub_resource type="Resource" id="Resource_2l4w0"]
 script = ExtResource("4_poyyk")
-amplitude = 35.389
+amplitude = 40.0
 frequency = 0.2
 randomize_seed = false
 seed = 0
