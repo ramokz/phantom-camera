@@ -246,7 +246,7 @@ tween_resource = SubResource("Resource_ct1eh")
 follow_offset = Vector2(0, -63.205)
 follow_damping = true
 draw_limits = true
-limit_target = NodePath("../RoomLeftArea2D/CollisionShape2D")
+limit_target = NodePath("../StartingTerrain")
 limit_margin = Vector4i(-50, 0, -50, 0)
 
 [node name="RoomLeftArea2D" type="Area2D" parent="."]
@@ -299,13 +299,13 @@ follow_damping = true
 draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
-physics_interpolation_mode = 2
+physics_interpolation_mode = 1
 position = Vector2(66, -113.205)
 zoom = Vector2(2, 2)
-limit_left = -407
-limit_top = -336
-limit_right = 483
-limit_bottom = 74
+limit_left = -387
+limit_top = -528
+limit_right = 433
+limit_bottom = 288
 position_smoothing_speed = 10.0
 editor_draw_limits = true
 
