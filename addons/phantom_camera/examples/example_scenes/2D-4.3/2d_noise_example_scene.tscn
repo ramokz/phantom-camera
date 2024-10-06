@@ -243,7 +243,7 @@ text = "[WASD] to move
 [Q] to trigger noise"
 
 [node name="Camera2D" type="Camera2D" parent="."]
-physics_interpolation_mode = 1
+physics_interpolation_mode = 2
 position = Vector2(227, -28)
 ignore_rotation = false
 zoom = Vector2(1.5, 1.5)
