@@ -549,7 +549,8 @@ func _enter_tree() -> void:
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 	_should_follow_checker()
-	_follow_targets_size_check()
+	if follow_mode == FollowMode.GROUP:
+		_follow_targets_size_check()
 
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
@@ -616,7 +617,6 @@ func _limit_checker() -> void:
 
 func _follow(delta: float) -> void:
 	var follow_position: Vector2
-
 	match follow_mode:
 		FollowMode.GLUED:
 			follow_position = follow_target.global_position
@@ -1123,6 +1123,8 @@ func set_follow_target(value: Node2D) -> void:
 			else:
 				_should_follow = false
 		else:
+			if not Engine.is_editor_hint():
+				print(_should_follow)
 			_should_follow = true
 		_check_physics_body(value)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):

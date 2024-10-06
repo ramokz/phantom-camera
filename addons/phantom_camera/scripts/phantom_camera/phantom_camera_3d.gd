@@ -653,7 +653,8 @@ func _enter_tree() -> void:
 		visibility_changed.connect(_check_visibility)
 
 	_should_follow_checker()
-	_follow_targets_size_check()
+	if follow_mode == FollowMode.GROUP:
+		_follow_targets_size_check()
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
