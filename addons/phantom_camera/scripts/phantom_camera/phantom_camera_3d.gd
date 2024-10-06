@@ -447,6 +447,7 @@ var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
+var _follow_targets: Array[Node3D]
 
 var _should_look_at: bool = false
 var _look_at_target_physics_based: bool = false
@@ -652,6 +653,7 @@ func _enter_tree() -> void:
 		visibility_changed.connect(_check_visibility)
 
 	_should_follow_checker()
+	_follow_targets_size_check()
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -669,6 +671,9 @@ func _exit_tree() -> void:
 
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
+
+	if not follow_mode == FollowMode.GROUP:
+		follow_targets = []
 
 
 func _ready():
@@ -750,11 +755,9 @@ func _follow(delta: float) -> void:
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
-				var bounds: AABB = AABB(follow_targets[0].global_position, Vector3.ZERO)
-				for node in follow_targets:
-					if is_instance_valid(node):
-						bounds = bounds.expand(node.global_position)
-
+				var bounds: AABB = AABB(_follow_targets[0].global_position, Vector3.ZERO)
+				for target in _follow_targets:
+					bounds = bounds.expand(target.global_position)
 				var distance: float
 				if auto_follow_distance:
 					distance = lerpf(auto_follow_distance_min, auto_follow_distance_max, bounds.get_longest_axis_size() / auto_follow_distance_divisor)
@@ -1050,24 +1053,25 @@ func _check_visibility() -> void:
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
 		_should_follow = false
-	if follow_targets.has(target):
-		erase_follow_targets(target)
+	if _follow_targets.has(target):
+		_follow_targets.erase(target)
 
 
 func _should_follow_checker() -> void:
 	if follow_mode == FollowMode.NONE:
 		_should_follow = false
-		return
-	if is_instance_valid(follow_target):
+	else:
 		_should_follow = true
 
 
 func _follow_targets_size_check() -> void:
 	var targets_size: int = 0
 	_follow_target_physics_based = false
-
+	_follow_targets = []
 	for i in follow_targets.size():
-		if is_instance_valid(follow_targets[i]):
+		if follow_targets[i] == null: continue
+		if follow_targets[i].is_inside_tree():
+			_follow_targets.append(follow_targets[i])
 			targets_size += 1
 			_follow_targets_single_target_index = i
 			_check_physics_body(follow_targets[i])

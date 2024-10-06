@@ -403,6 +403,7 @@ var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and whe
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
+var _follow_targets: Array[Node2D]
 
 var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
 
@@ -548,6 +549,7 @@ func _enter_tree() -> void:
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 	_should_follow_checker()
+	_follow_targets_size_check()
 
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
@@ -559,6 +561,8 @@ func _exit_tree() -> void:
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
 
+	if not follow_mode == FollowMode.GROUP:
+		follow_targets = []
 
 func _ready() -> void:
 	_transform_output = global_transform
@@ -622,19 +626,17 @@ func _follow(delta: float) -> void:
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
-				var rect: Rect2 = Rect2(follow_targets[0].global_position, Vector2.ZERO)
-				for node in follow_targets:
-					rect = rect.expand(node.global_position)
-					if auto_zoom:
-						rect = rect.grow_individual(
-							auto_zoom_margin.x,
-							auto_zoom_margin.y,
-							auto_zoom_margin.z,
-							auto_zoom_margin.w
-						)
-#						else:
-#							rect = rect.grow_individual(-80, 0, 0, 0)
+				var rect: Rect2 = Rect2(_follow_targets[0].global_position, Vector2.ZERO)
+				for target in _follow_targets:
+					rect = rect.expand(target.global_position)
 				if auto_zoom:
+					rect = rect.grow_individual(
+						auto_zoom_margin.x,
+						auto_zoom_margin.y,
+						auto_zoom_margin.z,
+						auto_zoom_margin.w
+					)
+
 					var screen_size: Vector2 = get_viewport_rect().size
 					if rect.size.x > rect.size.y * screen_size.aspect():
 						zoom = clamp(screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
@@ -720,6 +722,7 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 		_transform_output = Transform2D(global_rotation, output_position)
 	else:
 		_transform_output = Transform2D(global_rotation, target_position)
+
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
 		damping_time = maxf(0.0001, damping_time)
@@ -836,24 +839,25 @@ func _check_visibility() -> void:
 func _follow_target_tree_exiting(target: Node) -> void:
 	if target == follow_target:
 		_should_follow = false
-	if follow_targets.has(target):
-		erase_follow_targets(target)
+	if _follow_targets.has(target):
+		_follow_targets.erase(target)
 
 
 func _should_follow_checker() -> void:
 	if follow_mode == FollowMode.NONE:
 		_should_follow = false
-		return
-	if is_instance_valid(follow_target):
+	else:
 		_should_follow = true
 
 
 func _follow_targets_size_check() -> void:
 	var targets_size: int = 0
 	_follow_target_physics_based = false
-
+	_follow_targets = []
 	for i in follow_targets.size():
-		if is_instance_valid(follow_targets[i]):
+		if follow_targets[i] == null: continue
+		if follow_targets[i].is_inside_tree():
+			_follow_targets.append(follow_targets[i])
 			targets_size += 1
 			_follow_targets_single_target_index = i
 			_check_physics_body(follow_targets[i])
