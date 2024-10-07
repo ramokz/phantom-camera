@@ -493,12 +493,12 @@ func _validate_property(property: Dictionary) -> void:
 			"auto_zoom":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-		if not auto_zoom:
-			match property.name:
-				"auto_zoom_min", \
-				"auto_zoom_max", \
-				"auto_zoom_margin":
-					property.usage = PROPERTY_USAGE_NO_EDITOR
+	if not auto_zoom or follow_mode != FollowMode.GROUP:
+		match property.name:
+			"auto_zoom_min", \
+			"auto_zoom_max", \
+			"auto_zoom_margin":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	################
 	## Follow Framed
@@ -513,7 +513,7 @@ func _validate_property(property: Dictionary) -> void:
 	#######
 	## Zoom
 	#######
-	if property.name == "zoom" and auto_zoom:
+	if property.name == "zoom" and follow_mode == FollowMode.GROUP and auto_zoom:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	########
@@ -1123,8 +1123,6 @@ func set_follow_target(value: Node2D) -> void:
 			else:
 				_should_follow = false
 		else:
-			if not Engine.is_editor_hint():
-				print(_should_follow)
 			_should_follow = true
 		_check_physics_body(value)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
