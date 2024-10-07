@@ -693,7 +693,7 @@ func _ready():
 					_follow_spring_arm.shape = shape
 					_follow_spring_arm.margin = margin
 					_follow_spring_arm.add_excluded_object(follow_target)
-					get_tree().root.add_child.call_deferred(_follow_spring_arm)
+					get_parent().add_child.call_deferred(_follow_spring_arm)
 					reparent.call_deferred(_follow_spring_arm)
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
