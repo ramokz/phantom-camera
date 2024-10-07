@@ -580,7 +580,7 @@ func _validate_property(property: Dictionary) -> void:
 	not follow_mode == FollowMode.GROUP:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if not auto_follow_distance:
+	if not auto_follow_distance or not follow_mode == FollowMode.GROUP:
 		match property.name:
 			"auto_follow_distance_min", \
 			"auto_follow_distance_max", \
@@ -637,6 +637,7 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	notify_property_list_changed()
+
 #endregion
 
 #region Private Functions
@@ -1120,7 +1121,6 @@ func _look_at_targets_size_check() -> void:
 		_:
 			_should_look_at = true
 			_has_multiple_look_at_targets = true
-			print("Has 2")
 
 
 func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> void:
@@ -1143,7 +1143,6 @@ func _check_physics_body(target: Node3D) -> void:
 #elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
 #printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 #_follow_target_physics_based = true
-
 
 #endregion
 
