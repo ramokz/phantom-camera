@@ -504,6 +504,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				camera_2d.set("physics_interpolation_mode", 1)
 				#camera_2d.reset_physics_interpolation()
 				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
+				else:
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
 			else:
 				_follow_target_physics_based = false
 				_active_pcam_2d.set_follow_target_physics_based(false, self)
@@ -511,6 +515,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_2d.set("physics_interpolation_mode", 0)
 				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
+				else:
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
 	else:
 		_follow_target_physics_based = false
 		if _active_pcam_3d.show_viewfinder_in_play:
