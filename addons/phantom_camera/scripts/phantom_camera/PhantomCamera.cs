@@ -98,6 +98,30 @@ public abstract class PhantomCamera
         get => new((Resource)Node.Call(MethodName.GetTweenResource));
         set => Node.Call(MethodName.SetTweenResource, (GodotObject)value.Resource);
     }
+    
+    public bool TweenSkip
+    {
+        get => (bool)Node.Call(MethodName.GetTweenSkip);
+        set => Node.Call(MethodName.SetTweenSkip, value);
+    }
+
+    public float TweenDuration
+    {
+        get => (float)Node.Call(MethodName.GetTweenDuration);
+        set => Node.Call(MethodName.SetTweenDuration, value);
+    }
+    
+    public TransitionType TweenTransition
+    {
+        get => (TransitionType)(int)Node.Call(MethodName.GetTweenTransition);
+        set => Node.Call(MethodName.GetTweenTransition, (int)value);
+    }
+    
+    public EaseType TweenEase
+    {
+        get => (EaseType)(int)Node.Call(MethodName.GetTweenEase);
+        set => Node.Call(MethodName.GetTweenEase, (int)value);
+    }
 
     public bool TweenOnLoad
     {
@@ -172,9 +196,20 @@ public abstract class PhantomCamera
         public const string GetFollowDampingValue = "get_follow_damping_value";
         public const string SetFollowDampingValue = "set_follow_damping_value";
         
-
         public const string GetTweenResource = "get_tween_resource";
         public const string SetTweenResource = "set_tween_resource";
+
+        public const string GetTweenSkip = "get_tween_skip";
+        public const string SetTweenSkip = "set_tween_skip";
+
+        public const string GetTweenDuration = "get_tween_duration";
+        public const string SetTweenDuration = "set_tween_duration";
+
+        public const string GetTweenTransition = "get_tween_transition";
+        public const string SetTweenTransition = "set_tween_transition";
+
+        public const string GetTweenEase = "get_tween_ease";
+        public const string SetTweenEase = "set_tween_ease";
 
         public const string GetTweenOnLoad = "get_tween_on_load";
         public const string SetTweenOnLoad = "set_tween_on_load";

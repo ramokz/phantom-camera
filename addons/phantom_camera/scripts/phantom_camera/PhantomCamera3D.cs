@@ -164,7 +164,73 @@ public class PhantomCamera3D : PhantomCamera
         get => (float)Node3D.Call(MethodName.GetLookAtDampingValue);
         set => Node3D.Call(MethodName.SetLookAtDampingValue, value);
     }
-        
+    
+    public int CullMask
+    {
+        get => (int)Node.Call(MethodName.GetCullMask);
+        set => Node.Call(MethodName.SetCullMask, value);
+    }
+    
+    public float HOffset
+    {
+        get => (float)Node.Call(MethodName.GetHOffset);
+        set => Node.Call(MethodName.SetHOffset, value);
+    }
+    
+    public float VOffset
+    {
+        get => (float)Node.Call(MethodName.GetVOffset);
+        set => Node.Call(MethodName.SetVOffset, value);
+    }
+    
+    public ProjectionType Projection
+    {
+        get => (ProjectionType)(int)Node.Call(MethodName.GetProjection);
+        set => Node.Call(MethodName.SetProjection, (int)value);
+    }
+    
+    public float Fov
+    {
+        get => (float)Node.Call(MethodName.GetFov);
+        set => Node.Call(MethodName.SetFov, value);
+    }
+    
+    public float Size
+    {
+        get => (float)Node.Call(MethodName.GetSize);
+        set => Node.Call(MethodName.SetSize, value);
+    }
+    
+    public Vector2 FrustumOffset
+    {
+        get => (Vector2)Node.Call(MethodName.GetFrustumOffset);
+        set => Node.Call(MethodName.SetFrustumOffset, value);
+    }
+    
+    public float Far
+    {
+        get => (float)Node.Call(MethodName.GetFar);
+        set => Node.Call(MethodName.SetFar, value);
+    }
+    
+    public float Near
+    {
+        get => (float)Node.Call(MethodName.GetNear);
+        set => Node.Call(MethodName.SetNear, value);
+    }
+    
+    public Environment Environment
+    {
+        get => (Environment)Node.Call(MethodName.GetEnvironment);
+        set => Node.Call(MethodName.SetEnvironment, value);
+    }
+    
+    public CameraAttributes Attributes
+    {
+        get => (CameraAttributes)Node.Call(MethodName.GetAttributes);
+        set => Node.Call(MethodName.SetAttributes, value);
+    }
+    
     
     public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
@@ -244,5 +310,38 @@ public class PhantomCamera3D : PhantomCamera
         
         public const string GetLookAtDampingValue = "get_look_at_damping_value";
         public const string SetLookAtDampingValue = "set_look_at_damping_value";
+
+        public const string GetCullMask = "get_cull_mask";
+        public const string SetCullMask = "set_cull_mask";
+
+        public const string GetHOffset = "get_h_offset";
+        public const string SetHOffset = "set_h_offset";
+
+        public const string GetVOffset = "get_v_offset";
+        public const string SetVOffset = "set_v_offset";
+
+        public const string GetProjection = "get_projection";
+        public const string SetProjection = "set_projection";
+
+        public const string GetFov = "get_fov";
+        public const string SetFov = "set_fov";
+
+        public const string GetSize = "get_size";
+        public const string SetSize = "set_size";
+
+        public const string GetFrustumOffset = "get_frustum_offset";
+        public const string SetFrustumOffset = "set_frustum_offset";
+
+        public const string GetFar = "get_far";
+        public const string SetFar = "set_far";
+
+        public const string GetNear = "get_near";
+        public const string SetNear = "set_near";
+
+        public const string GetEnvironment = "get_environment";
+        public const string SetEnvironment = "set_environment";
+
+        public const string GetAttributes = "get_attributes";
+        public const string SetAttributes = "set_attributes";
     }
 }

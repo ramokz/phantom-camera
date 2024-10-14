@@ -131,6 +131,13 @@ public partial class TestPhantomCameraWrapper: Node
         Debug.Assert(limitTarget != null);
         Debug.Assert(limitTarget.IsTileMap);
         Debug.Assert(limitTarget.AsTileMap() != null);
+        
+        var tileMapLayer = testScene.GetNode<TileMapLayer>("TileMapLayer");
+        camera.SetLimitTarget(tileMapLayer);
+        limitTarget = camera.GetLimitTarget();
+        Debug.Assert(limitTarget != null);
+        Debug.Assert(limitTarget.IsTileMapLayer);
+        Debug.Assert(limitTarget.AsTileMapLayer() != null);
 
         var shape2D = testScene.GetNode<CollisionShape2D>("Area2D/CollisionShape2D");
         camera.SetLimitTarget(shape2D);

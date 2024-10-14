@@ -19,6 +19,7 @@ export_presets.cfg
 
 # CSharp Dev
 *.DotSettings
+*.csproj.old
 
 # Docs specific ignores
 #/docs/
