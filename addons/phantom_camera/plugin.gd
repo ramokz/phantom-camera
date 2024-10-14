@@ -82,25 +82,20 @@ func _btn_toggled(toggled_on: bool):
 
 
 func _exit_tree() -> void:
-	remove_custom_type(PCAM_2D)
-	remove_custom_type(PCAM_3D)
-	remove_custom_type(PCAM_HOST)
-
-	remove_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
-
-	remove_control_from_bottom_panel(editor_panel_instance)
-	editor_panel_instance.queue_free()
-#	if framed_viewfinder_panel_instance:
-	scene_changed.disconnect(_scene_changed)
-
-	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
-
 	panel_button.toggled.disconnect(_btn_toggled)
 	scene_changed.disconnect(editor_panel_instance.viewfinder.scene_changed)
 	scene_changed.disconnect(_scene_changed)
 
-#func _has_main_screen():
-#	return true;
+	remove_control_from_bottom_panel(editor_panel_instance)
+	editor_panel_instance.queue_free()
+
+	remove_node_3d_gizmo_plugin(pcam_3D_gizmo_plugin)
+
+	remove_custom_type(PCAM_2D)
+	remove_custom_type(PCAM_3D)
+	remove_custom_type(PCAM_HOST)
+
+	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 
 
 func _make_visible(visible):

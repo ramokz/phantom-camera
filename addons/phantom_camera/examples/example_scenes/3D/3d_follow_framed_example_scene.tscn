@@ -13,7 +13,12 @@ script = ExtResource("4_oqbub")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
+projection = 0
 fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
 albedo_texture = ExtResource("5_c0upu")

@@ -201,7 +201,19 @@ var _has_follow_path: bool = false
 @export var tween_resource: PhantomCameraTween = PhantomCameraTween.new():
 	set = set_tween_resource,
 	get = get_tween_resource
-var _has_tweened: bool = false
+var _tween_skip: bool = false
+
+var tween_duration: float:
+	set = set_tween_duration,
+	get = get_tween_duration
+
+var tween_transition: PhantomCameraTween.TransitionType:
+	set = set_tween_transition,
+	get = get_tween_transition
+
+var tween_ease: PhantomCameraTween.EaseType:
+	set = set_tween_ease,
+	get = get_tween_ease
 
 ## If enabled, the moment a [param PhantomCamera3D] is instantiated into
 ## a scene, and has the highest priority, it will perform its tween transition.
@@ -347,22 +359,22 @@ var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10
 	set = set_limit_bottom,
 	get = get_limit_bottom
 
-## Allows for setting either a [TileMap] or [CollisionShape2D] node to
+## Allows for setting either a [TileMap], [TileMapLayer] or [CollisionShape2D] node to
 ## automatically apply a limit size instead of manually adjusting the Left,
 ## Top, Right and Left properties.[br][br]
-## [b]TileMap[/b][br]
-## The Limit will update after the [TileSet] of the [TileMap] has changed.[br]
+## [b]TileMap / TileMapLayer[/b][br]
+## The Limit will update after the [TileSet] of the [TileMap] / [TileMapLayer] has changed.[br]
 ## [b]Note:[/b] The limit size will only update after closing the TileMap editor
 ## bottom panel.
 ## [br][br]
 ## [b]CollisionShape2D[/b][br]
 ## The limit will update in realtime as the Shape2D changes its size.
 ## Note: For performance reasons, resizing the [Shape2D] during runtime will not change the Limits sides.
-@export_node_path("TileMap", "CollisionShape2D") var limit_target = NodePath(""):
+@export_node_path("TileMap", "Node2D", "CollisionShape2D") var limit_target = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 var _limit_node: Node2D
-## Applies an offset to the [TileMap] Limit or [Shape2D] Limit.
+## Applies an offset to the [TileMap]/[TileMapLayer] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
 @export var limit_margin: Vector4i:
@@ -477,6 +489,9 @@ func _enter_tree() -> void:
 	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
+	if not visibility_changed.is_connected(_check_visibility):
+		visibility_changed.connect(_check_visibility)
+
 
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_removed(self)
@@ -506,7 +521,12 @@ func _process_logic(delta: float) -> void:
 #			InactiveUpdateMode.EXPONENTIALLY:
 #				TODO - Trigger positional updates less frequently as more Pcams gets added
 	_limit_checker()
+	
 	if _should_follow:
+		if not follow_mode == FollowMode.GROUP:
+			if follow_target.is_queued_for_deletion():
+				follow_target = null
+				return
 		_follow(delta)
 
 
@@ -577,7 +597,13 @@ func _follow(delta: float) -> void:
 								follow_position = glo_pos
 							else:
 								follow_position = _target_position_with_offset()
-						else:
+						elif _get_framed_side_offset().x != 0  and _get_framed_side_offset().y == 0:
+							follow_position = target_position
+							_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
+						elif _get_framed_side_offset().y != 0 and _get_framed_side_offset().x == 0 :
+							follow_position = target_position
+							_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
+						else : 
 							follow_position = target_position
 					else:
 						_follow_framed_offset = global_position - _target_position_with_offset()
@@ -593,7 +619,7 @@ func _set_velocity(index: int, value: float):
 
 
 func _interpolate_position(target_position: Vector2, delta: float) -> void:
-	if _limit_inactive_pcam and not _has_tweened:
+	if _limit_inactive_pcam and not _tween_skip:
 		target_position = _set_limit_clamp_position(target_position)
 
 	if follow_damping:
@@ -718,6 +744,11 @@ func _set_camera_2d_limit(side: int, limit: int) -> void:
 	if not _is_active: return
 	get_pcam_host_owner().camera_2d.set_limit(side, limit)
 
+
+func _check_visibility() -> void:
+	if not is_instance_valid(pcam_host_owner): return
+	pcam_host_owner.refresh_pcam_list_priorty()
+
 #endregion
 
 
@@ -733,8 +764,11 @@ func update_limit_all_sides() -> void:
 		_limit_sides.y = limit_top
 		_limit_sides.z = limit_right
 		_limit_sides.w = limit_bottom
-	elif _limit_node is TileMap:
-		var tile_map: TileMap = _limit_node as TileMap
+	elif _limit_node is TileMap or _limit_node.is_class("TileMapLayer"):
+		var tile_map := _limit_node
+
+		if not tile_map.tile_set: return # TODO: This should be removed once https://github.com/godotengine/godot/issues/96898 is resolved
+
 		var tile_map_size: Vector2 = Vector2(tile_map.get_used_rect().size) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 		var tile_map_position: Vector2 = tile_map.global_position + Vector2(tile_map.get_used_rect().position) * Vector2(tile_map.tile_set.tile_size) * tile_map.get_scale()
 
@@ -800,14 +834,14 @@ func reset_limit() -> void:
 ## Assigns the value of the [param has_tweened] property.
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
-func set_has_tweened(caller: Node, value: bool) -> void:
+func set_tween_skip(caller: Node, value: bool) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
-		_has_tweened = value
+		_tween_skip = value
 	else:
 		printerr("Can only be called PhantomCameraHost class")
 ## Returns the current [param has_tweened] value.
-func get_has_tweened() -> bool:
-	return _has_tweened
+func get_tween_skip() -> bool:
+	return _tween_skip
 
 #endregion
 
@@ -1218,11 +1252,12 @@ func set_limit_target(value: NodePath) -> void:
 		var prev_limit_node: Node2D = _limit_node
 		var new_limit_node: Node2D = get_node(value)
 
-		if prev_limit_node is TileMap:
-			if prev_limit_node.changed.is_connected(_on_tile_map_changed):
-				prev_limit_node.changed.disconnect(_on_tile_map_changed)
+		if prev_limit_node:
+			if prev_limit_node is TileMap or prev_limit_node.is_class("TileMapLayer"):
+				if prev_limit_node.changed.is_connected(_on_tile_map_changed):
+					prev_limit_node.changed.disconnect(_on_tile_map_changed)
 
-		if new_limit_node is TileMap:
+		if new_limit_node is TileMap or new_limit_node.is_class("TileMapLayer"):
 			if not new_limit_node.changed.is_connected(_on_tile_map_changed):
 				new_limit_node.changed.connect(_on_tile_map_changed)
 		elif new_limit_node is CollisionShape2D:
@@ -1234,7 +1269,7 @@ func set_limit_target(value: NodePath) -> void:
 				limit_target = null
 				return
 		else:
-			printerr("Limit Target is not a TileMap or CollisionShape2D node")
+			printerr("Limit Target is not a TileMap, TileMapLayer or CollisionShape2D node")
 			return
 
 	elif value == NodePath(""):
