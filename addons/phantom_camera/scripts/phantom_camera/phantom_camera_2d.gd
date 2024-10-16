@@ -365,7 +365,6 @@ enum InactiveUpdateMode {
 	#get = get_limit_smoothing
 
 @export_group("Noise")
-
 ## If true, will trigger the noise while in the editor.[br]
 ## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
 ## the resource.[br][br]

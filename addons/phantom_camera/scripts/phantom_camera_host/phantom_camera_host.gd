@@ -185,7 +185,7 @@ var _phantom_camera_manager: Node
 ## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
 var camera_2d: Camera2D = null
 ## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
-var camera_3d = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+var camera_3d: Node = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 
 #endregion
 
@@ -514,7 +514,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_2d.set("physics_interpolation_mode", 0)
-				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
 				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
 					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
 				else:
