@@ -165,8 +165,8 @@ sources/0 = SubResource("TileSetAtlasSource_lvmak")
 
 [sub_resource type="Resource" id="Resource_k7ms0"]
 script = ExtResource("11_d6abr")
-amplitude = 30.0
-frequency = 0.5
+amplitude = 20.0
+frequency = 0.4
 randomize_seed = true
 seed = 0
 positional_noise = true
@@ -243,10 +243,11 @@ text = "[WASD] to move
 [Q] to trigger noise"
 
 [node name="Camera2D" type="Camera2D" parent="."]
-physics_interpolation_mode = 2
+physics_interpolation_mode = 1
 position = Vector2(227, -28)
 ignore_rotation = false
 zoom = Vector2(1.5, 1.5)
+process_callback = 0
 editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]

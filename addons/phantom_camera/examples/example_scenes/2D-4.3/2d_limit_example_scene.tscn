@@ -231,12 +231,12 @@ visible = false
 [node name="CharacterBody2D" parent="." instance=ExtResource("5_yv8tn")]
 unique_name_in_owner = true
 z_index = 1
-position = Vector2(66, -50)
+position = Vector2(66, -28)
 script = ExtResource("6_68ewj")
 
 [node name="RoomLeftPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-position = Vector2(66, -113.205)
+position = Vector2(66, -91.205)
 script = ExtResource("6_2n5r1")
 priority = 5
 follow_mode = 2
@@ -300,8 +300,9 @@ draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
-position = Vector2(66, -113.205)
+position = Vector2(66, -91.205)
 zoom = Vector2(2, 2)
+process_callback = 0
 limit_left = -387
 limit_top = -528
 limit_right = 433

@@ -1061,8 +1061,13 @@ func _follow_target_tree_exiting(target: Node) -> void:
 func _should_follow_checker() -> void:
 	if follow_mode == FollowMode.NONE:
 		_should_follow = false
-	else:
-		_should_follow = true
+		return
+
+	if not follow_mode == FollowMode.GROUP:
+		if is_instance_valid(follow_target):
+			_should_follow = true
+		else:
+			_should_follow = false
 
 
 func _follow_targets_size_check() -> void:
