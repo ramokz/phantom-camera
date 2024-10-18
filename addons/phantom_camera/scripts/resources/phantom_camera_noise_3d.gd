@@ -3,6 +3,12 @@
 class_name PhantomCameraNoise3D
 extends Resource
 
+## A resource type used to apply noise, or shake, to [Camera3D]s that have a [PhantomCameraHost] as a child.
+##
+## Is a resource type that defines, calculates and outputs the noise values to a [Camera3D] through active
+## [PhantomCamera3D].[br]
+## It can be applied to either [PhantomCameraNoiseEmitter3D] or a [PhantomCamera3D] noise property directly
+
 #region Exported Properties
 
 ## Defines the size of the noise pattern.[br]
@@ -55,7 +61,7 @@ extends Resource
 
 ## Multiplies rotational noise amount in the Z-axis.[br]
 ## Set the value to [param 0] to disable noise in the axis.
-@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_z: float = 0:
+@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier_z: float = 1:
 	set = set_rotational_multiplier_z,
 	get = get_rotational_multiplier_z
 

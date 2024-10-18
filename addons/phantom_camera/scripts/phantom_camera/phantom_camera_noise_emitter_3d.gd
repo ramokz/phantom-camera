@@ -174,7 +174,7 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 
 #region Public Functions
 
-## Emits noise to the [PhantomCamera3D]s that matches the corresponding layers.
+## Emits noise to the [PhantomCamera3D]s that has at least one matching layers.
 func emit() -> void:
 	if _play: _play = false
 	_play = true

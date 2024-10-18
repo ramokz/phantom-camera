@@ -3,6 +3,12 @@
 class_name PhantomCameraNoise2D
 extends Resource
 
+## A resource type used to apply noise, or shake, to [Camera2D]s that have a [PhantomCameraHost] as a child.
+##
+## Is a resource type that defines, calculates and outputs the noise values to a [Camera2D] through active
+## [PhantomCamera3D].[br]
+## It can be applied to either [PhantomCameraNoiseEmitter2D] or a [PhantomCamera2D] noise property directly
+
 #region Exported Properties
 
 ## Defines the size of the noise pattern.[br]

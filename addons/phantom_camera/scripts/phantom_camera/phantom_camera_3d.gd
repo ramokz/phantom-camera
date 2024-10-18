@@ -1175,14 +1175,19 @@ func _check_physics_body(target: Node3D) -> void:
 #
 	#return unprojected_position
 
+
+## Returns the [Transform3D] value based on the [member follow_mode] / [member look_at_mode] target value.
 func get_transform_output() -> Transform3D:
 	return _transform_output
 
-func set_noise_transform(value: Transform3D) -> void:
-	_transform_noise = value
+
+## Returns the noise [Transform3D] value.
 func get_noise_transform() -> Transform3D:
 	return _transform_noise
 
+
+## Emits a noise based on a custom [Transform3D] value.[br]
+## Use this function if you wish to make use of external noise patterns from, for example, other addons.
 func emit_noise(value: Transform3D) -> void:
 	noise_emitted.emit(value)
 
