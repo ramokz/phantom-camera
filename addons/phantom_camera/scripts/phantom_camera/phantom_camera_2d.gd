@@ -589,6 +589,9 @@ func process_logic(delta: float) -> void:
 	if _is_active:
 		if _has_noise_resource and _preview_noise:
 			_transform_noise = noise.get_noise_transform(delta)
+			if not pcam_host_owner.camera_2d.ignore_rotation: return
+			if _transform_noise.get_rotation() != 0:
+				push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
 	else:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER: return
@@ -883,6 +886,12 @@ func _follow_targets_size_check() -> void:
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
 		noise_emitted.emit(emitter_noise_output)
+		
+		if not pcam_host_owner.camera_2d.ignore_rotation: return
+		if emitter_noise_output.get_rotation() != 0:
+			push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
+
+
 
 #endregion
 
