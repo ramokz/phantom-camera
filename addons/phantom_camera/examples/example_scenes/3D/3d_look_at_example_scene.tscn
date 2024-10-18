@@ -39,11 +39,11 @@ albedo_texture = ExtResource("5_u5qhp")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
-[node name="Node3D" type="Node3D"]
+[node name="Root" type="Node3D"]
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773413, -0.137901, 4.03222, 6.36446)
+transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773412, -0.137901, 4.03222, 6.36446)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 100
@@ -53,18 +53,16 @@ script = ExtResource("1_lldvu")
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
 metadata/_edit_lock_ = true
 
-[node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target", "look_at_targets")]
+[node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target")]
 transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773413, -0.137901, 4.03222, 6.36446)
 script = ExtResource("2_8md3q")
 priority = 10
 look_at_mode = 2
 look_at_target = NodePath("../PlayerCharacterBody3D2/PlayerVisual")
-look_at_targets = [null, NodePath("../NPCs/PlayerMeshInstance3D")]
 tween_resource = SubResource("Resource_pwcgo")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_ft2w3")
 look_at_damping = true
-look_at_damping_value = 0.1
 
 [node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("1_i2pjc")]
 

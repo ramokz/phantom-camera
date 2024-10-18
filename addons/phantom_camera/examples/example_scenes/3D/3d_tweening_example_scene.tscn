@@ -118,7 +118,7 @@ metadata/_edit_lock_ = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0.083587, 2.507, 4.05493)
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0.083587, 2.507, 4.05493)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("2_b2yrt")

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d.gd" id="1_jnc14"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="2_62b2n"]
-[ext_resource type="Texture2D" uid="uid://ci76plsequlrq" path="res://addons/phantom_camera/examples/textures/2D/player_sprite.svg" id="2_yr8cm"]
+[ext_resource type="Texture2D" uid="uid://cscjjt55iw2cu" path="res://addons/phantom_camera/examples/textures/2D/player_sprite.svg" id="2_yr8cm"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="4_rloon"]
 [ext_resource type="Resource" uid="uid://cecrnq0wnkexh" path="res://addons/phantom_camera/examples/resources/tween/item_focus_phantom_camera_2d_tween.tres" id="5_4iyk1"]
 [ext_resource type="Resource" uid="uid://cllveybboaqk5" path="res://addons/phantom_camera/examples/resources/tween/inventory_phantom_camera_2d_tween.tres" id="6_2h6fv"]

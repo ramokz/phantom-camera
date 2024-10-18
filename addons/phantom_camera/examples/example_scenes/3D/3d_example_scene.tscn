@@ -155,7 +155,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999858, 0, 0, 0, 0.94884, 0.315632, 0, -0.315637, 0.948825, -2.53871, 2, 9.76232)
+transform = Transform3D(1, 0, 0, 0, 0.948876, 0.315649, 0, -0.315649, 0.948876, -2.53871, 2, 9.76232)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_wn7ww")

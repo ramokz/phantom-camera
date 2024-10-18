@@ -6,6 +6,7 @@ extends CharacterBody2D
 @onready var _interaction_prompt: Panel = %InteractionPrompt
 @onready var _ui_sign: Control
 @onready var _dark_overlay: ColorRect = %DarkOverlay
+@onready var _noise_emitter: PhantomCameraNoiseEmitter2D
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"
@@ -44,8 +45,8 @@ var InputMovementDic: Dictionary = {
 
 
 func _ready() -> void:
-	_player_area2d.connect("body_shape_entered", _show_prompt)
-	_player_area2d.connect("body_shape_exited", _hide_prompt)
+	_player_area2d.body_shape_entered.connect(_show_prompt)
+	_player_area2d.body_shape_exited.connect(_hide_prompt)
 
 	_ui_sign = owner.get_node("%UISign")
 
@@ -87,6 +88,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.is_physical_key_pressed(KEY_ESCAPE) and _movement_disabled:
 			_hide_interactive_node(_interactive_UI)
 			_interactive_node_logic()
+
+	if event.keycode == KEY_Q and event.is_pressed():
+		if get_node_or_null("%PlayerPhantomCameraNoiseEmitter2D"):
+			%PlayerPhantomCameraNoiseEmitter2D.emit()
 
 
 func _show_interactive_node(UI: Control) -> void:
@@ -137,11 +142,10 @@ func _physics_process(delta: float) -> void:
 
 
 func _show_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shape: int) -> void:
-	if body is TileMap:
-		var tile_map: TileMap = body
-
+	if body.is_class("TileMapLayer"): # TODO - Using string reference to support Godot 4.2
+		var tile_map := body
 		var tile_coords: Vector2i = tile_map.get_coords_for_body_rid(body_rid)
-		var cell_data: TileData = tile_map.get_cell_tile_data(1, tile_coords)
+		var cell_data: TileData = tile_map.get_cell_tile_data(tile_coords)
 
 		if cell_data:
 			var cell_data_type: StringName = cell_data.get_custom_data("Type")
@@ -161,11 +165,11 @@ func _show_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shap
 
 
 func _hide_prompt(body_rid: RID, body: Node2D, body_shape_index: int, local_shape: int) -> void:
-	if body is TileMap:
-		var tile_map: TileMap = body
+	if body.is_class("TileMapLayer"): # TODO - Using string reference to support Godot 4.2
+		var tile_map := body
 
 		var tile_coords: Vector2i = tile_map.get_coords_for_body_rid(body_rid)
-		var cell_data: TileData = tile_map.get_cell_tile_data(1, tile_coords)
+		var cell_data: TileData = tile_map.get_cell_tile_data(tile_coords)
 
 		if cell_data:
 			_interaction_prompt.set_visible(false)

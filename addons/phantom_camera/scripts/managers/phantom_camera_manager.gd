@@ -3,6 +3,11 @@ extends Node
 
 const PHANTOM_CAMERA_CONSTS = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
+
+signal noise_2d_emitted(noise_output: Transform2D, emitter_layer: int)
+signal noise_3d_emitted(noise_output: Transform3D, emitter_layer: int)
+
+
 var phantom_camera_hosts: Array[PhantomCameraHost]:
 	get:
 		return _phantom_camera_host_list
@@ -39,10 +44,8 @@ func pcam_host_removed(caller: Node) -> void:
 func pcam_added(caller, host_slot: int = 0) -> void:
 	if is_instance_of(caller, PhantomCamera2D):
 		_phantom_camera_2d_list.append(caller)
-		#print("Added PCam2D to PCamManager")
 	elif caller.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_phantom_camera_3d_list.append(caller)
-		#print("Added PCam3D to PCamManager")
 
 	if not _phantom_camera_host_list.is_empty():
 		_phantom_camera_host_list[host_slot].pcam_added_to_scene(caller)

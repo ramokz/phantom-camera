@@ -160,6 +160,10 @@ func _on_timer_timeout() -> void:
 
 # Convert a version number to an actually comparable number
 func version_to_number(version: String) -> int:
+	var regex = RegEx.new()
+	regex.compile("[a-zA-Z]+")
+	if regex.search(str(version)): return 0
+
 	var bits = version.split(".")
 	var version_bit: int
 	var multiplier: int = 10000

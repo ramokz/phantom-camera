@@ -70,9 +70,12 @@ far = 4000.0
 
 [node name="Root" type="Node3D"]
 
+[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("7_kut0u")]
+unique_name_in_owner = true
+
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
+transform = Transform3D(1, 0, 0, 0, 0.866023, 0.499997, 0, -0.499999, 0.866021, -0.0194088, 2.25687, 3.01475)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
@@ -97,12 +100,9 @@ follow_offset = Vector3(0, 0.8, -0.399)
 follow_distance = 1.5
 spring_length = 1.5
 
-[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("7_kut0u")]
-unique_name_in_owner = true
-
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 3.01476)
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -0.0194088, 2.25687, 3.01475)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("5_oc4q1")

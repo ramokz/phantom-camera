@@ -39,7 +39,7 @@ func _init() -> void:
 
 func _draw_frustum() -> PackedVector3Array:
 	var lines = PackedVector3Array()
-	
+
 	var dis: float 		= 0.25
 	var width: float 	= dis * 1.25
 	var len: float 		= dis * 1.5
@@ -48,38 +48,36 @@ func _draw_frustum() -> PackedVector3Array:
 #	lines.push_back(Vector3(0, 0, 0))
 #	lines.push_back(Vector3(0, 0, -len))
 
-
 	# Trapezoid
 	lines.push_back(Vector3(0, 0, 0))
 	lines.push_back(Vector3(-width, dis, -len))
-	
+
 	lines.push_back(Vector3(0, 0, 0))
 	lines.push_back(Vector3(width, dis, -len))
-	
+
 	lines.push_back(Vector3(0, 0, 0))
 	lines.push_back(Vector3(-width, -dis, -len))
-	
+
 	lines.push_back(Vector3(0, 0, 0))
 	lines.push_back(Vector3(width, -dis, -len))
-	
-	
+
 	# Square
 	## Left
 	lines.push_back(Vector3(-width, dis, -len))
 	lines.push_back(Vector3(-width, -dis, -len))
-	
+
 	## Bottom
 	lines.push_back(Vector3(-width, -dis, -len))
 	lines.push_back(Vector3(width, -dis, -len))
-	
+
 	## Right
 	lines.push_back(Vector3(width, -dis, -len))
 	lines.push_back(Vector3(width, dis, -len))
-	
+
 	## Top
 	lines.push_back(Vector3(width, dis, -len))
 	lines.push_back(Vector3(-width, dis, -len))
-	
+
 	return lines
 
 
@@ -88,6 +86,6 @@ func _redraw(gizmo: EditorNode3DGizmo):
 
 	var icon: Material = get_material(_gizmo_name, gizmo)
 	gizmo.add_unscaled_billboard(icon, _gizmo_scale)
-	
+
 	var material = get_material("main", gizmo)
 	gizmo.add_lines(_draw_frustum(), material)

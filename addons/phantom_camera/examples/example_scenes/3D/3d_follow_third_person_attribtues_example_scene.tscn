@@ -58,7 +58,7 @@ dof_blur_far_distance = 31.1
 dof_blur_near_enabled = true
 dof_blur_near_distance = 1.79
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gwbyx"]
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_5mfg2"]
 dof_blur_far_enabled = true
 dof_blur_far_distance = 5.99
 dof_blur_near_enabled = true
@@ -134,8 +134,8 @@ transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 9.63713)
-attributes = SubResource("CameraAttributesPractical_gwbyx")
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -0.0194088, 2.25688, 9.63713)
+attributes = SubResource("CameraAttributesPractical_5mfg2")
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("5_8von1")

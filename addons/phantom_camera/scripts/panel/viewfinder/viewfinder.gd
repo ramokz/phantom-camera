@@ -194,11 +194,11 @@ func visibility_check() -> void:
 		_check_camera(root, camera_2d, true)
 	elif root is Node3D:
 		var camera_3d: Camera3D
-
 		if has_camera:
 			camera_3d = phantom_camera_host.camera_3d
-		else:
-			camera_3d = root.get_viewport().get_camera_3d()
+		elif root.get_viewport() != null:
+			if root.get_viewport().get_camera_3d() != null:
+				camera_3d = root.get_viewport().get_camera_3d()
 
 		_is_2d = false
 		is_scene = true
@@ -216,25 +216,22 @@ func visibility_check() -> void:
 
 func _get_camera_2d() -> Camera2D:
 	var edited_scene_root = EditorInterface.get_edited_scene_root()
-	
-	if edited_scene_root == null:
-		return null
-	
+
+	if edited_scene_root == null: return null
+
 	var viewport = edited_scene_root.get_viewport()
-	if viewport == null:
-		return null
-	
+	if viewport == null: return null
+
 	var viewport_rid = viewport.get_viewport_rid()
-	if viewport_rid == null:
-		return null
-	
+	if viewport_rid == null: return null
+
 	var camerasGroupName = "__cameras_%d" % viewport_rid.get_id()
 	var cameras = get_tree().get_nodes_in_group(camerasGroupName)
 
 	for camera in cameras:
 		if camera is Camera2D and camera.is_current:
 			return camera
-	
+
 	return null
 
 

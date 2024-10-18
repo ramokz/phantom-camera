@@ -94,7 +94,7 @@ albedo_color = Color(0.568403, 0.988235, 0.762724, 0.0901961)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 0, 2.507, 1.5)
+transform = Transform3D(0.999996, -0.00216283, 0.00184472, 0, 0.648938, 0.760841, -0.00284268, -0.760838, 0.648936, 0, 2.507, 1.5)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 script = ExtResource("1_lm5n8")

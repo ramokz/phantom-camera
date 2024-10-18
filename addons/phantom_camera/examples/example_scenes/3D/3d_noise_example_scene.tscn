@@ -1,0 +1,207 @@
+[gd_scene load_steps=22 format=3 uid="uid://p7s5t3tthmo"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_ggfbg"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_dreow"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_f8fcw"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_mjtut"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="4_poyyk"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="5_d6uqs"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="6_fbad7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_n8u0x"]
+[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="6_vpla5"]
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="10_0thai"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_i8r8q"]
+
+[sub_resource type="Resource" id="Resource_t3bgw"]
+script = ExtResource("4_poyyk")
+amplitude = 30.0
+frequency = 2.0
+randomize_noise_seed = 1
+noise_seed = 0
+rotational_noise = true
+positional_noise = false
+rotational_multiplier_x = 0.1
+rotational_multiplier_y = 0.1
+rotational_multiplier_z = 0.0
+positional_multiplier_x = 0.0
+positional_multiplier_y = 0.0
+positional_multiplier_z = 0.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_yvgu3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vc6km"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_lsrh7"]
+radius = 0.269454
+
+[sub_resource type="Resource" id="Resource_lhgur"]
+script = ExtResource("3_f8fcw")
+duration = 1.0
+transition = 0
+ease = 2
+
+[sub_resource type="Resource" id="Resource_ghjuj"]
+script = ExtResource("4_mjtut")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="Resource" id="Resource_2l4w0"]
+script = ExtResource("4_poyyk")
+amplitude = 40.0
+frequency = 0.2
+randomize_noise_seed = 0
+noise_seed = 0
+rotational_noise = true
+positional_noise = false
+rotational_multiplier_x = 1.0
+rotational_multiplier_y = 1.0
+rotational_multiplier_z = 0.0
+positional_multiplier_x = 0.1
+positional_multiplier_y = 0.1
+positional_multiplier_z = 0.1
+
+[sub_resource type="Resource" id="Resource_6tnhy"]
+script = ExtResource("4_poyyk")
+amplitude = 10.0
+frequency = 4.2
+randomize_noise_seed = 0
+noise_seed = 928
+rotational_noise = true
+positional_noise = false
+rotational_multiplier_x = 1.0
+rotational_multiplier_y = 1.0
+rotational_multiplier_z = 0.1
+positional_multiplier_x = 1.0
+positional_multiplier_y = 1.0
+positional_multiplier_z = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qi01t"]
+albedo_texture = ExtResource("6_vpla5")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ey47a"]
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_bottom_right = 20
+expand_margin_bottom = 6.0
+
+[node name="Root" type="Node3D"]
+
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.0329791, -0.0394775, 0.998676, 0, 0.99922, 0.039499, -0.999456, -0.00130264, 0.0329533, -16.46, 0.503767, 4.249)
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_ggfbg")
+
+[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.46, 0.503767, 4.249)
+script = ExtResource("6_fbad7")
+run_noise = SubResource("Resource_t3bgw")
+
+[node name="PlayerVisual" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+unique_name_in_owner = true
+mesh = SubResource("CapsuleMesh_yvgu3")
+surface_material_override/0 = SubResource("StandardMaterial3D_vc6km")
+
+[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_lsrh7")
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
+shape = SubResource("CapsuleShape3D_lsrh7")
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(0.00441533, 0, 0.999915, 0, 0.999995, 0, -0.999923, 0, 0.00441529, -16.46, 0.503767, 4.249)
+script = ExtResource("2_dreow")
+priority = 10
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D")
+tween_resource = SubResource("Resource_lhgur")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_ghjuj")
+noise = SubResource("Resource_2l4w0")
+noise_emitter_layer = 1
+
+[node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
+script = ExtResource("6_n8u0x")
+noise = SubResource("Resource_6tnhy")
+duration = 0.1
+decay_time = 0.1
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="Floor" parent="Environment" instance=ExtResource("5_d6uqs")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 6.539, 2.5)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_qi01t")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 8.83707, 6.53866, -1.80739)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_qi01t")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -38.9392, 6.53866, -1.80739)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_qi01t")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 6.539, 6)
+use_collision = true
+size = Vector3(178.429, 14.0773, 1)
+material = SubResource("StandardMaterial3D_qi01t")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="EmitterTip" type="Panel" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = -1
+anchor_right = 0.3
+anchor_bottom = 0.1
+theme_override_styles/panel = SubResource("StyleBoxFlat_ey47a")
+
+[node name="Guidance" type="RichTextLabel" parent="EmitterTip"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 8
+theme_override_fonts/normal_font = ExtResource("10_0thai")
+theme_override_fonts/bold_font = ExtResource("11_i8r8q")
+theme_override_font_sizes/normal_font_size = 18
+theme_override_font_sizes/bold_font_size = 24
+bbcode_enabled = true
+text = "[center]Press [b]Q[/b] to trigger Noise Emitter"
+fit_content = true

@@ -15,6 +15,14 @@ const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/
 
 #endregion
 
+#region
+
+## TBD - For when Godot 4.3 becomes the minimum version
+#@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
+	#set = set_interpolation_mode,
+	#get = get_interpolation_mode
+
+#endregion
 
 #region Signals
 
@@ -24,7 +32,6 @@ signal update_editor_viewfinder
 
 #endregion
 
-
 #region Variables
 
 enum InterpolationMode {
@@ -33,16 +40,9 @@ enum InterpolationMode {
 	PHYSICS = 2,
 }
 
-## TBD - For when Godot 4.3 becomes the minimum version
-#@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
-	#set = set_interpolation_mode,
-	#get = get_interpolation_mode
+#endregion
 
-
-## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
-var camera_2d: Camera2D = null
-## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
-var camera_3d = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+#region Private Variables
 
 var _pcam_list: Array[Node] = []
 
@@ -66,7 +66,6 @@ var _multiple_pcam_hosts: bool = false
 
 var _is_child_of_camera: bool = false
 var _is_2D: bool = false
-
 
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
@@ -172,10 +171,23 @@ var _cam_far_changed: bool = false
 var _active_pcam_2d_glob_transform: Transform2D = Transform2D()
 var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 
+var _has_noise_emitted: bool = false
+var _noise_emitted_output_2d: Transform2D = Transform2D()
+var _noise_emitted_output_3d: Transform3D = Transform3D()
+
 #endregion
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
 var _phantom_camera_manager: Node
+
+#region Public Variables
+
+## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
+var camera_2d: Camera2D = null
+## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
+var camera_3d: Node = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+
+#endregion
 
 #region Private Functions
 
@@ -216,7 +228,7 @@ func _enter_tree() -> void:
 		else:
 			_is_2D = false
 			camera_3d = parent
-			
+
 			## Clears existing resource on Camera3D to prevent potentially messing with external Attribute resource
 			if camera_3d.attributes != null and not Engine.is_editor_hint():
 				camera_3d.attributes = null
@@ -252,11 +264,16 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
-	if not is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d): return
+	process_priority = 300
+	process_physics_priority = 300
+
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.global_transform
+		camera_2d.offset = Vector2.ZERO
+		if not is_instance_valid(_active_pcam_2d): return
+		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.global_transform
+		if not is_instance_valid(_active_pcam_3d): return
+		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 
 func _check_camera_host_amount() -> void:
@@ -276,10 +293,21 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_active_pcam_2d.set_is_active(self, false)
 			_active_pcam_2d.became_inactive.emit()
 
+			if _active_pcam_2d.noise_emitted.is_connected(_noise_emitted_2d):
+				_active_pcam_2d.noise_emitted.disconnect(_noise_emitted_2d)
+
 			if _trigger_pcam_tween:
 				_active_pcam_2d.tween_interrupted.emit(pcam)
 		else:
 			_prev_active_pcam_3d_transform = camera_3d.global_transform
+			_active_pcam_3d.set_is_active(self, false)
+			_active_pcam_3d.became_inactive.emit()
+
+			if _active_pcam_3d.noise_emitted.is_connected(_noise_emitted_3d):
+				_active_pcam_3d.noise_emitted.disconnect(_noise_emitted_3d)
+
+			if _trigger_pcam_tween:
+				_active_pcam_3d.tween_interrupted.emit(pcam)
 
 			if camera_3d.attributes != null:
 				var _attributes: CameraAttributes = camera_3d.attributes
@@ -333,11 +361,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_cam_near = camera_3d.near
 			_prev_cam_far = camera_3d.far
 
-			_active_pcam_3d.set_is_active(self, false)
-			_active_pcam_3d.became_inactive.emit()
-
-			if _trigger_pcam_tween:
-				_active_pcam_3d.tween_interrupted.emit(pcam)
 	else:
 		no_previous_pcam = true
 
@@ -347,11 +370,15 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_priority = _active_pcam_2d.priority
 		_active_pcam_has_damping = _active_pcam_2d.follow_damping
 		_tween_duration = _active_pcam_2d.tween_duration
+		if not _active_pcam_2d.noise_emitted.is_connected(_noise_emitted_2d):
+			_active_pcam_2d.noise_emitted.connect(_noise_emitted_2d)
 	else:
 		_active_pcam_3d = pcam
 		_active_pcam_priority = _active_pcam_3d.priority
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
 		_tween_duration = _active_pcam_3d.tween_duration
+		if not _active_pcam_3d.noise_emitted.is_connected(_noise_emitted_3d):
+			_active_pcam_3d.noise_emitted.connect(_noise_emitted_3d)
 
 		# Checks if the Camera3DResource has changed from the previous active PCam3D
 		if _active_pcam_3d.camera_3d_resource:
@@ -452,6 +479,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
 		_camera_zoom = camera_2d.zoom
+
 		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
 		var _physics_based: bool
 
@@ -478,13 +506,21 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				camera_2d.set("physics_interpolation_mode", 1)
 				#camera_2d.reset_physics_interpolation()
 				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
+				else:
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
 			else:
 				_follow_target_physics_based = false
 				_active_pcam_2d.set_follow_target_physics_based(false, self)
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
-				camera_2d.set("physics_interpolation_mode", 2)
-				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+				camera_2d.set("physics_interpolation_mode", 0)
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
+				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
+				else:
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
 	else:
 		_follow_target_physics_based = false
 		if _active_pcam_3d.show_viewfinder_in_play:
@@ -495,12 +531,11 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _active_pcam_3d.camera_3d_resource:
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
-
 	if no_previous_pcam:
 		if _is_2D:
-			_prev_active_pcam_2d_transform = _active_pcam_2d.global_transform
+			_prev_active_pcam_2d_transform = _active_pcam_2d.get_transform_output()
 		else:
-			_prev_active_pcam_3d_transform = _active_pcam_3d.global_transform
+			_prev_active_pcam_3d_transform = _active_pcam_3d.get_transform_output()
 
 	if pcam.get_tween_skip():
 		_tween_elapsed_time = pcam.tween_duration
@@ -517,6 +552,7 @@ func _find_pcam_with_highest_priority() -> void:
 			_assign_new_active_pcam(pcam)
 		pcam.set_tween_skip(self, false)
 		_active_pcam_missing = false
+
 
 ## TODO - For 0.8 release
 #func _find_pcam_with_highest_priority() -> void:
@@ -536,21 +572,39 @@ func _find_pcam_with_highest_priority() -> void:
 		#_active_pcam_missing = true
 
 
-func _process(delta: float):
-	if _follow_target_physics_based or _active_pcam_missing: return
-	_tween_follow_checker(delta)
+func _process(delta: float) -> void:
+	if _active_pcam_missing: return
 
+	if not _follow_target_physics_based: _tween_follow_checker(delta)
 
-func _physics_process(delta: float):
-	if not _follow_target_physics_based or _active_pcam_missing: return
-	_tween_follow_checker(delta)
-
-
-func _tween_follow_checker(delta: float):
 	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.get_global_transform()
+		camera_2d.offset = Vector2.ZERO
+		camera_2d.offset = _active_pcam_2d.get_noise_transform().origin # + _noise_emitted_output_2d.origin
+		camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation() # + _noise_emitted_output_2d.get_rotation()
 	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.get_global_transform()
+		camera_3d.global_transform *= _active_pcam_3d.get_noise_transform()
+
+	if not _has_noise_emitted: return
+	if _is_2D:
+		camera_2d.offset += _noise_emitted_output_2d.origin
+		camera_2d.rotation += _noise_emitted_output_2d.get_rotation() # + _noise_emitted_output_2d.get_rotation()
+	else:
+		camera_3d.global_transform *= _noise_emitted_output_3d
+	_has_noise_emitted = false
+
+
+func _physics_process(delta: float) -> void:
+	if _active_pcam_missing or not _follow_target_physics_based: return
+	_tween_follow_checker(delta)
+
+
+func _tween_follow_checker(delta: float) -> void:
+	if _is_2D:
+		_active_pcam_2d.process_logic(delta)
+		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
+	else:
+		_active_pcam_3d.process_logic(delta)
+		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 	if _trigger_pcam_tween:
 		_pcam_tween(delta)
@@ -565,14 +619,14 @@ func _pcam_follow(delta: float) -> void:
 		if not is_instance_valid(_active_pcam_3d): return
 
 	if _active_pcam_missing or not _is_child_of_camera: return
-	# When following
+
 	if _is_2D:
 		if _active_pcam_2d.snap_to_pixel:
 			var snap_to_pixel_glob_transform: Transform2D = _active_pcam_2d_glob_transform
 			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
 			camera_2d.global_transform = snap_to_pixel_glob_transform
 		else:
-			camera_2d.global_transform =_active_pcam_2d_glob_transform
+			camera_2d.global_transform = _active_pcam_2d_glob_transform
 		camera_2d.zoom = _active_pcam_2d.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
@@ -601,6 +655,15 @@ func _pcam_follow(delta: float) -> void:
 			if _active_pcam_3d.environment != null:
 				camera_3d.environment = _active_pcam_3d.environment.duplicate()
 
+
+func _noise_emitted_2d(noise_output: Transform2D) -> void:
+	_noise_emitted_output_2d = noise_output
+	_has_noise_emitted = true
+
+
+func _noise_emitted_3d(noise_output: Transform3D) -> void:
+	_noise_emitted_output_3d = noise_output
+	_has_noise_emitted = true
 
 func _pcam_tween(delta: float) -> void:
 	# Run at the first tween frame
@@ -931,11 +994,6 @@ func _tween_interpolate_value(from: Variant, to: Variant, duration: float, trans
 		ease_type,
 	)
 
-#endregion
-
-
-#region Public Functions
-
 func _show_viewfinder_in_play() -> void:
 	# Don't show the viewfinder in the actual editor or project builds
 	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
@@ -963,6 +1021,9 @@ func _show_viewfinder_in_play() -> void:
 	_viewfinder_node.visible = true
 	_viewfinder_node.update_dead_zone()
 
+#endregion
+
+#region Public Functions
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a
@@ -1071,6 +1132,7 @@ func get_trigger_pcam_tween() -> bool:
 func refresh_pcam_list_priorty() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
+
 
 #func set_interpolation_mode(value: int) -> void:
 	#interpolation_mode = value
