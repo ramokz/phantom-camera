@@ -62,6 +62,8 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 far = 2000.0
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("3_fb4x5")
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("4_dm3jl")]
