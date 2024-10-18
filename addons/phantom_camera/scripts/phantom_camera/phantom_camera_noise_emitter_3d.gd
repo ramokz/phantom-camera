@@ -3,9 +3,23 @@
 class_name PhantomCameraNoiseEmitter3D
 extends Node3D
 
+## Emits positional and rotational noise to active [PhantomCamera3D]s and its corresponding [Camera3D].
+##
+## Is a node meant to apply positional and rotational noise, also referred to as shake, to the [Camera3D].
+## It is designed for use cases such as when hitting or when being hit, earthquakes or to add a
+## bit of slight movement to the camera to make it feel less static.
+## The emitter can affect multiple [PhantomCamera3D] in a given scene based on which [member noise_emitter_layer]
+## are enabled by calling its [method emit] function. At least one corresponding layer has to be
+## set on the [PhantomCamera3D] and the emitter node.
+
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 #region Exported Properties
+
+## The [PhantomCameraNoise3D] resource that defines the noise pattern.
+@export var noise: PhantomCameraNoise3D:
+	set = set_noise,
+	get = get_noise
 
 ## If true, previews the noise in the Viewfinder.
 @export var preview: bool = false:
@@ -18,44 +32,34 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 ## If true, repeats the noise indefinitely once started.Otherwise, it will only be triggered once. [br]
 ## [b]Note:[/b] This will always be enabled if the resource is assigned the the [PhantomCamera3D]'s
 ## [member PhantomCamera3D.noise] property.
-@export var continous: bool = false:
-	set(value):
-		continous = value
-		notify_property_list_changed()
-	get:
-		return continous
+@export var continuous: bool = false:
+	set = set_continuous,
+	get = get_continuous
 
 ## Determines how long the noise should take to reach full [member intensity] once started.[br]
 ## The value is set in [b]seconds[/b].
-@export_exp_easing("positive_only") var growth_time: float = 0
+@export_exp_easing("positive_only", "suffix: s") var growth_time: float = 0:
+	set = set_growth_time,
+	get = get_growth_time
 
 ## Sets the duration for the camera noise if [member loop] is set to false.[br]
 ## If the duration is [param 0] then [member continous] becomes enabled.[br]
 ## The value is set in [b]seconds[/b].
 @export_range(0, 10, 0.001, "or_greater", "suffix: s") var duration: float = 1.0:
-	set(value):
-		duration = value
-		if duration == 0:
-			duration = 0.001
-	get:
-		return duration
+	set = set_duration,
+	get = get_duration
 
 ## Determines how long the noise should take to come to a full stop.[br]
 ## The value is set in [b]seconds[/b].
-@export_exp_easing("attenuation", "positive_only") var decay_time: float = 0
+@export_exp_easing("attenuation", "positive_only", "suffix: s") var decay_time: float = 0:
+	set = set_decay_time,
+	get = get_decay_time
 
 ## Enabled layers will affect [PhantomCamera3D] nodes with at least one corresponding layer enabled.[br]
 ## Enabling multiple corresponding layers on the same [PhantomCamera3D] causes no additional effect.
-@export_flags_3d_render var noise_emitter_layer = 1
-
-## The resource that defines the noise pattern.[br]
-## [b]Note:[/b] This is a required property and so will always have a default value.
-@export var noise: PhantomCameraNoise3D:
-	set(value):
-		noise = value
-		update_configuration_warnings()
-	get:
-		return noise
+@export_flags_3d_render var noise_emitter_layer: int = 1:
+	set = set_noise_emitter_layer,
+	get = get_noise_emitter_layer
 
 #endregion
 
@@ -73,8 +77,8 @@ var _play: bool = false:
 			_should_decay = false
 		else:
 			_should_decay = true
-			if noise.randomize_seed:
-				noise.seed = randi() & 1000
+			if noise.randomize_noise_seed:
+				noise.noise_seed = randi() & 1000
 			else:
 				noise.reset_noise_time()
 	get:
@@ -107,7 +111,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 
 
 func _validate_property(property) -> void:
-	if property.name == "duration" and continous:
+	if property.name == "duration" and continuous:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
@@ -131,7 +135,7 @@ func _process(delta: float) -> void:
 			_start_duration_countdown = true
 			noise.set_trauma(1)
 
-	if not continous:
+	if not continuous:
 		if _start_duration_countdown:
 			if _elasped_play_time >= duration + growth_time:
 				_should_decay = true
@@ -151,19 +155,37 @@ func _process(delta: float) -> void:
 	_noise_output = noise.get_noise_transform(delta)
 	_phantom_camera_manager.noise_3d_emitted.emit(_noise_output, noise_emitter_layer)
 
+
+func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
+	var mask: int = current_layers
+
+	# From https://github.com/godotengine/godot/blob/51991e20143a39e9ef0107163eaf283ca0a761ea/scene/3d/camera_3d.cpp#L638
+	if layer_number < 1 or layer_number > 20:
+		printerr("Layer must be between 1 and 20.")
+	else:
+		if value:
+			mask |= 1 << (layer_number - 1)
+		else:
+			mask &= ~(1 << (layer_number - 1))
+
+	return mask
+
 #endregion
 
 #region Public Functions
 
-func assign_noise_resource(resource: PhantomCameraNoise3D) -> void:
-	noise = resource
-
-
+## Emits noise to the [PhantomCamera3D]s that matches the corresponding layers.
 func emit() -> void:
 	if _play: _play = false
 	_play = true
 
 
+## Returns the state for the emitter. If true, the emitter is currently emitting.
+func is_emitting() -> bool:
+	return _play
+
+
+## Stops the emitter from emitting noise.
 func stop(should_decay: bool = true) -> void:
 	if should_decay:
 		_should_decay = true
@@ -171,7 +193,74 @@ func stop(should_decay: bool = true) -> void:
 		_play = false
 
 
+## Toggles the emitter on and off.[br]
 func toggle() -> void:
 	_play = !_play
 
 #endregion
+
+#region Setter & Getter Functions
+
+## Sets the [member noise] resource.
+func set_noise(value: PhantomCameraNoise3D) -> void:
+	noise = value
+	update_configuration_warnings()
+
+## Returns the [member noise] resource.
+func get_noise() -> PhantomCameraNoise3D:
+	return noise
+
+
+## Sets the [member continous] value.
+func set_continuous(value: bool) -> void:
+	continuous = value
+	notify_property_list_changed()
+
+## Gets the [member continous] value.
+func get_continuous() -> bool:
+	return continuous
+
+
+## Sets the [member growth_time] value.
+func set_growth_time(value: float) -> void:
+	growth_time = value
+
+## Returns the [member growth_time] value.
+func get_growth_time() -> float:
+	return growth_time
+
+
+## Sets the [member duration] value.
+func set_duration(value: float) -> void:
+	duration = value
+	if duration == 0:
+		duration = 0.001
+
+## Returns the [member duration] value.
+func get_duration() -> float:
+	return duration
+
+
+## Sets the [member decay_time] value.
+func set_decay_time(value: float) -> void:
+	decay_time = value
+
+## Returns the [member decay_time] value.
+func get_decay_time() -> float:
+	return decay_time
+
+
+## Sets the [member noise_emitter_layer] value.
+func set_noise_emitter_layer(value: int) -> void:
+	noise_emitter_layer = value
+
+## Enables or disables a given layer of the [member noise_emitter_layer] value.
+func set_noise_emitter_value(value: int, enabled: bool) -> void:
+	noise_emitter_layer = _set_layer(noise_emitter_layer, value, enabled)
+
+## Returns the [member noise_emitter_layer] value.
+func get_noise_emitter_layer() -> int:
+	return noise_emitter_layer
+
+	#endregion
+
