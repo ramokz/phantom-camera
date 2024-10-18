@@ -17,7 +17,7 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 #region Exported Properties
 
 ## The [PhantomCameraNoise3D] resource that defines the noise pattern.
-@export var noise: PhantomCameraNoise3D:
+@export var noise: PhantomCameraNoise3D = null:
 	set = set_noise,
 	get = get_noise
 
