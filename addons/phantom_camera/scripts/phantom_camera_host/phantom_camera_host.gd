@@ -257,21 +257,23 @@ func _enter_tree() -> void:
 					pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
 
+					
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_host_removed(self)
 	_check_camera_host_amount()
 
 
 func _ready() -> void:
-	if not is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d): return
-	if _is_2D:
-		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
-		camera_2d.offset = Vector2.ZERO
-	else:
-		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
-
 	process_priority = 300
 	process_physics_priority = 300
+
+	if _is_2D:
+		camera_2d.offset = Vector2.ZERO
+		if not is_instance_valid(_active_pcam_2d): return
+		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
+	else:
+		if not is_instance_valid(_active_pcam_3d): return
+		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 
 func _check_camera_host_amount() -> void:

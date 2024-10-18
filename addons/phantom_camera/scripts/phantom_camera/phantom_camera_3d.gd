@@ -412,6 +412,12 @@ enum InactiveUpdateMode {
 	get = get_look_at_damping_value
 
 @export_group("Noise")
+## Applies a noise, or shake, to a [Camera3D].[br]
+## Once set, the noise will run continuously after the tween to the [PhantomCamera3D] instance is complete.
+@export var noise: PhantomCameraNoise3D:
+	set = set_noise,
+	get = get_noise
+
 ## If true, will trigger the noise while in the editor.[br]
 ## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
 ## the resource.[br][br]
@@ -424,13 +430,9 @@ enum InactiveUpdateMode {
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
 ## to make this [PhantomCamera3D] be affect by it.
-@export_flags_3d_render var noise_emitter_layer: int
-
-## Defines the noise, or shake, of a Camera3D.[br]
-## Once set, the noise will run continuously after the tween to this instance is complete.
-@export var noise: PhantomCameraNoise3D:
-	set = set_noise,
-	get = get_noise
+@export_flags_3d_render var noise_emitter_layer: int:
+	set = set_noise_emitter_layer,
+	get = get_noise_emitter_layer
 
 #endregion
 
@@ -1671,6 +1673,19 @@ func set_noise(value: PhantomCameraNoise3D) -> void:
 
 func get_noise() -> PhantomCameraNoise3D:
 	return noise
+
+
+## Sets the [member noise_emitter_layer] value.
+func set_noise_emitter_layer(value: int) -> void:
+	noise_emitter_layer = value
+
+## Enables or disables a given layer of the [member noise_emitter_layer] value.
+func set_noise_emitter_layer_value(value: int, enabled: bool) -> void:
+	noise_emitter_layer = _set_layer(noise_emitter_layer, value, enabled)
+
+## Returns the [member noise_emitter_layer]
+func get_noise_emitter_layer() -> int:
+	return noise_emitter_layer
 
 
 ## Sets [member inactive_update_mode] property.

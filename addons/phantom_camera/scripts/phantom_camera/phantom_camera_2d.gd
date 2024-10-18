@@ -365,8 +365,14 @@ enum InactiveUpdateMode {
 	#get = get_limit_smoothing
 
 @export_group("Noise")
+## Applies a noise, or shake, to a [Camera2D].[br]
+## Once set, the noise will run continuously after the tween to the [PhantomCamera2D] is complete.
+@export var noise: PhantomCameraNoise2D:
+	set = set_noise,
+	get = get_noise
+
 ## If true, will trigger the noise while in the editor.[br]
-## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
+## Useful in cases where you want to temporarily disable the noise in the editor without removing
 ## the resource.[br][br]
 ## [b]Note:[/b] This property has no effect on runtime behaviour.
 @export var _preview_noise: bool = true:
@@ -377,14 +383,9 @@ enum InactiveUpdateMode {
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter2D.noise_emitter_layer]
 ## to make this [PhantomCamera2D] be affect by it.
-@export_flags_2d_render var noise_emitter_layer: int
-
-## Defines the noise, or shake, of a Camera2D.[br]
-## Once set, the noise will run continuously after the tween to this instance is complete.
-@export var noise: PhantomCameraNoise2D:
-	set = set_noise,
-	get = get_noise
-
+@export_flags_2d_render var noise_emitter_layer: int:
+	set = set_noise_emitter_layer,
+	get = get_noise_emitter_layer
 
 #region Private Variables
 
@@ -563,6 +564,7 @@ func _exit_tree() -> void:
 
 	if not follow_mode == FollowMode.GROUP:
 		follow_targets = []
+
 
 func _ready() -> void:
 	_transform_output = global_transform
@@ -892,6 +894,19 @@ func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> vo
 			push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
 
 
+func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
+	var mask: int = current_layers
+
+	# From https://github.com/godotengine/godot/blob/51991e20143a39e9ef0107163eaf283ca0a761ea/scene/3d/camera_3d.cpp#L638
+	if layer_number < 1 or layer_number > 20:
+		printerr("Render layer must be between 1 and 20.")
+	else:
+		if value:
+			mask |= 1 << (layer_number - 1)
+		else:
+			mask &= ~(1 << (layer_number - 1))
+
+	return mask
 
 #endregion
 
@@ -1451,7 +1466,7 @@ func get_limit_margin() -> Vector4i:
 	#return limit_smoothed
 
 
-## Sets a [PhantomCameraNoise2D] resource
+## Sets a [PhantomCameraNoise2D] resource.
 func set_noise(value: PhantomCameraNoise2D) -> void:
 	noise = value
 	if value != null:
@@ -1461,12 +1476,23 @@ func set_noise(value: PhantomCameraNoise2D) -> void:
 		_has_noise_resource = false
 		_transform_noise = Transform2D()
 
+## Returns the [PhantomCameraNoise2D] resource.
 func get_noise() -> PhantomCameraNoise2D:
 	return noise
 
-## TODO - A small flag to prevent calculating noise transform if the resource is not present here in PCamHost script
-func get_has_noise_resource() -> bool:
-	return _has_noise_resource
+
+## Sets the [member noise_emitter_layer] value.
+func set_noise_emitter_layer(value: int) -> void:
+	noise_emitter_layer = value
+
+## Enables or disables a given layer of the [member noise_emitter_layer] value.
+func set_noise_emitter_layer_value(value: int, enabled: bool) -> void:
+	noise_emitter_layer = _set_layer(noise_emitter_layer, value, enabled)
+
+## Returns the [member noise_emitter_layer]
+func get_noise_emitter_layer() -> int:
+	return noise_emitter_layer
+
 
 ## Sets [member inactive_update_mode] property.
 func set_inactive_update_mode(value: int) -> void:
