@@ -350,7 +350,7 @@ enum InactiveUpdateMode {
 ## [b]CollisionShape2D[/b][br]
 ## The limit will update in realtime as the Shape2D changes its size.
 ## Note: For performance reasons, resizing the [Shape2D] during runtime will not change the Limits sides.
-@export_node_path("TileMap", "Node2D", "CollisionShape2D") var limit_target = NodePath(""):
+@export_node_path("TileMap", "Node2D", "CollisionShape2D") var limit_target: NodePath = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 
@@ -399,7 +399,7 @@ var pcam_host_owner: PhantomCameraHost = null:
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
+var _physics_interpolation_enabled: bool = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
@@ -450,7 +450,7 @@ var viewport_position: Vector2
 
 #endregion
 
-
+#region Private Functions
 
 func _validate_property(property: Dictionary) -> void:
 	################
@@ -538,7 +538,6 @@ func _validate_property(property: Dictionary) -> void:
 
 	notify_property_list_changed()
 
-#region Private Functions
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
@@ -582,7 +581,7 @@ func _process(delta: float) -> void:
 	process_logic(delta)
 
 
-func _physics_process(delta: float):
+func _physics_process(delta: float) -> void:
 	if not _follow_target_physics_based or _is_active: return
 	process_logic(delta)
 
@@ -591,7 +590,6 @@ func process_logic(delta: float) -> void:
 	if _is_active:
 		if _has_noise_resource and _preview_noise:
 			_transform_noise = noise.get_noise_transform(delta)
-			if not pcam_host_owner.camera_2d.ignore_rotation: return
 			if _transform_noise.get_rotation() != 0:
 				push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
 	else:
@@ -605,7 +603,7 @@ func process_logic(delta: float) -> void:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
 	_limit_checker()
-
+#	if not Engine.is_editor_hint(): print(_should_follow)
 	if _should_follow:
 		_follow(delta)
 	else:
@@ -759,7 +757,7 @@ func _set_limit_clamp_position(value: Vector2) -> Vector2:
 	return value
 
 
-func _draw():
+func _draw() -> void:
 	if not Engine.is_editor_hint(): return
 
 	if frame_preview and not _is_active:
@@ -851,7 +849,7 @@ func _should_follow_checker() -> void:
 	if follow_mode == FollowMode.NONE:
 		_should_follow = false
 		return
-	
+
 	if not follow_mode == FollowMode.GROUP: 
 		if is_instance_valid(follow_target):
 			_should_follow = true
@@ -946,7 +944,7 @@ func update_limit_all_sides() -> void:
 		# Bottom
 		_limit_sides.w = roundi(limit_rect.position.y + limit_rect.size.y)
 	elif _limit_node is CollisionShape2D:
-		var collision_shape_2d = _limit_node as CollisionShape2D
+		var collision_shape_2d: CollisionShape2D = _limit_node as CollisionShape2D
 
 		if not collision_shape_2d.get_shape(): return
 
@@ -1421,7 +1419,7 @@ func set_limit_target(value: NodePath) -> void:
 			if col_shape.shape == null:
 				printerr("No Shape2D in: ", col_shape.name)
 				reset_limit()
-				limit_target = null
+				limit_target = ""
 				return
 		else:
 			printerr("Limit Target is not a TileMap, TileMapLayer or CollisionShape2D node")
@@ -1429,7 +1427,7 @@ func set_limit_target(value: NodePath) -> void:
 
 	elif value == NodePath(""):
 		reset_limit()
-		limit_target = null
+		limit_target = ""
 	else:
 		printerr("Limit Target cannot be found")
 		return

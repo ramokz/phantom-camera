@@ -16,10 +16,10 @@
 script = ExtResource("4_poyyk")
 amplitude = 30.0
 frequency = 2.0
-randomize_seed = true
-seed = 0
-has_rotational_noise = true
-has_positional_noise = false
+randomize_noise_seed = 1
+noise_seed = 0
+rotational_noise = true
+positional_noise = false
 rotational_multiplier_x = 0.1
 rotational_multiplier_y = 0.1
 rotational_multiplier_z = 0.0
@@ -57,10 +57,10 @@ far = 4000.0
 script = ExtResource("4_poyyk")
 amplitude = 40.0
 frequency = 0.2
-randomize_seed = false
-seed = 0
-has_rotational_noise = true
-has_positional_noise = false
+randomize_noise_seed = 0
+noise_seed = 0
+rotational_noise = true
+positional_noise = false
 rotational_multiplier_x = 1.0
 rotational_multiplier_y = 1.0
 rotational_multiplier_z = 0.0
@@ -72,10 +72,10 @@ positional_multiplier_z = 0.1
 script = ExtResource("4_poyyk")
 amplitude = 10.0
 frequency = 4.2
-randomize_seed = false
-seed = 928
-has_rotational_noise = true
-has_positional_noise = false
+randomize_noise_seed = 0
+noise_seed = 928
+rotational_noise = true
+positional_noise = false
 rotational_multiplier_x = 1.0
 rotational_multiplier_y = 1.0
 rotational_multiplier_z = 0.1
@@ -100,9 +100,11 @@ expand_margin_bottom = 6.0
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.00345613, -0.00368911, 0.999987, 0, 0.999993, 0.00368913, -0.999994, -1.27501e-05, 0.00345611, -16.46, 0.503767, 4.249)
+transform = Transform3D(0.15181, 0.0142873, 0.988306, 0, 0.999896, -0.0144549, -0.98841, 0.00219439, 0.151794, -16.46, 0.503767, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("1_ggfbg")
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
@@ -134,16 +136,16 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_lhgur")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_ghjuj")
-noise_emitter_layer = 1
 noise = SubResource("Resource_2l4w0")
+noise_emitter_layer = 1
 
 [node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
 script = ExtResource("6_n8u0x")
+noise = SubResource("Resource_6tnhy")
 duration = 0.1
 decay_time = 0.1
-noise = SubResource("Resource_6tnhy")
 
 [node name="Environment" type="Node" parent="."]
 

@@ -257,7 +257,7 @@ func _enter_tree() -> void:
 					pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
 
-					
+
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_host_removed(self)
 	_check_camera_host_amount()
