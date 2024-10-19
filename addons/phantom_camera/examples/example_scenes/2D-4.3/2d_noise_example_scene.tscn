@@ -165,7 +165,7 @@ sources/0 = SubResource("TileSetAtlasSource_lvmak")
 
 [sub_resource type="Resource" id="Resource_87ddr"]
 script = ExtResource("11_d6abr")
-amplitude = 10.0
+amplitude = 30.0
 frequency = 0.5
 randomize_noise_seed = 1
 noise_seed = 0
@@ -245,6 +245,7 @@ text = "[WASD] to move
 [node name="Camera2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
 position = Vector2(227, -28)
+offset = Vector2(-3.20922, -3.64484)
 ignore_rotation = false
 zoom = Vector2(1.5, 1.5)
 process_callback = 0
@@ -272,7 +273,6 @@ tween_on_load = false
 follow_damping = true
 draw_limits = true
 noise = SubResource("Resource_87ddr")
-_preview_noise = false
 noise_emitter_layer = 1
 
 [node name="PlayerPhantomCameraNoiseEmitter2D" type="Node2D" parent="Player"]
