@@ -5,7 +5,7 @@ extends Node2D
 
 ## Controls a scene's [Camera2D] and applies logic to it.
 ##
-## The scene's [param Camera2D] will follow the position of the
+## The scene's [Camera2D] will follow the position of the
 ## [param PhantomCamera2D] with the highest priority.
 ## Each instance can have different positional and rotational logic applied
 ## to them.
@@ -123,6 +123,8 @@ enum InactiveUpdateMode {
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
+			top_level = false
+			_is_parents_physics()
 			notify_property_list_changed()
 			return
 
@@ -143,6 +145,7 @@ enum InactiveUpdateMode {
 			if dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
 
+		top_level = true
 		notify_property_list_changed()
 	get:
 		return follow_mode
