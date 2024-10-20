@@ -660,6 +660,8 @@ func _enter_tree() -> void:
 	_should_follow_checker()
 	if follow_mode == FollowMode.GROUP:
 		_follow_targets_size_check()
+	elif follow_mode == FollowMode.NONE:
+		_is_parents_physics()
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -1153,6 +1155,15 @@ func _check_physics_body(target: Node3D) -> void:
 #printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 #_follow_target_physics_based = true
 
+
+func _is_parents_physics() -> void:
+	var current_node: Node = self
+	while current_node:
+		current_node = current_node.get_parent()
+		if not current_node is PhysicsBody3D: continue
+		_follow_target_physics_based = true
+
+
 #endregion
 
 
@@ -1622,6 +1633,7 @@ func append_look_at_targets_array(value: Array[Node3D]) -> void:
 		else:
 			printerr(val, " is already part of Look At Group")
 
+## Removes [Node3D] from [member look_at_targets] array.
 func erase_look_at_targets(value: Node3D) -> void:
 	if look_at_targets.has(value):
 		look_at_targets.erase(value)

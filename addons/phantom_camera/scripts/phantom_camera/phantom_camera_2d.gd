@@ -543,19 +543,21 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _enter_tree() -> void:
+	_should_follow_checker()
+	if follow_mode == FollowMode.GROUP:
+		_follow_targets_size_check()
+	elif follow_mode == FollowMode.NONE:
+		_is_parents_physics()
+
+	if not visibility_changed.is_connected(_check_visibility):
+		visibility_changed.connect(_check_visibility)
+
 	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
 	_phantom_camera_manager.pcam_added(self)
 	update_limit_all_sides()
 
 	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
-
-	_should_follow_checker()
-	if follow_mode == FollowMode.GROUP:
-		_follow_targets_size_check()
-
-	if not visibility_changed.is_connected(_check_visibility):
-		visibility_changed.connect(_check_visibility)
 
 
 func _exit_tree() -> void:
@@ -1246,6 +1248,14 @@ func _check_physics_body(target: Node2D) -> void:
 		elif not ProjectSettings.get_setting("physics/common/physics_interpolation") and ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
 				printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		_follow_target_physics_based = true
+
+
+func _is_parents_physics() -> void:
+	var current_node: Node = self
+	while current_node:
+		current_node = current_node.get_parent()
+		if not current_node is PhysicsBody2D: continue
 		_follow_target_physics_based = true
 
 
