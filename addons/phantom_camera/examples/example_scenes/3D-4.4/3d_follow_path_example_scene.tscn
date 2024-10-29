@@ -1,0 +1,241 @@
+[gd_scene load_steps=25 format=3 uid="uid://oo1y1sjdmr6k"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_p8ccw"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_8itog"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="3_xqpq0"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_akuuo"]
+[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_0nadx"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="6_7h7mx"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_mkxip"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/path_follow.gd" id="7_g1m51"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="8_a1h2k"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="9_rk5lh"]
+
+[sub_resource type="Resource" id="Resource_ofv2c"]
+script = ExtResource("4_akuuo")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="Resource" id="Resource_01tho"]
+script = ExtResource("6_mkxip")
+duration = 1.2
+transition = 3
+ease = 2
+
+[sub_resource type="Resource" id="Resource_syh5m"]
+script = ExtResource("4_akuuo")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="Curve3D" id="Curve3D_b33df"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -10),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_aovgi"]
+size = Vector3(6, 0.1, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0hdeh"]
+size = Vector3(6, 0.1, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fsm1b"]
+transparency = 1
+albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
+
+[sub_resource type="Resource" id="Resource_xci4c"]
+script = ExtResource("4_akuuo")
+cull_mask = 1048575
+h_offset = 0.0
+v_offset = 0.0
+projection = 0
+fov = 75.0
+size = 1.0
+frustum_offset = Vector2(0, 0)
+near = 0.05
+far = 4000.0
+
+[sub_resource type="Curve3D" id="Curve3D_8uw2x"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ctnqu"]
+size = Vector3(12, 0.1, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f6dp8"]
+size = Vector3(12, 0.1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gwnkj"]
+transparency = 1
+albedo_color = Color(0.568403, 0.988235, 0.762724, 0.0901961)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7l3dh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_as6ok"]
+
+[node name="Root" type="Node3D"]
+
+[node name="MainCamera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.999996, -0.00216283, 0.00184472, 0, 0.648938, 0.760841, -0.00284268, -0.760838, 0.648936, 0, 2.507, 1.5)
+
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_p8ccw")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+metadata/_edit_lock_ = true
+
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 0, 2.507, 1.5)
+top_level = true
+script = ExtResource("2_8itog")
+priority = 10
+follow_mode = 2
+follow_target = NodePath("../PlayerCharacterBody3D2")
+tween_resource = ExtResource("3_xqpq0")
+tween_on_load = false
+camera_3d_resource = SubResource("Resource_ofv2c")
+follow_offset = Vector3(0, 2, 1.5)
+follow_damping = true
+
+[node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("5_0nadx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.507, 0)
+script = ExtResource("6_7h7mx")
+
+[node name="Paths" type="Node" parent="."]
+
+[node name="PathPhantomCamera3D" type="Node3D" parent="Paths" node_paths=PackedStringArray("follow_target", "follow_path")]
+transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -0.31028, 7.9199, -1.60976)
+top_level = true
+script = ExtResource("2_8itog")
+priority = 2
+follow_mode = 4
+follow_target = NodePath("../../PlayerCharacterBody3D2")
+follow_path = NodePath("../FollowPath")
+tween_resource = SubResource("Resource_01tho")
+camera_3d_resource = SubResource("Resource_syh5m")
+follow_damping = true
+
+[node name="FollowPath" type="Path3D" parent="Paths"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.31028, 7.9199, -1.60976)
+curve = SubResource("Curve3D_b33df")
+
+[node name="StraightPathFollowTrigger" type="Area3D" parent="Paths" node_paths=PackedStringArray("path_pcam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0420399, -0.45, -6.73666)
+priority = 5
+script = ExtResource("7_g1m51")
+path_pcam = NodePath("../PathPhantomCamera3D")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Paths/StraightPathFollowTrigger"]
+shape = SubResource("BoxShape3D_aovgi")
+
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="Paths/StraightPathFollowTrigger/CollisionShape3D"]
+mesh = SubResource("BoxMesh_0hdeh")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_fsm1b")
+metadata/_edit_group_ = true
+
+[node name="PathPhantomCamera3D2" type="Node3D" parent="Paths" node_paths=PackedStringArray("follow_target", "follow_path")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 7.9199, -13.4572)
+top_level = true
+visible = false
+script = ExtResource("2_8itog")
+priority = 2
+follow_mode = 4
+follow_target = NodePath("../../PlayerCharacterBody3D2")
+follow_path = NodePath("../FollowPath2")
+tween_resource = SubResource("Resource_01tho")
+camera_3d_resource = SubResource("Resource_xci4c")
+follow_damping = true
+follow_damping_value = Vector3(0.6, 0.1, 0.1)
+
+[node name="FollowPath2" type="Path3D" parent="Paths"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.97141, 7.9199, -13.4572)
+curve = SubResource("Curve3D_8uw2x")
+
+[node name="StraightPathFollowTrigger2" type="Area3D" parent="Paths" node_paths=PackedStringArray("path_pcam")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0420399, 0, -13.7367)
+priority = 5
+script = ExtResource("7_g1m51")
+path_pcam = NodePath("../PathPhantomCamera3D2")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Paths/StraightPathFollowTrigger2"]
+shape = SubResource("BoxShape3D_ctnqu")
+
+[node name="NPCInteractionZoneMesh" type="MeshInstance3D" parent="Paths/StraightPathFollowTrigger2/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.45, 0)
+mesh = SubResource("BoxMesh_f6dp8")
+skeleton = NodePath("../../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_gwnkj")
+metadata/_edit_group_ = true
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="Floor" parent="Environment" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+metadata/_edit_lock_ = true
+
+[node name="Floor3" parent="Environment" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(6, 0, 0, 0, 1, 0, 0, 0, 1, -0.44204, 0, 1.76334)
+
+[node name="Floor2" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(0.166667, 0, 0, 0, 3, 0, 0, 0, 14, -0.516667, 1, -6.5)
+
+[node name="Floor5" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(0.166667, 0, 0, 0, 3, 0, 0, 0, 14, 0.65, 1, -6.5)
+
+[node name="Floor4" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(2, 0, 0, 0, 3, 0, 0, 0, 1, 0.0666667, 1, -18)
+
+[node name="Floor6" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(0.333333, 0, 0, 0, 3, 0, 0, 0, 1, -0.766667, 1, -13)
+mesh = SubResource("BoxMesh_7l3dh")
+
+[node name="Floor8" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(0.166667, 0, 0, 0, 3, 0, 0, 0, 6, -1.01667, 1, -15.5)
+mesh = SubResource("BoxMesh_as6ok")
+
+[node name="Floor9" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(0.166667, 0, 0, 0, 3, 0, 0, 0, 6, 1.15, 1, -15.5)
+mesh = SubResource("BoxMesh_as6ok")
+
+[node name="Floor7" parent="Environment/Floor3" instance=ExtResource("8_a1h2k")]
+transform = Transform3D(0.333333, 0, 0, 0, 3, 0, 0, 0, 1, 0.9, 1, -13)
+mesh = SubResource("BoxMesh_7l3dh")
+
+[node name="NPCDescriptionLabel" type="Label3D" parent="Environment"]
+transform = Transform3D(5.21541e-08, -1, -7.7486e-07, -1.10675e-15, 2.23517e-07, 0.999999, -0.999999, -7.45058e-08, -5.68829e-14, -3.47306, 2.59595, -5.51755)
+text = "Camera follows player while confined to a Path3D"
+font = ExtResource("9_rk5lh")
+font_size = 64
+
+[node name="MovementInstructionsLabel" type="Label3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.02174, -0.455369, 0.570585)
+modulate = Color(0.294118, 1, 0.631373, 1)
+text = "[WASD] to move"
+font = ExtResource("9_rk5lh")
+font_size = 48

@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://bhd1kwv2fwj1y"]
+
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="1_5s24o"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_47f0o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mv4do"]
+albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
+size = Vector3(0.5, 0.5, 0.3)
+
+[node name="PlayerCharacterBody3D" type="CharacterBody3D"]
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, -0.0163251)
+collision_layer = 2
+script = ExtResource("1_5s24o")
+metadata/_edit_group_ = true
+
+[node name="PlayerArea3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerArea3D"]
+shape = SubResource("CapsuleShape3D_s61dn")
+
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_s61dn")
+
+[node name="PlayerVisual" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerVisual"]
+transform = Transform3D(1, 0, 0, 0, 1, 4.65661e-10, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("CapsuleMesh_47f0o")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
+
+[node name="PlayerDirection" type="MeshInstance3D" parent="PlayerVisual"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, -9.31323e-10, 1, 4.65661e-10, 2.98023e-08, 0, 1, -0.0156226, 1.08631, 0)
+mesh = SubResource("PrismMesh_wg1x3")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")

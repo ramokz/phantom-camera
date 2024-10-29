@@ -55,8 +55,10 @@ signal tween_interrupted(pcam_3d: PhantomCamera3D)
 ## [param PhantomCamera3D].
 signal tween_completed
 
-## Emitted when Noise should be applied to the Camera3D.
+## Emitted when Noise should be applied to the [param Camera3D].
 signal noise_emitted(noise_output: Transform3D)
+
+signal physics_target_changed
 
 #endregion
 
@@ -657,6 +659,8 @@ func _enter_tree() -> void:
 	_should_follow_checker()
 	if follow_mode == FollowMode.GROUP:
 		_follow_targets_size_check()
+	elif follow_mode == FollowMode.NONE:
+		_is_parents_physics()
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -1137,18 +1141,29 @@ func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> vo
 func _check_physics_body(target: Node3D) -> void:
 	if target is PhysicsBody3D:
 		## NOTE - Feature Toggle
-		#if Engine.get_version_info().major == 4 and \
-		#Engine.get_version_info().minor < XX:
-		if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
-			print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter - on lower physics ticks in particular.")
-			print_rich("Will have proper support once 3D Physics Interpolation becomes part of the core Godot engine.")
-			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 4:
+			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter - on lower physics ticks in particular.")
+				print_rich("If possible, will recommend upgrading to Godot 4.4, as it has built-in support for 3D Physics Interpolation, which will mitigate this issue.")
+				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+			return
+		## NOTE - Only supported in Godot 4.4 or above
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-		return
-## TODO - Enable once Godot supports 3D Physics Interpolation
-#elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
-#printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
-#_follow_target_physics_based = true
+		_follow_target_physics_based = true
+	else:
+		_is_parents_physics(target)
+	physics_target_changed.emit()
+
+func _is_parents_physics(target: Node = self) -> void:
+	var current_node: Node = target
+	while current_node:
+		current_node = current_node.get_parent()
+		if not current_node is PhysicsBody3D: continue
+		_follow_target_physics_based = true
 
 #endregion
 
@@ -1844,12 +1859,6 @@ func set_far(value: float) -> void:
 func get_far() -> float:
 	return camera_3d_resource.far
 
-
-func set_follow_target_physics_based(value: bool, caller: Node) -> void:
-	if is_instance_of(caller, PhantomCameraHost):
-		_follow_target_physics_based = value
-	else:
-		printerr("set_follow_target_physics_based is for internal use only.")
 
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
