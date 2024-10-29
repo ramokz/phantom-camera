@@ -53,7 +53,7 @@ frustum_offset = Vector2(0, 0)
 near = 0.05
 far = 2000.0
 
-[node name="Root" type="Node3D"]
+[node name="Root2" type="Node3D"]
 script = ExtResource("1_gnrfx")
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
@@ -76,6 +76,7 @@ environment = SubResource("Environment_0s7cr")
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, -1.48964, 2.5, 2)
+top_level = true
 script = ExtResource("3_4sdb7")
 priority = 30
 follow_mode = 2

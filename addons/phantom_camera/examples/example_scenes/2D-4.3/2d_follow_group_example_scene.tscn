@@ -212,6 +212,7 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
+physics_interpolation_mode = 1
 position = Vector2(186, -172.5)
 zoom = Vector2(1.5, 1.5)
 process_callback = 0

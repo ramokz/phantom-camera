@@ -5,7 +5,7 @@ extends Node2D
 
 ## Controls a scene's [Camera2D] and applies logic to it.
 ##
-## The scene's [Camera2D] will follow the position of the
+## The scene's [param Camera2D] will follow the position of the
 ## [param PhantomCamera2D] with the highest priority.
 ## Each instance can have different positional and rotational logic applied
 ## to them.
@@ -20,6 +20,7 @@ const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/
 
 ## Emitted when the [param PhantomCamera2D] becomes active.
 signal became_active
+
 ## Emitted when the [param PhantomCamera2D] becomes inactive.
 signal became_inactive
 
@@ -50,6 +51,8 @@ signal tween_completed
 
 ## Emitted when Noise should be applied to the Camera2D.
 signal noise_emitted(noise_output: Transform2D)
+
+signal physics_target_changed
 
 #endregion
 
@@ -911,6 +914,35 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 
 	return mask
 
+
+func _check_physics_body(target: Node2D) -> void:
+	if target is PhysicsBody2D:
+		## NOTE - Feature Toggle
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 3:
+			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter - on lower physics ticks in particular.")
+				print_rich("If possible, will recommend upgrading to Godot 4.3, as it has built-in support for 2D Physics Interpolation, which will mitigate this issue.")
+				print_rich("Otherwise, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+			return
+			## NOTE - Only supported in Godot 4.3 or above
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation") and ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		_follow_target_physics_based = true
+	else:
+		_is_parents_physics(target)
+	physics_target_changed.emit()
+
+
+func _is_parents_physics(target: Node = self) -> void:
+	var current_node: Node = target
+	while current_node:
+		current_node = current_node.get_parent()
+		if not current_node is PhysicsBody2D: continue
+		_follow_target_physics_based = true
+
 #endregion
 
 
@@ -1515,11 +1547,6 @@ func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
 
-func set_follow_target_physics_based(value: bool, caller: Node) -> void:
-	if is_instance_of(caller, PhantomCameraHost):
-		_follow_target_physics_based = value
-	else:
-		printerr("set_follow_target_physics_based() is for internal use only.")
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
 

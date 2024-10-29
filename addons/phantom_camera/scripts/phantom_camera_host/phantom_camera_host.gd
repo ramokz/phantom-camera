@@ -293,6 +293,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_active_pcam_2d.set_is_active(self, false)
 			_active_pcam_2d.became_inactive.emit()
 
+			if _active_pcam_2d.physics_target_changed.is_connected(_check_pcam_physics):
+				_active_pcam_2d.physics_target_changed.disconnect(_check_pcam_physics)
+
 			if _active_pcam_2d.noise_emitted.is_connected(_noise_emitted_2d):
 				_active_pcam_2d.noise_emitted.disconnect(_noise_emitted_2d)
 
@@ -302,6 +305,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_active_pcam_3d_transform = camera_3d.global_transform
 			_active_pcam_3d.set_is_active(self, false)
 			_active_pcam_3d.became_inactive.emit()
+
+			if _active_pcam_3d.physics_target_changed.is_connected(_check_pcam_physics):
+				_active_pcam_3d.physics_target_changed.disconnect(_check_pcam_physics)
 
 			if _active_pcam_3d.noise_emitted.is_connected(_noise_emitted_3d):
 				_active_pcam_3d.noise_emitted.disconnect(_noise_emitted_3d)
@@ -370,6 +376,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_priority = _active_pcam_2d.priority
 		_active_pcam_has_damping = _active_pcam_2d.follow_damping
 		_tween_duration = _active_pcam_2d.tween_duration
+
+		if not _active_pcam_2d.physics_target_changed.is_connected(_check_pcam_physics):
+			_active_pcam_2d.physics_target_changed.connect(_check_pcam_physics)
+
 		if not _active_pcam_2d.noise_emitted.is_connected(_noise_emitted_2d):
 			_active_pcam_2d.noise_emitted.connect(_noise_emitted_2d)
 	else:
@@ -377,6 +387,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_priority = _active_pcam_3d.priority
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
 		_tween_duration = _active_pcam_3d.tween_duration
+
+		if not _active_pcam_3d.physics_target_changed.is_connected(_check_pcam_physics):
+			_active_pcam_3d.physics_target_changed.connect(_check_pcam_physics)
+
 		if not _active_pcam_3d.noise_emitted.is_connected(_noise_emitted_3d):
 			_active_pcam_3d.noise_emitted.connect(_noise_emitted_3d)
 
@@ -479,50 +493,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
 		_camera_zoom = camera_2d.zoom
-
-		## TODO - Needs 3D variant once Godot supports physics_interpolation for 3D scenes.
-		var _physics_based: bool
-
-		## NOTE - Only supported in Godot 4.3 or above
-		if Engine.get_version_info().major == 4 and \
-		Engine.get_version_info().minor >= 3:
-			## TBD - For when Godot 4.3 becomes the minimum version
-			#if interpolation_mode == InterpolationMode.IDLE:
-				#_physics_based = false
-			#elif interpolation_mode == InterpolationMode.PHYSICS:
-				#_physics_based = true
-			#else:
-				#_physics_based = _active_pcam.follow_target_physics_based
-
-			# TBD - REMOVE this line once Godot 4.3 becomes the minimum version
-			_physics_based = _active_pcam_2d.get_follow_target_physics_based()
-
-			if _physics_based:
-				_follow_target_physics_based = true
-				_active_pcam_2d.set_follow_target_physics_based(true, self)
-				## TODO - Temporary solution to support Godot 4.2
-				## Remove line below and uncomment the following once Godot 4.3 is min verison.
-				camera_2d.call("reset_physics_interpolation")
-				camera_2d.set("physics_interpolation_mode", 1)
-				#camera_2d.reset_physics_interpolation()
-				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
-				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
-					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
-				else:
-					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
-			else:
-				_follow_target_physics_based = false
-				_active_pcam_2d.set_follow_target_physics_based(false, self)
-				## TODO - Temporary solution to support Godot 4.2
-				## Remove line below and uncomment the following once Godot 4.3 is min verison.
-				camera_2d.set("physics_interpolation_mode", 0)
-				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
-				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
-					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
-				else:
-					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
 	else:
-		_follow_target_physics_based = false
 		if _active_pcam_3d.show_viewfinder_in_play:
 			_viewfinder_needed_check = true
 
@@ -537,12 +508,87 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		else:
 			_prev_active_pcam_3d_transform = _active_pcam_3d.get_transform_output()
 
+	_check_pcam_physics()
+
 	if pcam.get_tween_skip():
 		_tween_elapsed_time = pcam.tween_duration
 	else:
 		_tween_elapsed_time = 0
 
 	_trigger_pcam_tween = true
+
+
+func _check_pcam_physics() -> void:
+	if _is_2D:
+		## NOTE - Only supported in Godot 4.3 or above
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor >= 3:
+			## TBD - For when Godot 4.3 becomes the minimum version
+			#if interpolation_mode == InterpolationMode.IDLE:
+			#_physics_based = false
+			#elif interpolation_mode == InterpolationMode.PHYSICS:
+			#_physics_based = true
+			#else:
+			#_physics_based = _active_pcam.follow_target_physics_based
+
+			# TBD - REMOVE this line once Godot 4.3 becomes the minimum version
+			#			_physics_based = _active_pcam_2d.get_follow_target_physics_based()
+
+			if _active_pcam_2d.get_follow_target_physics_based():
+				_follow_target_physics_based = true
+				#				_active_pcam_2d.set_follow_target_physics_based(true, self)
+				## TODO - Temporary solution to support Godot 4.2
+				## Remove line below and uncomment the following once Godot 4.3 is min verison.
+				camera_2d.call("reset_physics_interpolation")
+				camera_2d.set("physics_interpolation_mode", 1)
+				#camera_2d.reset_physics_interpolation()
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
+				else:
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
+			else:
+				_follow_target_physics_based = false
+				#				_active_pcam_2d.set_follow_target_physics_based(false, self)
+				## TODO - Temporary solution to support Godot 4.2
+				## Remove line below and uncomment the following once Godot 4.3 is min verison.
+				camera_2d.set("physics_interpolation_mode", 0)
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
+				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents warning that the engine does
+				else:
+					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
+	else:
+		## NOTE - Only supported in Godot 4.4 or above
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor >= 4:
+			## TBD - For when Godot 4.3 becomes the minimum version
+			#if interpolation_mode == InterpolationMode.IDLE:
+			#_physics_based = false
+			#elif interpolation_mode == InterpolationMode.PHYSICS:
+			#_physics_based = true
+			#else:
+			#_physics_based = _active_pcam.follow_target_physics_based
+
+			# TBD - REMOVE this line once Godot 4.3 becomes the minimum version
+			#			_physics_based = _active_pcam_3d.get_follow_target_physics_based()
+			if _active_pcam_3d.get_follow_target_physics_based():
+				_follow_target_physics_based = true
+				#				_active_pcam_3d.set_follow_target_physics_based(true, self)
+				## TODO - Temporary solution to support Godot 4.3
+				## Remove line below and uncomment the following once Godot 4.3 is min verison.
+				camera_3d.call("reset_physics_interpolation")
+				camera_3d.set("physics_interpolation_mode", 1)
+				#camera_2d.reset_physics_interpolation()
+				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+			else:
+				_follow_target_physics_based = false
+				#				_active_pcam_3d.set_follow_target_physics_based(false, self)
+				## TODO - Temporary solution to support Godot 4.2
+				## Remove line below and uncomment the following once Godot 4.3 is min verison.
+				camera_3d.set("physics_interpolation_mode", 0)
+#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
+
 
 
 func _find_pcam_with_highest_priority() -> void:

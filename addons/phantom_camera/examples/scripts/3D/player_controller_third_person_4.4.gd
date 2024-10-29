@@ -1,4 +1,4 @@
-extends "player_controller.gd"
+extends "player_controller_4.4.gd"
 
 @onready var _player_pcam: PhantomCamera3D
 @onready var _aim_pcam: PhantomCamera3D
@@ -14,7 +14,6 @@ extends "player_controller.gd"
 @export var max_yaw: float = 360
 
 
-
 func _ready() -> void:
 	super()
 
@@ -24,7 +23,6 @@ func _ready() -> void:
 
 	if _player_pcam.get_follow_mode() == _player_pcam.FollowMode.THIRD_PERSON:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
 
 func _physics_process(delta: float) -> void:
 	super(delta)
