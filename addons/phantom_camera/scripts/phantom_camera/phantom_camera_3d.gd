@@ -1168,15 +1168,6 @@ func _is_parents_physics(target: Node = self) -> void:
 		if not current_node is PhysicsBody3D: continue
 		_follow_target_physics_based = true
 
-
-func _is_parents_physics() -> void:
-	var current_node: Node = self
-	while current_node:
-		current_node = current_node.get_parent()
-		if not current_node is PhysicsBody3D: continue
-		_follow_target_physics_based = true
-
-
 #endregion
 
 

@@ -620,7 +620,6 @@ func _find_pcam_with_highest_priority() -> void:
 
 func _process(delta: float) -> void:
 	if _active_pcam_missing: return
-
 	if not _follow_target_physics_based: _tween_follow_checker(delta)
 
 	if _is_2D:
