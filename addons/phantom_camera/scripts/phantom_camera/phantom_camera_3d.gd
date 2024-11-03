@@ -265,16 +265,15 @@ enum InactiveUpdateMode {
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
-## Overrides the [member Camera3D.environment] resource property.
-@export var environment: Environment = null:
-	set = set_environment,
-	get = get_environment
-
 ## Overrides the [member Camera3D.attribuets] resource property.
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes
 
+## Overrides the [member Camera3D.environment] resource property.
+@export var environment: Environment = null:
+	set = set_environment,
+	get = get_environment
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
