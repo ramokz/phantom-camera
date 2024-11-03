@@ -1148,6 +1148,8 @@ func get_tween_ease() -> int:
 func set_is_active(node, value) -> void:
 	if node is PhantomCameraHost:
 		_is_active = value
+		if value:
+			_should_follow_checker()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 
