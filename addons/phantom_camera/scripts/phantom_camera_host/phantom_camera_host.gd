@@ -146,6 +146,16 @@ var _cam_frustum_focus_distance_changed: bool = false
 
 #endregion
 
+#endregion
+
+
+#region Environment
+
+var _cam_environment_changed: bool = false
+var _cam_environment_assigned: bool = false
+
+#endregion
+
 var _prev_cam_h_offset: float = 0
 var _cam_h_offset_changed: bool = false
 
@@ -315,58 +325,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			if _trigger_pcam_tween:
 				_active_pcam_3d.tween_interrupted.emit(pcam)
 
-			if camera_3d.attributes != null:
-				var _attributes: CameraAttributes = camera_3d.attributes
-
-				_prev_cam_exposure_multiplier = _attributes.exposure_multiplier
-				_prev_cam_auto_exposure_scale = _attributes.auto_exposure_scale
-				_prev_cam_auto_exposure_speed = _attributes.auto_exposure_speed
-
-				if camera_3d.attributes is CameraAttributesPractical:
-					_attributes = _attributes as CameraAttributesPractical
-
-					_prev_cam_dof_blur_amount = _attributes.dof_blur_amount
-
-					if _attributes.dof_blur_far_enabled:
-						_prev_cam_dof_blur_far_distance = _attributes.dof_blur_far_distance
-						_prev_cam_dof_blur_far_transition = _attributes.dof_blur_far_transition
-					else:
-						_prev_cam_dof_blur_far_distance = _cam_dof_blur_far_distance_default
-						_prev_cam_dof_blur_far_transition = _cam_dof_blur_far_transition_default
-
-					if _attributes.dof_blur_near_enabled:
-						_prev_cam_dof_blur_near_distance = _attributes.dof_blur_near_distance
-						_prev_cam_dof_blur_near_transition = _attributes.dof_blur_near_transition
-					else:
-						_prev_cam_dof_blur_near_distance = _cam_dof_blur_near_distance_default
-						_prev_cam_dof_blur_near_transition = _cam_dof_blur_near_transition_default
-
-					if _attributes.auto_exposure_enabled:
-						_prev_cam_exposure_max_sensitivity = _attributes.auto_exposure_max_sensitivity
-						_prev_cam_exposure_min_sensitivity = _attributes.auto_exposure_min_sensitivity
-
-				elif camera_3d.attributes is CameraAttributesPhysical:
-					_attributes = _attributes as CameraAttributesPhysical
-
-					_prev_cam_frustum_focus_distance = _attributes.frustum_focus_distance
-					_prev_cam_frustum_focal_length = _attributes.frustum_focal_length
-					_prev_cam_frustum_far = _attributes.frustum_far
-					_prev_cam_frustum_near = _attributes.frustum_near
-					_prev_cam_exposure_aperture = _attributes.exposure_aperture
-					_prev_cam_exposure_shutter_speed = _attributes.exposure_shutter_speed
-
-					if _attributes.auto_exposure_enabled:
-						_prev_cam_exposure_min_exposure_value = _attributes.auto_exposure_min_exposure_value
-						_prev_cam_exposure_max_exposure_value = _attributes.auto_exposure_max_exposure_value
-
-			_prev_cam_h_offset = camera_3d.h_offset
-			_prev_cam_v_offset = camera_3d.v_offset
-			_prev_cam_fov = camera_3d.fov
-			_prev_cam_size = camera_3d.size
-			_prev_cam_frustum_offset = camera_3d.frustum_offset
-			_prev_cam_near = camera_3d.near
-			_prev_cam_far = camera_3d.far
-
 	else:
 		no_previous_pcam = true
 
@@ -395,6 +353,14 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_active_pcam_3d.noise_emitted.connect(_noise_emitted_3d)
 
 		# Checks if the Camera3DResource has changed from the previous active PCam3D
+		_prev_cam_h_offset = camera_3d.h_offset
+		_prev_cam_v_offset = camera_3d.v_offset
+		_prev_cam_fov = camera_3d.fov
+		_prev_cam_size = camera_3d.size
+		_prev_cam_frustum_offset = camera_3d.frustum_offset
+		_prev_cam_near = camera_3d.near
+		_prev_cam_far = camera_3d.far
+
 		if _active_pcam_3d.camera_3d_resource:
 			if _prev_cam_h_offset != _active_pcam_3d.h_offset:
 				_cam_h_offset_changed = true
@@ -411,80 +377,14 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			if _prev_cam_far != _active_pcam_3d.far:
 				_cam_far_changed = true
 
-		if _active_pcam_3d.attributes == null:
-			_cam_attribute_changed = false
+			# Camera3D Attributes
+		if _active_pcam_3d.attributes:
+			_set_camera_3d_attributes()
 		else:
-			if _prev_cam_attributes != _active_pcam_3d.attributes:
-				_prev_cam_attributes = _active_pcam_3d.attributes
-				_cam_attribute_changed = true
-				var _attributes: CameraAttributes = _active_pcam_3d.attributes
+			_cam_attribute_changed = false
 
-				if _prev_cam_auto_exposure_scale != _attributes.auto_exposure_scale:
-					_cam_auto_exposure_scale_changed = true
-				if _prev_cam_auto_exposure_speed != _attributes.auto_exposure_speed:
-					_cam_auto_exposure_speed_changed = true
-				if _prev_cam_exposure_multiplier != _attributes.exposure_multiplier:
-					_cam_exposure_multiplier_changed = true
-				if _prev_cam_exposure_sensitivity != _attributes.exposure_sensitivity:
-					_cam_exposure_sensitivity_changed = true
-
-				if _attributes is CameraAttributesPractical:
-					_cam_attribute_type = 0
-
-					if camera_3d.attributes == null:
-						camera_3d.attributes = CameraAttributesPractical.new()
-						camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
-						_cam_attribute_assigned = true
-
-					if _prev_cam_exposure_min_sensitivity != _attributes.auto_exposure_min_sensitivity:
-						_cam_exposure_min_sensitivity_changed = true
-					if _prev_cam_exposure_max_sensitivity != _attributes.auto_exposure_max_sensitivity:
-						_cam_exposure_max_sensitivity_changed = true
-
-					if _prev_cam_dof_blur_amount != _attributes.dof_blur_amount:
-						_cam_dof_blur_amount_changed = true
-
-					if _prev_cam_dof_blur_far_distance != _attributes.dof_blur_far_distance:
-						_cam_dof_blur_far_distance_changed = true
-						camera_3d.attributes.dof_blur_far_enabled = true
-					if _prev_cam_dof_blur_far_transition != _attributes.dof_blur_far_transition:
-						_cam_dof_blur_far_transition_changed = true
-						camera_3d.attributes.dof_blur_far_enabled = true
-
-					if _prev_cam_dof_blur_near_distance != _attributes.dof_blur_near_distance:
-						_cam_dof_blur_near_distance_changed = true
-						camera_3d.attributes.dof_blur_near_enabled = true
-					if _prev_cam_dof_blur_near_transition != _attributes.dof_blur_near_transition:
-						_cam_dof_blur_near_transition_changed = true
-						camera_3d.attributes.dof_blur_near_enabled = true
-				elif _attributes is CameraAttributesPhysical:
-					_cam_attribute_type = 1
-
-					if camera_3d.attributes == null:
-						camera_3d.attributes = CameraAttributesPhysical.new()
-						camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
-
-					if _prev_cam_exposure_min_exposure_value != _attributes.auto_exposure_min_exposure_value:
-						_cam_exposure_min_exposure_value_changed = true
-					if _prev_cam_exposure_max_exposure_value != _attributes.auto_exposure_max_exposure_value:
-						_cam_exposure_max_exposure_value_changed = true
-
-					if _prev_cam_exposure_aperture != _attributes.exposure_aperture:
-						_cam_exposure_aperture_changed = true
-					if _prev_cam_exposure_shutter_speed != _attributes.exposure_shutter_speed:
-						_cam_exposure_shutter_speed_changed = true
-
-					if _prev_cam_frustum_far != _attributes.frustum_far:
-						_cam_frustum_far_changed = true
-
-					if _prev_cam_frustum_focal_length != _attributes.frustum_focal_length:
-						_cam_frustum_focal_length_changed = true
-
-					if _prev_cam_frustum_focus_distance != _attributes.frustum_focus_distance:
-						_cam_frustum_focus_distance_changed = true
-
-					if _prev_cam_frustum_near != _attributes.frustum_near:
-						_cam_frustum_near_changed = true
+		if _active_pcam_3d.environment:
+			camera_3d.environment = _active_pcam_3d.environment
 
 	if _is_2D:
 		if _active_pcam_2d.show_viewfinder_in_play:
@@ -502,6 +402,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if _active_pcam_3d.camera_3d_resource:
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
+
 	if no_previous_pcam:
 		if _is_2D:
 			_prev_active_pcam_2d_transform = _active_pcam_2d.get_transform_output()
@@ -517,6 +418,137 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	_trigger_pcam_tween = true
 
+
+func _set_camera_3d_attributes() -> void:
+	if camera_3d.attributes:
+		if not camera_3d.attributes.resource_path.contains("::"):
+			printerr(camera_3d.name, " already has an applied resource that is saved to disk. This is being cleared from the instance in order to prevent changing a shared Attributes resource. Consider not applying a locally saved Attributes resource on the Camera3D node directly and use PhantomCamera3Ds instead.")
+			camera_3d.attributes = null
+
+	if _active_pcam_3d.attributes is CameraAttributesPractical:
+		if camera_3d.attributes == null:
+#			camera_3d.attributes = CameraAttributesPractical.new()
+			camera_3d.attributes = _active_pcam_3d.attributes.duplicate(true)
+		elif camera_3d.attributes is CameraAttributesPhysical:
+			printerr("Attempting to modify a CameraAttributesPractical resource from, ", _active_pcam_3d.name, " to an existing CameraAttributesPhysical in ", camera_3d.name ,". Needs to be the same Attributes resource type.")
+
+		var attributes: CameraAttributesPractical = camera_3d.attributes
+		_cam_attribute_assigned = true
+
+		_prev_cam_exposure_multiplier = attributes.exposure_multiplier
+		_prev_cam_auto_exposure_scale = attributes.auto_exposure_scale
+		_prev_cam_auto_exposure_speed = attributes.auto_exposure_speed
+
+		_prev_cam_dof_blur_amount = attributes.dof_blur_amount
+
+		if attributes.dof_blur_far_enabled:
+			_prev_cam_dof_blur_far_distance = attributes.dof_blur_far_distance
+			_prev_cam_dof_blur_far_transition = attributes.dof_blur_far_transition
+		else:
+			_prev_cam_dof_blur_far_distance = _cam_dof_blur_far_distance_default
+			_prev_cam_dof_blur_far_transition = _cam_dof_blur_far_transition_default
+
+		if attributes.dof_blur_near_enabled:
+			_prev_cam_dof_blur_near_distance = attributes.dof_blur_near_distance
+			_prev_cam_dof_blur_near_transition = attributes.dof_blur_near_transition
+		else:
+			_prev_cam_dof_blur_near_distance = _cam_dof_blur_near_distance_default
+			_prev_cam_dof_blur_near_transition = _cam_dof_blur_near_transition_default
+
+		if attributes.auto_exposure_enabled:
+			_prev_cam_exposure_max_sensitivity = attributes.auto_exposure_max_sensitivity
+			_prev_cam_exposure_min_sensitivity = attributes.auto_exposure_min_sensitivity
+
+	elif _active_pcam_3d.attributes is CameraAttributesPhysical:
+		if camera_3d.attributes == null:
+#			camera_3d.attributes = CameraAttributesPhysical.new()
+			camera_3d.attributes = _active_pcam_3d.attributes.duplicate(true)
+		elif camera_3d.attributes is CameraAttributesPractical:
+			printerr("Attempting to modify a CameraAttributesPhysical resource from, ", _active_pcam_3d.name, " to an existing CameraAttributesPractical resource in ", camera_3d.name ,". Needs to be the same Attributes resource type.")
+
+		var attributes: CameraAttributesPhysical = camera_3d.attributes
+		_cam_attribute_assigned = true
+
+		_prev_cam_exposure_multiplier = attributes.exposure_multiplier
+		_prev_cam_auto_exposure_scale = attributes.auto_exposure_scale
+		_prev_cam_auto_exposure_speed = attributes.auto_exposure_speed
+
+		_prev_cam_frustum_focus_distance = attributes.frustum_focus_distance
+		_prev_cam_frustum_focal_length = attributes.frustum_focal_length
+		_prev_cam_frustum_far = attributes.frustum_far
+		_prev_cam_frustum_near = attributes.frustum_near
+		_prev_cam_exposure_aperture = attributes.exposure_aperture
+		_prev_cam_exposure_shutter_speed = attributes.exposure_shutter_speed
+
+		if attributes.auto_exposure_enabled:
+			_prev_cam_exposure_min_exposure_value = attributes.auto_exposure_min_exposure_value
+			_prev_cam_exposure_max_exposure_value = attributes.auto_exposure_max_exposure_value
+
+		# Checking if Attributes resource has changed
+		if _prev_cam_attributes != _active_pcam_3d.attributes:
+			_cam_attribute_changed = true
+			var _attributes: CameraAttributes = _active_pcam_3d.attributes
+
+			if _prev_cam_auto_exposure_scale != _attributes.auto_exposure_scale:
+				_cam_auto_exposure_scale_changed = true
+			if _prev_cam_auto_exposure_speed != _attributes.auto_exposure_speed:
+				_cam_auto_exposure_speed_changed = true
+			if _prev_cam_exposure_multiplier != _attributes.exposure_multiplier:
+				_cam_exposure_multiplier_changed = true
+			if _prev_cam_exposure_sensitivity != _attributes.exposure_sensitivity:
+				_cam_exposure_sensitivity_changed = true
+
+			if _attributes is CameraAttributesPractical:
+				_cam_attribute_type = 0
+
+				if _prev_cam_exposure_min_sensitivity != _attributes.auto_exposure_min_sensitivity:
+					_cam_exposure_min_sensitivity_changed = true
+				if _prev_cam_exposure_max_sensitivity != _attributes.auto_exposure_max_sensitivity:
+					_cam_exposure_max_sensitivity_changed = true
+
+				if _prev_cam_dof_blur_amount != _attributes.dof_blur_amount:
+					_cam_dof_blur_amount_changed = true
+
+				if _prev_cam_dof_blur_far_distance != _attributes.dof_blur_far_distance:
+					_cam_dof_blur_far_distance_changed = true
+					camera_3d.attributes.dof_blur_far_enabled = true
+				if _prev_cam_dof_blur_far_transition != _attributes.dof_blur_far_transition:
+					_cam_dof_blur_far_transition_changed = true
+					camera_3d.attributes.dof_blur_far_enabled = true
+
+				if _prev_cam_dof_blur_near_distance != _attributes.dof_blur_near_distance:
+					_cam_dof_blur_near_distance_changed = true
+					camera_3d.attributes.dof_blur_near_enabled = true
+				if _prev_cam_dof_blur_near_transition != _attributes.dof_blur_near_transition:
+					_cam_dof_blur_near_transition_changed = true
+					camera_3d.attributes.dof_blur_near_enabled = true
+
+			elif _attributes is CameraAttributesPhysical:
+				_cam_attribute_type = 1
+
+				if _prev_cam_exposure_min_exposure_value != _attributes.auto_exposure_min_exposure_value:
+					_cam_exposure_min_exposure_value_changed = true
+				if _prev_cam_exposure_max_exposure_value != _attributes.auto_exposure_max_exposure_value:
+					_cam_exposure_max_exposure_value_changed = true
+
+				if _prev_cam_exposure_aperture != _attributes.exposure_aperture:
+					_cam_exposure_aperture_changed = true
+				if _prev_cam_exposure_shutter_speed != _attributes.exposure_shutter_speed:
+					_cam_exposure_shutter_speed_changed = true
+
+				if _prev_cam_frustum_far != _attributes.frustum_far:
+					_cam_frustum_far_changed = true
+
+				if _prev_cam_frustum_focal_length != _attributes.frustum_focal_length:
+					_cam_frustum_focal_length_changed = true
+
+				if _prev_cam_frustum_focus_distance != _attributes.frustum_focus_distance:
+					_cam_frustum_focus_distance_changed = true
+
+				if _prev_cam_frustum_near != _attributes.frustum_near:
+					_cam_frustum_near_changed = true
+
+			_prev_cam_attributes = _active_pcam_3d.attributes
 
 func _check_pcam_physics() -> void:
 	if _is_2D:
@@ -666,11 +698,17 @@ func _pcam_follow(_delta: float) -> void:
 				camera_3d.near = _active_pcam_3d.near
 				camera_3d.far = _active_pcam_3d.far
 
-			if _active_pcam_3d.attributes != null:
-				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
+#			if _active_pcam_3d.attributes != null:
+#				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
+#
+#			if _active_pcam_3d.environment != null:
+#				camera_3d.environment = _active_pcam_3d.environment.duplicate()
 
-			if _active_pcam_3d.environment != null:
-				camera_3d.environment = _active_pcam_3d.environment.duplicate()
+
+func _camera_3d_attribute_changed() -> void:
+	if _active_pcam_3d.attributes == null: return
+	printerr(_active_pcam_3d, " is currently overriding the Attribute of ", camera_3d, ". Modify the PCam3D instance to change the Attributes.")
+#	update_attributes()
 
 
 func _noise_emitted_2d(noise_output: Transform2D) -> void:
@@ -1149,6 +1187,79 @@ func get_trigger_pcam_tween() -> bool:
 func refresh_pcam_list_priorty() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
+
+func update_environment() -> void:
+	print("Changing environment")
+	if _active_pcam_3d.environment == null: return
+
+	var property_list: Array[Dictionary] = _active_pcam_3d.environment.get_property_list()
+
+	if camera_3d.environment:
+		# Checks to see if assigned Camera3D Attribute resource is saved to disk, overrides the resource if so.
+		if camera_3d.environment.resource_path:
+			camera_3d.environment = camera_3d.environment.duplicate(true)
+	else:
+		# Assigns a new Attributes resource if none is already assigned
+		camera_3d.environment = camera_3d.environment.duplicate(true)
+
+	for property in property_list:
+		# Skips over generic Object properties
+		if property.type == 0: continue
+
+		# Skips over all generic Resource properties
+		match property.name:
+			"resource_local_to_scene", \
+			"resource_path", \
+			"resource_name", \
+			"resource_scene_unique_id", \
+			"script": \
+			continue
+
+		# Assigns PCam3D attributes to Camera3D's attributes
+		camera_3d.environment.set(property.name, _active_pcam_3d.environment.get(property.name))
+
+func clear_environment() -> void:
+	camera_3d.environment = null
+
+
+## Updates the [Camera3D] Attributes.
+func update_attributes() -> void:
+	if _active_pcam_3d.attributes == null: return
+	print("dsaadas")
+	var property_list: Array[Dictionary] = _active_pcam_3d.attributes.get_property_list()
+
+	if camera_3d.attributes:
+		# Checks to see if assigned Camera3D Attribute resource is saved to disk, overrides the resource if so.
+		if camera_3d.attributes.resource_path:
+			camera_3d.attributes = _active_pcam_3d.attributes.duplicate(true)
+	else:
+		# Assigns a new Attributes resource if none is already assigned
+		camera_3d.attributes = _active_pcam_3d.attributes.duplicate(true)
+
+#		# Creates a new CameraAttribute resource if not present missing from Camera3D
+#		if _active_pcam_3d.attributes is CameraAttributesPhysical:
+#			camera_3d.attributes = CameraAttributesPhysical.new()
+#		else:
+#			camera_3d.attributes = CameraAttributesPractical.new()
+
+	for property in property_list:
+		# Skips over generic Object properties
+		if property.type == 0: continue
+
+		# Skips over all generic Resource properties
+		match property.name:
+			"resource_local_to_scene", \
+			"resource_path", \
+			"resource_name", \
+			"resource_scene_unique_id", \
+			"script": \
+				continue
+
+		# Assigns PCam3D attributes to Camera3D's attributes
+		camera_3d.attributes.set(property.name, _active_pcam_3d.attributes.get(property.name))
+
+func clear_attributes() -> void:
+	camera_3d.attributes = null
 
 
 #func set_interpolation_mode(value: int) -> void:

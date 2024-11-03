@@ -1169,6 +1169,23 @@ func _is_parents_physics(target: Node = self) -> void:
 		if not current_node is PhysicsBody3D: continue
 		_follow_target_physics_based = true
 
+
+func _environment_changed() -> void:
+	print("changin")
+	if not _has_valid_pcam_owner() or \
+	not _is_active or \
+	not environment:
+		return
+	pcam_host_owner.update_environment()
+
+
+func _attribute_changed() -> void:
+	if not _has_valid_pcam_owner() or \
+	not _is_active or \
+	not attributes:
+		return
+
+	pcam_host_owner.update_attributes()
 #endregion
 
 
@@ -1752,8 +1769,16 @@ func get_cull_mask() -> int:
 
 
 ## Assigns a new [Environment] resource to the [Camera3DResource].
-func set_environment(value: Environment):
+func set_environment(value: Environment) -> void:
 	environment = value
+#	if value != null:
+#		if not environment.changed.is_connected(_environment_changed):
+#			environment.changed.connect(_environment_changed)
+#			print("Setting changed")
+#	else:
+#		if _is_active and Engine.is_editor_hint():
+#			if not _has_valid_pcam_owner(): return
+#			pcam_host_owner.clear_environment()
 
 ## Gets the [Camera3D.environment] value assigned to the [Camera3DResource].
 func get_environment() -> Environment:
@@ -1761,8 +1786,15 @@ func get_environment() -> Environment:
 
 
 ## Assigns a new [CameraAttributes] resource to the [Camera3DResource].
-func set_attributes(value: CameraAttributes):
+func set_attributes(value: CameraAttributes) -> void:
 	attributes = value
+	if value != null:
+		if not attributes.changed.is_connected(_attribute_changed):
+			attributes.changed.connect(_attribute_changed)
+	else:
+		if _is_active and Engine.is_editor_hint():
+			if not _has_valid_pcam_owner(): return
+			pcam_host_owner.clear_attributes()
 
 ## Gets the [Camera3D.attributes] value assigned to the [Camera3DResource].
 func get_attributes() -> CameraAttributes:
