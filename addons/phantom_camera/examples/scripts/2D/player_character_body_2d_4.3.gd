@@ -89,7 +89,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_hide_interactive_node(_interactive_UI)
 			_interactive_node_logic()
 
-	if event.keycode == KEY_Q and event.is_pressed():
+	if Input.is_physical_key_pressed(KEY_Q):
 		if get_node_or_null("%PlayerPhantomCameraNoiseEmitter2D"):
 			%PlayerPhantomCameraNoiseEmitter2D.emit()
 
