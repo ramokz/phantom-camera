@@ -702,7 +702,10 @@ func _ready():
 					_follow_spring_arm.position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
 					_follow_spring_arm.spring_length = spring_length
 					_follow_spring_arm.collision_mask = collision_mask
-					_follow_spring_arm.shape = shape
+					if shape:
+						_follow_spring_arm.shape = shape
+					else:
+						_follow_spring_arm.shape = _get_camera_shape()
 					_follow_spring_arm.margin = margin
 					_follow_spring_arm.add_excluded_object(follow_target)
 					get_parent().add_child.call_deferred(_follow_spring_arm)
@@ -1108,6 +1111,19 @@ func _follow_targets_size_check() -> void:
 		_:
 			_should_follow = true
 			_has_multiple_follow_targets = true
+
+
+func _get_camera_shape() -> Shape3D:
+	if not _has_valid_pcam_owner(): return
+
+	var pyramid_shape_data = PhysicsServer3D.shape_get_data(
+		get_pcam_host_owner().camera_3d.get_pyramid_shape_rid()
+	)
+
+	var shape = ConvexPolygonShape3D.new()
+	shape.points = pyramid_shape_data
+
+	return shape
 
 
 func _look_at_target_tree_exiting(target: Node) -> void:
@@ -1564,7 +1580,10 @@ func get_collision_mask() -> int:
 func set_shape(value: Shape3D) -> void:
 	shape = value
 	if is_instance_valid(_follow_spring_arm):
-		_follow_spring_arm.shape = shape
+		if shape:
+			_follow_spring_arm.shape = shape
+		else:
+			_follow_spring_arm.shape = _get_camera_shape()
 
 ## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
