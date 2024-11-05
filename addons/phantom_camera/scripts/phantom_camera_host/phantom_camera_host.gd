@@ -35,8 +35,8 @@ signal update_editor_viewfinder
 #region Variables
 
 enum InterpolationMode {
-	AUTO = 0,
-	IDLE = 1,
+	AUTO    = 0,
+	IDLE    = 1,
 	PHYSICS = 2,
 }
 
@@ -47,7 +47,7 @@ enum InterpolationMode {
 var _pcam_list: Array[Node] = []
 
 var _active_pcam_2d: PhantomCamera2D = null
-var _active_pcam_3d = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+var _active_pcam_3d: Node = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 var _active_pcam_priority: int = -1
 var _active_pcam_missing: bool = true
 var _active_pcam_has_damping: bool = false

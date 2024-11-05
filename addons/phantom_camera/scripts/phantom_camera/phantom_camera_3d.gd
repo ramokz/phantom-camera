@@ -169,7 +169,11 @@ enum InactiveUpdateMode {
 			if  dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
 
-		top_level = true
+		if follow_mode == FollowMode.THIRD_PERSON:
+			top_level = false
+		else:
+			top_level = true
+
 		notify_property_list_changed()
 	get:
 		return follow_mode
