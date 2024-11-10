@@ -709,13 +709,13 @@ func _ready():
 					_follow_spring_arm.add_excluded_object(follow_target)
 					get_parent().add_child.call_deferred(_follow_spring_arm)
 					reparent.call_deferred(_follow_spring_arm)
-					_has_follow_spring_arm = true
 
 					# Waits for the SpringArm3D to be ready and then apply rotation
 					# Resolves an issue most prominent in Godot 4.4
 					await _follow_spring_arm.ready
 					_follow_spring_arm.position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
 					_follow_spring_arm.global_rotation = global_rotation
+					_has_follow_spring_arm = true
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
 				_follow_framed_offset = global_position - _get_target_position_offset()
