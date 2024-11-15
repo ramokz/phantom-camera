@@ -59,8 +59,6 @@ var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
 var _trigger_pcam_tween: bool = false
 var _tween_elapsed_time: float = 0
 var _tween_duration: float = 0
-var _tween_transition: int = 0
-var _tween_ease: int = 2
 
 var _multiple_pcam_hosts: bool = false
 
@@ -593,13 +591,6 @@ func _process(delta: float) -> void:
 
 	if not _follow_target_physics_based: _tween_follow_checker(delta)
 
-	if _is_2D:
-		camera_2d.offset = Vector2.ZERO
-		camera_2d.offset = _active_pcam_2d.get_noise_transform().origin # + _noise_emitted_output_2d.origin
-		camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation() # + _noise_emitted_output_2d.get_rotation()
-	else:
-		camera_3d.global_transform *= _active_pcam_3d.get_noise_transform()
-
 	if not _has_noise_emitted: return
 	if _is_2D:
 		camera_2d.offset += _noise_emitted_output_2d.origin
@@ -626,6 +617,13 @@ func _tween_follow_checker(delta: float) -> void:
 		_pcam_follow(delta)
 	else:
 		_pcam_tween(delta)
+
+	if _is_2D:
+		camera_2d.offset = Vector2.ZERO
+		camera_2d.offset = _active_pcam_2d.get_noise_transform().origin # + _noise_emitted_output_2d.origin
+		camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation() # + _noise_emitted_output_2d.get_rotation()
+	else:
+		camera_3d.global_transform *= _active_pcam_3d.get_noise_transform()
 
 
 func _pcam_follow(_delta: float) -> void:
