@@ -456,7 +456,7 @@ var viewport_position: Vector2
 
 #endregion
 
-#region Private Functions
+#region Property Validator
 
 func _validate_property(property: Dictionary) -> void:
 	################
@@ -542,8 +542,7 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "frame_preview" and _is_active:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
-	notify_property_list_changed()
-
+#region Private Functions
 
 func _enter_tree() -> void:
 	_should_follow_checker()
