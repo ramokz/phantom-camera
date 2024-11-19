@@ -646,8 +646,6 @@ func _validate_property(property: Dictionary) -> void:
 	not look_at_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	notify_property_list_changed()
-
 #endregion
 
 #region Private Functions
