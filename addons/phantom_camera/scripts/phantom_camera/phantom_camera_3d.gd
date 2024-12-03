@@ -887,7 +887,10 @@ func _follow(delta: float) -> void:
 func _look_at(delta: float) -> void:
 	match look_at_mode:
 		LookAtMode.MIMIC:
-			global_rotation = look_at_target.global_rotation
+			_interpolate_rotation(
+				global_position - look_at_target.basis.z,
+				delta
+			)
 
 		LookAtMode.SIMPLE:
 			_interpolate_rotation(
@@ -1046,6 +1049,7 @@ func _get_framed_side_offset() -> Vector2:
 
 	return frame_out_bounds
 
+
 func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 	var mask: int = current_layers
 
@@ -1059,6 +1063,7 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 			mask &= ~(1 << (layer_number - 1))
 
 	return mask
+
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
