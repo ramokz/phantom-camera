@@ -1,15 +1,16 @@
-[gd_scene load_steps=10 format=3 uid="uid://c4llb3gsbfv1a"]
+[gd_scene load_steps=11 format=3 uid="uid://cx7x48cpi8gcd"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_7824u"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_g1bv4"]
-[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="3_420vh"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_oqbub"]
-[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="4_t4fso"]
-[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="5_c0upu"]
-[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_f2w3x"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_6uslv"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_5cpe8"]
+[ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="3_422w7"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_4qurp"]
+[ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_uw36d"]
+[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="6_fcomr"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_i060b"]
+[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="7_iyghi"]
 
 [sub_resource type="Resource" id="Resource_wg1pr"]
-script = ExtResource("4_oqbub")
+script = ExtResource("4_4qurp")
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -21,7 +22,7 @@ near = 0.05
 far = 4000.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_auy8m"]
-albedo_texture = ExtResource("5_c0upu")
+albedo_texture = ExtResource("7_iyghi")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
@@ -34,7 +35,7 @@ transform = Transform3D(1, 0, 0, 0, 0.793353, 0.608762, 0, -0.608762, 0.793353, 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
 process_physics_priority = 300
-script = ExtResource("1_7824u")
+script = ExtResource("1_6uslv")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
@@ -46,10 +47,10 @@ metadata/_edit_lock_ = true
 unique_name_in_owner = true
 transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, 0.083587, 2.94168, 5.22787)
 top_level = true
-script = ExtResource("2_g1bv4")
+script = ExtResource("2_5cpe8")
 follow_mode = 5
-follow_target = NodePath("../PlayerCharacterBody3D2/PlayerVisual")
-tween_resource = ExtResource("3_420vh")
+follow_target = NodePath("../PlayerCharacterBody3D2")
+tween_resource = ExtResource("3_422w7")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_wg1pr")
 follow_damping = true
@@ -59,11 +60,12 @@ dead_zone_height = 0.14
 show_viewfinder_in_play = true
 spring_length = 4.0
 
-[node name="PlayerCharacterBody3D2" parent="Player" instance=ExtResource("5_f2w3x")]
+[node name="PlayerCharacterBody3D2" parent="Player" instance=ExtResource("5_uw36d")]
+script = ExtResource("6_fcomr")
 
 [node name="Environment" type="Node" parent="."]
 
-[node name="Floor" parent="Environment" instance=ExtResource("4_t4fso")]
+[node name="Floor" parent="Environment" instance=ExtResource("6_i060b")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
@@ -151,5 +153,3 @@ size = Vector3(4.03502, 1.27695, 5.2198)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.38147, 0.0440434, 8.36617)
 use_collision = true
 size = Vector3(4.57784, 1.08809, 3.11285)
-
-[editable path="Player/PlayerCharacterBody3D2"]

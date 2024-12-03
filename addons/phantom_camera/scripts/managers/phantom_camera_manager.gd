@@ -18,10 +18,10 @@ var phantom_camera_2ds: Array[PhantomCamera2D]:
 		return _phantom_camera_2d_list
 var _phantom_camera_2d_list: Array[PhantomCamera2D]
 
-var phantom_camera_3ds: Array: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+var phantom_camera_3ds: Array[Node]: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 	get:
 		return _phantom_camera_3d_list
-var _phantom_camera_3d_list: Array ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 
 
 func _enter_tree():

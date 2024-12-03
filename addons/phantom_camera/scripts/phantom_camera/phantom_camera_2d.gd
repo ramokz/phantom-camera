@@ -20,6 +20,7 @@ const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/
 
 ## Emitted when the [param PhantomCamera2D] becomes active.
 signal became_active
+
 ## Emitted when the [param PhantomCamera2D] becomes inactive.
 signal became_inactive
 
@@ -50,6 +51,8 @@ signal tween_completed
 
 ## Emitted when Noise should be applied to the Camera2D.
 signal noise_emitted(noise_output: Transform2D)
+
+signal physics_target_changed
 
 #endregion
 
@@ -123,6 +126,8 @@ enum InactiveUpdateMode {
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
+			top_level = false
+			_is_parents_physics()
 			notify_property_list_changed()
 			return
 
@@ -143,6 +148,7 @@ enum InactiveUpdateMode {
 			if dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
 
+		top_level = true
 		notify_property_list_changed()
 	get:
 		return follow_mode
@@ -450,7 +456,7 @@ var viewport_position: Vector2
 
 #endregion
 
-#region Private Functions
+#region Property Validator
 
 func _validate_property(property: Dictionary) -> void:
 	################
@@ -536,23 +542,24 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "frame_preview" and _is_active:
 		property.usage |= PROPERTY_USAGE_READ_ONLY
 
-	notify_property_list_changed()
-
+#region Private Functions
 
 func _enter_tree() -> void:
+	_should_follow_checker()
+	if follow_mode == FollowMode.GROUP:
+		_follow_targets_size_check()
+	elif follow_mode == FollowMode.NONE:
+		_is_parents_physics()
+
+	if not visibility_changed.is_connected(_check_visibility):
+		visibility_changed.connect(_check_visibility)
+
 	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
 	_phantom_camera_manager.pcam_added(self)
 	update_limit_all_sides()
 
 	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
 		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
-
-	_should_follow_checker()
-	if follow_mode == FollowMode.GROUP:
-		_follow_targets_size_check()
-
-	if not visibility_changed.is_connected(_check_visibility):
-		visibility_changed.connect(_check_visibility)
 
 
 func _exit_tree() -> void:
@@ -850,7 +857,7 @@ func _should_follow_checker() -> void:
 		_should_follow = false
 		return
 
-	if not follow_mode == FollowMode.GROUP: 
+	if not follow_mode == FollowMode.GROUP:
 		if is_instance_valid(follow_target):
 			_should_follow = true
 		else:
@@ -886,7 +893,7 @@ func _follow_targets_size_check() -> void:
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
 		noise_emitted.emit(emitter_noise_output)
-		
+
 		if not pcam_host_owner.camera_2d.ignore_rotation: return
 		if emitter_noise_output.get_rotation() != 0:
 			push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
@@ -905,6 +912,35 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 			mask &= ~(1 << (layer_number - 1))
 
 	return mask
+
+
+func _check_physics_body(target: Node2D) -> void:
+	if target is PhysicsBody2D:
+		## NOTE - Feature Toggle
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 3:
+			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter - on lower physics ticks in particular.")
+				print_rich("If possible, will recommend upgrading to Godot 4.3, as it has built-in support for 2D Physics Interpolation, which will mitigate this issue.")
+				print_rich("Otherwise, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+			return
+			## NOTE - Only supported in Godot 4.3 or above
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation") and ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		_follow_target_physics_based = true
+	else:
+		_is_parents_physics(target)
+	physics_target_changed.emit()
+
+
+func _is_parents_physics(target: Node = self) -> void:
+	var current_node: Node = target
+	while current_node:
+		current_node = current_node.get_parent()
+		if not current_node is PhysicsBody2D: continue
+		_follow_target_physics_based = true
 
 #endregion
 
@@ -1111,6 +1147,8 @@ func get_tween_ease() -> int:
 func set_is_active(node, value) -> void:
 	if node is PhantomCameraHost:
 		_is_active = value
+		if value:
+			_should_follow_checker()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 
@@ -1226,24 +1264,6 @@ func erase_follow_targets(value: Node2D) -> void:
 ## Gets all [Node2D] from [member follow_targets] array.
 func get_follow_targets() -> Array[Node2D]:
 	return follow_targets
-
-
-func _check_physics_body(target: Node2D) -> void:
-	if target is PhysicsBody2D:
-		## NOTE - Feature Toggle
-		if Engine.get_version_info().major == 4 and \
-		Engine.get_version_info().minor < 3:
-			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
-				print_rich("Following a [b]PhysicsBody2D[/b] node will likely result in jitter - on lower physics ticks in particular.")
-				print_rich("If possible, will recommend upgrading to Godot 4.3, as it has built-in support for 2D Physics Interpolation, which will mitigate this issue.")
-				print_rich("Otherwise, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-			return
-		## NOTE - Only supported in Godot 4.3 or above
-		elif not ProjectSettings.get_setting("physics/common/physics_interpolation") and ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
-				printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
-				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-		_follow_target_physics_based = true
 
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
@@ -1502,11 +1522,6 @@ func get_inactive_update_mode() -> int:
 	return inactive_update_mode
 
 
-func set_follow_target_physics_based(value: bool, caller: Node) -> void:
-	if is_instance_of(caller, PhantomCameraHost):
-		_follow_target_physics_based = value
-	else:
-		printerr("set_follow_target_physics_based() is for internal use only.")
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
 

@@ -5,7 +5,7 @@ extends Node3D
 
 ## Controls a scene's [Camera3D] and applies logic to it.
 ##
-## The scene's [param Camera3D] will follow the position of the
+## The scene's [Camera3D] will follow the position of the
 ## [param PhantomCamera3D] with the highest priority.
 ## Each instance can have different positional and rotational logic applied
 ## to them.
@@ -55,8 +55,10 @@ signal tween_interrupted(pcam_3d: PhantomCamera3D)
 ## [param PhantomCamera3D].
 signal tween_completed
 
-## Emitted when Noise should be applied to the Camera3D.
+## Emitted when Noise should be applied to the [param Camera3D].
 signal noise_emitted(noise_output: Transform3D)
+
+signal physics_target_changed
 
 #endregion
 
@@ -145,6 +147,8 @@ enum InactiveUpdateMode {
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
+			top_level = false
+			_is_parents_physics()
 			notify_property_list_changed()
 			return
 
@@ -164,6 +168,11 @@ enum InactiveUpdateMode {
 		else:
 			if  dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+		if follow_mode == FollowMode.THIRD_PERSON:
+			top_level = false
+		else:
+			top_level = true
 
 		notify_property_list_changed()
 	get:
@@ -260,16 +269,15 @@ enum InactiveUpdateMode {
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
-## Overrides the [member Camera3D.environment] resource property.
-@export var environment: Environment = null:
-	set = set_environment,
-	get = get_environment
-
 ## Overrides the [member Camera3D.attribuets] resource property.
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes
 
+## Overrides the [member Camera3D.environment] resource property.
+@export var environment: Environment = null:
+	set = set_environment,
+	get = get_environment
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
@@ -464,6 +472,7 @@ var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3
 
 var _follow_spring_arm: SpringArm3D
+var _has_follow_spring_arm: bool = false
 
 var _current_rotation: Vector3
 
@@ -637,8 +646,6 @@ func _validate_property(property: Dictionary) -> void:
 	not look_at_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	notify_property_list_changed()
-
 #endregion
 
 #region Private Functions
@@ -657,6 +664,8 @@ func _enter_tree() -> void:
 	_should_follow_checker()
 	if follow_mode == FollowMode.GROUP:
 		_follow_targets_size_check()
+	elif follow_mode == FollowMode.NONE:
+		_is_parents_physics()
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -688,14 +697,23 @@ func _ready():
 					_follow_spring_arm = SpringArm3D.new()
 					_follow_spring_arm.top_level = true
 					_follow_spring_arm.rotation = global_rotation
-					_follow_spring_arm.position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
 					_follow_spring_arm.spring_length = spring_length
 					_follow_spring_arm.collision_mask = collision_mask
-					_follow_spring_arm.shape = shape
+					if shape:
+						_follow_spring_arm.shape = shape
+					else:
+						_follow_spring_arm.shape = _get_camera_shape()
 					_follow_spring_arm.margin = margin
 					_follow_spring_arm.add_excluded_object(follow_target)
 					get_parent().add_child.call_deferred(_follow_spring_arm)
 					reparent.call_deferred(_follow_spring_arm)
+
+					# Waits for the SpringArm3D to be ready and then apply rotation
+					# Resolves an issue most prominent in Godot 4.4
+					await _follow_spring_arm.ready
+					_follow_spring_arm.position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
+					_follow_spring_arm.global_rotation = global_rotation
+					_has_follow_spring_arm = true
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
 				_follow_framed_offset = global_position - _get_target_position_offset()
@@ -857,9 +875,9 @@ func _follow(delta: float) -> void:
 
 		FollowMode.THIRD_PERSON:
 			if not Engine.is_editor_hint():
-				if is_instance_valid(follow_target) and is_instance_valid(_follow_spring_arm):
-					follow_position = _get_target_position_offset()
-					follow_target_node = _follow_spring_arm
+				if not _has_follow_spring_arm: return
+				follow_position = _get_target_position_offset()
+				follow_target_node = _follow_spring_arm
 			else:
 				follow_position = _get_position_offset_distance()
 
@@ -869,7 +887,10 @@ func _follow(delta: float) -> void:
 func _look_at(delta: float) -> void:
 	match look_at_mode:
 		LookAtMode.MIMIC:
-			global_rotation = look_at_target.global_rotation
+			_interpolate_rotation(
+				global_position - look_at_target.basis.z,
+				delta
+			)
 
 		LookAtMode.SIMPLE:
 			_interpolate_rotation(
@@ -1028,6 +1049,7 @@ func _get_framed_side_offset() -> Vector2:
 
 	return frame_out_bounds
 
+
 func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 	var mask: int = current_layers
 
@@ -1041,6 +1063,7 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 			mask &= ~(1 << (layer_number - 1))
 
 	return mask
+
 
 func _has_valid_pcam_owner() -> bool:
 	if not is_instance_valid(get_pcam_host_owner()): return false
@@ -1098,6 +1121,19 @@ func _follow_targets_size_check() -> void:
 			_has_multiple_follow_targets = true
 
 
+func _get_camera_shape() -> Shape3D:
+	if not _has_valid_pcam_owner(): return
+
+	var pyramid_shape_data = PhysicsServer3D.shape_get_data(
+		get_pcam_host_owner().camera_3d.get_pyramid_shape_rid()
+	)
+
+	var shape = ConvexPolygonShape3D.new()
+	shape.points = pyramid_shape_data
+
+	return shape
+
+
 func _look_at_target_tree_exiting(target: Node) -> void:
 	if target == look_at_target:
 		_should_look_at = false
@@ -1137,18 +1173,29 @@ func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> vo
 func _check_physics_body(target: Node3D) -> void:
 	if target is PhysicsBody3D:
 		## NOTE - Feature Toggle
-		#if Engine.get_version_info().major == 4 and \
-		#Engine.get_version_info().minor < XX:
-		if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
-			print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter - on lower physics ticks in particular.")
-			print_rich("Will have proper support once 3D Physics Interpolation becomes part of the core Godot engine.")
-			print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor < 4:
+			if ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips"):
+				print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter - on lower physics ticks in particular.")
+				print_rich("If possible, will recommend upgrading to Godot 4.4, as it has built-in support for 3D Physics Interpolation, which will mitigate this issue.")
+				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
+				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+			return
+		## NOTE - Only supported in Godot 4.4 or above
+		elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
+			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-		return
-## TODO - Enable once Godot supports 3D Physics Interpolation
-#elif not ProjectSettings.get_setting("physics/common/physics_interpolation"):
-#printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
-#_follow_target_physics_based = true
+		_follow_target_physics_based = true
+	else:
+		_is_parents_physics(target)
+	physics_target_changed.emit()
+
+func _is_parents_physics(target: Node = self) -> void:
+	var current_node: Node = target
+	while current_node:
+		current_node = current_node.get_parent()
+		if not current_node is PhysicsBody3D: continue
+		_follow_target_physics_based = true
 
 #endregion
 
@@ -1280,6 +1327,8 @@ func get_tween_ease() -> int:
 func set_is_active(node: Node, value: bool) -> void:
 	if node is PhantomCameraHost:
 		_is_active = value
+		if value:
+			_should_follow_checker()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
@@ -1539,7 +1588,10 @@ func get_collision_mask() -> int:
 func set_shape(value: Shape3D) -> void:
 	shape = value
 	if is_instance_valid(_follow_spring_arm):
-		_follow_spring_arm.shape = shape
+		if shape:
+			_follow_spring_arm.shape = shape
+		else:
+			_follow_spring_arm.shape = _get_camera_shape()
 
 ## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
@@ -1619,6 +1671,7 @@ func append_look_at_targets_array(value: Array[Node3D]) -> void:
 		else:
 			printerr(val, " is already part of Look At Group")
 
+## Removes [Node3D] from [member look_at_targets] array.
 func erase_look_at_targets(value: Node3D) -> void:
 	if look_at_targets.has(value):
 		look_at_targets.erase(value)
@@ -1844,12 +1897,6 @@ func set_far(value: float) -> void:
 func get_far() -> float:
 	return camera_3d_resource.far
 
-
-func set_follow_target_physics_based(value: bool, caller: Node) -> void:
-	if is_instance_of(caller, PhantomCameraHost):
-		_follow_target_physics_based = value
-	else:
-		printerr("set_follow_target_physics_based is for internal use only.")
 
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
