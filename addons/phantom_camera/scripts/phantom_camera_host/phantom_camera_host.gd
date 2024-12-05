@@ -59,6 +59,7 @@ var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
 var _trigger_pcam_tween: bool = false
 var _tween_elapsed_time: float = 0
 var _tween_duration: float = 0
+var _tween_is_instant: bool = false
 
 var _multiple_pcam_hosts: bool = false
 
@@ -508,6 +509,11 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	else:
 		_tween_elapsed_time = 0
 
+	if pcam.tween_duration == 0:
+		if Engine.get_version_info().major == 4 and \
+		Engine.get_version_info().minor >= 3:
+			_tween_is_instant = true
+
 	_check_pcam_physics()
 
 	_trigger_pcam_tween = true
@@ -536,7 +542,7 @@ func _check_pcam_physics() -> void:
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_2d.set("physics_interpolation_mode", 0)
 				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
-				if ProjectSettings.get_setting("physics/common/physics_interpolation"):
+				if get_tree().physics_interpolation:
 					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents a warning
 				else:
 					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
@@ -544,14 +550,15 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.4 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 4:
-			if _active_pcam_3d.get_follow_target_physics_based():
+			if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
+				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_3d.call("reset_physics_interpolation")
 				camera_3d.set("physics_interpolation_mode", 1)
-				#camera_2d.reset_physics_interpolation()
-				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
+				#camera_3d.reset_physics_interpolation()
+				#camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
 			else:
 				_follow_target_physics_based = false
 				## TODO - Temporary solution to support Godot 4.2
@@ -614,6 +621,10 @@ func _tween_follow_checker(delta: float) -> void:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 	if not _trigger_pcam_tween:
+		# Rechecks physics target if PCam transitioned with an isntant tween
+		if _tween_is_instant:
+			_check_pcam_physics()
+			_tween_is_instant = false
 		_pcam_follow(delta)
 	else:
 		_pcam_tween(delta)
@@ -679,6 +690,7 @@ func _noise_emitted_3d(noise_output: Transform3D) -> void:
 	_noise_emitted_output_3d = noise_output
 	_has_noise_emitted = true
 
+
 func _pcam_tween(delta: float) -> void:
 	# Run at the first tween frame
 	if _tween_elapsed_time == 0:
@@ -687,6 +699,13 @@ func _pcam_tween(delta: float) -> void:
 			_active_pcam_2d.reset_limit()
 		else:
 			_active_pcam_3d.tween_started.emit()
+
+	# Forcefully disables physics interpolation when tweens are instant
+	if _tween_is_instant:
+		if _is_2D:
+			camera_2d.set("physics_interpolation_mode", 2)
+		else:
+			camera_3d.set("physics_interpolation_mode", 2)
 
 	_tween_elapsed_time = min(_tween_duration, _tween_elapsed_time + delta)
 
