@@ -246,6 +246,7 @@ text = "[WASD] to move
 
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target", "follow_path")]
 unique_name_in_owner = true
+top_level = true
 position = Vector2(374, -190)
 script = ExtResource("6_y6hoa")
 priority = 10

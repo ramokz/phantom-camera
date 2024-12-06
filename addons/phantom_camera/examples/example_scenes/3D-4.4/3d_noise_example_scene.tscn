@@ -56,7 +56,7 @@ positional_multiplier_z = 0.1
 [sub_resource type="Resource" id="Resource_6tnhy"]
 script = ExtResource("3_t4fhv")
 amplitude = 10.0
-frequency = 4.2
+frequency = 20.0
 randomize_noise_seed = 0
 noise_seed = 928
 rotational_noise = true
@@ -85,7 +85,7 @@ expand_margin_bottom = 6.0
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.18022, -0.152326, 0.97176, 9.31323e-10, 0.987936, 0.154862, -0.983626, -0.0279091, 0.178046, -16.46, 0.503767, 4.249)
+transform = Transform3D(-0.0642313, 0.122871, 0.990342, 0, 0.992391, -0.123126, -0.997935, -0.00790852, -0.0637426, -16.46, 0.503767, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300

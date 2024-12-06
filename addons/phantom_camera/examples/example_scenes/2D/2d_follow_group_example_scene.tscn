@@ -210,7 +210,6 @@ visible = false
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(186, -172.5)
 zoom = Vector2(1.5, 1.5)
-process_callback = 0
 position_smoothing_speed = 8.0
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
@@ -229,6 +228,7 @@ text = "[WASD] to move
 [Space] to jump"
 
 [node name="PhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_targets")]
+top_level = true
 position = Vector2(186, -172.5)
 script = ExtResource("6_diuy4")
 priority = 10

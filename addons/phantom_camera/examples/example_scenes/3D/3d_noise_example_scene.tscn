@@ -100,7 +100,7 @@ expand_margin_bottom = 6.0
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.0329791, -0.0394775, 0.998676, 0, 0.99922, 0.039499, -0.999456, -0.00130264, 0.0329533, -16.46, 0.503767, 4.249)
+transform = Transform3D(-0.0348243, 0.0245683, 0.999091, 0, 0.999698, -0.0245832, -0.999393, -0.000856094, -0.0348138, -16.46, 0.503767, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -115,6 +115,7 @@ run_noise = SubResource("Resource_t3bgw")
 
 [node name="PlayerVisual" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
 unique_name_in_owner = true
+visible = false
 mesh = SubResource("CapsuleMesh_yvgu3")
 surface_material_override/0 = SubResource("StandardMaterial3D_vc6km")
 

@@ -38,6 +38,8 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 0.906308, 0.422618, 0, -0.422618, 0.906308, -13.2122, 2.5, 10.4016)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("1_3tok8")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -49,6 +51,7 @@ metadata/_edit_lock_ = true
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -13.2122, 2.5, 10.4016)
+top_level = true
 script = ExtResource("2_grjck")
 priority = 10
 follow_mode = 2

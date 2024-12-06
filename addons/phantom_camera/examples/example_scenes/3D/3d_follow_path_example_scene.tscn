@@ -97,6 +97,8 @@ unique_name_in_owner = true
 transform = Transform3D(0.999996, -0.00216283, 0.00184472, 0, 0.648938, 0.760841, -0.00284268, -0.760838, 0.648936, 0, 2.507, 1.5)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("1_lm5n8")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -106,6 +108,7 @@ metadata/_edit_lock_ = true
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 0, 2.507, 1.5)
+top_level = true
 script = ExtResource("3_bd7x3")
 priority = 10
 follow_mode = 2
@@ -123,6 +126,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.507, 0)
 
 [node name="PathPhantomCamera3D" type="Node3D" parent="Paths" node_paths=PackedStringArray("follow_target", "follow_path")]
 transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -0.31028, 7.9199, -1.60976)
+top_level = true
 script = ExtResource("3_bd7x3")
 priority = 2
 follow_mode = 4
@@ -154,6 +158,7 @@ metadata/_edit_group_ = true
 
 [node name="PathPhantomCamera3D2" type="Node3D" parent="Paths" node_paths=PackedStringArray("follow_target", "follow_path")]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 7.9199, -13.4572)
+top_level = true
 visible = false
 script = ExtResource("3_bd7x3")
 priority = 2

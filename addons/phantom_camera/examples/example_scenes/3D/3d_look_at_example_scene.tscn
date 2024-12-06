@@ -46,7 +46,8 @@ unique_name_in_owner = true
 transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773412, -0.137901, 4.03222, 6.36446)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
-process_priority = 100
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("1_lldvu")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

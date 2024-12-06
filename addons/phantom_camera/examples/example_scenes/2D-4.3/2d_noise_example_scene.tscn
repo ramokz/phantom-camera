@@ -177,9 +177,9 @@ rotational_multiplier = 1.0
 
 [sub_resource type="Resource" id="Resource_rmnw1"]
 script = ExtResource("11_d6abr")
-amplitude = 120.0
-frequency = 4.0
-randomize_noise_seed = 0
+amplitude = 20.0
+frequency = 10.0
+randomize_noise_seed = 1
 noise_seed = 96
 positional_noise = true
 rotational_noise = false
@@ -245,7 +245,7 @@ text = "[WASD] to move
 [node name="Camera2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
 position = Vector2(227, -28)
-offset = Vector2(-3.20922, -3.64484)
+offset = Vector2(-0.0537988, 2.87179)
 ignore_rotation = false
 zoom = Vector2(1.5, 1.5)
 process_callback = 0
@@ -261,6 +261,7 @@ script = ExtResource("5_d6fcf")
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 process_priority = -1
+top_level = true
 position = Vector2(227, -28)
 script = ExtResource("6_bdmii")
 priority = 10

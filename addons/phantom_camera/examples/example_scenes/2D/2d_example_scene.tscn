@@ -226,6 +226,7 @@ script = ExtResource("4_54fc4")
 [node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 process_priority = -1
+top_level = true
 position = Vector2(227, -28)
 script = ExtResource("2_mgsut")
 priority = 10
