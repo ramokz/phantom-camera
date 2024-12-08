@@ -162,6 +162,10 @@ func _settings_changed() -> void:
 	var ratio: float = viewport_width / viewport_height
 	aspect_ratio_container.set_ratio(ratio)
 	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
+
+	## Applies Project Settings to Viewport
+	sub_viewport.canvas_item_default_texture_filter = ProjectSettings.get_setting("rendering/textures/canvas_textures/default_texture_filter")
+
 	# TODO - Add resizer for Framed Viewfinder
 
 
