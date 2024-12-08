@@ -813,7 +813,7 @@ func _follow(delta: float) -> void:
 					return
 
 				viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
-				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+				var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
 				viewport_position = viewport_position / visible_rect_size
 				_current_rotation = global_rotation
 
@@ -857,7 +857,7 @@ func _follow(delta: float) -> void:
 				var viewport_width: float = get_viewport().size.x
 				var viewport_height: float = get_viewport().size.y
 				var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
-				var visible_rect_size: Vector2 = get_viewport().get_viewport().size
+				var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
 
 				unprojected_position = unprojected_position - visible_rect_size / 2
 				if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
@@ -1189,6 +1189,7 @@ func _check_physics_body(target: Node3D) -> void:
 	else:
 		_is_parents_physics(target)
 	physics_target_changed.emit()
+
 
 func _is_parents_physics(target: Node = self) -> void:
 	var current_node: Node = target
