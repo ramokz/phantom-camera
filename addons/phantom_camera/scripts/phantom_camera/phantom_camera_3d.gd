@@ -100,6 +100,16 @@ enum InactiveUpdateMode {
 #	EXPONENTIALLY,
 }
 
+enum FollowLockAxis {
+	NONE 	= 0,
+	X 		= 1,
+	Y 		= 2,
+	Z 		= 3,
+	XY		= 4,
+	XZ		= 5,
+	YZ 		= 6,
+}
+
 #endregion
 
 
@@ -300,6 +310,16 @@ enum InactiveUpdateMode {
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 
+
+## Prevents the [param PhantomCamera2D] from moving in a designated axis.
+## This can be enabled or disabled at runtime or from the editor directly.
+@export var follow_axis_lock: FollowLockAxis = FollowLockAxis.NONE:
+	set = set_lock_axis,
+	get = get_lock_axis
+var _follow_axis_is_locked: bool = false
+var _follow_axis_lock_value: Vector3 = Vector3.ZERO
+
+
 ## Sets a distance offset from the centre of the target's position.
 ## The distance is applied to the [param PhantomCamera3D]'s local z axis.
 @export var follow_distance: float = 1:
@@ -418,6 +438,7 @@ enum InactiveUpdateMode {
 @export_range(0.0, 1.0, 0.001, "or_greater") var look_at_damping_value: float = 0.25:
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
+
 
 @export_group("Noise")
 ## Applies a noise, or shake, to a [Camera3D].[br]
@@ -760,6 +781,24 @@ func process_logic(delta: float) -> void:
 		_look_at(delta)
 	else:
 		_transform_output.basis = global_basis
+
+	if _follow_axis_is_locked:
+		match follow_axis_lock:
+			FollowLockAxis.X:
+				_transform_output.origin.x = _follow_axis_lock_value.x
+			FollowLockAxis.Y:
+				_transform_output.origin.y = _follow_axis_lock_value.y
+			FollowLockAxis.Z:
+				_transform_output.origin.z = _follow_axis_lock_value.z
+			FollowLockAxis.XY:
+				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.y = _follow_axis_lock_value.y
+			FollowLockAxis.XZ:
+				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.z = _follow_axis_lock_value.z
+			FollowLockAxis.YZ:
+				_transform_output.origin.y = _follow_axis_lock_value.y
+				_transform_output.origin.z = _follow_axis_lock_value.z
 
 
 func _follow(delta: float) -> void:
@@ -1718,6 +1757,38 @@ func set_look_at_damping_value(value: float) -> void:
 ## Gets the currents [member look_at_damping_value] value.
 func get_look_at_damping_value() -> float:
 	return look_at_damping_value
+
+
+func set_lock_axis(value: FollowLockAxis) -> void:
+	follow_axis_lock = value
+
+	# Wait for the node to be ready before setting lock
+	if not is_node_ready(): await ready
+
+	# Prevent axis lock from working in the editor
+	if value != FollowLockAxis.NONE and not Engine.is_editor_hint():
+		_follow_axis_is_locked = true
+		match value:
+			FollowLockAxis.X:
+				_follow_axis_lock_value.x = _transform_output.origin.x
+			FollowLockAxis.Y:
+				_follow_axis_lock_value.y = _transform_output.origin.y
+			FollowLockAxis.Z:
+				_follow_axis_lock_value.z = _transform_output.origin.z
+			FollowLockAxis.XY:
+				_follow_axis_lock_value.x = _transform_output.origin.x
+				_follow_axis_lock_value.y = _transform_output.origin.y
+			FollowLockAxis.XZ:
+				_follow_axis_lock_value.x = _transform_output.origin.x
+				_follow_axis_lock_value.z = _transform_output.origin.z
+			FollowLockAxis.YZ:
+				_follow_axis_lock_value.y = _transform_output.origin.y
+				_follow_axis_lock_value.z = _transform_output.origin.z
+	else:
+		_follow_axis_is_locked = false
+
+func get_lock_axis() -> FollowLockAxis:
+	return follow_axis_lock
 
 
 ## Sets a [PhantomCameraNoise3D] resource
