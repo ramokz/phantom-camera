@@ -81,6 +81,12 @@ enum InactiveUpdateMode {
 #	EXPONENTIALLY,
 }
 
+enum FollowLockAxis {
+	NONE 	= 0,
+	X 		= 1,
+	Y 		= 2,
+}
+
 #endregion
 
 #region Exported Properties
@@ -247,6 +253,16 @@ enum InactiveUpdateMode {
 @export var follow_damping_value: Vector2 = Vector2(0.1, 0.1):
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
+
+
+## Prevents the [param PhantomCamera2D] from moving in a designated axis.
+## This can be enabled or disabled at runtime or from the editor directly.
+@export var follow_axis_lock: FollowLockAxis = FollowLockAxis.NONE:
+	set = set_lock_axis,
+	get = get_lock_axis
+var _follow_axis_is_locked: bool = false
+var _follow_axis_lock_value: Vector2 = Vector2.ZERO
+
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -615,6 +631,13 @@ func process_logic(delta: float) -> void:
 		_follow(delta)
 	else:
 		_transform_output = global_transform
+
+	if _follow_axis_is_locked:
+		match follow_axis_lock:
+			FollowLockAxis.X:
+				_transform_output.origin.x = _follow_axis_lock_value.x
+			FollowLockAxis.Y:
+				_transform_output.origin.y = _follow_axis_lock_value.y
 
 
 func _limit_checker() -> void:
@@ -1051,7 +1074,6 @@ func get_noise_transform() -> Transform2D:
 func emit_noise(value: Transform2D) -> void:
 	noise_emitted.emit(value)
 
-
 #endregion
 
 
@@ -1295,6 +1317,26 @@ func set_follow_damping_value(value: Vector2) -> void:
 ## Gets the current Follow Damping value.
 func get_follow_damping_value() -> Vector2:
 	return follow_damping_value
+
+
+func set_lock_axis(value: FollowLockAxis) -> void:
+	follow_axis_lock = value
+
+	# Wait for the node to be ready before setting lock
+	if not is_node_ready(): await ready
+
+	# Prevent axis lock from working in the editor
+	if value != FollowLockAxis.NONE and not Engine.is_editor_hint():
+		_follow_axis_is_locked = true
+		if value == FollowLockAxis.X:
+			_follow_axis_lock_value.x = _transform_output.origin.x
+		else:
+			_follow_axis_lock_value.y = _transform_output.origin.y
+	else:
+		_follow_axis_is_locked = false
+
+func get_lock_axis() -> FollowLockAxis:
+	return follow_axis_lock
 
 
 ## Enables or disables [member snap_to_pixel].
