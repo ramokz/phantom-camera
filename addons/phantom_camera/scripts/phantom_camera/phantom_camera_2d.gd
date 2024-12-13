@@ -82,7 +82,7 @@ enum InactiveUpdateMode {
 }
 
 enum FollowLockAxis {
-	NONE 	= 0,
+	NONE    = 0,
 	X 		= 1,
 	Y 		= 2,
 }

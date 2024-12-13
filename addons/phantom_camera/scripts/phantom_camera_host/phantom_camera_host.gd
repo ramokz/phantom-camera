@@ -1067,6 +1067,7 @@ func pcam_added_to_scene(pcam) -> void:
 			_pcam_list.append(pcam)
 			if not pcam.tween_on_load:
 				pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
+			if not pcam.is_node_ready(): await pcam.ready
 			_find_pcam_with_highest_priority()
 	else:
 		printerr("This function should only be called from PhantomCamera scripts")
