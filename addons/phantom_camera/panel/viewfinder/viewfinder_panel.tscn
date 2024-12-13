@@ -1,6 +1,6 @@
 [gd_scene load_steps=22 format=3 uid="uid://dbkr3d716wtx0"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
+[ext_resource type="Script" uid="uid://bqrc8nj027t1b" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/panel/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_li3i3"]
 [ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="4_lcg1p"]
@@ -154,6 +154,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 metadata/_edit_lock_ = true
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="FramedViewfinder"]
@@ -164,13 +165,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 stretch = true
 
 [node name="SubViewport" type="SubViewport" parent="FramedViewfinder/SubViewportContainer"]
 unique_name_in_owner = true
 handle_input_locally = false
+canvas_item_default_texture_filter = 0
 gui_disable_input = true
-size = Vector2i(1152, 648)
+size = Vector2i(1920, 1080)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
@@ -187,27 +190,32 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/separation = 0
 
 [node name="DeadZoneLeftHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_constants/separation = 0
 
 [node name="DeadZoneLeftTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneLeftCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneLeftBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneCenterHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
@@ -215,43 +223,51 @@ unique_name_in_owner = true
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_filter = 2
 theme_override_constants/separation = 0
 
 [node name="DeadZoneCenterTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneCenterCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fle8t")
 
 [node name="DeadZoneCenterBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneRightHBoxContainer" type="VBoxContainer" parent="FramedViewfinder/DeadZoneHBoxContainer"]
 clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_constants/separation = 0
 
 [node name="DeadZoneRightTopPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneRightCenterPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="DeadZoneRightBottomPanel" type="Panel" parent="FramedViewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="FramedViewfinder"]
@@ -263,10 +279,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 ratio = 1.77778
 
 [node name="CameraViewportPanel" type="Panel" parent="FramedViewfinder/AspectRatioContainer"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xmo1t")
 
 [node name="TargetPoint" type="Panel" parent="FramedViewfinder/AspectRatioContainer/CameraViewportPanel"]
@@ -283,6 +301,7 @@ offset_right = 3.0
 offset_bottom = 3.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_q7vs4")
 
 [node name="NoSupportMsg" type="Label" parent="."]
