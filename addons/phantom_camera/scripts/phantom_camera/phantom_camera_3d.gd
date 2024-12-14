@@ -314,8 +314,8 @@ enum FollowLockAxis {
 ## Prevents the [param PhantomCamera2D] from moving in a designated axis.
 ## This can be enabled or disabled at runtime or from the editor directly.
 @export var follow_axis_lock: FollowLockAxis = FollowLockAxis.NONE:
-	set = set_lock_axis,
-	get = get_lock_axis
+	set = set_follow_axis_lock,
+	get = get_follow_axis_lock
 var _follow_axis_is_locked: bool = false
 var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
@@ -1762,7 +1762,7 @@ func get_look_at_damping_value() -> float:
 	return look_at_damping_value
 
 
-func set_lock_axis(value: FollowLockAxis) -> void:
+func set_follow_axis_lock(value: FollowLockAxis) -> void:
 	follow_axis_lock = value
 
 	# Wait for the node to be ready before setting lock
@@ -1790,7 +1790,7 @@ func set_lock_axis(value: FollowLockAxis) -> void:
 	else:
 		_follow_axis_is_locked = false
 
-func get_lock_axis() -> FollowLockAxis:
+func get_follow_axis_lock() -> FollowLockAxis:
 	return follow_axis_lock
 
 
