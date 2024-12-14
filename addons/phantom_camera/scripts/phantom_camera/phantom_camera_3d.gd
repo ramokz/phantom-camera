@@ -101,13 +101,14 @@ enum InactiveUpdateMode {
 }
 
 enum FollowLockAxis {
-	NONE    = 0,
+	NONE	= 0,
 	X 		= 1,
 	Y 		= 2,
 	Z 		= 3,
 	XY		= 4,
 	XZ		= 5,
-	YZ 		= 6,
+	YZ		= 6,
+	XYZ		= 7,
 }
 
 #endregion
@@ -797,6 +798,10 @@ func process_logic(delta: float) -> void:
 				_transform_output.origin.x = _follow_axis_lock_value.x
 				_transform_output.origin.z = _follow_axis_lock_value.z
 			FollowLockAxis.YZ:
+				_transform_output.origin.y = _follow_axis_lock_value.y
+				_transform_output.origin.z = _follow_axis_lock_value.z
+			FollowLockAxis.XYZ:
+				_transform_output.origin.x = _follow_axis_lock_value.x
 				_transform_output.origin.y = _follow_axis_lock_value.y
 				_transform_output.origin.z = _follow_axis_lock_value.z
 
@@ -1785,6 +1790,10 @@ func set_follow_axis_lock(value: FollowLockAxis) -> void:
 				_follow_axis_lock_value.x = _transform_output.origin.x
 				_follow_axis_lock_value.z = _transform_output.origin.z
 			FollowLockAxis.YZ:
+				_follow_axis_lock_value.y = _transform_output.origin.y
+				_follow_axis_lock_value.z = _transform_output.origin.z
+			FollowLockAxis.XYZ:
+				_follow_axis_lock_value.x = _transform_output.origin.x
 				_follow_axis_lock_value.y = _transform_output.origin.y
 				_follow_axis_lock_value.z = _transform_output.origin.z
 	else:

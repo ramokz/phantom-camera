@@ -85,6 +85,7 @@ enum FollowLockAxis {
 	NONE    = 0,
 	X 		= 1,
 	Y 		= 2,
+	XY		= 3,
 }
 
 #endregion
@@ -637,6 +638,9 @@ func process_logic(delta: float) -> void:
 			FollowLockAxis.X:
 				_transform_output.origin.x = _follow_axis_lock_value.x
 			FollowLockAxis.Y:
+				_transform_output.origin.y = _follow_axis_lock_value.y
+			FollowLockAxis.XY:
+				_transform_output.origin.x = _follow_axis_lock_value.x
 				_transform_output.origin.y = _follow_axis_lock_value.y
 
 
@@ -1328,10 +1332,14 @@ func set_lock_axis(value: FollowLockAxis) -> void:
 	# Prevent axis lock from working in the editor
 	if value != FollowLockAxis.NONE and not Engine.is_editor_hint():
 		_follow_axis_is_locked = true
-		if value == FollowLockAxis.X:
-			_follow_axis_lock_value.x = _transform_output.origin.x
-		else:
-			_follow_axis_lock_value.y = _transform_output.origin.y
+		match value:
+			FollowLockAxis.X:
+				_follow_axis_lock_value.x = _transform_output.origin.x
+			FollowLockAxis.Y:
+				_follow_axis_lock_value.y = _transform_output.origin.y
+			FollowLockAxis.XY:
+				_follow_axis_lock_value.x = _transform_output.origin.x
+				_follow_axis_lock_value.y = _transform_output.origin.y
 	else:
 		_follow_axis_is_locked = false
 
