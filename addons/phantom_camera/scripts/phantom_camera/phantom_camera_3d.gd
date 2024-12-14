@@ -1663,14 +1663,17 @@ func set_look_at_target(value: Node3D) -> void:
 	if look_at_mode == LookAtMode.NONE: return
 	if look_at_target == value: return
 	look_at_target = value
-	if is_instance_valid(look_at_target):
-		_should_look_at = true
-		_check_physics_body(value)
-		if not look_at_target.tree_exiting.is_connected(_look_at_target_tree_exiting):
-			look_at_target.tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_target))
-	else:
-		if not look_at_mode == LookAtMode.GROUP:
+	if not look_at_mode == LookAtMode.GROUP:
+		if is_instance_valid(look_at_target):
+			_should_look_at = true
+			_check_physics_body(value)
+			if not look_at_target.tree_exiting.is_connected(_look_at_target_tree_exiting):
+				look_at_target.tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_target))
+		else:
 			_should_look_at = false
+	elif look_at_targets.size() == 0:
+		_should_look_at = false
+
 	look_at_target_changed.emit()
 	notify_property_list_changed()
 
