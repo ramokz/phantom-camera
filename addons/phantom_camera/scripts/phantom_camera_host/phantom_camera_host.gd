@@ -280,6 +280,7 @@ func _check_camera_host_amount() -> void:
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
+	if not is_inside_tree(): return
 	var no_previous_pcam: bool
 	if is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d):
 		if _is_2D:
@@ -542,8 +543,7 @@ func _check_pcam_physics() -> void:
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_2d.set("physics_interpolation_mode", 0)
 				#camera_2d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
-				var tree := get_tree()
-				if is_instance_valid(tree) and tree.physics_interpolation:
+				if get_tree().physics_interpolation:
 					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents a warning
 				else:
 					camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
@@ -551,8 +551,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.4 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 4:
-			var tree := get_tree()
-			if is_instance_valid(tree) and tree.physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
+			if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
