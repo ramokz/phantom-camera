@@ -1,6 +1,6 @@
 [gd_scene load_steps=22 format=3 uid="uid://dbkr3d716wtx0"]
 
-[ext_resource type="Script" uid="uid://bqrc8nj027t1b" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/panel/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_li3i3"]
 [ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="4_lcg1p"]
@@ -173,7 +173,7 @@ unique_name_in_owner = true
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 gui_disable_input = true
-size = Vector2i(1920, 1080)
+size = Vector2i(1152, 648)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
