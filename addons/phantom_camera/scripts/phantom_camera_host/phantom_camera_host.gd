@@ -281,7 +281,7 @@ func _check_camera_host_amount() -> void:
 
 func _assign_new_active_pcam(pcam: Node) -> void:
 	# Only checks if the scene tree is still present.
-    # Prevents a few errors and checks from happening if the scene is exited.
+	# Prevents a few errors and checks from happening if the scene is exited.
 	if not is_inside_tree(): return
 	var no_previous_pcam: bool
 	if is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d):
