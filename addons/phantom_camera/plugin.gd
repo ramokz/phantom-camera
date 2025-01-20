@@ -33,8 +33,9 @@ var panel_button: Button
 #region Private Functions
 
 func _enter_tree() -> void:
-	if not get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
-		add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
+	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
+#	if not get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
+#		add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
 
 	# Phantom Camera Nodes
 	add_custom_type(PCAM_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
@@ -50,11 +51,14 @@ func _enter_tree() -> void:
 	# TODO - Should be disabled unless in editor
 	# Viewfinder
 	editor_panel_instance = EditorPanel.instantiate()
+
 	editor_panel_instance.editor_plugin = self
 	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
 
 	# Trigger events in the viewfinder whenever
 	panel_button.toggled.connect(_btn_toggled)
+
+	if panel_button.toggle_mode: _btn_toggled(true)
 
 	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
 
@@ -78,11 +82,12 @@ func _enter_tree() -> void:
 
 
 func _btn_toggled(toggled_on: bool):
-	if toggled_on:
-		editor_panel_instance.viewfinder.viewfinder_visible = true
-		editor_panel_instance.viewfinder.visibility_check()
-	else:
-		editor_panel_instance.viewfinder.viewfinder_visible = false
+	editor_panel_instance.viewfinder.set_visibility(toggled_on)
+#	if toggled_on:
+#		editor_panel_instance.viewfinder.viewfinder_visible = true
+#		editor_panel_instance.viewfinder.visibility_check()
+#	else:
+#		editor_panel_instance.viewfinder.viewfinder_visible = false
 
 
 func _exit_tree() -> void:
@@ -102,8 +107,9 @@ func _exit_tree() -> void:
 	remove_custom_type(PCAM_NOISE_EMITTER_2D)
 	remove_custom_type(PCAM_NOISE_EMITTER_3D)
 
-	if get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
-		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
+	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
+#	if get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
+#		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 
 
 func _make_visible(visible):

@@ -1,0 +1,40 @@
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://bhppejri5dbsf"]
+
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="1_5rtjh"]
+[ext_resource type="StyleBox" uid="uid://5weqvkjsfso3" path="res://addons/phantom_camera/themes/button_hover.tres" id="2_du6h5"]
+[ext_resource type="StyleBox" uid="uid://bclbwo3xrdat0" path="res://addons/phantom_camera/themes/button_normal.tres" id="3_a8j1f"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ek0y3"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rjkuq"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[resource]
+default_font = ExtResource("1_5rtjh")
+Button/colors/font_color = Color(0.227451, 0.72549, 0.603922, 1)
+Button/colors/font_focus_color = Color(0.0784314, 0.109804, 0.129412, 1)
+Button/colors/font_hover_color = Color(0.0784314, 0.109804, 0.129412, 1)
+Button/colors/font_hover_pressed_color = Color(0.0784314, 0.109804, 0.129412, 1)
+Button/colors/font_pressed_color = Color(0.0784314, 0.109804, 0.129412, 1)
+Button/styles/focus = SubResource("StyleBoxFlat_ek0y3")
+Button/styles/hover = ExtResource("2_du6h5")
+Button/styles/hover_pressed = null
+Button/styles/normal = ExtResource("3_a8j1f")
+Button/styles/pressed = SubResource("StyleBoxFlat_rjkuq")

@@ -42,6 +42,17 @@ enum InterpolationMode {
 
 #endregion
 
+#region Public Variables
+
+## Determines which [PhantomCamera2D] / [PhantomCamera3D] nodes this [PhantomCameraHost] should recognise.
+## At least one corresponding layer needs to be set on the PhantomCamera node for the [PhantomCameraHost].
+@export_flags_2d_render var host_layers: int = 1:
+	set = set_host_layers,
+	get = get_host_layers
+
+#endregion
+
+
 #region Private Variables
 
 var _pcam_list: Array[Node] = []
@@ -232,15 +243,14 @@ func _enter_tree() -> void:
 		_phantom_camera_manager.pcam_host_added(self)
 #		var already_multi_hosts: bool = multiple_pcam_hosts
 
-		_check_camera_host_amount()
 
-		if _multiple_pcam_hosts:
-			printerr(
-				"Only one PhantomCameraHost can exist in a scene",
-				"\n",
-				"Multiple PhantomCameraHosts will be supported in https://github.com/ramokz/phantom-camera/issues/26"
-			)
-			queue_free()
+#		if _multiple_pcam_hosts:
+#			printerr(
+#				"Only one PhantomCameraHost can exist in a scene",
+#				"\n",
+#				"Multiple PhantomCameraHosts will be supported in https://github.com/ramokz/phantom-camera/issues/26"
+#			)
+#			queue_free()
 
 		if _is_2D:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
@@ -256,12 +266,15 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_host_removed(self)
-	_check_camera_host_amount()
 
 
 func _ready() -> void:
 	process_priority = 300
 	process_physics_priority = 300
+
+	_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
+	_phantom_camera_manager.pcam_added_to_scene.connect(pcam_added_to_scene)
+	_phantom_camera_manager.pcam_removed_from_scene.connect(pcam_removed_from_scene)
 
 	if _is_2D:
 		camera_2d.offset = Vector2.ZERO
@@ -272,11 +285,68 @@ func _ready() -> void:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 
-func _check_camera_host_amount() -> void:
-	if _phantom_camera_manager.get_phantom_camera_hosts().size() > 1:
-		_multiple_pcam_hosts = true
+func _pcam_host_layer_changed(pcam: Node) -> void:
+	print("PCam Host Layer")
+	if pcam.host_layers & host_layers != 0:
+		if _pcam_list.has(pcam): return
+		_pcam_list.append(pcam)
+		_check_pcam_priority(pcam)
 	else:
-		_multiple_pcam_hosts = false
+		if _pcam_list.has(pcam):
+			_pcam_list.erase(pcam)
+
+		if _is_2D:
+			if _active_pcam_2d == pcam:
+				_active_pcam_missing = true
+				_active_pcam_2d = null
+				_active_pcam_priority = -1
+				pcam.set_is_active(self, false)
+				_find_pcam_with_highest_priority()
+		else:
+			if _active_pcam_3d == pcam:
+				_active_pcam_missing = true
+				_active_pcam_3d = null
+				_active_pcam_priority = -1
+				pcam.set_is_active(self, false)
+				_find_pcam_with_highest_priority()
+
+#	if _is_2D:
+#		if pcam.host_layers & host_layers != 0:
+#			_pcam_list.append(pcam)
+#			_check_pcam_priority(pcam)
+#		else:
+#			if _pcam_list.has(pcam):
+#				_pcam_list.erase(pcam)
+#			if _active_pcam_2d == pcam:
+#				_active_pcam_missing = true
+#				_active_pcam_2d = null
+#				_active_pcam_priority = -1
+#				pcam.set_is_active(self, false)
+#			_find_pcam_with_highest_priority()
+#		else:
+#		if pcam.host_layers & host_layers != 0:
+#			_check_pcam_priority(pcam)
+#		else:
+#			if _active_pcam_3d == pcam:
+#				_active_pcam_missing = true
+#				_active_pcam_3d = null
+#				_active_pcam_priority = -1
+#				pcam.set_is_active(self, false)
+#			_find_pcam_with_highest_priority()
+
+
+func _check_pcam_priority(pcam: Node) -> void:
+	if pcam.get_priority() > _active_pcam_priority:
+		_assign_new_active_pcam(pcam)
+		pcam.set_tween_skip(self, false)
+		_active_pcam_missing = false
+
+
+func _find_pcam_with_highest_priority() -> void:
+	for pcam in _pcam_list:
+		if pcam.host_layers & host_layers == 0: continue # Skips PCams that doesn't have overlapping host_layers
+		if not pcam.visible: continue # Prevents hidden PCams from becoming active
+		_check_pcam_priority(pcam)
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
@@ -567,15 +637,6 @@ func _check_pcam_physics() -> void:
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
 				camera_3d.set("physics_interpolation_mode", 0)
-
-
-func _find_pcam_with_highest_priority() -> void:
-	for pcam in _pcam_list:
-		if not pcam.visible: continue # Prevents hidden PCams from becoming active
-		if pcam.get_priority() > _active_pcam_priority:
-			_assign_new_active_pcam(pcam)
-		pcam.set_tween_skip(self, false)
-		_active_pcam_missing = false
 
 
 ## TODO - For 0.8 release
@@ -1030,6 +1091,7 @@ func _tween_interpolate_value(from: Variant, to: Variant, duration: float, trans
 		ease_type,
 	)
 
+
 func _show_viewfinder_in_play() -> void:
 	# Don't show the viewfinder in the actual editor or project builds
 	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
@@ -1062,18 +1124,14 @@ func _show_viewfinder_in_play() -> void:
 #region Public Functions
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
-## [b]Note:[/b] This can only be called internally from a
-## [param PhantomCamera] node.
-func pcam_added_to_scene(pcam) -> void:
-	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-		if not _pcam_list.has(pcam):
-			_pcam_list.append(pcam)
-			if not pcam.tween_on_load:
-				pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
-			if not pcam.is_node_ready(): await pcam.ready
-			_find_pcam_with_highest_priority()
-	else:
-		printerr("This function should only be called from PhantomCamera scripts")
+## [b]Note:[/b] This can only be called internally from a [param PhantomCamera] node.
+func pcam_added_to_scene(pcam: Node) -> void:
+	if not _pcam_list.has(pcam):
+		_pcam_list.append(pcam)
+		if not pcam.tween_on_load:
+			pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
+		if not pcam.is_node_ready(): await pcam.ready
+		_find_pcam_with_highest_priority()
 
 
 ## Called when a [param PhantomCamera] is removed from the scene.[br]
@@ -1177,3 +1235,22 @@ func refresh_pcam_list_priorty() -> void:
 	#return interpolation_mode
 
 #endregion
+
+##region Setters / Getters
+
+func set_host_layers(value: int) -> void:
+	host_layers = value
+
+	if not _active_pcam_missing:
+		if _is_2D:
+			_pcam_host_layer_changed(_active_pcam_2d)
+		else:
+			_pcam_host_layer_changed(_active_pcam_3d)
+	else:
+		_find_pcam_with_highest_priority()
+
+
+func get_host_layers() -> int:
+	return host_layers
+
+##endregion
