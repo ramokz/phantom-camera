@@ -255,8 +255,9 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	_phantom_camera_manager.pcam_host_removed(self)
-	_check_camera_host_amount()
+	if is_instance_valid(_phantom_camera_manager):
+		_phantom_camera_manager.pcam_host_removed(self)
+		_check_camera_host_amount()
 
 
 func _ready() -> void:
