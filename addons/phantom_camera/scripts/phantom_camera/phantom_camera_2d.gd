@@ -580,7 +580,8 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	_phantom_camera_manager.pcam_removed(self)
+	if is_instance_valid(_phantom_camera_manager):
+		_phantom_camera_manager.pcam_removed(self)
 
 	if _has_valid_pcam_owner():
 		get_pcam_host_owner().pcam_removed_from_scene(self)
