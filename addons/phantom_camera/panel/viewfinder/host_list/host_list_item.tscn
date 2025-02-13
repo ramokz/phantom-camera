@@ -1,10 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://btn6jgv0vix7"]
+[gd_scene load_steps=10 format=3 uid="uid://btn6jgv0vix7"]
 
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="1_anjxo"]
 [ext_resource type="Theme" uid="uid://bhppejri5dbsf" path="res://addons/phantom_camera/themes/theme.tres" id="1_wql5t"]
 [ext_resource type="Texture2D" uid="uid://rghrkoqrm2ig" path="res://addons/phantom_camera/icons/viewfinder/Select.svg" id="2_71b6g"]
 [ext_resource type="ButtonGroup" uid="uid://dfu0b8jbtyr1n" path="res://addons/phantom_camera/panel/viewfinder/host_list/host_list_item_group.tres" id="3_06a0y"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list_item.gd" id="3_a5o8b"]
+[ext_resource type="Texture2D" uid="uid://cjlv0bg7byjx0" path="res://addons/phantom_camera/icons/warning.svg" id="3_qgpy7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0rxfi"]
+content_margin_right = 6.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_llqnh"]
 
@@ -16,13 +20,17 @@ Button/colors/icon_pressed_color = Color(0.227451, 0.72549, 0.603922, 1)
 Button/constants/icon_max_width = 20
 Button/styles/focus = SubResource("StyleBoxEmpty_llqnh")
 
-[node name="HBoxContainer" type="HBoxContainer"]
-offset_right = 220.0
-offset_bottom = 40.0
-theme_override_constants/separation = 2
+[node name="HostListItem" type="PanelContainer"]
+offset_right = 229.0
+offset_bottom = 34.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0rxfi")
 script = ExtResource("3_a5o8b")
 
-[node name="SelectPCamHost" type="Button" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="SelectPCamHost" type="Button" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
@@ -32,7 +40,22 @@ theme = SubResource("Theme_7h15c")
 icon = ExtResource("2_71b6g")
 flat = true
 
-[node name="SwitchPCamHost" type="Button" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ErrorPCamHost" type="TextureRect" parent="HBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+tooltip_text = "This Phantom Camera Host node will not affect a Camera node.
+See the warning in the Scene Tree for more information."
+texture = ExtResource("3_qgpy7")
+expand_mode = 1
+
+[node name="SwitchPCamHost" type="Button" parent="HBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2

@@ -1,28 +1,46 @@
 @tool
 extends Control
 
-const button_group_resource = preload("res://addons/phantom_camera/panel/viewfinder/host_list/host_list_item_group.tres")
+const button_group_resource: ButtonGroup = preload("res://addons/phantom_camera/panel/viewfinder/host_list/host_list_item_group.tres")
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-
-var id: int
-var pcam_host: PhantomCameraHost
-
-var _pcam_manager: Node
 
 @onready var select_pcam_host: Button = %SelectPCamHost
 @onready var switch_pcam_host: Button = %SwitchPCamHost
 
+var pcam_host: PhantomCameraHost:
+	set(value):
+		pcam_host = value
+		if not is_instance_valid(value): return
+		if not pcam_host.renamed.is_connected(_rename_pcam_host):
+			pcam_host.renamed.connect(_rename_pcam_host)
+			pcam_host.has_error.connect(_pcam_host_has_error)
+	get:
+		return pcam_host
+
+var _pcam_manager: Node
+
+#region Private fucntions
 
 func _ready() -> void:
-	_pcam_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
-	_pcam_manager.pcam_host_removed_from_scene.connect(_pcam_host_removed_from_scene)
-
-#	pcam_host.renamed.connect(_renamed_pcam_host)
-
 	switch_pcam_host.button_group = button_group_resource
-
 	select_pcam_host.pressed.connect(_select_pcam)
 	switch_pcam_host.pressed.connect(_switch_pcam_host)
+
+	if not is_instance_valid(pcam_host): return
+	switch_pcam_host.text = pcam_host.name
+
+	_pcam_host_has_error()
+
+
+func _pcam_host_has_error() -> void:
+	if pcam_host.show_warning:
+		%ErrorPCamHost.visible = true
+	else:
+		%ErrorPCamHost.visible = false
+
+
+func _rename_pcam_host() -> void:
+	switch_pcam_host.text = pcam_host.name
 
 
 func _select_pcam() -> void:
@@ -31,13 +49,10 @@ func _select_pcam() -> void:
 
 
 func _switch_pcam_host() -> void:
+	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
+	if not is_instance_valid(_pcam_manager):
+		_pcam_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
+
 	_pcam_manager.viewfinder_pcam_host_switch.emit(pcam_host)
 
-
-## Removes this PCam Host list item if the PCam Host node is deleted
-func _pcam_host_removed_from_scene(pcam_host_freed: PhantomCameraHost) -> void:
-	if not pcam_host == pcam_host_freed: return
-	queue_free()
-
-#func _renamed_pcam_host() -> void:
-#	select_pcam_host.text = pcam_host.name
+#endregion

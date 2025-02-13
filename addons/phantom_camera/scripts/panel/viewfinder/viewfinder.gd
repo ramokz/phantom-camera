@@ -124,7 +124,8 @@ func _ready() -> void:
 
 
 func _pcam_host_switch(new_pcam_host: PhantomCameraHost) -> void:
-	pcam_host = new_pcam_host
+#	pcam_host = new_pcam_host
+	_set_viewfinder_camera(new_pcam_host, true)
 
 
 func _exit_tree() -> void:
@@ -436,7 +437,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 		else:
 			_pcam_host_list.visible = true
 			_set_viewfinder_camera(pcam_host_group[0], editor)
-
 			for i in pcam_host_group.size():
 				var is_default: bool = false
 				if i == 0:
@@ -447,7 +447,8 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 				#pass
 
 
-func _set_viewfinder_camera(pcam_host: PhantomCameraHost, editor: bool) -> void:
+func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> void:
+	pcam_host = new_pcam_host
 	if _is_2d:
 		_selected_camera = pcam_host.camera_2d
 
@@ -455,6 +456,7 @@ func _set_viewfinder_camera(pcam_host: PhantomCameraHost, editor: bool) -> void:
 			_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
 		if editor:
 			sub_viewport.disable_3d = true
+			pcam_host = pcam_host
 			_camera_2d.zoom = pcam_host.camera_2d.zoom
 			_camera_2d.offset = pcam_host.camera_2d.offset
 			_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
@@ -556,11 +558,13 @@ func _assign_manager() -> void:
 
 			_pcam_manager.viewfinder_pcam_host_switch.connect(_pcam_host_switch)
 
+
 func _pcam_host_removed_from_scene(pcam_host: PhantomCameraHost) -> void:
 	if _pcam_manager.phantom_camera_hosts.size() < 2:
 		_pcam_host_list.visible = false
 
 	_visibility_check()
+
 
 func _pcam_changed(pcam: Node) -> void:
 	_visibility_check()
@@ -584,12 +588,16 @@ func update_dead_zone() -> void:
 
 func scene_changed(scene_root: Node) -> void:
 	_assign_manager()
+
+	_pcam_host_list.clear_pcam_host_list()
+
 	if not scene_root is Node2D and not scene_root is Node3D:
 		is_scene = false
 		_pcam_host_list.visible = false
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.visible = false
 	else:
+		_pcam_host_list.reset_scroll_container_height()
 		_visibility_check()
 
 #endregion

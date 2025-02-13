@@ -9,6 +9,12 @@ extends Node
 ## PhantomCameraHost. It is what determines which [param PhantomCamera] should
 ## be active.
 
+#region Signals
+
+signal has_error()
+
+#endregion
+
 #region Constants
 
 const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
@@ -54,8 +60,6 @@ enum InterpolationMode {
 
 
 #region Private Variables
-
-var _pcam_list: Array[Node] = []
 
 var _active_pcam_2d: PhantomCamera2D = null
 var _active_pcam_3d: Node = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
@@ -193,6 +197,8 @@ var _phantom_camera_manager: Node
 
 #region Public Variables
 
+var show_warning: bool = false
+
 ## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
 var camera_2d: Camera2D = null
 ## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
@@ -210,25 +216,39 @@ var camera_3d: Node = null ## Note: To support disable_3d export templates for 2
 
 func _get_configuration_warnings() -> PackedStringArray:
 	var parent: Node = get_parent()
+	var first_pcam_host_child: PhantomCameraHost
 
 	if _is_2D:
 		if not parent is Camera2D:
-			return ["Needs to be a child of a Camera2D in order to work."]
-		else:
-			return []
+			show_warning = true
+			has_error.emit()
+			return["Needs to be a child of a Camera2D in order to work."]
 	else:
 		if not parent.is_class("Camera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-			return ["Needs to be a child of a Camera3D in order to work."]
-		else:
-			return []
+			show_warning = true
+			has_error.emit()
+			return["Needs to be a child of a Camera3D in order to work."]
+
+	for child in parent.get_children():
+		if not child is PhantomCameraHost: continue
+		if not is_instance_valid(first_pcam_host_child):
+			first_pcam_host_child = child
+		elif not first_pcam_host_child == self:
+			show_warning = true
+			has_error.emit()
+			return["Only the first PhantomCameraHost child will be used."]
+
+	show_warning = false
+	has_error.emit()
+	return[]
 
 
 func _enter_tree() -> void:
-	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
-
 	var parent: Node = get_parent()
-
 	if parent is Camera2D or parent.is_class("Camera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+		_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
+		_phantom_camera_manager.pcam_host_added(self)
+
 		_is_child_of_camera = true
 		if parent is Camera2D:
 			_is_2D = true
@@ -239,18 +259,6 @@ func _enter_tree() -> void:
 		else:
 			_is_2D = false
 			camera_3d = parent
-
-		_phantom_camera_manager.pcam_host_added(self)
-#		var already_multi_hosts: bool = multiple_pcam_hosts
-
-
-#		if _multiple_pcam_hosts:
-#			printerr(
-#				"Only one PhantomCameraHost can exist in a scene",
-#				"\n",
-#				"Multiple PhantomCameraHosts will be supported in https://github.com/ramokz/phantom-camera/issues/26"
-#			)
-#			queue_free()
 
 		if _is_2D:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
@@ -273,9 +281,14 @@ func _ready() -> void:
 	process_priority = 300
 	process_physics_priority = 300
 
-	_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
-	_phantom_camera_manager.pcam_added_to_scene.connect(pcam_added_to_scene)
-	_phantom_camera_manager.pcam_removed_from_scene.connect(pcam_removed_from_scene)
+	# PCam Host Signals
+	if Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
+		_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
+		_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
+
+		# PCam Signals
+		_phantom_camera_manager.pcam_added_to_scene.connect(pcam_added_to_scene)
+		_phantom_camera_manager.pcam_removed_from_scene.connect(pcam_removed_from_scene)
 
 	if _is_2D:
 		camera_2d.offset = Vector2.ZERO
@@ -287,15 +300,9 @@ func _ready() -> void:
 
 
 func _pcam_host_layer_changed(pcam: Node) -> void:
-	print("PCam Host Layer")
 	if pcam.host_layers & host_layers != 0:
-		if _pcam_list.has(pcam): return
-		_pcam_list.append(pcam)
 		_check_pcam_priority(pcam)
 	else:
-		if _pcam_list.has(pcam):
-			_pcam_list.erase(pcam)
-
 		if _is_2D:
 			if _active_pcam_2d == pcam:
 				_active_pcam_missing = true
@@ -311,43 +318,44 @@ func _pcam_host_layer_changed(pcam: Node) -> void:
 				pcam.set_is_active(self, false)
 				_find_pcam_with_highest_priority()
 
-#	if _is_2D:
-#		if pcam.host_layers & host_layers != 0:
-#			_pcam_list.append(pcam)
-#			_check_pcam_priority(pcam)
-#		else:
-#			if _pcam_list.has(pcam):
-#				_pcam_list.erase(pcam)
-#			if _active_pcam_2d == pcam:
-#				_active_pcam_missing = true
-#				_active_pcam_2d = null
-#				_active_pcam_priority = -1
-#				pcam.set_is_active(self, false)
-#			_find_pcam_with_highest_priority()
-#		else:
-#		if pcam.host_layers & host_layers != 0:
-#			_check_pcam_priority(pcam)
-#		else:
-#			if _active_pcam_3d == pcam:
-#				_active_pcam_missing = true
-#				_active_pcam_3d = null
-#				_active_pcam_priority = -1
-#				pcam.set_is_active(self, false)
-#			_find_pcam_with_highest_priority()
-
 
 func _check_pcam_priority(pcam: Node) -> void:
+	if not _is_pcam_in_same_host_layer(pcam): return
 	if pcam.get_priority() > _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		pcam.set_tween_skip(self, false)
 		_active_pcam_missing = false
 
 
-func _find_pcam_with_highest_priority() -> void:
-	for pcam in _pcam_list:
+func _rescan_pcam_list() -> void:
+	var pcam_list: Array
+	if _is_2D:
+		pcam_list = _phantom_camera_manager.phantom_camera_2ds
+	else:
+		pcam_list = _phantom_camera_manager.phantom_camera_3ds
+
+	for pcam in pcam_list:
 		if pcam.host_layers & host_layers == 0: continue # Skips PCams that doesn't have overlapping host_layers
 		if not pcam.visible: continue # Prevents hidden PCams from becoming active
 		_check_pcam_priority(pcam)
+
+
+func _find_pcam_with_highest_priority() -> void:
+	var pcam_list: Array
+	if _is_2D:
+		pcam_list = _phantom_camera_manager.phantom_camera_2ds
+	else:
+		pcam_list = _phantom_camera_manager.phantom_camera_3ds
+
+	for pcam in pcam_list:
+		if pcam.host_layers & host_layers == 0: continue # Skips PCams that doesn't have overlapping host_layers
+		if not pcam.visible: continue # Prevents hidden PCams from becoming active
+		_check_pcam_priority(pcam)
+
+
+func _is_pcam_in_same_host_layer(pcam: Node) -> bool:
+	if pcam.host_layers & host_layers != 0: return true
+	return false
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
@@ -1127,12 +1135,10 @@ func _show_viewfinder_in_play() -> void:
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a [param PhantomCamera] node.
 func pcam_added_to_scene(pcam: Node) -> void:
-	if not _pcam_list.has(pcam):
-		_pcam_list.append(pcam)
-		if not pcam.tween_on_load:
-			pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
-		if not pcam.is_node_ready(): await pcam.ready
-		_find_pcam_with_highest_priority()
+	if not pcam.tween_on_load:
+		pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
+	if not pcam.is_node_ready(): await pcam.ready
+	_find_pcam_with_highest_priority()
 
 
 ## Called when a [param PhantomCamera] is removed from the scene.[br]
@@ -1140,7 +1146,6 @@ func pcam_added_to_scene(pcam: Node) -> void:
 ## [param PhantomCamera] node.
 func pcam_removed_from_scene(pcam) -> void:
 	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-		_pcam_list.erase(pcam)
 		if _is_2D:
 			if pcam == _active_pcam_2d:
 				_active_pcam_missing = true
@@ -1241,6 +1246,7 @@ func refresh_pcam_list_priorty() -> void:
 
 func set_host_layers(value: int) -> void:
 	host_layers = value
+	if not _is_child_of_camera: return
 
 	if not _active_pcam_missing:
 		if _is_2D:
