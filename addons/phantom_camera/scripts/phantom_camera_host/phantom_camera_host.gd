@@ -79,7 +79,7 @@ var _tween_is_instant: bool = false
 var _multiple_pcam_hosts: bool = false
 
 var _is_child_of_camera: bool = false
-var _is_2D: bool = false
+var _is_2d: bool = false
 
 var _viewfinder_node: Control = null
 var _viewfinder_needed_check: bool = true
@@ -218,7 +218,7 @@ func _get_configuration_warnings() -> PackedStringArray:
 	var parent: Node = get_parent()
 	var first_pcam_host_child: PhantomCameraHost
 
-	if _is_2D:
+	if _is_2d:
 		if not parent is Camera2D:
 			show_warning = true
 			has_error.emit()
@@ -251,16 +251,16 @@ func _enter_tree() -> void:
 
 		_is_child_of_camera = true
 		if parent is Camera2D:
-			_is_2D = true
+			_is_2d = true
 			camera_2d = parent
 			## Force applies position smoothing to be disabled
 			## This is to prevent overlap with the interpolation of the PCam2D.
 			camera_2d.set_position_smoothing_enabled(false)
 		else:
-			_is_2D = false
+			_is_2d = false
 			camera_3d = parent
 
-		if _is_2D:
+		if _is_2d:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
 					pcam_added_to_scene(pcam)
@@ -290,7 +290,7 @@ func _ready() -> void:
 		_phantom_camera_manager.pcam_added_to_scene.connect(pcam_added_to_scene)
 		_phantom_camera_manager.pcam_removed_from_scene.connect(pcam_removed_from_scene)
 
-	if _is_2D:
+	if _is_2d:
 		camera_2d.offset = Vector2.ZERO
 		if not is_instance_valid(_active_pcam_2d): return
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
@@ -303,7 +303,7 @@ func _pcam_host_layer_changed(pcam: Node) -> void:
 	if pcam.host_layers & host_layers != 0:
 		_check_pcam_priority(pcam)
 	else:
-		if _is_2D:
+		if _is_2d:
 			if _active_pcam_2d == pcam:
 				_active_pcam_missing = true
 				_active_pcam_2d = null
@@ -329,7 +329,7 @@ func _check_pcam_priority(pcam: Node) -> void:
 
 func _rescan_pcam_list() -> void:
 	var pcam_list: Array
-	if _is_2D:
+	if _is_2d:
 		pcam_list = _phantom_camera_manager.phantom_camera_2ds
 	else:
 		pcam_list = _phantom_camera_manager.phantom_camera_3ds
@@ -342,7 +342,7 @@ func _rescan_pcam_list() -> void:
 
 func _find_pcam_with_highest_priority() -> void:
 	var pcam_list: Array
-	if _is_2D:
+	if _is_2d:
 		pcam_list = _phantom_camera_manager.phantom_camera_2ds
 	else:
 		pcam_list = _phantom_camera_manager.phantom_camera_3ds
@@ -364,7 +364,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	if not is_inside_tree(): return
 	var no_previous_pcam: bool
 	if is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d):
-		if _is_2D:
+		if _is_2d:
 			_prev_active_pcam_2d_transform = camera_2d.global_transform
 			_active_pcam_2d.queue_redraw()
 			_active_pcam_2d.set_is_active(self, false)
@@ -448,7 +448,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		no_previous_pcam = true
 
 	## Assign newly active pcam
-	if _is_2D:
+	if _is_2d:
 		_active_pcam_2d = pcam
 		_active_pcam_priority = _active_pcam_2d.priority
 		_active_pcam_has_damping = _active_pcam_2d.follow_damping
@@ -563,7 +563,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 					if _prev_cam_frustum_near != _attributes.frustum_near:
 						_cam_frustum_near_changed = true
 
-	if _is_2D:
+	if _is_2d:
 		if _active_pcam_2d.show_viewfinder_in_play:
 			_viewfinder_needed_check = true
 
@@ -581,7 +581,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			camera_3d.projection = _active_pcam_3d.projection
 
 	if no_previous_pcam:
-		if _is_2D:
+		if _is_2d:
 			_prev_active_pcam_2d_transform = _active_pcam_2d.get_transform_output()
 		else:
 			_prev_active_pcam_3d_transform = _active_pcam_3d.get_transform_output()
@@ -602,7 +602,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 
 func _check_pcam_physics() -> void:
-	if _is_2D:
+	if _is_2d:
 		## NOTE - Only supported in Godot 4.3 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 3:
@@ -672,7 +672,7 @@ func _process(delta: float) -> void:
 	if not _follow_target_physics_based: _tween_follow_checker(delta)
 
 	if not _has_noise_emitted: return
-	if _is_2D:
+	if _is_2d:
 		camera_2d.offset += _noise_emitted_output_2d.origin
 		camera_2d.rotation += _noise_emitted_output_2d.get_rotation() # + _noise_emitted_output_2d.get_rotation()
 	else:
@@ -686,7 +686,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _tween_follow_checker(delta: float) -> void:
-	if _is_2D:
+	if _is_2d:
 		_active_pcam_2d.process_logic(delta)
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
 	else:
@@ -702,7 +702,7 @@ func _tween_follow_checker(delta: float) -> void:
 	else:
 		_pcam_tween(delta)
 
-	if _is_2D:
+	if _is_2d:
 		camera_2d.offset = Vector2.ZERO
 		camera_2d.offset = _active_pcam_2d.get_noise_transform().origin # + _noise_emitted_output_2d.origin
 		camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation() # + _noise_emitted_output_2d.get_rotation()
@@ -711,14 +711,14 @@ func _tween_follow_checker(delta: float) -> void:
 
 
 func _pcam_follow(_delta: float) -> void:
-	if _is_2D:
+	if _is_2d:
 		if not is_instance_valid(_active_pcam_2d): return
 	else:
 		if not is_instance_valid(_active_pcam_3d): return
 
 	if _active_pcam_missing or not _is_child_of_camera: return
 
-	if _is_2D:
+	if _is_2d:
 		if _active_pcam_2d.snap_to_pixel:
 			var snap_to_pixel_glob_transform: Transform2D = _active_pcam_2d_glob_transform
 			snap_to_pixel_glob_transform.origin = snap_to_pixel_glob_transform.origin.round()
@@ -735,7 +735,7 @@ func _pcam_follow(_delta: float) -> void:
 
 	# TODO - Should be able to find a more efficient way using signals
 	if Engine.is_editor_hint():
-		if not _is_2D:
+		if not _is_2d:
 			if _active_pcam_3d.camera_3d_resource != null:
 				camera_3d.cull_mask = _active_pcam_3d.cull_mask
 				camera_3d.h_offset = _active_pcam_3d.h_offset
@@ -767,7 +767,7 @@ func _noise_emitted_3d(noise_output: Transform3D) -> void:
 func _pcam_tween(delta: float) -> void:
 	# Run at the first tween frame
 	if _tween_elapsed_time == 0:
-		if _is_2D:
+		if _is_2d:
 			_active_pcam_2d.tween_started.emit()
 			_active_pcam_2d.reset_limit()
 		else:
@@ -775,14 +775,14 @@ func _pcam_tween(delta: float) -> void:
 
 	# Forcefully disables physics interpolation when tweens are instant
 	if _tween_is_instant:
-		if _is_2D:
+		if _is_2d:
 			camera_2d.set("physics_interpolation_mode", 2)
 		else:
 			camera_3d.set("physics_interpolation_mode", 2)
 
 	_tween_elapsed_time = min(_tween_duration, _tween_elapsed_time + delta)
 
-	if _is_2D:
+	if _is_2d:
 		_active_pcam_2d.is_tweening.emit()
 		var interpolation_destination: Vector2 = _tween_interpolate_value(
 			_prev_active_pcam_2d_transform.origin,
@@ -1066,7 +1066,7 @@ func _pcam_tween(delta: float) -> void:
 	if _tween_elapsed_time < _tween_duration: return
 	_trigger_pcam_tween = false
 	_tween_elapsed_time = 0
-	if _is_2D:
+	if _is_2d:
 		_active_pcam_2d.update_limit_all_sides()
 		_active_pcam_2d.tween_completed.emit()
 		if Engine.is_editor_hint():
@@ -1109,7 +1109,7 @@ func _show_viewfinder_in_play() -> void:
 	if is_instance_valid(_viewfinder_node):
 		_viewfinder_node.visible = false
 
-	if _is_2D:
+	if _is_2d:
 		if not _active_pcam_2d.show_viewfinder_in_play: return
 		if _active_pcam_2d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
 	else:
@@ -1146,7 +1146,7 @@ func pcam_added_to_scene(pcam: Node) -> void:
 ## [param PhantomCamera] node.
 func pcam_removed_from_scene(pcam) -> void:
 	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-		if _is_2D:
+		if _is_2d:
 			if pcam == _active_pcam_2d:
 				_active_pcam_missing = true
 				_active_pcam_priority = -1
@@ -1160,21 +1160,20 @@ func pcam_removed_from_scene(pcam) -> void:
 		printerr("This function should only be called from PhantomCamera scripts")
 
 
-## Triggers a recalculation to determine which PhantomCamera has the highest
-## priority.
+## Triggers a recalculation to determine which PhantomCamera has the highest priority.
 func pcam_priority_updated(pcam: Node) -> void:
+	if not is_instance_valid(pcam): return
+
 	if Engine.is_editor_hint():
-		if _is_2D:
+		if _is_2d:
 			if _active_pcam_2d.priority_override: return
 		else:
 			if _active_pcam_3d.priority_override: return
 
-	if not is_instance_valid(pcam): return
-
 	var current_pcam_priority: int = pcam.priority
 
 	if current_pcam_priority >= _active_pcam_priority:
-		if _is_2D:
+		if _is_2d:
 			if pcam != _active_pcam_2d:
 				_assign_new_active_pcam(pcam)
 		else:
@@ -1194,7 +1193,7 @@ func pcam_priority_updated(pcam: Node) -> void:
 ## [b]Note:[/b] This only affects the editor.
 func pcam_priority_override(pcam: Node) -> void:
 	if Engine.is_editor_hint():
-		if _is_2D:
+		if _is_2d:
 			if _active_pcam_2d.priority_override:
 				_active_pcam_2d.priority_override = false
 		else:
@@ -1214,7 +1213,7 @@ func pcam_priority_override_disabled() -> void:
 
 ## Returns the currently active [param PhantomCamera]
 func get_active_pcam() -> Node:
-	if _is_2D:
+	if _is_2d:
 		return _active_pcam_2d
 	else:
 		return _active_pcam_3d
@@ -1249,7 +1248,7 @@ func set_host_layers(value: int) -> void:
 	if not _is_child_of_camera: return
 
 	if not _active_pcam_missing:
-		if _is_2D:
+		if _is_2d:
 			_pcam_host_layer_changed(_active_pcam_2d)
 		else:
 			_pcam_host_layer_changed(_active_pcam_3d)
