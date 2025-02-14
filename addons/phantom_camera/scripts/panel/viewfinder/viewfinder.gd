@@ -597,7 +597,6 @@ func scene_changed(scene_root: Node) -> void:
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.visible = false
 	else:
-		_pcam_host_list.reset_scroll_container_height()
 		_visibility_check()
 
 #endregion

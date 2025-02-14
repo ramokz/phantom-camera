@@ -17,8 +17,6 @@ signal pcam_host_removed(pcam_host: PhantomCameraHost)
 var _host_list_open: bool = false
 
 var _bottom_offset_value: float
-var _list_item_height: float
-var _list_item_seperation: float
 
 var _pcam_host_list: Array[PhantomCameraHost]
 var _pcam_manager: Node
@@ -34,14 +32,14 @@ func _ready() -> void:
 		_pcam_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
 		_pcam_manager.pcam_host_removed_from_scene.connect(_remove_pcam_host)
 
-	if not get_parent() is Control: return
+	if not get_parent() is Control: return # To prevent errors when opening the scene on its own
 	_viewfinder_panel = get_parent()
-	_viewfinder_panel.resized.connect(_viewfinder_resized)
+	_viewfinder_panel.resized.connect(_set_offset_top)
 
-	offset_top = _viewfinder_panel.size.y - _host_list_button.size.y
+	_host_list_item_container.resized.connect(_set_offset_top)
 
 
-func _viewfinder_resized() -> void:
+func _set_offset_top() -> void:
 	offset_top = _set_host_list_size()
 
 
@@ -80,12 +78,11 @@ func _remove_pcam_host(pcam_host: PhantomCameraHost) -> void:
 	if _pcam_host_list.has(pcam_host):
 		_pcam_host_list.erase(pcam_host)
 
+	var freed_pcam_host: Control
 	for host_list_item_instance in _host_list_item_container.get_children():
 		if not host_list_item_instance.pcam_host == pcam_host: continue
-
+		freed_pcam_host = host_list_item_instance
 		host_list_item_instance.queue_free()
-
-	offset_top = _set_host_list_size()
 
 #endregion
 
@@ -99,8 +96,6 @@ func add_pcam_host(pcam_host: PhantomCameraHost, is_default: bool) -> void:
 	var host_list_item_instance: PanelContainer = _host_list_item.instantiate()
 	var switch_pcam_host_button: Button = host_list_item_instance.get_node("%SwitchPCamHost")
 	if is_default: switch_pcam_host_button.button_pressed = true
-	_list_item_height = host_list_item_instance.size.y
-	_list_item_seperation = _host_list_item_container.get_theme_constant("separation")
 
 	if not pcam_host.tree_exiting.is_connected(_remove_pcam_host):
 		pcam_host.tree_exiting.connect(_remove_pcam_host.bind(pcam_host))
@@ -109,19 +104,11 @@ func add_pcam_host(pcam_host: PhantomCameraHost, is_default: bool) -> void:
 
 	_host_list_item_container.add_child(host_list_item_instance)
 
-	await host_list_item_instance.ready
-	offset_top = _set_host_list_size()
-
 
 func clear_pcam_host_list() -> void:
 	_pcam_host_list.clear()
 
 	for host_list_item_instance in _host_list_item_container.get_children():
 		host_list_item_instance.queue_free()
-
-
-func reset_scroll_container_height() -> void:
-	_host_list_open = true
-	offset_top = _set_host_list_size()
 
 #endregion
