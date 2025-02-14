@@ -327,19 +327,6 @@ func _check_pcam_priority(pcam: Node) -> void:
 		_active_pcam_missing = false
 
 
-func _rescan_pcam_list() -> void:
-	var pcam_list: Array
-	if _is_2d:
-		pcam_list = _phantom_camera_manager.phantom_camera_2ds
-	else:
-		pcam_list = _phantom_camera_manager.phantom_camera_3ds
-
-	for pcam in pcam_list:
-		if pcam.host_layers & host_layers == 0: continue # Skips PCams that doesn't have overlapping host_layers
-		if not pcam.visible: continue # Prevents hidden PCams from becoming active
-		_check_pcam_priority(pcam)
-
-
 func _find_pcam_with_highest_priority() -> void:
 	var pcam_list: Array
 	if _is_2d:
@@ -348,7 +335,6 @@ func _find_pcam_with_highest_priority() -> void:
 		pcam_list = _phantom_camera_manager.phantom_camera_3ds
 
 	for pcam in pcam_list:
-		if pcam.host_layers & host_layers == 0: continue # Skips PCams that doesn't have overlapping host_layers
 		if not pcam.visible: continue # Prevents hidden PCams from becoming active
 		_check_pcam_priority(pcam)
 
@@ -1163,11 +1149,14 @@ func pcam_removed_from_scene(pcam) -> void:
 ## Triggers a recalculation to determine which PhantomCamera has the highest priority.
 func pcam_priority_updated(pcam: Node) -> void:
 	if not is_instance_valid(pcam): return
+	if not _is_pcam_in_same_host_layer(pcam): return
 
 	if Engine.is_editor_hint():
 		if _is_2d:
+			if not is_instance_valid(_active_pcam_2d): return
 			if _active_pcam_2d.priority_override: return
 		else:
+			if not is_instance_valid(_active_pcam_3d): return
 			if _active_pcam_3d.priority_override: return
 
 	var current_pcam_priority: int = pcam.priority
@@ -1179,6 +1168,8 @@ func pcam_priority_updated(pcam: Node) -> void:
 		else:
 			if pcam != _active_pcam_3d:
 				_assign_new_active_pcam(pcam)
+		pcam.set_tween_skip(self, false)
+		_active_pcam_missing = false
 
 	if pcam == _active_pcam_2d or pcam == _active_pcam_3d:
 		if current_pcam_priority <= _active_pcam_priority:
@@ -1191,14 +1182,19 @@ func pcam_priority_updated(pcam: Node) -> void:
 ## Updates the viewfinder when a [param PhantomCamera] has its
 ## [param priority_ovrride] enabled.[br]
 ## [b]Note:[/b] This only affects the editor.
-func pcam_priority_override(pcam: Node) -> void:
-	if Engine.is_editor_hint():
-		if _is_2d:
-			if _active_pcam_2d.priority_override:
-				_active_pcam_2d.priority_override = false
+func pcam_priority_override(pcam: Node, shouldOverride: bool) -> void:
+	if not Engine.is_editor_hint(): return
+
+	if _is_2d:
+		if shouldOverride:
+			_active_pcam_2d.priority_override = true
 		else:
-			if _active_pcam_3d.priority_override:
-				_active_pcam_3d.priority_override = false
+			_active_pcam_2d.priority_override = false
+	else:
+		if shouldOverride:
+			_active_pcam_3d.priority_override = true
+		else:
+			_active_pcam_3d.priority_override = false
 
 	_assign_new_active_pcam(pcam)
 	update_editor_viewfinder.emit()
