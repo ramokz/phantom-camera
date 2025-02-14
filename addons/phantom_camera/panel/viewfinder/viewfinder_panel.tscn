@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dbkr3d716wtx0"]
+[gd_scene load_steps=28 format=3 uid="uid://dbkr3d716wtx0"]
 
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/panel/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="4_lcg1p"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="5_4jhax"]
 [ext_resource type="Texture2D" uid="uid://dy8eifa6aw2en" path="res://addons/phantom_camera/icons/misc/PriorityOverride.svg" id="6_ptuth"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="7_kpij0"]
+[ext_resource type="Theme" uid="uid://bhppejri5dbsf" path="res://addons/phantom_camera/themes/theme.tres" id="8_b4akn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
 bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
@@ -57,7 +59,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.552941, 0.647059, 0.952941, 1)
+border_color = Color(0.988235, 0.498039, 0.498039, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -131,6 +133,42 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w002y"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kq7gm"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.960784, 0.960784, 0.960784, 1)
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ynag5"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.960784, 0.960784, 0.960784, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_right = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q2svd"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_right = 8
 
 [node name="ViewfinderPanel" type="Control"]
 clip_contents = true
@@ -321,6 +359,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_iho1a")
 text = "Control scenes are not supported"
 horizontal_alignment = 1
 vertical_alignment = 1
+metadata/_edit_lock_ = true
 
 [node name="EmptyStateControl" type="Control" parent="."]
 unique_name_in_owner = true
@@ -330,6 +369,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+metadata/_edit_lock_ = true
 
 [node name="BGColorRect" type="ColorRect" parent="EmptyStateControl"]
 visible = false
@@ -428,6 +469,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_840sd")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ja3vm")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_mk273")
 theme_override_styles/normal = SubResource("StyleBoxFlat_agqdu")
+metadata/_edit_lock_ = true
 
 [node name="PriorityOverrideIcon" type="TextureRect" parent="PriorityOverrideButton"]
 layout_mode = 1
@@ -462,3 +504,59 @@ text = "PCam_Name
 "
 vertical_alignment = 1
 text_overrun_behavior = 3
+
+[node name="SizeLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_right = 40.0
+offset_bottom = 11.5
+grow_vertical = 2
+
+[node name="PCamHostList" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 1.0
+offset_top = 588.0
+grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = -2
+alignment = 2
+script = ExtResource("7_kpij0")
+
+[node name="HostListButton" type="Button" parent="PCamHostList"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/icon_hover_color = Color(0.0784314, 0.109804, 0.129412, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.0784314, 0.109804, 0.129412, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_w002y")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_kq7gm")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ynag5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kq7gm")
+theme_override_styles/normal = SubResource("StyleBoxFlat_q2svd")
+icon = ExtResource("4_lcg1p")
+expand_icon = true
+
+[node name="PanelContainer" type="PanelContainer" parent="PCamHostList"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("8_b4akn")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PCamHostList/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("8_b4akn")
+horizontal_scroll_mode = 0
+
+[node name="HostListContainer" type="VBoxContainer" parent="PCamHostList/PanelContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("8_b4akn")

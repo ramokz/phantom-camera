@@ -273,6 +273,11 @@ enum FollowLockAxis {
 	set = set_inactive_update_mode,
 	get = get_inactive_update_mode
 
+## Determines which layers this [PhantomCamera2D] should be able to find [PhantomCamera2D] / [PhantomCamera3D].
+## A corresponding layer needs to be set on the PhantomCamera node.
+@export_flags_3d_render var host_layers: int = 1:
+	set = set_host_layers,
+	get = get_host_layers
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
@@ -674,14 +679,13 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
-
 	_phantom_camera_manager.pcam_added(self)
-
-	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
-		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
+
+#	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
+#		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 	_should_follow_checker()
 	if follow_mode == FollowMode.GROUP:
@@ -1390,6 +1394,18 @@ func set_tween_on_load(value: bool) -> void:
 ## Gets the current [member tween_on_load] value.
 func get_tween_on_load() -> bool:
 	return tween_on_load
+
+
+## Sets the [member host_layers] value.
+func set_host_layers(value: int) -> void:
+	host_layers = value
+
+	if is_instance_valid(_phantom_camera_manager):
+		_phantom_camera_manager.pcam_host_layer_changed.emit(self)
+
+## Gets the current [member host_layers].
+func get_host_layers() -> int:
+	return host_layers
 
 
 ## Gets the current follow mode as an enum int based on [member FollowMode] enum.[br]

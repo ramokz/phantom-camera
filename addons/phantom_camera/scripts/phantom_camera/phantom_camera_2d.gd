@@ -234,6 +234,12 @@ enum FollowLockAxis {
 ## to improve performance.
 @export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
+## Determines which layers this [PhantomCamera2D] should be able to find [PhantomCamera2D] / [PhantomCamera3D].
+## A corresponding layer needs to be set on the PhantomCamera node.
+@export_flags_2d_render var host_layers: int = 1:
+	set = set_host_layers,
+	get = get_host_layers
+
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
 @export var follow_offset: Vector2 = Vector2.ZERO:
@@ -255,7 +261,6 @@ enum FollowLockAxis {
 	set = set_follow_damping_value,
 	get = get_follow_damping_value
 
-
 ## Prevents the [param PhantomCamera2D] from moving in a designated axis.
 ## This can be enabled or disabled at runtime or from the editor directly.
 @export var follow_axis_lock: FollowLockAxis = FollowLockAxis.NONE:
@@ -276,6 +281,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 @export var auto_zoom: bool = false:
 	set = set_auto_zoom,
 	get = get_auto_zoom
+
 ## Sets the param minimum zoom amount, in other words how far away the
 ## [param Camera2D] can be from scene.[br][br]
 ## This only works when [member auto_zoom] is enabled.
@@ -289,10 +295,10 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 @export var auto_zoom_max: float = 5:
 	set = set_auto_zoom_max,
 	get = get_auto_zoom_max
+
 ## Determines how close to the edges the targets are allowed to be.
 ## This is useful to avoid targets being cut off at the edges of the screen.
 ## [br][br]
-
 ## The Vector4 parameter order goes: [param Left] - [param Top] - [param Right]
 ## - [param Bottom].
 @export var auto_zoom_margin: Vector4 = Vector4.ZERO:
@@ -575,8 +581,8 @@ func _enter_tree() -> void:
 	_phantom_camera_manager.pcam_added(self)
 	update_limit_all_sides()
 
-	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
-		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
+#	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
+#		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 
 func _exit_tree() -> void:
@@ -796,9 +802,6 @@ func _draw() -> void:
 	if not Engine.is_editor_hint(): return
 
 	if frame_preview and not _is_active:
-		var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
-		var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
-		var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
 		draw_rect(_camera_frame_rect(), Color("3ab99a"), false, 2)
 
 
@@ -1176,6 +1179,7 @@ func set_is_active(node, value) -> void:
 		_is_active = value
 		if value:
 			_should_follow_checker()
+		queue_redraw()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 
@@ -1193,6 +1197,17 @@ func set_tween_on_load(value: bool) -> void:
 ## Gets the current [member tween_on_load] value.
 func get_tween_on_load() -> bool:
 	return tween_on_load
+
+## Sets the [member host_layers] value.
+func set_host_layers(value: int) -> void:
+	host_layers = value
+
+	if is_instance_valid(_phantom_camera_manager):
+		_phantom_camera_manager.pcam_host_layer_changed.emit(self)
+
+## Gets the current [member host_layers].
+func get_host_layers() -> int:
+	return host_layers
 
 
 ## Gets the current follow mode as an enum int based on [enum FollowMode].[br]
