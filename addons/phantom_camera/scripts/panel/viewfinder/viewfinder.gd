@@ -129,7 +129,6 @@ func _pcam_host_switch(new_pcam_host: PhantomCameraHost) -> void:
 
 
 func _exit_tree() -> void:
-
 	if aspect_ratio_container.resized.is_connected(_resized):
 		aspect_ratio_container.resized.disconnect(_resized)
 
@@ -156,22 +155,22 @@ func _process(_delta: float) -> void:
 	if not Engine.is_editor_hint():
 		target_point.position = camera_viewport_panel.size * unprojected_position_clamped - target_point.size / 2
 
-	if _is_2d:
-		if not is_instance_valid(pcam_host): return
-		if not is_instance_valid(pcam_host.camera_2d): return
+	if not _is_2d: return
+	if not is_instance_valid(pcam_host): return
+	if not is_instance_valid(pcam_host.camera_2d): return
 
-		var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
-		sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
+	var window_size_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	sub_viewport.size_2d_override = sub_viewport.size * (window_size_height / sub_viewport.size.y)
 
-		_camera_2d.global_transform = pcam_host.camera_2d.global_transform
-		_camera_2d.offset = pcam_host.camera_2d.offset
-		_camera_2d.zoom = pcam_host.camera_2d.zoom
-		_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
-		_camera_2d.anchor_mode = pcam_host.camera_2d.anchor_mode
-		_camera_2d.limit_left = pcam_host.camera_2d.limit_left
-		_camera_2d.limit_top = pcam_host.camera_2d.limit_top
-		_camera_2d.limit_right = pcam_host.camera_2d.limit_right
-		_camera_2d.limit_bottom = pcam_host.camera_2d.limit_bottom
+	_camera_2d.global_transform = pcam_host.camera_2d.global_transform
+	_camera_2d.offset = pcam_host.camera_2d.offset
+	_camera_2d.zoom = pcam_host.camera_2d.zoom
+	_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
+	_camera_2d.anchor_mode = pcam_host.camera_2d.anchor_mode
+	_camera_2d.limit_left = pcam_host.camera_2d.limit_left
+	_camera_2d.limit_top = pcam_host.camera_2d.limit_top
+	_camera_2d.limit_right = pcam_host.camera_2d.limit_right
+	_camera_2d.limit_bottom = pcam_host.camera_2d.limit_bottom
 
 
 func _settings_changed() -> void:
@@ -191,21 +190,20 @@ func _visibility_check() -> void:
 	if not viewfinder_visible: return
 	if not is_instance_valid(_pcam_manager): return # Prevents errors from occuring when checking prematurely
 
-	var phantom_camera_host: PhantomCameraHost
+	var pcam_host: PhantomCameraHost
 	var has_camera: bool = false
 #	if not get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 	if not Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 		has_camera = true
-		phantom_camera_host = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()[0]
+		pcam_host = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()[0]
 #		phantom_camera_host = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()[0]
 
 	var root: Node = EditorInterface.get_edited_scene_root()
-
 	if root is Node2D:
 		var camera_2d: Camera2D
 
 		if has_camera:
-			camera_2d = phantom_camera_host.camera_2d
+			camera_2d = pcam_host.camera_2d
 		else:
 			camera_2d = _get_camera_2d()
 
@@ -216,7 +214,7 @@ func _visibility_check() -> void:
 	elif root is Node3D:
 		var camera_3d: Camera3D
 		if has_camera:
-			camera_3d = phantom_camera_host.camera_3d
+			camera_3d = pcam_host.camera_3d
 		elif root.get_viewport() != null:
 			if root.get_viewport().get_camera_3d() != null:
 				camera_3d = root.get_viewport().get_camera_3d()
@@ -290,11 +288,8 @@ func _check_camera(root: Node, camera: Node) -> void:
 						_set_viewfinder(root, true)
 #							if pcam_host.get_active_pcam().get_get_follow_mode():
 #								_on_dead_zone_changed()
-
 						_set_viewfinder_state()
-
 						%NoSupportMsg.visible = false
-
 					else:
 #						No PCam in scene
 						_update_button(pcam_string, pcam_icon, color)
@@ -380,6 +375,8 @@ func _add_node(node_type: String) -> void:
 		_constants.PCAM_3D_NODE_NAME:
 			var pcam_3D: PhantomCamera3D = PhantomCamera3D.new()
 			_instantiate_node(root, pcam_3D, _constants.PCAM_3D_NODE_NAME)
+
+	_visibility_check()
 
 
 func _instantiate_node(root: Node, node: Node, name: String) -> void:
