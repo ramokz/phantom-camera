@@ -1,6 +1,5 @@
 .tmp
 .DS_Store
-project.godot
 .idea/
 *.zip
 
