@@ -12,10 +12,6 @@ defaults:
 
 permissions:
   contents: write
-  pull-requests: write
-
-env:
-  GODOT_MAJOR_MINOR_VERSION: "4.3"
 
 jobs:
   release-branch:
@@ -28,4 +24,5 @@ jobs:
       - uses: coffeebeats/godot-infra/package-addon@main
         with:
           subfolder: phantom_camera
-          target-branch: "godot-v${{ env.GODOT_MAJOR_MINOR_VERSION }}"
+          target-branch: "godot-v4.3"
+          godot-editor-version: v4.3-stable
