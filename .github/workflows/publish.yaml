@@ -1,0 +1,31 @@
+name: "🚀 Release: Plugin version"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  GODOT_MAJOR_MINOR_VERSION: "4.3"
+
+jobs:
+  release-branch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: coffeebeats/godot-infra/package-addon@main
+        with:
+          subfolder: phantom_camera
+          target-branch: "godot-v${{ env.GODOT_MAJOR_MINOR_VERSION }}"
