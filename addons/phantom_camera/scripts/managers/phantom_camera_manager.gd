@@ -43,6 +43,9 @@ var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export t
 
 #var _viewfinder: Control
 
+func _ready():
+	if not Engine.has_singleton(PHANTOM_CAMERA_CONSTS.PCAM_MANAGER_NODE_NAME):
+		Engine.register_singleton(PHANTOM_CAMERA_CONSTS.PCAM_MANAGER_NODE_NAME, self)
 
 func _enter_tree() -> void:
 	Engine.physics_jitter_fix = 0
