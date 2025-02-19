@@ -263,12 +263,12 @@ func _enter_tree() -> void:
 		if _is_2d:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
-					pcam_added_to_scene(pcam)
+					_pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
 		else:
 			if not _phantom_camera_manager.get_phantom_camera_3ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_3ds():
-					pcam_added_to_scene(pcam)
+					_pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
 
 
@@ -287,8 +287,10 @@ func _ready() -> void:
 		_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
 
 		# PCam Signals
-		_phantom_camera_manager.pcam_added_to_scene.connect(pcam_added_to_scene)
-		_phantom_camera_manager.pcam_removed_from_scene.connect(pcam_removed_from_scene)
+		_phantom_camera_manager.pcam_added_to_scene.connect(_pcam_added_to_scene)
+		_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
+		_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
+		_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
 
 	if _is_2d:
 		camera_2d.offset = Vector2.ZERO
@@ -300,7 +302,7 @@ func _ready() -> void:
 
 
 func _pcam_host_layer_changed(pcam: Node) -> void:
-	if pcam.host_layers & host_layers != 0:
+	if _pcam_is_in_host_layer(pcam):
 		_check_pcam_priority(pcam)
 	else:
 		if _is_2d:
@@ -320,7 +322,8 @@ func _pcam_host_layer_changed(pcam: Node) -> void:
 
 
 func _check_pcam_priority(pcam: Node) -> void:
-	if not _is_pcam_in_same_host_layer(pcam): return
+	if not _pcam_is_in_host_layer(pcam): return
+	if not pcam.visible: return # Prevents hidden PCams from becoming active
 	if pcam.get_priority() > _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		pcam.set_tween_skip(self, false)
@@ -335,13 +338,12 @@ func _find_pcam_with_highest_priority() -> void:
 		pcam_list = _phantom_camera_manager.phantom_camera_3ds
 
 	for pcam in pcam_list:
-		if not pcam.visible: continue # Prevents hidden PCams from becoming active
 		_check_pcam_priority(pcam)
 
 
-func _is_pcam_in_same_host_layer(pcam: Node) -> bool:
+func _pcam_is_in_host_layer(pcam: Node) -> bool:
 	if pcam.host_layers & host_layers != 0: return true
-	return false
+	else: return false
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
@@ -1120,7 +1122,7 @@ func _show_viewfinder_in_play() -> void:
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a [param PhantomCamera] node.
-func pcam_added_to_scene(pcam: Node) -> void:
+func _pcam_added_to_scene(pcam: Node) -> void:
 	if not pcam.tween_on_load:
 		pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
 	if not pcam.is_node_ready(): await pcam.ready
@@ -1130,26 +1132,23 @@ func pcam_added_to_scene(pcam: Node) -> void:
 ## Called when a [param PhantomCamera] is removed from the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a
 ## [param PhantomCamera] node.
-func pcam_removed_from_scene(pcam) -> void:
-	if is_instance_of(pcam, PhantomCamera2D) or pcam.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-		if _is_2d:
-			if pcam == _active_pcam_2d:
-				_active_pcam_missing = true
-				_active_pcam_priority = -1
-				_find_pcam_with_highest_priority()
-		else:
-			if pcam == _active_pcam_3d:
-				_active_pcam_missing = true
-				_active_pcam_priority = -1
-				_find_pcam_with_highest_priority()
+func _pcam_removed_from_scene(pcam: Node) -> void:
+	if _is_2d:
+		if pcam == _active_pcam_2d:
+			_active_pcam_missing = true
+			_active_pcam_priority = -1
+			_find_pcam_with_highest_priority()
 	else:
-		printerr("This function should only be called from PhantomCamera scripts")
+		if pcam == _active_pcam_3d:
+			_active_pcam_missing = true
+			_active_pcam_priority = -1
+			_find_pcam_with_highest_priority()
 
 
 ## Triggers a recalculation to determine which PhantomCamera has the highest priority.
 func pcam_priority_updated(pcam: Node) -> void:
 	if not is_instance_valid(pcam): return
-	if not _is_pcam_in_same_host_layer(pcam): return
+	if not _pcam_is_in_host_layer(pcam): return
 
 	if Engine.is_editor_hint():
 		if _is_2d:
@@ -1182,21 +1181,23 @@ func pcam_priority_updated(pcam: Node) -> void:
 ## Updates the viewfinder when a [param PhantomCamera] has its
 ## [param priority_ovrride] enabled.[br]
 ## [b]Note:[/b] This only affects the editor.
-func pcam_priority_override(pcam: Node, shouldOverride: bool) -> void:
+func _pcam_priority_override(pcam: Node, should_override: bool) -> void:
 	if not Engine.is_editor_hint(): return
-
-	if _is_2d:
-		if shouldOverride:
-			_active_pcam_2d.priority_override = true
+	if not _pcam_is_in_host_layer(pcam): return
+	if should_override:
+		if _is_2d:
+			if is_instance_valid(_active_pcam_2d):
+				if _active_pcam_2d.priority_override:
+					_active_pcam_2d.priority_override = false
 		else:
-			_active_pcam_2d.priority_override = false
+			if is_instance_valid(_active_pcam_3d):
+				if _active_pcam_3d.priority_override:
+					_active_pcam_3d.priority_override = false
+		_assign_new_active_pcam(pcam)
 	else:
-		if shouldOverride:
-			_active_pcam_3d.priority_override = true
-		else:
-			_active_pcam_3d.priority_override = false
+		_find_pcam_with_highest_priority()
 
-	_assign_new_active_pcam(pcam)
+
 	update_editor_viewfinder.emit()
 
 

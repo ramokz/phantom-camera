@@ -115,8 +115,10 @@ func _ready() -> void:
 	# PCam Host List
 	_pcam_host_list.visible = false
 	_assign_manager()
-
 	_visibility_check()
+
+#	while not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
+#		_visibility_check()
 
 #		_pcam_manager.pcam_host_added_to_scene.connect(_pcam_host_added)
 
@@ -188,10 +190,11 @@ func _settings_changed() -> void:
 
 func _visibility_check() -> void:
 	if not viewfinder_visible: return
-	if not is_instance_valid(_pcam_manager): return # Prevents errors from occuring when checking prematurely
 
 	var pcam_host: PhantomCameraHost
 	var has_camera: bool = false
+	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
+
 #	if not get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 	if not Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 		has_camera = true
@@ -483,7 +486,7 @@ func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> v
 	set_process(true)
 
 	if not pcam_host.update_editor_viewfinder.is_connected(_on_update_editor_viewfinder):
-		pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder.bind(pcam_host))
+		pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder)
 
 	if not aspect_ratio_container.resized.is_connected(_resized):
 		aspect_ratio_container.resized.connect(_resized)
@@ -505,7 +508,6 @@ func _on_dead_zone_changed() -> void:
 	if camera_viewport_panel.size.x == 0:
 		await camera_viewport_panel.resized
 
-	#print(_active_pcam.get_pcam_host_owner())
 	if is_instance_valid(_active_pcam.get_pcam_host_owner()):
 		pcam_host = _active_pcam.get_pcam_host_owner()
 		if not _active_pcam == pcam_host.get_active_pcam():
@@ -528,7 +530,7 @@ func _on_dead_zone_changed() -> void:
 ####################
 ## Priority Override
 ####################
-func _on_update_editor_viewfinder(pcam_host: PhantomCameraHost) -> void:
+func _on_update_editor_viewfinder() -> void:
 	if pcam_host.get_active_pcam().priority_override:
 		_active_pcam = pcam_host.get_active_pcam()
 		_priority_override_button.visible = true

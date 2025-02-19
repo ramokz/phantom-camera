@@ -123,14 +123,14 @@ enum FollowLockAxis {
 ## disabled when running a build export of the game.
 @export var priority_override: bool = false:
 	set(value):
-		if Engine.is_editor_hint() and _has_valid_pcam_owner():
-			if value == true:
-				priority_override = value
-				get_pcam_host_owner().pcam_priority_override(self)
+		priority_override = value
+		if Engine.is_editor_hint():
+			if value:
+				if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
+				Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_override.emit(self, priority_override)
 			else:
-				priority_override = value
-				get_pcam_host_owner().pcam_priority_updated(self)
-				get_pcam_host_owner().pcam_priority_override_disabled()
+				if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
+				Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_override.emit(self, priority_override)
 	get:
 		return priority_override
 
@@ -563,7 +563,7 @@ var viewport_position: Vector2
 #endregion
 
 
-#region Property Validator
+#region Private Functions
 
 func _validate_property(property: Dictionary) -> void:
 	################
@@ -673,19 +673,13 @@ func _validate_property(property: Dictionary) -> void:
 	not look_at_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-#endregion
-
-#region Private Functions
 
 func _enter_tree() -> void:
-	_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
+	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
 	_phantom_camera_manager.pcam_added(self)
 
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
-
-#	if not _phantom_camera_manager.get_phantom_camera_hosts().is_empty():
-#		set_pcam_host_owner(_phantom_camera_manager.get_phantom_camera_hosts()[0])
 
 	_should_follow_checker()
 	if follow_mode == FollowMode.GROUP:
@@ -705,14 +699,11 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
-	if is_instance_valid(_phantom_camera_manager):
-		_phantom_camera_manager.pcam_removed(self)
-
-	if _has_valid_pcam_owner():
-		get_pcam_host_owner().pcam_removed_from_scene(self)
-
 	if not follow_mode == FollowMode.GROUP:
 		follow_targets = []
+
+	if not is_instance_valid(_phantom_camera_manager): return
+	_phantom_camera_manager.pcam_removed(self)
 
 
 func _ready():
@@ -1334,8 +1325,8 @@ func get_pcam_host_owner() -> PhantomCameraHost:
 ## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
 	priority = abs(value) # TODO - Make any minus values be 0
-	if _has_valid_pcam_owner():
-		get_pcam_host_owner().pcam_priority_updated(self)
+	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
+	Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_changed.emit(self)
 ## Gets current [param Priority] value.
 func get_priority() -> int:
 	return priority

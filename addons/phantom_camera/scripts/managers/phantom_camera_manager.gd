@@ -14,9 +14,11 @@ signal pcam_host_removed_from_scene(pcam_host: PhantomCameraHost)
 signal pcam_added_to_scene(pcam: Node)
 signal pcam_removed_from_scene(pcam: Node)
 
+signal pcam_priority_changed(pcam: Node)
+
 # PCam Viewfinder Signals
 signal viewfinder_pcam_host_switch(pcam_host: PhantomCameraHost)
-signal pcam_priority_override(pcam: Node)
+signal pcam_priority_override(pcam: Node, shouldOverride: bool)
 signal pcam_dead_zone_changed(pcam: Node)
 signal pcam_host_layer_changed(pcam: Node)
 
@@ -41,14 +43,11 @@ var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export t
 
 #endregion
 
-#var _viewfinder: Control
-
-
 func _enter_tree() -> void:
-	Engine.physics_jitter_fix = 0
-
 	if not Engine.has_singleton(_CONSTANTS.PCAM_MANAGER_NODE_NAME):
 		Engine.register_singleton(_CONSTANTS.PCAM_MANAGER_NODE_NAME, self)
+	Engine.physics_jitter_fix = 0
+
 
 func pcam_host_added(caller: Node) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
@@ -65,16 +64,13 @@ func pcam_host_removed(caller: Node) -> void:
 		printerr("This method can only be called from a PhantomCameraHost node")
 
 
-func pcam_added(caller, host_slot: int = 0) -> void:
+func pcam_added(caller) -> void:
 	if is_instance_of(caller, PhantomCamera2D):
 		_phantom_camera_2d_list.append(caller)
 		pcam_added_to_scene.emit(caller)
 	elif caller.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_phantom_camera_3d_list.append(caller)
 		pcam_added_to_scene.emit(caller)
-
-	if not _phantom_camera_host_list.is_empty():
-		_phantom_camera_host_list[host_slot].pcam_added_to_scene(caller)
 
 func pcam_removed(caller) -> void:
 	if is_instance_of(caller, PhantomCamera2D):
