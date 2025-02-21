@@ -291,6 +291,11 @@ func _ready() -> void:
 		_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
 		_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
 		_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
+	else:
+		printerr("Could not find Phantom Camera Manager singleton")
+		printerr("Make sure the addon is enable or that it hasn't been disabled inside Project Settings / Globals")
+
+	_find_pcam_with_highest_priority()
 
 	if _is_2d:
 		camera_2d.offset = Vector2.ZERO
@@ -311,14 +316,13 @@ func _pcam_host_layer_changed(pcam: Node) -> void:
 				_active_pcam_2d = null
 				_active_pcam_priority = -1
 				pcam.set_is_active(self, false)
-				_find_pcam_with_highest_priority()
 		else:
 			if _active_pcam_3d == pcam:
 				_active_pcam_missing = true
 				_active_pcam_3d = null
 				_active_pcam_priority = -1
 				pcam.set_is_active(self, false)
-				_find_pcam_with_highest_priority()
+		_find_pcam_with_highest_priority()
 
 
 func _check_pcam_priority(pcam: Node) -> void:
@@ -682,7 +686,7 @@ func _tween_follow_checker(delta: float) -> void:
 		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
 	if not _trigger_pcam_tween:
-		# Rechecks physics target if PCam transitioned with an isntant tween
+		# Rechecks physics target if PCam transitioned with an instant tween
 		if _tween_is_instant:
 			_check_pcam_physics()
 			_tween_is_instant = false
@@ -1123,10 +1127,8 @@ func _show_viewfinder_in_play() -> void:
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a [param PhantomCamera] node.
 func _pcam_added_to_scene(pcam: Node) -> void:
-	if not pcam.tween_on_load:
-		pcam.set_tween_skip(self, true) # Skips its tween if it has the highest priority on load
 	if not pcam.is_node_ready(): await pcam.ready
-	_find_pcam_with_highest_priority()
+	_check_pcam_priority(pcam)
 
 
 ## Called when a [param PhantomCamera] is removed from the scene.[br]
@@ -1242,6 +1244,7 @@ func refresh_pcam_list_priorty() -> void:
 
 func set_host_layers(value: int) -> void:
 	host_layers = value
+
 	if not _is_child_of_camera: return
 
 	if not _active_pcam_missing:

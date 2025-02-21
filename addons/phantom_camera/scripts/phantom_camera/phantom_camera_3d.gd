@@ -686,6 +686,9 @@ func _enter_tree() -> void:
 		_follow_targets_size_check()
 	elif follow_mode == FollowMode.NONE:
 		_is_parents_physics()
+
+	_tween_skip = false if tween_on_load else true
+
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
 			#_look_at_target_node = look_at_target
@@ -1302,8 +1305,8 @@ func get_tween_skip() -> bool:
 ## plugin internals. Proper support will be added in issue #26.
 func set_pcam_host_owner(value: PhantomCameraHost) -> void:
 	pcam_host_owner = value
-	if is_instance_valid(pcam_host_owner):
-		pcam_host_owner.pcam_added_to_scene(self)
+#	if is_instance_valid(pcam_host_owner):
+#		pcam_host_owner.pcam_added_to_scene(self)
 
 	#if value.size() == 1:
 #	else:
@@ -1318,7 +1321,7 @@ func set_pcam_host_owner(value: PhantomCameraHost) -> void:
 	#pcam_host_owner = value
 ## Gets the current [PhantomCameraHost] this [param PhantomCamera3D] is
 ## assigned to.
-func get_pcam_host_owner() -> PhantomCameraHost:
+func get_pcam_host_owner() -> PhantomCameraHost: # TODO - Needs to be removed due to the changes of Multi PCam
 	return pcam_host_owner
 
 

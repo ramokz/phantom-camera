@@ -582,6 +582,8 @@ func _enter_tree() -> void:
 
 	update_limit_all_sides()
 
+	_tween_skip = false if tween_on_load else true
+
 
 func _exit_tree() -> void:
 	if not follow_mode == FollowMode.GROUP:
@@ -1090,8 +1092,8 @@ func emit_noise(value: Transform2D) -> void:
 ## plugin internals. Proper support will be added in issue #26.
 func set_pcam_host_owner(value: PhantomCameraHost) -> void:
 	pcam_host_owner = value
-	if is_instance_valid(pcam_host_owner):
-		pcam_host_owner.pcam_added_to_scene(self)
+#	if is_instance_valid(pcam_host_owner):
+#		pcam_host_owner.pcam_added_to_scene(self)
 	#if value.size() == 1:
 #	else:
 #		for camera_host in camera_host_group:
