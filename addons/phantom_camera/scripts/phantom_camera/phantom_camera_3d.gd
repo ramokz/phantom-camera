@@ -931,7 +931,7 @@ func _look_at(delta: float) -> void:
 	match look_at_mode:
 		LookAtMode.MIMIC:
 			_interpolate_rotation(
-				global_position - look_at_target.basis.z,
+				global_position - look_at_target.global_basis.z,
 				delta
 			)
 
