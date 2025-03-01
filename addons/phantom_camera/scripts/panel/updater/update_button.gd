@@ -174,6 +174,27 @@ func version_to_number(version: String) -> int:
 
 
 func check_for_update() -> void:
+	var has_updater_notifier: bool = false
+	var has_updater_enabled: bool = false
+
+	var updater_notifier := ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_notify_release)
+	var updater_enabled := ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_enabled)
+
+	# Custom Project Settings can return either a bool or null.
+	# null being the default value, which is true
+	if updater_notifier == null or updater_notifier:
+		has_updater_notifier = true
+	if updater_enabled == null or updater_enabled:
+		has_updater_enabled = true
+
+	# Disables Github request if updater settings are disabled
+	if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"): # For forks
+		if not has_updater_notifier:
+			return
+	else: # For users
+		if not has_updater_notifier and not has_updater_enabled:
+			return
+
 	http_request.request(REMOTE_RELEASE_URL)
 
 #endregion
