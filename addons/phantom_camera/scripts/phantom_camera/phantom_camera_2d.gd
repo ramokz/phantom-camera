@@ -640,12 +640,12 @@ func process_logic(delta: float) -> void:
 	if _follow_axis_is_locked:
 		match follow_axis_lock:
 			FollowLockAxis.X:
-				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
 			FollowLockAxis.Y:
-				_transform_output.origin.y = _follow_axis_lock_value.y
+				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
 			FollowLockAxis.XY:
-				_transform_output.origin.x = _follow_axis_lock_value.x
-				_transform_output.origin.y = _follow_axis_lock_value.y
+				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
+				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
 
 
 func _limit_checker() -> void:
