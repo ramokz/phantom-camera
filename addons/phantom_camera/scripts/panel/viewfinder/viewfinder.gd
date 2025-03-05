@@ -61,7 +61,7 @@ var _root_node: Node
 
 #endregion
 
-#region Public variables
+#region Public Variables
 
 var pcam_host_group: Array[PhantomCameraHost]
 

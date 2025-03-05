@@ -851,8 +851,11 @@ func _get_framed_side_offset() -> Vector2:
 
 
 func _draw_camera_2d_limit() -> void:
-	if _has_valid_pcam_owner():
-		get_pcam_host_owner().camera_2d.set_limit_drawing_enabled(draw_limits)
+	if not is_instance_valid(_phantom_camera_manager): return
+	_phantom_camera_manager.draw_limit_2d.emit(draw_limits)
+
+#	if _has_valid_pcam_owner():
+#		get_pcam_host_owner().camera_2d.set_limit_drawing_enabled(draw_limits)
 
 
 func _check_limit_is_not_default() -> void:
@@ -860,12 +863,6 @@ func _check_limit_is_not_default() -> void:
 		_limit_inactive_pcam = false
 	else:
 		_limit_inactive_pcam = true
-
-
-func _set_camera_2d_limit(side: int, limit: int) -> void:
-	if not _has_valid_pcam_owner(): return
-	if not _is_active: return
-	get_pcam_host_owner().camera_2d.set_limit(side, limit)
 
 
 func _check_visibility() -> void:
@@ -1038,21 +1035,22 @@ func update_limit_all_sides() -> void:
 		_limit_sides.w = roundi(limit_rect.position.y + limit_rect.size.y)
 
 	_check_limit_is_not_default()
-
-	if _is_active and _has_valid_pcam_owner():
-		_set_camera_2d_limit(SIDE_LEFT, _limit_sides.x)
-		_set_camera_2d_limit(SIDE_TOP, _limit_sides.y)
-		_set_camera_2d_limit(SIDE_RIGHT, _limit_sides.z)
-		_set_camera_2d_limit(SIDE_BOTTOM, _limit_sides.w)
+	if not _is_active: return
+	if not is_instance_valid(_phantom_camera_manager): return
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_LEFT, _limit_sides.x)
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_TOP, _limit_sides.y)
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_RIGHT, _limit_sides.z)
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_BOTTOM, _limit_sides.w)
+	_phantom_camera_manager.draw_limit_2d.emit(draw_limits)
 
 
 func reset_limit() -> void:
-	if not _has_valid_pcam_owner(): return
-	if not _is_active: return
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_LEFT, _limit_sides_default.x)
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_TOP, _limit_sides_default.y)
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_RIGHT, _limit_sides_default.z)
-	get_pcam_host_owner().camera_2d.set_limit(SIDE_BOTTOM, _limit_sides_default.w)
+	if not is_instance_valid(_phantom_camera_manager): return
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_LEFT, _limit_sides_default.x)
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_TOP, _limit_sides_default.y)
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_RIGHT, _limit_sides_default.z)
+	_phantom_camera_manager.limit_2d_changed.emit(SIDE_BOTTOM, _limit_sides_default.w)
+	_phantom_camera_manager.draw_limit_2d.emit(draw_limits)
 
 
 ## Assigns the value of the [param has_tweened] property.
@@ -1511,7 +1509,6 @@ func set_limit_target(value: NodePath) -> void:
 		else:
 			printerr("Limit Target is not a TileMap, TileMapLayer or CollisionShape2D node")
 			return
-
 	elif value == NodePath(""):
 		reset_limit()
 		limit_target = ""

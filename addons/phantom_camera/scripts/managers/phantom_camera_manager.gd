@@ -16,6 +16,9 @@ signal pcam_removed_from_scene(pcam: Node)
 
 signal pcam_priority_changed(pcam: Node)
 
+signal limit_2d_changed(side: int, limit: int)
+signal draw_limit_2d(enabled: bool)
+
 # PCam Viewfinder Signals
 signal viewfinder_pcam_host_switch(pcam_host: PhantomCameraHost)
 signal pcam_priority_override(pcam: Node, shouldOverride: bool)

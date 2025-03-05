@@ -265,6 +265,12 @@ func _enter_tree() -> void:
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
 					_pcam_added_to_scene(pcam)
 					pcam.set_pcam_host_owner(self)
+
+			if not _phantom_camera_manager.limit_2d_changed.is_connected(_update_limit_2d):
+				_phantom_camera_manager.limit_2d_changed.connect(_update_limit_2d)
+			if not _phantom_camera_manager.draw_limit_2d.is_connected(_draw_limit_2d):
+				_phantom_camera_manager.draw_limit_2d.connect(_draw_limit_2d)
+
 		else:
 			if not _phantom_camera_manager.get_phantom_camera_3ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_3ds():
@@ -291,6 +297,13 @@ func _ready() -> void:
 		_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
 		_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
 		_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
+
+		if _is_2d:
+			if not _phantom_camera_manager.limit_2d_changed.is_connected(_update_limit_2d):
+				_phantom_camera_manager.limit_2d_changed.connect(_update_limit_2d)
+			if not _phantom_camera_manager.draw_limit_2d.is_connected(_draw_limit_2d):
+				_phantom_camera_manager.draw_limit_2d.connect(_draw_limit_2d)
+
 	else:
 		printerr("Could not find Phantom Camera Manager singleton")
 		printerr("Make sure the addon is enable or that it hasn't been disabled inside Project Settings / Globals")
@@ -1120,9 +1133,15 @@ func _show_viewfinder_in_play() -> void:
 	_viewfinder_node.visible = true
 	_viewfinder_node.update_dead_zone()
 
-#endregion
 
-#region Public Functions
+
+func _update_limit_2d(side: int, limit: int) -> void:
+	if is_instance_valid(camera_2d):
+		camera_2d.set_limit(side, limit)
+
+func _draw_limit_2d(enabled: bool) -> void:
+	camera_2d.set_limit_drawing_enabled(enabled)
+
 
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a [param PhantomCamera] node.
@@ -1146,6 +1165,9 @@ func _pcam_removed_from_scene(pcam: Node) -> void:
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 
+#endregion
+
+#region Public Functions
 
 ## Triggers a recalculation to determine which PhantomCamera has the highest priority.
 func pcam_priority_updated(pcam: Node) -> void:
