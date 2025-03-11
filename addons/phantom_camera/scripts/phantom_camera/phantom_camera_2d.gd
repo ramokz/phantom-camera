@@ -560,12 +560,6 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "limit_margin" and not _limit_node:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	################
-	## Frame Preview
-	################
-	if property.name == "frame_preview" and _is_active:
-		property.usage |= PROPERTY_USAGE_READ_ONLY
-
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
