@@ -348,6 +348,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Note: This distance will only ever be reached when all the targets are in
 ## the exact same [param Vector3] coordinate, which will very unlikely
 ## happen, so adjust the value here accordingly.
+## [br][br]
+## If only one follow target is assigned to [member follow_targets], this value will be used as the `follow_distance`.
 @export var auto_follow_distance_min: float = 1:
 	set = set_auto_follow_distance_min,
 	get = get_auto_follow_distance_min
@@ -832,14 +834,14 @@ func _follow(delta: float) -> void:
 				follow_position = \
 					bounds.get_center() + \
 					follow_offset + \
-					get_transform().basis.z * \
+					global_transform.basis.z * \
 					Vector3(distance, distance, distance)
 			else:
 				follow_position = \
 					follow_targets[_follow_targets_single_target_index].global_position + \
 					follow_offset + \
-					get_transform().basis.z * \
-					Vector3(follow_distance, follow_distance, follow_distance)
+					global_transform.basis.z * \
+					Vector3(auto_follow_distance_min, auto_follow_distance_min, auto_follow_distance_min)
 
 		FollowMode.PATH:
 			var path_position: Vector3 = follow_path.global_position
