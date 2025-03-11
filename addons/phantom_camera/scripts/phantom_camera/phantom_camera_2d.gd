@@ -676,9 +676,9 @@ func _follow(delta: float) -> void:
 						zoom = clamp(screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
-				follow_position = rect.get_center()
+				follow_position = rect.get_center() + follow_offset
 			else:
-				follow_position = follow_targets[_follow_targets_single_target_index].global_position
+				follow_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
 
 		FollowMode.PATH:
 			var path_position: Vector2 = follow_path.global_position
