@@ -1,12 +1,12 @@
 [gd_scene load_steps=28 format=3 uid="uid://dbkr3d716wtx0"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
+[ext_resource type="Script" uid="uid://drmv3363t8amc" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/panel/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_li3i3"]
 [ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="4_lcg1p"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="5_4jhax"]
 [ext_resource type="Texture2D" uid="uid://dy8eifa6aw2en" path="res://addons/phantom_camera/icons/misc/PriorityOverride.svg" id="6_ptuth"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="7_kpij0"]
+[ext_resource type="Script" uid="uid://c84cxry3t35ny" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="7_kpij0"]
 [ext_resource type="Theme" uid="uid://bhppejri5dbsf" path="res://addons/phantom_camera/themes/theme.tres" id="8_b4akn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bulsh7s0ibmao"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="1_6hh6c"]
+[ext_resource type="Script" uid="uid://dut3e76k2c71n" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="1_6hh6c"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8efyg"]
 

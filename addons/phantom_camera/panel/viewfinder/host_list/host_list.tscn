@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://mbjdav5oqves"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="1_h6ayt"]
+[ext_resource type="Script" uid="uid://c84cxry3t35ny" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="1_h6ayt"]
 [ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="1_xlgqb"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w002y"]
