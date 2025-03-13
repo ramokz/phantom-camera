@@ -27,30 +27,68 @@ signal pcam_host_layer_changed(pcam: Node)
 
 #endregion
 
-#region Variables
+#region Private Variables
+
+var _phantom_camera_host_list: Array[PhantomCameraHost]
+var _phantom_camera_2d_list: Array[PhantomCamera2D]
+var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+
+#endregion
+
+#region Public Variables
 
 var phantom_camera_hosts: Array[PhantomCameraHost]:
 	get:
 		return _phantom_camera_host_list
-var _phantom_camera_host_list: Array[PhantomCameraHost]
 
 var phantom_camera_2ds: Array[PhantomCamera2D]:
 	get:
 		return _phantom_camera_2d_list
-var _phantom_camera_2d_list: Array[PhantomCamera2D]
 
 var phantom_camera_3ds: Array[Node]: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 	get:
 		return _phantom_camera_3d_list
-var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+
+
+var screen_size: Vector2i
 
 #endregion
+
+#region Private Functions
 
 func _enter_tree() -> void:
 	if not Engine.has_singleton(_CONSTANTS.PCAM_MANAGER_NODE_NAME):
 		Engine.register_singleton(_CONSTANTS.PCAM_MANAGER_NODE_NAME, self)
 	Engine.physics_jitter_fix = 0
 
+
+func _ready() -> void:
+	# Setting default screensize
+	screen_size = Vector2i(
+		ProjectSettings.get_setting("display/window/size/viewport_width"),
+		ProjectSettings.get_setting("display/window/size/viewport_height")
+	)
+
+	# For editor
+	if Engine.is_editor_hint():
+		ProjectSettings.settings_changed.connect(func():
+			screen_size = Vector2i(
+				ProjectSettings.get_setting("display/window/size/viewport_width"),
+				ProjectSettings.get_setting("display/window/size/viewport_height")
+			)
+		)
+	# For runtime
+	else:
+		get_tree().get_root().size_changed.connect(func():
+			screen_size = Vector2i(
+				get_viewport().get_visible_rect().size.x,
+				get_viewport().get_visible_rect().size.y
+			)
+		)
+
+#endregion
+
+#region Public Functions
 
 func pcam_host_added(caller: Node) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
@@ -100,3 +138,5 @@ func scene_changed() -> void:
 	_phantom_camera_2d_list.clear()
 	_phantom_camera_3d_list.clear()
 	_phantom_camera_host_list.clear()
+
+#endregion

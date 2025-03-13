@@ -671,11 +671,10 @@ func _follow(delta: float) -> void:
 						auto_zoom_margin.w
 					)
 
-					var screen_size: Vector2 = get_viewport_rect().size
-					if rect.size.x > rect.size.y * screen_size.aspect():
-						zoom = clamp(screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
+					if rect.size.x > rect.size.y * _phantom_camera_manager.screen_size.aspect():
+						zoom = clamp(_phantom_camera_manager.screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
-						zoom = clamp(screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
+						zoom = clamp(_phantom_camera_manager.screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 				follow_position = rect.get_center() + follow_offset
 			else:
 				follow_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
@@ -797,9 +796,7 @@ func _draw() -> void:
 
 
 func _camera_frame_rect() -> Rect2:
-	var screen_size_width: int = ProjectSettings.get_setting("display/window/size/viewport_width")
-	var screen_size_height: int = ProjectSettings.get_setting("display/window/size/viewport_height")
-	var screen_size_zoom: Vector2 = Vector2(screen_size_width / get_zoom().x, screen_size_height / get_zoom().y)
+	var screen_size_zoom: Vector2 = Vector2(_phantom_camera_manager.screen_size.x / get_zoom().x, _phantom_camera_manager.screen_size.y / get_zoom().y)
 
 	return Rect2(-screen_size_zoom / 2, screen_size_zoom)
 
