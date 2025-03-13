@@ -27,6 +27,7 @@ var editor_panel_instance: Control
 var panel_button: Button
 #var viewfinder_panel_instance
 
+
 #endregion
 
 
@@ -48,46 +49,61 @@ func _enter_tree() -> void:
 	add_node_3d_gizmo_plugin(pcam_3d_gizmo_plugin)
 	add_node_3d_gizmo_plugin(pcam_3d_noise_emitter_gizmo_plugin)
 
+	var setting_updater_mode: String
+	var setting_updater_mode_default: int
+	if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"): # For forks
+		setting_updater_mode = "Disabled, Console Output"
+		setting_updater_mode_default = 1
+	else: # For end-users
+		setting_updater_mode = "Disabled, Console Output, Updater Window"
+		setting_updater_mode_default = 2
+
+	if not ProjectSettings.has_setting(updater_constants.setting_updater_mode):
+		ProjectSettings.set_setting(updater_constants.setting_updater_mode, setting_updater_mode_default)
+	ProjectSettings.add_property_info({
+		"name": updater_constants.setting_updater_mode,
+		"type": TYPE_INT,
+		"hint": PROPERTY_HINT_ENUM,
+		"hint_string": setting_updater_mode,
+	})
+	ProjectSettings.set_initial_value(updater_constants.setting_updater_mode, setting_updater_mode_default)
+	ProjectSettings.set_as_basic(updater_constants.setting_updater_mode, true)
+
+
+	## Setting for enabling / disabling Jitter tips in the Output
+	if not ProjectSettings.has_setting(_settings_show_jitter_tips):
+		ProjectSettings.set_setting(_settings_show_jitter_tips, true)
+	ProjectSettings.add_property_info({
+		"name": _settings_show_jitter_tips,
+		"type": TYPE_BOOL,
+	})
+	ProjectSettings.set_initial_value(_settings_show_jitter_tips, true)
+	ProjectSettings.set_as_basic(_settings_show_jitter_tips, true)
+
+
+# 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after this release
+#	if not ProjectSettings.has_setting(_settings_enable_editor_shortcut):
+#		ProjectSettings.set_setting(_settings_enable_editor_shortcut, false)
+#	ProjectSettings.set_initial_value(_settings_enable_editor_shortcut, false)
+
+# 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after this release
+#	_viewfinder_shortcut_default.events = [editor_shortcut]
+#	if ProjectSettings.get_setting(_settings_enable_editor_shortcut):
+#	if not ProjectSettings.has_setting(_settings_editor_shortcut):
+#		ProjectSettings.set_setting(_settings_editor_shortcut, _editor_shortcut)
+#	ProjectSettings.set_initial_value(_settings_editor_shortcut, _editor_shortcut)
+
+
 	# TODO - Should be disabled unless in editor
 	# Viewfinder
 	editor_panel_instance = EditorPanel.instantiate()
-
 	editor_panel_instance.editor_plugin = self
 	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
-
-	# Trigger events in the viewfinder whenever
 	panel_button.toggled.connect(_btn_toggled)
-
 	if panel_button.toggle_mode: _btn_toggled(true)
 
 	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
-
 	scene_changed.connect(_scene_changed)
-
-	## Sets Updater Disabling option for non-forked projects
-	if not FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"):
-		if not ProjectSettings.has_setting(updater_constants.setting_updater_enabled):
-			ProjectSettings.set_setting(updater_constants.setting_updater_enabled, true)
-		ProjectSettings.set_initial_value(updater_constants.setting_updater_enabled, true)
-
-	## Adds Release console log disabler
-	if not ProjectSettings.has_setting(updater_constants.setting_updater_notify_release):
-		ProjectSettings.set_setting(updater_constants.setting_updater_notify_release, true)
-	ProjectSettings.set_initial_value(updater_constants.setting_updater_notify_release, true)
-
-	## Enables or disable
-	if not ProjectSettings.has_setting("phantom_camera/tips/show_jitter_tips"):
-		ProjectSettings.set_setting("phantom_camera/tips/show_jitter_tips", true)
-	ProjectSettings.set_initial_value("phantom_camera/tips/show_jitter_tips", true)
-
-
-func _btn_toggled(toggled_on: bool):
-	editor_panel_instance.viewfinder.set_visibility(toggled_on)
-#	if toggled_on:
-#		editor_panel_instance.viewfinder.viewfinder_visible = true
-#		editor_panel_instance.viewfinder.visibility_check()
-#	else:
-#		editor_panel_instance.viewfinder.viewfinder_visible = false
 
 
 func _exit_tree() -> void:
@@ -111,6 +127,14 @@ func _exit_tree() -> void:
 #	if get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
 #		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 
+
+func _btn_toggled(toggled_on: bool):
+	editor_panel_instance.viewfinder.set_visibility(toggled_on)
+#	if toggled_on:
+#		editor_panel_instance.viewfinder.viewfinder_visible = true
+#		editor_panel_instance.viewfinder.visibility_check()
+#	else:
+#		editor_panel_instance.viewfinder.viewfinder_visible = false
 
 func _make_visible(visible):
 	if editor_panel_instance:
