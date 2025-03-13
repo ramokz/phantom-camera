@@ -80,10 +80,7 @@ func _ready() -> void:
 	# For runtime
 	else:
 		get_tree().get_root().size_changed.connect(func():
-			screen_size = Vector2i(
-				get_viewport().get_visible_rect().size.x,
-				get_viewport().get_visible_rect().size.y
-			)
+			screen_size = get_viewport().get_visible_rect().size
 		)
 
 #endregion
