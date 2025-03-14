@@ -17,6 +17,11 @@ const PHANTOM_CAMERA_MANAGER: StringName = "PhantomCameraManager"
 
 #endregion
 
+#region Private Variables
+
+var _settings_show_jitter_tips: String = "phantom_camera/tips/show_jitter_tips"
+var _settings_enable_editor_shortcut: String = "phantom_camera/general/enable_editor_shortcut"
+var _settings_editor_shortcut: String = "phantom_camera/general/editor_shortcut"
 
 #region Variables
 
@@ -30,8 +35,17 @@ var panel_button: Button
 
 #endregion
 
-
 #region Private Functions
+
+func _enable_plugin() -> void:
+	print_rich("Phantom Camera documentation can be found at: [url=https://phantom-camera.dev]https://phantom-camera.dev[/url]")
+	if not Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
+		add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
+
+
+func _disable_plugin() -> void:
+	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
+
 
 func _enter_tree() -> void:
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
