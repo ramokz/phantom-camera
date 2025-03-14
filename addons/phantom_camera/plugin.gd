@@ -23,7 +23,12 @@ var _settings_show_jitter_tips: String = "phantom_camera/tips/show_jitter_tips"
 var _settings_enable_editor_shortcut: String = "phantom_camera/general/enable_editor_shortcut"
 var _settings_editor_shortcut: String = "phantom_camera/general/editor_shortcut"
 
-#region Variables
+# 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after the release that is featured in
+#var _editor_shortcut: Shortcut = Shortcut.new()
+#var _editor_shortcut_input: InputEventKey
+#endregion
+
+#region Public Variables
 
 var pcam_3d_gizmo_plugin = PCam3DPlugin.new()
 var pcam_3d_noise_emitter_gizmo_plugin = PCam3DNoiseEmitterPlugin.new()
@@ -49,8 +54,6 @@ func _disable_plugin() -> void:
 
 func _enter_tree() -> void:
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
-#	if not get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
-#		add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
 
 	# Phantom Camera Nodes
 	add_custom_type(PCAM_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
@@ -157,6 +160,13 @@ func _make_visible(visible):
 
 func _scene_changed(scene_root: Node) -> void:
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
+
+#	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after this release
+#func _set_editor_shortcut() -> InputEventKey:
+#	var shortcut: InputEventKey = InputEventKey.new()
+#	shortcut.keycode = 67 # Key =  C
+#	shortcut.alt_pressed = true
+#	return shortcut
 
 #endregion
 
