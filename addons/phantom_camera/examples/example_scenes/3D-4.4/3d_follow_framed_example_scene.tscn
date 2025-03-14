@@ -30,6 +30,7 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
+physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 0.793353, 0.608762, 0, -0.608762, 0.793353, 0.083587, 2.94168, 5.22787)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -49,7 +50,7 @@ transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793
 top_level = true
 script = ExtResource("2_5cpe8")
 follow_mode = 5
-follow_target = NodePath("../PlayerCharacterBody3D2")
+follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = ExtResource("3_422w7")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_wg1pr")
@@ -60,7 +61,7 @@ dead_zone_height = 0.14
 show_viewfinder_in_play = true
 spring_length = 4.0
 
-[node name="PlayerCharacterBody3D2" parent="Player" instance=ExtResource("5_uw36d")]
+[node name="PlayerCharacterBody3D" parent="Player" instance=ExtResource("5_uw36d")]
 script = ExtResource("6_fcomr")
 
 [node name="Environment" type="Node" parent="."]
