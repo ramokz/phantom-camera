@@ -186,6 +186,10 @@ enum FollowLockAxis {
 			top_level = true
 
 		notify_property_list_changed()
+
+		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
+		if look_at_mode != LookAtMode.NONE:
+			print_rich("[color=#EAA15E]Warning: Using both Look At and Follow Mode on the same PCam3D has not been fully tested yet, proceed with caution![/color]")
 	get:
 		return follow_mode
 
@@ -228,6 +232,10 @@ enum FollowLockAxis {
 		else: # If Look At Group
 			_look_at_targets_size_check()
 		notify_property_list_changed()
+
+		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
+		if follow_mode != FollowMode.NONE:
+			print_rich("[color=#EAA15E]Warning: Using both Look At and Follow Mode on the same PCam3D has not been fully tested yet, proceed with caution![/color]")
 	get:
 		return look_at_mode
 
