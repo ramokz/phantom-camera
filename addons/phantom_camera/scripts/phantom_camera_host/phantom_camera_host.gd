@@ -637,8 +637,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.4 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 4:
-			if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
-				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
+			if is_inside_tree() and get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
