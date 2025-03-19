@@ -60,6 +60,9 @@ signal noise_emitted(noise_output: Transform3D)
 
 signal physics_target_changed
 
+signal camera_3d_resource_property_changed(property: StringName, value: Variant)
+signal camera_3d_resource_changed
+
 #endregion
 
 
@@ -535,6 +538,9 @@ var tween_ease: PhantomCameraTween.EaseType:
 	set = set_tween_ease,
 	get = get_tween_ease
 
+var keep_aspect: int:
+	set = set_keep_aspect,
+	get = get_keep_aspect
 var cull_mask: int:
 	set = set_cull_mask,
 	get = get_cull_mask
@@ -1226,6 +1232,10 @@ func _is_parents_physics(target: Node = self) -> void:
 		if not current_node is PhysicsBody3D: continue
 		_follow_target_physics_based = true
 
+
+func _camera_resource_changed() -> void:
+	camera_3d_resource_changed.emit()
+
 #endregion
 
 
@@ -1570,8 +1580,8 @@ func get_third_person_quaternion() -> Quaternion:
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
-	if is_instance_valid(_follow_spring_arm):
-		_follow_spring_arm.spring_length = value
+	if not is_instance_valid(_follow_spring_arm): return
+	_follow_spring_arm.spring_length = value
 
 ## Gets the [member SpringArm3D.length]
 ## from a [param ThirdPerson] [enum follow_mode] instance.
@@ -1583,15 +1593,15 @@ func get_spring_length() -> float:
 ## is set to [param ThirdPerson].
 func set_collision_mask(value: int) -> void:
 	collision_mask = value
-	if is_instance_valid(_follow_spring_arm):
-		_follow_spring_arm.collision_mask = collision_mask
+	if not is_instance_valid(_follow_spring_arm): return
+	_follow_spring_arm.collision_mask = collision_mask
 
 ## Enables or disables a specific [member collision_mask] layer for the
 ## [SpringArm3D] when [enum FollowMode] is set to [param ThirdPerson].
 func set_collision_mask_value(value: int, enabled: bool) -> void:
 	collision_mask = _set_layer(collision_mask, value, enabled)
-	if is_instance_valid(_follow_spring_arm):
-		_follow_spring_arm.collision_mask = collision_mask
+	if not is_instance_valid(_follow_spring_arm): return
+	_follow_spring_arm.collision_mask = collision_mask
 
 ## Gets [member collision_mask] from the [SpringArm3D] when [enum FollowMode]
 ## is set to [param ThirdPerson].
@@ -1603,11 +1613,8 @@ func get_collision_mask() -> int:
 ## is set to [param ThirdPerson].
 func set_shape(value: Shape3D) -> void:
 	shape = value
-	if is_instance_valid(_follow_spring_arm):
-		if shape:
-			_follow_spring_arm.shape = shape
-		else:
-			_follow_spring_arm.shape = _get_camera_shape()
+	if not is_instance_valid(_follow_spring_arm): return
+	_follow_spring_arm.shape = shape
 
 ## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
 func get_shape() -> Shape3D:
@@ -1618,8 +1625,8 @@ func get_shape() -> Shape3D:
 ## is set to [param ThirdPerson].
 func set_margin(value: float) -> void:
 	margin = value
-	if is_instance_valid(_follow_spring_arm):
-		_follow_spring_arm.margin = margin
+	if not is_instance_valid(_follow_spring_arm): return
+	_follow_spring_arm.margin = margin
 
 ## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
 ## [param ThirdPerson].
@@ -1814,10 +1821,26 @@ func get_inactive_update_mode() -> int:
 ## Assigns a [Camera3DResource].
 func set_camera_3d_resource(value: Camera3DResource) -> void:
 	camera_3d_resource = value
+	camera_3d_resource_changed.emit()
+	if value:
+		if not camera_3d_resource.changed.is_connected(_camera_resource_changed):
+			camera_3d_resource.changed.connect(_camera_resource_changed)
 
 ## Gets the [Camera3DResource].
 func get_camera_3d_resource() -> Camera3DResource:
 	return camera_3d_resource
+
+
+func set_keep_aspect(value: int) -> void:
+	if not camera_3d_resource:
+		printerr("Can't assign a keep_aspect value. No Camera3DResource assigned to ", name)
+		return
+	keep_aspect = value
+	camera_3d_resource_property_changed.emit("keep_aspect", value)
+
+func get_keep_aspect() -> Variant:
+	if not camera_3d_resource: return null
+	return camera_3d_resource.keep_aspect
 
 
 ## Assigns a new [member Camera3D.cull_mask] value.[br]
@@ -1825,21 +1848,21 @@ func get_camera_3d_resource() -> Camera3DResource:
 ## this [param PhantomCamera3D].
 func set_cull_mask(value: int) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a cull_mask value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a cull_mask value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.cull_mask = value
-	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = value
+	camera_3d_resource_property_changed.emit("cull_mask", value)
 
 ## Enables or disables a specific [member Camera3D.cull_mask] layer.[br]
 ## [b]Note:[/b] This will override and make the [param Camera3DResource] unique to
 ## this [param PhantomCamera3D].
 func set_cull_mask_value(layer_number: int, value: bool) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a cull_mask value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a cull_mask value. No Camera3DResource assigned to ", name)
 		return
 	var mask: int = _set_layer(get_cull_mask(), layer_number, value)
 	camera_3d_resource.cull_mask = mask
-	if _is_active: get_pcam_host_owner().camera_3d.cull_mask = mask
+	camera_3d_resource_property_changed.emit("cull_mask", mask)
 
 ## Gets the [member Camera3D.cull_mask] value assigned to the [Camera3DResource].
 func get_cull_mask() -> Variant:
@@ -1848,8 +1871,9 @@ func get_cull_mask() -> Variant:
 
 
 ## Assigns a new [Environment] resource to the [Camera3DResource].
-func set_environment(value: Environment):
+func set_environment(value: Environment) -> void:
 	environment = value
+	camera_3d_resource_property_changed.emit("environment", value)
 
 ## Gets the [Camera3D.environment] value assigned to the [Camera3DResource].
 func get_environment() -> Environment:
@@ -1857,8 +1881,9 @@ func get_environment() -> Environment:
 
 
 ## Assigns a new [CameraAttributes] resource to the [Camera3DResource].
-func set_attributes(value: CameraAttributes):
+func set_attributes(value: CameraAttributes) -> void:
 	attributes = value
+	camera_3d_resource_property_changed.emit("attributes", value)
 
 ## Gets the [Camera3D.attributes] value assigned to the [Camera3DResource].
 func get_attributes() -> CameraAttributes:
@@ -1870,10 +1895,10 @@ func get_attributes() -> CameraAttributes:
 ## this [param PhantomCamera3D].
 func set_h_offset(value: float) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a h_offset value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a h_offset value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.h_offset = value
-	if _is_active: get_pcam_host_owner().camera_3d.h_offset = value
+	camera_3d_resource_property_changed.emit("h_offset", value)
 
 ## Gets the [member Camera3D.h_offset] value assigned to the [param Camera3DResource].
 func get_h_offset() -> Variant:
@@ -1886,10 +1911,10 @@ func get_h_offset() -> Variant:
 ## this [param PhantomCamera3D].
 func set_v_offset(value: float) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a v_offset value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a v_offset value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.v_offset = value
-	if _is_active: get_pcam_host_owner().camera_3d.v_offset = value
+	camera_3d_resource_property_changed.emit("v_offset", value)
 
 ## Gets the [member Camera3D.v_offset] value assigned to the [param Camera3DResource].
 func get_v_offset() -> Variant:
@@ -1902,10 +1927,10 @@ func get_v_offset() -> Variant:
 ## this [param PhantomCamera3D].
 func set_projection(value: int) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a projection value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a projection value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.projection = value
-	if _is_active: get_pcam_host_owner().camera_3d.projection = value
+	camera_3d_resource_property_changed.emit("projection", value)
 
 ## Gets the [member Camera3D.projection] value assigned to the [param Camera3DResource].
 func get_projection() -> Variant:
@@ -1918,10 +1943,10 @@ func get_projection() -> Variant:
 ## this [param PhantomCamera3D].
 func set_fov(value: float) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a fov value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a fov value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.fov = value
-	if _is_active: get_pcam_host_owner().camera_3d.fov = value
+	camera_3d_resource_property_changed.emit("fov", value)
 
 ## Gets the [member Camera3D.fov] value assigned to the [param Camera3DResource].
 func get_fov() -> Variant:
@@ -1934,10 +1959,10 @@ func get_fov() -> Variant:
 ## this [param PhantomCamera3D].
 func set_size(value: float) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a size value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a size value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.size = value
-	if _is_active: get_pcam_host_owner().camera_3d.size = value
+	camera_3d_resource_property_changed.emit("size", value)
 
 ## Gets the [member Camera3D.size] value assigned to the [param Camera3DResource].
 func get_size() -> Variant:
@@ -1950,10 +1975,10 @@ func get_size() -> Variant:
 ## this [param PhantomCamera3D].
 func set_frustum_offset(value: Vector2) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a frustum_offset value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a frustum_offset value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.frustum_offset = value
-	if _is_active: get_pcam_host_owner().camera_3d.frustum_offset = value
+	camera_3d_resource_property_changed.emit("frustum_offset", value)
 
 ## Gets the [member Camera3D.frustum_offset] value assigned to the [param Camera3DResource].
 func get_frustum_offset() -> Variant:
@@ -1966,10 +1991,10 @@ func get_frustum_offset() -> Variant:
 ## this [param PhantomCamera3D].
 func set_near(value: float) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a near value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a near value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.near = value
-	if _is_active: get_pcam_host_owner().camera_3d.near = value
+	camera_3d_resource_property_changed.emit("near", value)
 
 ## Gets the [member Camera3D.near] value assigned to the [param Camera3DResource].
 func get_near() -> Variant:
@@ -1982,10 +2007,10 @@ func get_near() -> Variant:
 ## this [param PhantomCamera3D].
 func set_far(value: float) -> void:
 	if not camera_3d_resource:
-		printerr("Can't set a far value. No Camera3DResource assigned to ", name)
+		printerr("Can't assign a far value. No Camera3DResource assigned to ", name)
 		return
 	camera_3d_resource.far = value
-	if _is_active: get_pcam_host_owner().camera_3d.far = value
+	camera_3d_resource_property_changed.emit("far", value)
 
 ## Gets the [member Camera3D.far] value assigned to the [param Camera3DResource].
 func get_far() -> Variant:

@@ -295,6 +295,7 @@ func _ready() -> void:
 		_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
 		_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
 		_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
+		_phantom_camera_manager.pcam_visibility_changed.connect(_pcam_visibility_changed)
 
 		if _is_2d:
 			if not _phantom_camera_manager.limit_2d_changed.is_connected(_update_limit_2d):
@@ -358,7 +359,7 @@ func _find_pcam_with_highest_priority() -> void:
 
 func _pcam_is_in_host_layer(pcam: Node) -> bool:
 	if pcam.host_layers & host_layers != 0: return true
-	else: return false
+	return false
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
@@ -391,6 +392,12 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 			if _active_pcam_3d.noise_emitted.is_connected(_noise_emitted_3d):
 				_active_pcam_3d.noise_emitted.disconnect(_noise_emitted_3d)
+
+			if _active_pcam_3d.camera_3d_resource_changed.is_connected(_camera_3d_resource_changed):
+				_active_pcam_3d.camera_3d_resource_changed.disconnect(_camera_3d_resource_changed)
+
+			if _active_pcam_3d.camera_3d_resource_property_changed.is_connected(_camera_3d_resource_property_changed):
+				_active_pcam_3d.camera_3d_resource_property_changed.disconnect(_camera_3d_resource_property_changed)
 
 			if _trigger_pcam_tween:
 				_active_pcam_3d.tween_interrupted.emit(pcam)
@@ -485,8 +492,19 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if not _active_pcam_3d.noise_emitted.is_connected(_noise_emitted_3d):
 			_active_pcam_3d.noise_emitted.connect(_noise_emitted_3d)
 
+		if not _active_pcam_3d.camera_3d_resource_changed.is_connected(_camera_3d_resource_changed):
+			_active_pcam_3d.camera_3d_resource_changed.connect(_camera_3d_resource_changed)
+
+		if not _active_pcam_3d.camera_3d_resource_property_changed.is_connected(_camera_3d_resource_property_changed):
+			_active_pcam_3d.camera_3d_resource_property_changed.connect(_camera_3d_resource_property_changed)
+
 		# Checks if the Camera3DResource has changed from the previous active PCam3D
 		if _active_pcam_3d.camera_3d_resource:
+			# Signal to detect if the Camera3D properties are being changed in the inspector
+			# This is to prevent accidential misalignment between the Camera3D and Camera3DResource
+			if Engine.is_editor_hint():
+				if not EditorInterface.get_inspector().property_edited.is_connected(_camera_3d_edited):
+					EditorInterface.get_inspector().property_edited.connect(_camera_3d_edited)
 			if _prev_cam_h_offset != _active_pcam_3d.h_offset:
 				_cam_h_offset_changed = true
 			if _prev_cam_v_offset != _active_pcam_3d.v_offset:
@@ -501,6 +519,18 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				_cam_near_changed = true
 			if _prev_cam_far != _active_pcam_3d.far:
 				_cam_far_changed = true
+		else:
+			_cam_h_offset_changed = false
+			_cam_v_offset_changed = false
+			_cam_fov_changed = false
+			_cam_size_changed = false
+			_cam_frustum_offset_changed = false
+			_cam_near_changed = false
+			_cam_far_changed = false
+			_cam_attribute_changed = false
+			if Engine.is_editor_hint():
+				if EditorInterface.get_inspector().property_edited.is_connected(_camera_3d_edited):
+					EditorInterface.get_inspector().property_edited.disconnect(_camera_3d_edited)
 
 		if _active_pcam_3d.attributes == null:
 			_cam_attribute_changed = false
@@ -747,23 +777,13 @@ func _pcam_follow(_delta: float) -> void:
 		_show_viewfinder_in_play()
 		_viewfinder_needed_check = false
 
-	# TODO - Should be able to find a more efficient way using signals
 	if Engine.is_editor_hint():
 		if not _is_2d:
-			if _active_pcam_3d.camera_3d_resource != null:
-				camera_3d.cull_mask = _active_pcam_3d.cull_mask
-				camera_3d.h_offset = _active_pcam_3d.h_offset
-				camera_3d.v_offset = _active_pcam_3d.v_offset
-				camera_3d.projection = _active_pcam_3d.projection
-				camera_3d.fov = _active_pcam_3d.fov
-				camera_3d.size = _active_pcam_3d.size
-				camera_3d.frustum_offset = _active_pcam_3d.frustum_offset
-				camera_3d.near = _active_pcam_3d.near
-				camera_3d.far = _active_pcam_3d.far
-
+			# TODO - Signal-based solution pending on https://github.com/godotengine/godot/pull/99729
 			if _active_pcam_3d.attributes != null:
 				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
 
+			# TODO - Signal-based solution pending https://github.com/godotengine/godot/pull/99873
 			if _active_pcam_3d.environment != null:
 				camera_3d.environment = _active_pcam_3d.environment.duplicate()
 
@@ -776,6 +796,34 @@ func _noise_emitted_2d(noise_output: Transform2D) -> void:
 func _noise_emitted_3d(noise_output: Transform3D) -> void:
 	_noise_emitted_output_3d = noise_output
 	_has_noise_emitted = true
+
+
+func _camera_3d_resource_changed() -> void:
+	if _active_pcam_3d.camera_3d_resource:
+		if Engine.is_editor_hint():
+			if not EditorInterface.get_inspector().property_edited.is_connected(_camera_3d_edited):
+				EditorInterface.get_inspector().property_edited.connect(_camera_3d_edited)
+		camera_3d.keep_aspect = _active_pcam_3d.keep_aspect
+		camera_3d.cull_mask = _active_pcam_3d.cull_mask
+		camera_3d.h_offset = _active_pcam_3d.h_offset
+		camera_3d.v_offset = _active_pcam_3d.v_offset
+		camera_3d.projection = _active_pcam_3d.projection
+		camera_3d.fov = _active_pcam_3d.fov
+		camera_3d.size = _active_pcam_3d.size
+		camera_3d.frustum_offset = _active_pcam_3d.frustum_offset
+		camera_3d.near = _active_pcam_3d.near
+		camera_3d.far = _active_pcam_3d.far
+	else:
+		if Engine.is_editor_hint():
+			EditorInterface.get_inspector().property_edited.disconnect(_camera_3d_edited)
+
+func _camera_3d_edited(value: String) -> void:
+	if not EditorInterface.get_inspector().get_edited_object() == camera_3d: return
+	camera_3d.set(value, _active_pcam_3d.camera_3d_resource.get(value))
+	push_warning("Camera3D properties are being overridden by ", _active_pcam_3d.name, "'s Camera3DResource")
+
+func _camera_3d_resource_property_changed(property: StringName, value: Variant) -> void:
+	camera_3d.set(property, value)
 
 
 func _pcam_tween(delta: float) -> void:
@@ -1086,7 +1134,7 @@ func _pcam_tween(delta: float) -> void:
 		if Engine.is_editor_hint():
 			_active_pcam_2d.queue_redraw()
 	else:
-		if _active_pcam_3d.attributes != null:
+		if _active_pcam_3d.camera_3d_resource and _active_pcam_3d.attributes != null:
 			if _cam_attribute_type == 0:
 				if not _active_pcam_3d.attributes.dof_blur_far_enabled:
 					camera_3d.attributes.dof_blur_far_enabled = false
