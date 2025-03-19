@@ -8,6 +8,19 @@ extends Resource
 ## The overrides defined here will be applied to the [Camera3D] upon the
 ## [PhantomCamera3D] becoming active.
 
+enum KeepAspect {
+	KEEP_WIDTH = 0,
+	KEEP_HEIGHT = 1
+}
+
+## Overrides [member Camera3D.keep_aspect].
+@export var keep_aspect: KeepAspect = KeepAspect.KEEP_HEIGHT:
+	set(value):
+		keep_aspect = value
+		emit_changed()
+	get:
+		return keep_aspect
+
 ## Overrides [member Camera3D.cull_mask].
 @export_flags_3d_render var cull_mask: int = 1048575:
 	set(value):
