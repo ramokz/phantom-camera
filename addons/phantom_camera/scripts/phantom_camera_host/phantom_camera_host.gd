@@ -264,7 +264,6 @@ func _enter_tree() -> void:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
 					_pcam_added_to_scene(pcam)
-					pcam.set_pcam_host_owner(self)
 
 			if not _phantom_camera_manager.limit_2d_changed.is_connected(_update_limit_2d):
 				_phantom_camera_manager.limit_2d_changed.connect(_update_limit_2d)
@@ -275,7 +274,6 @@ func _enter_tree() -> void:
 			if not _phantom_camera_manager.get_phantom_camera_3ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_3ds():
 					_pcam_added_to_scene(pcam)
-					pcam.set_pcam_host_owner(self)
 
 
 func _exit_tree() -> void:
@@ -469,6 +467,17 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_priority = _active_pcam_3d.priority
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
 		_tween_duration = _active_pcam_3d.tween_duration
+
+		# Assigns a default shape to SpringArm3D node is none is supplied
+		if not Engine.is_editor_hint():
+			if _active_pcam_3d.follow_mode == _active_pcam_3d.FollowMode.THIRD_PERSON:
+				if not _active_pcam_3d.shape:
+					var pyramid_shape_data = PhysicsServer3D.shape_get_data(
+						camera_3d.get_pyramid_shape_rid()
+					)
+					var shape = ConvexPolygonShape3D.new()
+					shape.points = pyramid_shape_data
+					_active_pcam_3d.shape = shape
 
 		if not _active_pcam_3d.physics_target_changed.is_connected(_check_pcam_physics):
 			_active_pcam_3d.physics_target_changed.connect(_check_pcam_physics)
@@ -1134,7 +1143,6 @@ func _show_viewfinder_in_play() -> void:
 	_viewfinder_node.update_dead_zone()
 
 
-
 func _update_limit_2d(side: int, limit: int) -> void:
 	if is_instance_valid(camera_2d):
 		camera_2d.set_limit(side, limit)
@@ -1165,6 +1173,14 @@ func _pcam_removed_from_scene(pcam: Node) -> void:
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 
+
+func _pcam_visibility_changed(pcam: Node) -> void:
+	if pcam == _active_pcam_2d or pcam == _active_pcam_3d:
+		_active_pcam_priority = -1
+		_find_pcam_with_highest_priority()
+		return
+	_check_pcam_priority(pcam)
+
 #endregion
 
 #region Public Functions
@@ -1173,6 +1189,10 @@ func _pcam_removed_from_scene(pcam: Node) -> void:
 func pcam_priority_updated(pcam: Node) -> void:
 	if not is_instance_valid(pcam): return
 	if not _pcam_is_in_host_layer(pcam): return
+
+	if pcam == _active_pcam_2d or pcam == _active_pcam_3d:
+		if not pcam.visible:
+			refresh_pcam_list_priorty()
 
 	if Engine.is_editor_hint():
 		if _is_2d:

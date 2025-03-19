@@ -421,11 +421,6 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 
 var _is_active: bool = false
 
-## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
-var pcam_host_owner: PhantomCameraHost = null:
-	set = set_pcam_host_owner,
-	get = get_pcam_host_owner
-
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _follow_target_physics_based: bool = false
@@ -612,8 +607,6 @@ func process_logic(delta: float) -> void:
 	if _is_active:
 		if _has_noise_resource and _preview_noise:
 			_transform_noise = noise.get_noise_transform(delta)
-			if _transform_noise.get_rotation() != 0:
-				push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
 	else:
 		match inactive_update_mode:
 			InactiveUpdateMode.NEVER: return
@@ -813,12 +806,6 @@ func _on_dead_zone_changed() -> void:
 	set_global_position( _target_position_with_offset() )
 
 
-func _has_valid_pcam_owner() -> bool:
-	if not is_instance_valid(get_pcam_host_owner()): return false
-	if not is_instance_valid(get_pcam_host_owner().camera_2d): return false
-	return true
-
-
 func _get_framed_side_offset() -> Vector2:
 	var frame_out_bounds: Vector2
 
@@ -845,9 +832,6 @@ func _draw_camera_2d_limit() -> void:
 	if not is_instance_valid(_phantom_camera_manager): return
 	_phantom_camera_manager.draw_limit_2d.emit(draw_limits)
 
-#	if _has_valid_pcam_owner():
-#		get_pcam_host_owner().camera_2d.set_limit_drawing_enabled(draw_limits)
-
 
 func _check_limit_is_not_default() -> void:
 	if _limit_sides == _limit_sides_default:
@@ -857,8 +841,7 @@ func _check_limit_is_not_default() -> void:
 
 
 func _check_visibility() -> void:
-	if not is_instance_valid(pcam_host_owner): return
-	pcam_host_owner.refresh_pcam_list_priorty()
+	_phantom_camera_manager.pcam_visibility_changed.emit(self)
 
 
 func _follow_target_tree_exiting(target: Node) -> void:
@@ -909,10 +892,6 @@ func _follow_targets_size_check() -> void:
 func _noise_emitted(emitter_noise_output: Transform2D, emitter_layer: int) -> void:
 	if noise_emitter_layer & emitter_layer != 0:
 		noise_emitted.emit(emitter_noise_output)
-
-		if not pcam_host_owner.camera_2d.ignore_rotation: return
-		if emitter_noise_output.get_rotation() != 0:
-			push_warning(pcam_host_owner.camera_2d.name, " has ignore_rotation enabled.")
 
 
 func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
@@ -1075,27 +1054,6 @@ func emit_noise(value: Transform2D) -> void:
 
 
 #region Setter & Getter Functions
-
-## Assigns the [param PhantomCamera2D] to a new [PhantomCameraHost].[br]
-## [b][color=yellow]Important:[/color][/b] This is currently restricted to
-## plugin internals. Proper support will be added in issue #26.
-func set_pcam_host_owner(value: PhantomCameraHost) -> void:
-	pcam_host_owner = value
-#	if is_instance_valid(pcam_host_owner):
-#		pcam_host_owner.pcam_added_to_scene(self)
-	#if value.size() == 1:
-#	else:
-#		for camera_host in camera_host_group:
-#			print("Multiple PhantomCameraBases in scene")
-#			print(pcam_host_group)
-#			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
-#			multiple_pcam_host_group.append(camera_host)
-#			return nullfunc assign_pcam_host() -> void:
-## Gets the current [PhantomCameraHost] this [param PhantomCamera2D] is
-## assigned to.
-func get_pcam_host_owner() -> PhantomCameraHost:
-	return pcam_host_owner
-
 
 ## Assigns new Zoom value.
 func set_zoom(value: Vector2) -> void:
@@ -1327,7 +1285,7 @@ func set_follow_damping_value(value: Vector2) -> void:
 func get_follow_damping_value() -> Vector2:
 	return follow_damping_value
 
-
+## Assigns a new [member follow_axis] member. Value is based on [enum FollowLockAxis] enum.
 func set_lock_axis(value: FollowLockAxis) -> void:
 	follow_axis_lock = value
 
@@ -1348,6 +1306,7 @@ func set_lock_axis(value: FollowLockAxis) -> void:
 	else:
 		_follow_axis_is_locked = false
 
+## Gets the current [member follow_axis_lock] value. Value is based on [enum FollowLockAxis] enum.
 func get_lock_axis() -> FollowLockAxis:
 	return follow_axis_lock
 
@@ -1532,8 +1491,6 @@ func get_limit_margin() -> Vector4i:
 ### Enables or disables the Limit Smoothing beaviour.
 #func set_limit_smoothing(value: bool) -> void:
 	#limit_smoothed = value
-	#if is_active() and _has_valid_pcam_owner():
-		#get_pcam_host_owner().camera_2d.reset_smoothing()
 ### Returns the Limit Smoothing beaviour.
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed

@@ -523,12 +523,7 @@ var _phantom_camera_manager: Node
 
 #endregion
 
-#region Public Variables
-
-## The [PhantomCameraHost] that owns this [param PhantomCamera2D].
-var pcam_host_owner: PhantomCameraHost = null:
-	set = set_pcam_host_owner,
-	get = get_pcam_host_owner
+#region Public Variable
 
 var tween_duration: float:
 	set = set_tween_duration,
@@ -730,10 +725,7 @@ func _ready():
 					_follow_spring_arm.rotation = global_rotation
 					_follow_spring_arm.spring_length = spring_length
 					_follow_spring_arm.collision_mask = collision_mask
-					if shape:
-						_follow_spring_arm.shape = shape
-					else:
-						_follow_spring_arm.shape = _get_camera_shape()
+					_follow_spring_arm.shape = shape
 					_follow_spring_arm.margin = margin
 					_follow_spring_arm.add_excluded_object(follow_target)
 					get_parent().add_child.call_deferred(_follow_spring_arm)
@@ -860,7 +852,7 @@ func _follow(delta: float) -> void:
 
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
-				if not _is_active || get_pcam_host_owner().get_trigger_pcam_tween():
+				if not _is_active:
 					follow_position = _get_position_offset_distance()
 					_interpolate_position(follow_position, delta)
 					return
@@ -1118,15 +1110,8 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 	return mask
 
 
-func _has_valid_pcam_owner() -> bool:
-	if not is_instance_valid(get_pcam_host_owner()): return false
-	if not is_instance_valid(get_pcam_host_owner().camera_3d): return false
-	return true
-
-
 func _check_visibility() -> void:
-	if not is_instance_valid(pcam_host_owner): return
-	pcam_host_owner.refresh_pcam_list_priorty()
+	_phantom_camera_manager.pcam_visibility_changed.emit(self)
 
 
 func _follow_target_tree_exiting(target: Node) -> void:
@@ -1172,19 +1157,6 @@ func _follow_targets_size_check() -> void:
 		_:
 			_should_follow = true
 			_has_multiple_follow_targets = true
-
-
-func _get_camera_shape() -> Shape3D:
-	if not _has_valid_pcam_owner(): return
-
-	var pyramid_shape_data = PhysicsServer3D.shape_get_data(
-		get_pcam_host_owner().camera_3d.get_pyramid_shape_rid()
-	)
-
-	var shape = ConvexPolygonShape3D.new()
-	shape.points = pyramid_shape_data
-
-	return shape
 
 
 func _look_at_target_tree_exiting(target: Node) -> void:
@@ -1308,31 +1280,6 @@ func set_tween_skip(caller: Node, value: bool) -> void:
 ## Returns the current [param has_tweened] value.
 func get_tween_skip() -> bool:
 	return _tween_skip
-
-
-## Assigns the [param PhantomCamera3D] to a new [PhantomCameraHost].[br]
-## [b][color=yellow]Important:[/color][/b] This is currently restricted to
-## plugin internals. Proper support will be added in issue #26.
-func set_pcam_host_owner(value: PhantomCameraHost) -> void:
-	pcam_host_owner = value
-#	if is_instance_valid(pcam_host_owner):
-#		pcam_host_owner.pcam_added_to_scene(self)
-
-	#if value.size() == 1:
-#	else:
-#		for camera_host in camera_host_group:
-#			print("Multiple PhantomCameraBases in scene")
-#			print(pcam_host_group)
-#			print(pcam.get_tree().get_nodes_in_group(PhantomCameraGroupNames.PHANTOM_CAMERA_HOST_GROUP_NAME))
-#			multiple_pcam_host_group.append(camera_host)
-#			return null
-## Sets a PCamHost to
-#func assign_pcam_host(value: PhantomCameraHost) -> void:
-	#pcam_host_owner = value
-## Gets the current [PhantomCameraHost] this [param PhantomCamera3D] is
-## assigned to.
-func get_pcam_host_owner() -> PhantomCameraHost: # TODO - Needs to be removed due to the changes of Multi PCam
-	return pcam_host_owner
 
 
 ## Assigns new [member priority] value.
@@ -1790,7 +1737,7 @@ func set_look_at_damping_value(value: float) -> void:
 func get_look_at_damping_value() -> float:
 	return look_at_damping_value
 
-
+## Assigns the Follow Axis.
 func set_follow_axis_lock(value: FollowLockAxis) -> void:
 	follow_axis_lock = value
 
@@ -1823,11 +1770,12 @@ func set_follow_axis_lock(value: FollowLockAxis) -> void:
 	else:
 		_follow_axis_is_locked = false
 
+## Gets the current [member follow_axis_lock] property. Value is based on [enum FollowLockAxis] enum.
 func get_follow_axis_lock() -> FollowLockAxis:
 	return follow_axis_lock
 
 
-## Sets a [PhantomCameraNoise3D] resource
+## Sets a [PhantomCameraNoise3D] resource.
 func set_noise(value: PhantomCameraNoise3D) -> void:
 	noise = value
 	if value != null:
@@ -1849,7 +1797,7 @@ func set_noise_emitter_layer(value: int) -> void:
 func set_noise_emitter_layer_value(value: int, enabled: bool) -> void:
 	noise_emitter_layer = _set_layer(noise_emitter_layer, value, enabled)
 
-## Returns the [member noise_emitter_layer]
+## Returns the [member noise_emitter_layer].
 func get_noise_emitter_layer() -> int:
 	return noise_emitter_layer
 
@@ -1867,7 +1815,7 @@ func get_inactive_update_mode() -> int:
 func set_camera_3d_resource(value: Camera3DResource) -> void:
 	camera_3d_resource = value
 
-## Gets the [Camera3DResource]
+## Gets the [Camera3DResource].
 func get_camera_3d_resource() -> Camera3DResource:
 	return camera_3d_resource
 
