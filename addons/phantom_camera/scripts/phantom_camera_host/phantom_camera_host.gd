@@ -621,6 +621,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_3d.set_is_active(self, true)
 		_active_pcam_3d.became_active.emit()
 		if _active_pcam_3d.camera_3d_resource:
+			camera_3d.keep_aspect = _active_pcam_3d.keep_aspect
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
 
