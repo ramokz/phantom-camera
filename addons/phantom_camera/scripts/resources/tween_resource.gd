@@ -32,7 +32,7 @@ enum EaseType {
 }
 
 ## The time it takes to tween to this PhantomCamera in [param seconds].
-@export var duration: float = 1
+@export var duration: float = 1.0
 
 ## The transition bezier type for the tween. The options are defined in the [enum TransitionType].
 @export var transition: TransitionType = TransitionType.LINEAR
