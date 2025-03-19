@@ -5,21 +5,30 @@ const _CONSTANTS = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 
 #region Signals
 
+# Noise
 signal noise_2d_emitted(noise_output: Transform2D, emitter_layer: int)
 signal noise_3d_emitted(noise_output: Transform3D, emitter_layer: int)
 
+# PCam Host
 signal pcam_host_added_to_scene(pcam_host: PhantomCameraHost)
 signal pcam_host_removed_from_scene(pcam_host: PhantomCameraHost)
 
+# PCam
 signal pcam_added_to_scene(pcam: Node)
 signal pcam_removed_from_scene(pcam: Node)
 
+# Priority
 signal pcam_priority_changed(pcam: Node)
+signal pcam_visibility_changed(pcam: Node)
 
+# Limit (2D)
 signal limit_2d_changed(side: int, limit: int)
 signal draw_limit_2d(enabled: bool)
 
-# PCam Viewfinder Signals
+# Camera3DResource (3D)
+signal camera_3d_resource_changed(property: String, value: Variant)
+
+# Viewfinder Signals
 signal viewfinder_pcam_host_switch(pcam_host: PhantomCameraHost)
 signal pcam_priority_override(pcam: Node, shouldOverride: bool)
 signal pcam_dead_zone_changed(pcam: Node)
