@@ -69,10 +69,10 @@ func _enter_tree() -> void:
 	var setting_updater_mode: String
 	var setting_updater_mode_default: int
 	if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn"): # For forks
-		setting_updater_mode = "Disabled, Console Output"
+		setting_updater_mode = "Off, Console Output"
 		setting_updater_mode_default = 1
 	else: # For end-users
-		setting_updater_mode = "Disabled, Console Output, Updater Window"
+		setting_updater_mode = "Off, Console Output, Updater Window"
 		setting_updater_mode_default = 2
 
 	if not ProjectSettings.has_setting(updater_constants.setting_updater_mode):
@@ -157,7 +157,7 @@ func _make_visible(visible):
 	if editor_panel_instance:
 		editor_panel_instance.set_visible(visible)
 
-
+## TODO - Signal can be added directly to the editor_panel once Godot 4.5 is out (https://github.com/godotengine/godot/pull/102986)
 func _scene_changed(scene_root: Node) -> void:
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
 
