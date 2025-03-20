@@ -282,6 +282,10 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
+	# Waits for the first process tick to finish before initializing any logic
+	# This should help with avoiding ocassional erratic camera movement upon running a scene
+	await get_tree().process_frame
+
 	process_priority = 300
 	process_physics_priority = 300
 
@@ -780,11 +784,11 @@ func _pcam_follow(_delta: float) -> void:
 
 	if Engine.is_editor_hint():
 		if not _is_2d:
-			# TODO - Signal-based solution pending on https://github.com/godotengine/godot/pull/99729
+			# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99729
 			if _active_pcam_3d.attributes != null:
 				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
 
-			# TODO - Signal-based solution pending https://github.com/godotengine/godot/pull/99873
+			# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99873
 			if _active_pcam_3d.environment != null:
 				camera_3d.environment = _active_pcam_3d.environment.duplicate()
 
