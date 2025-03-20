@@ -11,7 +11,6 @@ extends Node
 
 #region Signals
 
-signal has_error()
 
 #endregion
 
@@ -21,24 +20,20 @@ const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/
 
 #endregion
 
-#region
-
-## TBD - For when Godot 4.3 becomes the minimum version
-#@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
-	#set = set_interpolation_mode,
-	#get = get_interpolation_mode
-
-#endregion
-
 #region Signals
 
 ## Updates the viewfinder [param dead zones] sizes.[br]
 ## [b]Note:[/b] This is only being used in the editor viewfinder UI.
 signal update_editor_viewfinder
 
+## Used internally to check if the [param PhantomCameraHost] is valid.
+## The result will be visible in the viewfinder when multiple instances are present.
+signal has_error()
+
 #endregion
 
-#region Variables
+
+#region Enums
 
 enum InterpolationMode {
 	AUTO    = 0,
@@ -48,6 +43,7 @@ enum InterpolationMode {
 
 #endregion
 
+
 #region Public Variables
 
 ## Determines which [PhantomCamera2D] / [PhantomCamera3D] nodes this [PhantomCameraHost] should recognise.
@@ -55,6 +51,11 @@ enum InterpolationMode {
 @export_flags_2d_render var host_layers: int = 1:
 	set = set_host_layers,
 	get = get_host_layers
+
+## TBD - For when Godot 4.3 becomes the minimum version
+#@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
+	#set = set_interpolation_mode,
+	#get = get_interpolation_mode
 
 #endregion
 
@@ -201,6 +202,7 @@ var show_warning: bool = false
 
 ## For 2D scenes, is the [Camera2D] instance the [param PhantomCameraHost] controls.
 var camera_2d: Camera2D = null
+
 ## For 3D scenes, is the [Camera3D] instance the [param PhantomCameraHost] controls.
 var camera_3d: Node = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 
@@ -297,9 +299,13 @@ func _ready() -> void:
 		# PCam Signals
 		_phantom_camera_manager.pcam_added_to_scene.connect(_pcam_added_to_scene)
 		_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
+
 		_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
 		_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
+
 		_phantom_camera_manager.pcam_visibility_changed.connect(_pcam_visibility_changed)
+
+		_phantom_camera_manager.pcam_teleport.connect(_pcam_teleported)
 
 		if _is_2d:
 			if not _phantom_camera_manager.limit_2d_changed.is_connected(_update_limit_2d):
@@ -1233,6 +1239,20 @@ func _pcam_visibility_changed(pcam: Node) -> void:
 		_find_pcam_with_highest_priority()
 		return
 	_check_pcam_priority(pcam)
+
+
+func _pcam_teleported() -> void:
+#	return
+	if _is_2d:
+		if not is_instance_valid(camera_2d): return
+		camera_2d.global_position = _active_pcam_2d.global_position
+		camera_2d.call("reset_physics_interpolation")
+#		camera_2d.reset_physics_interpolation() # TODO - For when Godot 4.3 becomes the minimum version
+	else:
+		if not is_instance_valid(camera_3d): return
+		camera_3d.global_position = _active_pcam_3d.global_position
+		camera_3d.call("reset_physics_interpolation")
+#		camera_3d.reset_physics_interpolation() # TODO - For when Godot 4.3 becomes the minimum version
 
 #endregion
 

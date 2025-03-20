@@ -449,6 +449,8 @@ var _limit_node: Node2D
 
 var _limit_inactive_pcam: bool
 
+var _target_transform: Transform2D
+
 var _transform_output: Transform2D
 var _transform_noise: Transform2D
 
@@ -643,13 +645,12 @@ func _limit_checker() -> void:
 
 
 func _follow(delta: float) -> void:
-	var follow_position: Vector2
 	match follow_mode:
 		FollowMode.GLUED:
-			follow_position = follow_target.global_position
+			_target_transform.origin = follow_target.global_position
 
 		FollowMode.SIMPLE:
-			follow_position = _target_position_with_offset()
+			_target_transform.origin = _target_position_with_offset()
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
@@ -668,14 +669,14 @@ func _follow(delta: float) -> void:
 						zoom = clamp(_phantom_camera_manager.screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(_phantom_camera_manager.screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
-				follow_position = rect.get_center() + follow_offset
+				_target_transform.origin = rect.get_center() + follow_offset
 			else:
-				follow_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
+				_target_transform.origin = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
 
 		FollowMode.PATH:
 			var path_position: Vector2 = follow_path.global_position
 
-			follow_position = \
+			_target_transform.origin = \
 				follow_path.curve.get_closest_point(
 					_target_position_with_offset() - path_position
 				) + path_position
@@ -691,37 +692,37 @@ func _follow(delta: float) -> void:
 
 					if dead_zone_width == 0 || dead_zone_height == 0:
 						if dead_zone_width == 0 && dead_zone_height != 0:
-							follow_position = _target_position_with_offset()
+							_target_transform.origin = _target_position_with_offset()
 						elif dead_zone_width != 0 && dead_zone_height == 0:
 							glo_pos = _target_position_with_offset()
 							glo_pos.x += target_position.x - global_position.x
-							follow_position = glo_pos
+							_target_transform.origin = glo_pos
 						else:
-							follow_position = _target_position_with_offset()
+							_target_transform.origin = _target_position_with_offset()
 
 					# If a horizontal dead zone is reached
 					if framed_side_offset.x != 0 and framed_side_offset.y == 0:
-						follow_position.y = _transform_output.origin.y
-						follow_position.x = target_position.x
+						_target_transform.origin.y = _transform_output.origin.y
+						_target_transform.origin.x = target_position.x
 						_follow_framed_offset.y = global_position.y - _target_position_with_offset().y
 						dead_zone_reached.emit(Vector2(framed_side_offset.x, 0))
 					# If a vertical dead zone is reached
 					elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
-						follow_position.x = _transform_output.origin.x
-						follow_position.y = target_position.y
+						_target_transform.origin.x = _transform_output.origin.x
+						_target_transform.origin.y = target_position.y
 						_follow_framed_offset.x = global_position.x - _target_position_with_offset().x
 						dead_zone_reached.emit(Vector2(0, framed_side_offset.y))
 					# If a deadzone corner is reached
 					else:
-						follow_position = target_position
+						_target_transform.origin = target_position
 						dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
 				else:
 					_follow_framed_offset = _transform_output.origin - _target_position_with_offset()
 					return
 			else:
-				follow_position = _target_position_with_offset()
+				_target_transform.origin = _target_position_with_offset()
 
-	_interpolate_position(follow_position, delta)
+	_interpolate_position(_target_transform.origin, delta)
 
 
 func _set_follow_velocity(index: int, value: float):
@@ -1049,6 +1050,14 @@ func get_noise_transform() -> Transform2D:
 ## Use this function if you wish to make use of external noise patterns from, for example, other addons.
 func emit_noise(value: Transform2D) -> void:
 	noise_emitted.emit(value)
+
+
+## Teleports the [param PhantomCamera2D] to its designated position.
+## This bypasses the damping process.
+func teleport_position() -> void:
+	_follow_velocity_ref = Vector2.ZERO
+	_transform_output.origin = _target_transform.origin
+	_phantom_camera_manager.pcam_teleport.emit()
 
 #endregion
 

@@ -518,6 +518,8 @@ var _current_rotation: Vector3
 
 var _has_noise_resource: bool = false
 
+var _target_transform: Transform3D
+
 var _transform_output: Transform3D
 var _transform_noise: Transform3D
 
@@ -814,16 +816,14 @@ func process_logic(delta: float) -> void:
 
 
 func _follow(delta: float) -> void:
-	var follow_position: Vector3
-
 	var follow_target_node: Node3D = self # TODO - Think this can be removed
 
 	match follow_mode:
 		FollowMode.GLUED:
-			follow_position = follow_target.global_position
+			_target_transform.origin = follow_target.global_position
 
 		FollowMode.SIMPLE:
-			follow_position = _get_target_position_offset()
+			_target_transform.origin = _get_target_position_offset()
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
@@ -837,13 +837,13 @@ func _follow(delta: float) -> void:
 				else:
 					distance = follow_distance
 
-				follow_position = \
+				_target_transform.origin = \
 					bounds.get_center() + \
 					follow_offset + \
 					global_transform.basis.z * \
 					Vector3(distance, distance, distance)
 			else:
-				follow_position = \
+				_target_transform.origin = \
 					follow_targets[_follow_targets_single_target_index].global_position + \
 					follow_offset + \
 					global_transform.basis.z * \
@@ -851,7 +851,7 @@ func _follow(delta: float) -> void:
 
 		FollowMode.PATH:
 			var path_position: Vector3 = follow_path.global_position
-			follow_position = \
+			_target_transform.origin = \
 				follow_path.curve.get_closest_point(
 					follow_target.global_position - path_position
 				) + path_position
@@ -859,8 +859,8 @@ func _follow(delta: float) -> void:
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
 				if not _is_active:
-					follow_position = _get_position_offset_distance()
-					_interpolate_position(follow_position, delta)
+					_target_transform.origin = _get_position_offset_distance()
+					_interpolate_position(_target_transform.origin, delta)
 					return
 
 				viewport_position = get_viewport().get_camera_3d().unproject_position(_get_target_position_offset())
@@ -869,7 +869,7 @@ func _follow(delta: float) -> void:
 				_current_rotation = global_rotation
 
 				if _current_rotation != global_rotation:
-					follow_position = _get_position_offset_distance()
+					_target_transform.origin = _get_position_offset_distance()
 
 				if _get_framed_side_offset() != Vector2.ZERO:
 					var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
@@ -879,13 +879,13 @@ func _follow(delta: float) -> void:
 						if dead_zone_width == 0 && dead_zone_height != 0:
 							glo_pos = _get_position_offset_distance()
 							glo_pos.z = target_position.z
-							follow_position = glo_pos
+							_target_transform.origin = glo_pos
 						elif dead_zone_width != 0 && dead_zone_height == 0:
 							glo_pos = _get_position_offset_distance()
 							glo_pos.x = target_position.x
-							follow_position = glo_pos
+							_target_transform.origin = glo_pos
 						else:
-							follow_position = _get_position_offset_distance()
+							_target_transform.origin = _get_position_offset_distance()
 					else:
 						if _current_rotation != global_rotation:
 							var opposite: float = sin(-global_rotation.x) * follow_distance + _get_target_position_offset().y
@@ -893,17 +893,17 @@ func _follow(delta: float) -> void:
 							glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + _get_target_position_offset().z
 							glo_pos.x = global_position.x
 
-							follow_position = glo_pos
+							_target_transform.origin = glo_pos
 							_current_rotation = global_rotation
 						else:
 							dead_zone_reached.emit()
-							follow_position = target_position
+							_target_transform.origin = target_position
 				else:
 					_follow_framed_offset = global_position - _get_target_position_offset()
 					_current_rotation = global_rotation
 					return
 			else:
-				follow_position = _get_position_offset_distance()
+				_target_transform.origin = _get_position_offset_distance()
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
 				var viewport_width: float = get_viewport().size.x
 				var viewport_height: float = get_viewport().size.y
@@ -927,12 +927,12 @@ func _follow(delta: float) -> void:
 		FollowMode.THIRD_PERSON:
 			if not Engine.is_editor_hint():
 				if not _has_follow_spring_arm: return
-				follow_position = _get_target_position_offset()
+				_target_transform.origin = _get_target_position_offset()
 				follow_target_node = _follow_spring_arm
 			else:
-				follow_position = _get_position_offset_distance()
+				_target_transform.origin = _get_position_offset_distance()
 
-	_interpolate_position(follow_position, delta, follow_target_node)
+	_interpolate_position(_target_transform.origin, delta, follow_target_node)
 
 
 func _look_at(delta: float) -> void:
@@ -1276,6 +1276,14 @@ func get_noise_transform() -> Transform3D:
 ## Use this function if you wish to make use of external noise patterns from, for example, other addons.
 func emit_noise(value: Transform3D) -> void:
 	noise_emitted.emit(value)
+
+
+## Teleports the [param PhantomCamera3D] to its designated position.
+## This bypasses the damping process.
+func teleport_position() -> void:
+	_follow_velocity_ref = Vector3.ZERO
+	_transform_output.origin = _target_transform.origin
+	_phantom_camera_manager.pcam_teleport.emit()
 
 #region Setter & Getter Functions
 
