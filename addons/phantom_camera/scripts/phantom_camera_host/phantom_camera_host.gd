@@ -1255,6 +1255,21 @@ func _pcam_teleported() -> void:
 		camera_3d.call("reset_physics_interpolation")
 #		camera_3d.reset_physics_interpolation() # TODO - For when Godot 4.3 becomes the minimum version
 
+
+func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
+	var mask: int = current_layers
+
+	# From https://github.com/godotengine/godot/blob/51991e20143a39e9ef0107163eaf283ca0a761ea/scene/3d/camera_3d.cpp#L638
+	if layer_number < 1 or layer_number > 20:
+		printerr("Render layer must be between 1 and 20.")
+	else:
+		if value:
+			mask |= 1 << (layer_number - 1)
+		else:
+			mask &= ~(1 << (layer_number - 1))
+
+	return mask
+
 #endregion
 
 #region Public Functions
@@ -1358,6 +1373,7 @@ func refresh_pcam_list_priorty() -> void:
 
 ##region Setters / Getters
 
+## Sets the [member host_layers] value.
 func set_host_layers(value: int) -> void:
 	host_layers = value
 
@@ -1371,7 +1387,11 @@ func set_host_layers(value: int) -> void:
 	else:
 		_find_pcam_with_highest_priority()
 
+## Enables or disables a given layer of [member host_layers].
+func set_host_layers_value(layer: int, value: bool) -> void:
+	host_layers = _set_layer(host_layers, layer, value)
 
+## Returns the [member host_layers] value.
 func get_host_layers() -> int:
 	return host_layers
 
