@@ -238,6 +238,7 @@ physics_interpolation_mode = 1
 position = Vector2(227, -28)
 process_callback = 0
 position_smoothing_speed = 10.0
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 process_priority = 300

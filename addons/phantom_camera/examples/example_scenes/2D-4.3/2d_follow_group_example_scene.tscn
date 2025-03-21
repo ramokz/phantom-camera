@@ -217,6 +217,7 @@ position = Vector2(186, -172.5)
 zoom = Vector2(1.5, 1.5)
 process_callback = 0
 position_smoothing_speed = 8.0
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 process_priority = 300

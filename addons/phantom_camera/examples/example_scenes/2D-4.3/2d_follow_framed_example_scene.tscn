@@ -209,6 +209,7 @@ physics_interpolation_mode = 1
 position = Vector2(215, -73)
 zoom = Vector2(2, 2)
 process_callback = 0
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 process_priority = 300
@@ -233,6 +234,7 @@ follow_damping = true
 dead_zone_width = 0.25
 dead_zone_height = 0.8
 show_viewfinder_in_play = true
+draw_limits = true
 
 [node name="Label" type="Label" parent="Player"]
 offset_left = 167.0

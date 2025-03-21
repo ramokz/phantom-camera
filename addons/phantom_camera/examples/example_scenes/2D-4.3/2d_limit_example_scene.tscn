@@ -237,7 +237,7 @@ script = ExtResource("6_68ewj")
 [node name="RoomLeftPhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 top_level = true
-position = Vector2(66, -91.205)
+position = Vector2(141, -91.205)
 script = ExtResource("6_2n5r1")
 priority = 5
 follow_mode = 2
@@ -303,12 +303,12 @@ draw_limits = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
-position = Vector2(66, -91.205)
+position = Vector2(141, -91.205)
 zoom = Vector2(2, 2)
 process_callback = 0
-limit_left = -387
+limit_left = -147
 limit_top = -528
-limit_right = 433
+limit_right = 673
 limit_bottom = 288
 position_smoothing_speed = 10.0
 editor_draw_limits = true
