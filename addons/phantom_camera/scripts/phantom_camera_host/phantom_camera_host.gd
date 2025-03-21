@@ -46,8 +46,8 @@ enum InterpolationMode {
 
 #region Public Variables
 
-## Determines which [PhantomCamera2D] / [PhantomCamera3D] nodes this [PhantomCameraHost] should recognise.
-## At least one corresponding layer needs to be set on the PhantomCamera node for the [PhantomCameraHost].
+## Determines which [PhantomCamera2D] / [PhantomCamera3D] nodes this [param PhantomCameraHost] should recognise.
+## At least one corresponding layer needs to be set on the [param PhantomCamera] for the [param PhantomCameraHost] node to work.
 @export_flags_2d_render var host_layers: int = 1:
 	set = set_host_layers,
 	get = get_host_layers
@@ -766,6 +766,7 @@ func _tween_follow_checker(delta: float) -> void:
 
 
 func _pcam_follow(_delta: float) -> void:
+	# TODO - Should be optimised
 	if _is_2d:
 		if not is_instance_valid(_active_pcam_2d): return
 	else:

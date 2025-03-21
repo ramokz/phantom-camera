@@ -10,7 +10,7 @@ extends Resource
 
 enum KeepAspect {
 	KEEP_WIDTH = 0,
-	KEEP_HEIGHT = 1
+	KEEP_HEIGHT = 1,
 }
 
 ## Overrides [member Camera3D.keep_aspect].
