@@ -1052,8 +1052,8 @@ func emit_noise(value: Transform2D) -> void:
 	noise_emitted.emit(value)
 
 
-## Teleports the [param PhantomCamera2D] to its designated position.
-## This bypasses the damping process.
+## Teleports the [param PhantomCamera2D] and [Camera2D] to their designated position,
+## bypassing the damping process.
 func teleport_position() -> void:
 	_follow_velocity_ref = Vector2.ZERO
 	_transform_output.origin = _target_transform.origin
@@ -1524,7 +1524,7 @@ func get_noise() -> PhantomCameraNoise2D:
 func set_noise_emitter_layer(value: int) -> void:
 	noise_emitter_layer = value
 
-## Enables or disables a given layer of the [member noise_emitter_layer] value.
+## Enables or disables a given layer of [member noise_emitter_layer].
 func set_noise_emitter_layer_value(value: int, enabled: bool) -> void:
 	noise_emitter_layer = _set_layer(noise_emitter_layer, value, enabled)
 

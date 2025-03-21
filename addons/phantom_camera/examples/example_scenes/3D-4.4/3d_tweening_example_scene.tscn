@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_d1opf"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_4whss"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="4_8ap1e"]
-[ext_resource type="Script" uid="uid://bc2tn187qiatp" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_1sgnu"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_1sgnu"]
 [ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="6_lr46m"]
 [ext_resource type="Script" uid="uid://bnhxcejvr6wi3" path="res://addons/phantom_camera/examples/scripts/3D/3d_trigger_area.gd" id="7_istoq"]
 [ext_resource type="Script" uid="uid://tgv6xpi88sd0" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="7_x1jex"]
@@ -13,6 +13,7 @@
 
 [sub_resource type="Resource" id="Resource_0dtvs"]
 script = ExtResource("5_1sgnu")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -41,6 +42,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_kmep1"]
 script = ExtResource("5_1sgnu")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -59,6 +61,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_eu3bc"]
 script = ExtResource("5_1sgnu")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -77,6 +80,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_u0lff"]
 script = ExtResource("5_1sgnu")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -95,6 +99,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_rexf8"]
 script = ExtResource("5_1sgnu")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -120,7 +125,7 @@ metadata/_edit_lock_ = true
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0.083587, 2.507, 4.05493)
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.5, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -131,19 +136,20 @@ script = ExtResource("2_d1opf")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0.083587, 2.507, 4.05493)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0, 2.5, 2)
 top_level = true
 script = ExtResource("3_4whss")
 priority = 3
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D2")
+follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = ExtResource("4_8ap1e")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_0dtvs")
 follow_offset = Vector3(0, 2, 2)
 follow_damping = true
 
-[node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("6_lr46m")]
+[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("6_lr46m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("7_x1jex")
 
 [node name="-------------------" type="Node" parent="."]
