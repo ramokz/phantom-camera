@@ -215,8 +215,18 @@ func _visibility_check() -> void:
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.visible = false
 
+		# Checks if a new scene is created and changes viewfinder accordingly
+		if not get_tree().node_added.is_connected(_node_added_to_scene):
+			get_tree().node_added.connect(_node_added_to_scene)
+
 	if not _priority_override_button.pressed.is_connected(_select_override_pcam):
 		_priority_override_button.pressed.connect(_select_override_pcam)
+
+
+func _node_added_to_scene(node: Node) -> void:
+	if node is Node2D or node is Node3D:
+		get_tree().node_added.disconnect(_node_added_to_scene)
+		_visibility_check()
 
 
 func _get_camera_2d() -> Camera2D:
