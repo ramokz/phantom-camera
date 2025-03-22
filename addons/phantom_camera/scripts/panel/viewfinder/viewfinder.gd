@@ -97,14 +97,7 @@ func _ready() -> void:
 
 		_set_viewfinder(_root_node, false)
 
-	if Engine.is_editor_hint():
-		pass
-		# BUG - Both signals below are called whenever a noe is selected in the scenetree
-		# Should only be triggered whenever a node is added or removed.
-#		get_tree().node_added.connect(_node_added_or_removed)
-#		get_tree().node_removed.connect(_node_added_or_removed)
-
-	else:
+	if not Engine.is_editor_hint():
 		_empty_state_control.visible = false
 
 	_priority_override_button.visible = false
@@ -117,16 +110,8 @@ func _ready() -> void:
 	_assign_manager()
 	_visibility_check()
 
-#	while not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
-#		_visibility_check()
-
-#		_pcam_manager.pcam_host_added_to_scene.connect(_pcam_host_added)
-
-#	_pcam_host_list.pcam_host_changed.connect(_pcam_host_changed)
-
 
 func _pcam_host_switch(new_pcam_host: PhantomCameraHost) -> void:
-#	pcam_host = new_pcam_host
 	_set_viewfinder_camera(new_pcam_host, true)
 
 
@@ -182,7 +167,7 @@ func _settings_changed() -> void:
 	aspect_ratio_container.set_ratio(ratio)
 	camera_viewport_panel.size.x = viewport_width / (viewport_height / sub_viewport.size.y)
 
-	## Applies Project Settings to Viewport
+	# Applies Project Settings to Viewport
 	sub_viewport.canvas_item_default_texture_filter = ProjectSettings.get_setting("rendering/textures/canvas_textures/default_texture_filter")
 
 	# TODO - Add resizer for Framed Viewfinder
@@ -195,11 +180,9 @@ func _visibility_check() -> void:
 	var has_camera: bool = false
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
 
-#	if not get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 	if not Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts().is_empty():
 		has_camera = true
 		pcam_host = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()[0]
-#		phantom_camera_host = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()[0]
 
 	var root: Node = EditorInterface.get_edited_scene_root()
 	if root is Node2D:
@@ -227,8 +210,8 @@ func _visibility_check() -> void:
 		_add_node_button.visible = true
 		_check_camera(root, camera_3d)
 	else:
+		# Is not a 2D or 3D scene
 		is_scene = false
-#		Is not a 2D or 3D scene
 		_set_empty_viewfinder_state(_no_open_scene_string, _no_open_scene_icon)
 		_add_node_button.visible = false
 
@@ -289,8 +272,6 @@ func _check_camera(root: Node, camera: Node) -> void:
 					get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_3ds():
 						# Pcam exists in tree
 						_set_viewfinder(root, true)
-#							if pcam_host.get_active_pcam().get_get_follow_mode():
-#								_on_dead_zone_changed()
 						_set_viewfinder_state()
 						%NoSupportMsg.visible = false
 					else:
@@ -394,46 +375,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 		if pcam_host_group.size() == 1:
 			_pcam_host_list.visible = false
 			_set_viewfinder_camera(pcam_host_group[0], editor)
-			#var pcam_host: PhantomCameraHost = pcam_host_group[0]
-			#if _is_2d:
-				#_selected_camera = pcam_host.camera_2d
-				#_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
-				#if editor:
-					#var camera_2d_rid: RID = _selected_camera.get_canvas()
-					#sub_viewport.disable_3d = true
-					#_camera_2d.zoom = pcam_host.camera_2d.zoom
-					#_camera_2d.offset = pcam_host.camera_2d.offset
-					#_camera_2d.ignore_rotation = pcam_host.camera_2d.ignore_rotation
-#
-					#sub_viewport.world_2d = pcam_host.camera_2d.get_world_2d()
-					#sub_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-					#sub_viewport.render_target_clear_mode = SubViewport.CLEAR_MODE_ALWAYS
-					#sub_viewport.size_2d_override_stretch = true
-			#else:
-				#_selected_camera = pcam_host.camera_3d
-				#_active_pcam = pcam_host.get_active_pcam() as PhantomCamera3D
-				#if editor:
-					#var camera_3d_rid: RID = _selected_camera.get_camera_rid()
-					#sub_viewport.disable_3d = false
-					#sub_viewport.world_3d = pcam_host.camera_3d.get_world_3d()
-					#RenderingServer.viewport_attach_camera(sub_viewport.get_viewport_rid(), camera_3d_rid)
-#
-				#if _selected_camera.keep_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
-					#aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_HEIGHT_CONTROLS_WIDTH)
-				#else:
-					#aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT)
-#
-			#_on_dead_zone_changed()
-			#set_process(true)
-
-			#if not pcam_host.update_editor_viewfinder.is_connected(_on_update_editor_viewfinder):
-				#pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder.bind(pcam_host))
-#
-			#if not aspect_ratio_container.resized.is_connected(_resized):
-				#aspect_ratio_container.resized.connect(_resized)
-#
-			#if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
-				#_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
 		else:
 			_pcam_host_list.visible = true
 			_set_viewfinder_camera(pcam_host_group[0], editor)
@@ -442,9 +383,6 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 				if i == 0:
 					is_default = true
 				_pcam_host_list.add_pcam_host(pcam_host_group[i], is_default)
-#
-			#for pcam_host_list_item in _pcam_host_list.get_children():
-				#pass
 
 
 func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> void:
@@ -508,11 +446,8 @@ func _on_dead_zone_changed() -> void:
 	if camera_viewport_panel.size.x == 0:
 		await camera_viewport_panel.resized
 
-	if is_instance_valid(_active_pcam.get_pcam_host_owner()):
-		pcam_host = _active_pcam.get_pcam_host_owner()
-		if not _active_pcam == pcam_host.get_active_pcam():
-			_active_pcam == pcam_host.get_active_pcam()
-			print("Active pcam in viewfinder: ", _active_pcam)
+	if not _active_pcam == pcam_host.get_active_pcam():
+		_active_pcam == pcam_host.get_active_pcam()
 
 	var dead_zone_width: float = _active_pcam.dead_zone_width * camera_viewport_panel.size.x
 	var dead_zone_height: float = _active_pcam.dead_zone_height * camera_viewport_panel.size.y
