@@ -331,42 +331,44 @@ func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> voi
 
 
 func _add_node(node_type: String) -> void:
-	var root: Node = EditorInterface.get_edited_scene_root()
+	var scene_root: Node = EditorInterface.get_edited_scene_root()
 
 	match node_type:
 		_no_open_scene_string:
 			pass
 		_constants.CAMERA_2D_NODE_NAME:
 			var camera: Camera2D = Camera2D.new()
-			_instantiate_node(root, camera, _constants.CAMERA_2D_NODE_NAME)
+			_instantiate_node(scene_root, camera, _constants.CAMERA_2D_NODE_NAME)
 		_constants.CAMERA_3D_NODE_NAME:
 			var camera: Camera3D = Camera3D.new()
-			_instantiate_node(root, camera, _constants.CAMERA_3D_NODE_NAME)
+			_instantiate_node(scene_root, camera, _constants.CAMERA_3D_NODE_NAME)
 		_constants.PCAM_HOST_NODE_NAME:
 			var pcam_host: PhantomCameraHost = PhantomCameraHost.new()
-			pcam_host.set_name(_constants.PCAM_HOST_NODE_NAME)
+			var camera_owner: Node
 			if _is_2d:
-#				get_tree().get_edited_scene_root().get_viewport().get_camera_2d().add_child(pcam_host)
-				_get_camera_2d().add_child(pcam_host)
-				pcam_host.set_owner(get_tree().get_edited_scene_root())
+				camera_owner = _get_camera_2d()
 			else:
-#				var pcam_3D := get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
-				get_tree().get_edited_scene_root().get_viewport().get_camera_3d().add_child(pcam_host)
-				pcam_host.set_owner(get_tree().get_edited_scene_root())
+				camera_owner = get_tree().get_edited_scene_root().get_viewport().get_camera_3d()
+			_instantiate_node(
+				scene_root,
+				pcam_host,
+				_constants.PCAM_HOST_NODE_NAME,
+				camera_owner
+			)
 		_constants.PCAM_2D_NODE_NAME:
 			var pcam_2D: PhantomCamera2D = PhantomCamera2D.new()
-			_instantiate_node(root, pcam_2D, _constants.PCAM_2D_NODE_NAME)
+			_instantiate_node(scene_root, pcam_2D, _constants.PCAM_2D_NODE_NAME)
 		_constants.PCAM_3D_NODE_NAME:
 			var pcam_3D: PhantomCamera3D = PhantomCamera3D.new()
-			_instantiate_node(root, pcam_3D, _constants.PCAM_3D_NODE_NAME)
+			_instantiate_node(scene_root, pcam_3D, _constants.PCAM_3D_NODE_NAME)
 
 	_visibility_check()
 
 
-func _instantiate_node(root: Node, node: Node, name: String) -> void:
+func _instantiate_node(scene_root: Node, node: Node, name: String, parent: Node = scene_root) -> void:
 	node.set_name(name)
-	root.add_child(node)
-	node.set_owner(get_tree().get_edited_scene_root())
+	parent.add_child(node)
+	node.owner = scene_root
 
 
 func _set_viewfinder(root: Node, editor: bool) -> void:
