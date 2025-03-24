@@ -24,7 +24,9 @@ const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/
 
 ## Updates the viewfinder [param dead zones] sizes.[br]
 ## [b]Note:[/b] This is only being used in the editor viewfinder UI.
-signal update_editor_viewfinder
+#signal update_editor_viewfinder
+signal viewfinder_update(check_framed_view: bool)
+signal viewfinder_disable_dead_zone
 
 ## Used internally to check if the [param PhantomCameraHost] is valid.
 ## The result will be visible in the viewfinder when multiple instances are present.
@@ -378,6 +380,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	if not is_inside_tree(): return
 	var no_previous_pcam: bool
 	if is_instance_valid(_active_pcam_2d) or is_instance_valid(_active_pcam_3d):
+		if OS.has_feature("debug"):
+			viewfinder_disable_dead_zone.emit()
+
 		if _is_2d:
 			_prev_active_pcam_2d_transform = camera_2d.global_transform
 			_active_pcam_2d.queue_redraw()
@@ -485,8 +490,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
 		_tween_duration = _active_pcam_3d.tween_duration
 
-		# Assigns a default shape to SpringArm3D node is none is supplied
 		if not Engine.is_editor_hint():
+			# Assigns a default shape to SpringArm3D node is none is supplied
 			if _active_pcam_3d.follow_mode == _active_pcam_3d.FollowMode.THIRD_PERSON:
 				if not _active_pcam_3d.shape:
 					var pyramid_shape_data = PhysicsServer3D.shape_get_data(
@@ -616,6 +621,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 					if _prev_cam_frustum_near != _attributes.frustum_near:
 						_cam_frustum_near_changed = true
+
+	if OS.has_feature("debug"):
+		viewfinder_update.emit(false)
 
 	if _is_2d:
 		if _active_pcam_2d.show_viewfinder_in_play:
@@ -827,7 +835,8 @@ func _camera_3d_resource_changed() -> void:
 		camera_3d.far = _active_pcam_3d.far
 	else:
 		if Engine.is_editor_hint():
-			EditorInterface.get_inspector().property_edited.disconnect(_camera_3d_edited)
+			if EditorInterface.get_inspector().property_edited.is_connected(_camera_3d_edited):
+				EditorInterface.get_inspector().property_edited.disconnect(_camera_3d_edited)
 
 func _camera_3d_edited(value: String) -> void:
 	if not EditorInterface.get_inspector().get_edited_object() == camera_3d: return
@@ -1140,6 +1149,8 @@ func _pcam_tween(delta: float) -> void:
 	if _tween_elapsed_time < _tween_duration: return
 	_trigger_pcam_tween = false
 	_tween_elapsed_time = 0
+	viewfinder_update.emit(true)
+
 	if _is_2d:
 		_active_pcam_2d.update_limit_all_sides()
 		_active_pcam_2d.tween_completed.emit()
@@ -1179,7 +1190,7 @@ func _show_viewfinder_in_play() -> void:
 	# Don't show the viewfinder in the actual editor or project builds
 	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
 
-	# We default the viewfinder node to hidden
+	# Default the viewfinder node to be hidden
 	if is_instance_valid(_viewfinder_node):
 		_viewfinder_node.visible = false
 
@@ -1330,15 +1341,14 @@ func _pcam_priority_override(pcam: Node, should_override: bool) -> void:
 	else:
 		_find_pcam_with_highest_priority()
 
-
-	update_editor_viewfinder.emit()
+	viewfinder_update.emit(false)
 
 
 ## Updates the viewfinder when a [param PhantomCamera] has its
 ## [param priority_ovrride] disabled.[br]
 ## [b]Note:[/b] This only affects the editor.
 func pcam_priority_override_disabled() -> void:
-	update_editor_viewfinder.emit()
+	viewfinder_update.emit(false)
 
 
 ## Returns the currently active [param PhantomCamera]

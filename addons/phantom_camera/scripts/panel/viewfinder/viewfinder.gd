@@ -26,7 +26,7 @@ const _overlay_color_alpha: float = 0.3
 
 @onready var aspect_ratio_container: AspectRatioContainer = %AspectRatioContainer
 @onready var camera_viewport_panel: Panel = aspect_ratio_container.get_child(0)
-@onready var _framed_viewfinder: Control = %FramedViewfinder
+@onready var _viewfinder: Control = %Viewfinder
 @onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
 @onready var sub_viewport: SubViewport = %SubViewport
 
@@ -311,8 +311,7 @@ func _update_button(text: String, icon: CompressedTexture2D, color: Color) -> vo
 
 func _set_viewfinder_state() -> void:
 	_empty_state_control.visible = false
-
-	_framed_viewfinder.visible = true
+	_viewfinder.visible = true
 
 	if is_instance_valid(_active_pcam):
 		if _active_pcam.get_follow_mode() == _active_pcam.FollowMode.FRAMED:
@@ -324,8 +323,8 @@ func _set_viewfinder_state() -> void:
 
 
 func _set_empty_viewfinder_state(text: String, icon: CompressedTexture2D) -> void:
-	_framed_viewfinder.visible = false
-	target_point.visible = false
+	_viewfinder.visible = false
+	_framed_view_visible(false)
 
 	_empty_state_control.visible = true
 	_empty_state_icon.texture = icon
@@ -399,11 +398,10 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 
 func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> void:
 	pcam_host = new_pcam_host
+
 	if _is_2d:
 		_selected_camera = pcam_host.camera_2d
 
-		if is_instance_valid(pcam_host.get_active_pcam()):
-			_active_pcam = pcam_host.get_active_pcam() as PhantomCamera2D
 		if editor:
 			sub_viewport.disable_3d = true
 			pcam_host = pcam_host
@@ -417,8 +415,6 @@ func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> v
 			sub_viewport.size_2d_override_stretch = true
 	else:
 		_selected_camera = pcam_host.camera_3d
-		if is_instance_valid(pcam_host.get_active_pcam()):
-			_active_pcam = pcam_host.get_active_pcam() as PhantomCamera3D
 		if editor:
 			var camera_3d_rid: RID = _selected_camera.get_camera_rid()
 			sub_viewport.disable_3d = false
@@ -430,24 +426,73 @@ func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> v
 		else:
 			aspect_ratio_container.set_stretch_mode(AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT)
 
-	## TODO - Calling recusively - Needs proper fix
-#	_check_camera(EditorInterface.get_edited_scene_root(), _selected_camera)
-	_on_dead_zone_changed()
 	set_process(true)
 
-	if not pcam_host.update_editor_viewfinder.is_connected(_on_update_editor_viewfinder):
-		pcam_host.update_editor_viewfinder.connect(_on_update_editor_viewfinder)
+	if not pcam_host.viewfinder_update.is_connected(_on_update_editor_viewfinder):
+		pcam_host.viewfinder_update.connect(_on_update_editor_viewfinder)
+
+	if not pcam_host.viewfinder_disable_dead_zone.is_connected(_disconnect_dead_zone):
+		pcam_host.viewfinder_disable_dead_zone.connect(_disconnect_dead_zone)
 
 	if not aspect_ratio_container.resized.is_connected(_resized):
 		aspect_ratio_container.resized.connect(_resized)
 
 	if is_instance_valid(pcam_host.get_active_pcam()):
-		if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
-			_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
+		_active_pcam = pcam_host.get_active_pcam()
+	else:
+		_framed_view_visible(false)
+		_active_pcam = null
+		return
+
+	if not _active_pcam.follow_mode == PhantomCamera2D.FollowMode.FRAMED: return
+
+	_framed_view_visible(true)
+	_on_dead_zone_changed()
+	_connect_dead_zone()
+
+
+func _connect_dead_zone() -> void:
+	if not _active_pcam and is_instance_valid(pcam_host.get_active_pcam()):
+		_active_pcam = pcam_host.get_active_pcam()
+
+	if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+		_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
+
+		_framed_view_visible(true)
+		_viewfinder.visible = true
+		_on_dead_zone_changed()
+
+func _disconnect_dead_zone() -> void:
+	if not is_instance_valid(_active_pcam): return
+	_framed_view_visible(_is_framed_pcam())
+
+	if _active_pcam.follow_mode_changed.is_connected(_check_follow_mode):
+		_active_pcam.follow_mode_changed.disconnect(_check_follow_mode)
+
+	if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+		_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
 
 
 func _resized() -> void:
 	_on_dead_zone_changed()
+
+
+func _is_framed_pcam() -> bool:
+	if not is_instance_valid(pcam_host): return false
+	_active_pcam = pcam_host.get_active_pcam()
+	if not is_instance_valid(_active_pcam): return false
+	if not _active_pcam.follow_mode == PhantomCamera2D.FollowMode.FRAMED: return false
+
+	return true
+
+
+func _framed_view_visible(should_show: bool) -> void:
+	if should_show:
+		target_point.visible = true
+		_dead_zone_h_box_container.visible = true
+	else:
+		target_point.visible = false
+		_dead_zone_h_box_container.visible = false
 
 
 func _on_dead_zone_changed() -> void:
@@ -474,17 +519,28 @@ func _on_dead_zone_changed() -> void:
 	max_vertical = 0.5 + _active_pcam.dead_zone_height / 2
 
 
-####################
-## Priority Override
-####################
-func _on_update_editor_viewfinder() -> void:
-	if pcam_host.get_active_pcam().priority_override:
-		_active_pcam = pcam_host.get_active_pcam()
+func _check_follow_mode() -> void:
+	_framed_view_visible(_is_framed_pcam())
+
+
+func _on_update_editor_viewfinder(check_framed_view: bool = false) -> void:
+	_active_pcam = pcam_host.get_active_pcam()
+
+	if not is_instance_valid(_active_pcam): return
+
+	if not _active_pcam.follow_mode_changed.is_connected(_check_follow_mode):
+		_active_pcam.follow_mode_changed.connect(_check_follow_mode)
+
+	if _active_pcam.priority_override:
 		_priority_override_button.visible = true
 		_priority_override_name_label.set_text(_active_pcam.name)
 		_priority_override_button.set_tooltip_text(_active_pcam.name)
 	else:
 		_priority_override_button.visible = false
+
+	_framed_view_visible(false)
+	if not check_framed_view: return
+	if _is_framed_pcam(): _connect_dead_zone()
 
 
 func _select_override_pcam() -> void:
@@ -532,9 +588,10 @@ func update_dead_zone() -> void:
 	_set_viewfinder(_root_node, true)
 
 
+## TODO - Signal can be added directly to this file with the changes in Godot 4.5 (https://github.com/godotengine/godot/pull/102986)
 func scene_changed(scene_root: Node) -> void:
 	_assign_manager()
-
+	_priority_override_button.visible = false
 	_pcam_host_list.clear_pcam_host_list()
 
 	if not scene_root is Node2D and not scene_root is Node3D:

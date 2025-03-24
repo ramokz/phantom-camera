@@ -25,6 +25,10 @@ signal became_active
 ## Emitted when the [param PhantomCamera3D] becomes inactive.
 signal became_inactive
 
+## Emitted when the follow_mode changes.
+## Note: This is for internal use only
+signal follow_mode_changed
+
 ## Emitted when [member follow_target] changes.
 signal follow_target_changed
 
@@ -188,6 +192,7 @@ enum FollowLockAxis {
 		else:
 			top_level = true
 
+		follow_mode_changed.emit()
 		notify_property_list_changed()
 
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
@@ -690,6 +695,8 @@ func _validate_property(property: Dictionary) -> void:
 func _enter_tree() -> void:
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
 	_phantom_camera_manager.pcam_added(self)
+
+	priority_override = false
 
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)

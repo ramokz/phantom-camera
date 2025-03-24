@@ -157,7 +157,7 @@ func _make_visible(visible):
 	if editor_panel_instance:
 		editor_panel_instance.set_visible(visible)
 
-## TODO - Signal can be added directly to the editor_panel once Godot 4.5 is out (https://github.com/godotengine/godot/pull/102986)
+## TODO - Signal can be added directly to the editor_panel with the changes in Godot 4.5 (https://github.com/godotengine/godot/pull/102986)
 func _scene_changed(scene_root: Node) -> void:
 	editor_panel_instance.viewfinder.scene_changed(scene_root)
 
