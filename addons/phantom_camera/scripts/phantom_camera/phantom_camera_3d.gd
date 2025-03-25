@@ -1378,9 +1378,12 @@ func get_tween_on_load() -> bool:
 ## Sets the [member host_layers] value.
 func set_host_layers(value: int) -> void:
 	host_layers = value
-
 	if is_instance_valid(_phantom_camera_manager):
 		_phantom_camera_manager.pcam_host_layer_changed.emit(self)
+
+## Enables or disables a given layer of [member host_layers].
+func set_host_layers_value(layer: int, value: bool) -> void:
+	host_layers = _set_layer(host_layers, layer, value)
 
 ## Gets the current [member host_layers].
 func get_host_layers() -> int:
