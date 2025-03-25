@@ -237,10 +237,12 @@ func _get_configuration_warnings() -> PackedStringArray:
 		if not child is PhantomCameraHost: continue
 		if not is_instance_valid(first_pcam_host_child):
 			first_pcam_host_child = child
+			continue
 		elif not first_pcam_host_child == self:
 			show_warning = true
 			has_error.emit()
 			return["Only the first PhantomCameraHost child will be used."]
+		child.update_configuration_warnings()
 
 	show_warning = false
 	has_error.emit()
