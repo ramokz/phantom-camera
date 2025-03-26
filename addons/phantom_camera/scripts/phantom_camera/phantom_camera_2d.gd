@@ -107,7 +107,6 @@ enum FollowLockAxis {
 		if Engine.is_editor_hint():
 			if value:
 				if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
-				print("asdasd")
 				Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_override.emit(self, true)
 			else:
 				if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
@@ -565,6 +564,8 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
+	_tween_skip = !tween_on_load
+
 	_phantom_camera_manager.pcam_added(self)
 
 	priority_override = false
@@ -580,7 +581,6 @@ func _enter_tree() -> void:
 
 	update_limit_all_sides()
 
-	_tween_skip = false if tween_on_load else true
 
 
 func _exit_tree() -> void:

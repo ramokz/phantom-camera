@@ -316,10 +316,9 @@ func _ready() -> void:
 				_phantom_camera_manager.limit_2d_changed.connect(_update_limit_2d)
 			if not _phantom_camera_manager.draw_limit_2d.is_connected(_draw_limit_2d):
 				_phantom_camera_manager.draw_limit_2d.connect(_draw_limit_2d)
-
 	else:
 		printerr("Could not find Phantom Camera Manager singleton")
-		printerr("Make sure the addon is enable or that it hasn't been disabled inside Project Settings / Globals")
+		printerr("Make sure the addon is enable or that the singleton hasn't been disabled inside Project Settings / Globals")
 
 	_find_pcam_with_highest_priority()
 
@@ -351,13 +350,9 @@ func _pcam_host_layer_changed(pcam: Node) -> void:
 		_find_pcam_with_highest_priority()
 
 
-func _check_pcam_priority(pcam: Node) -> void:
-	if not _pcam_is_in_host_layer(pcam): return
-	if not pcam.visible: return # Prevents hidden PCams from becoming active
-	if pcam.get_priority() > _active_pcam_priority:
-		_assign_new_active_pcam(pcam)
-		pcam.set_tween_skip(self, false)
-		_active_pcam_missing = false
+func _pcam_is_in_host_layer(pcam: Node) -> bool:
+	if pcam.host_layers & host_layers != 0: return true
+	return false
 
 
 func _find_pcam_with_highest_priority() -> void:
@@ -371,9 +366,14 @@ func _find_pcam_with_highest_priority() -> void:
 		_check_pcam_priority(pcam)
 
 
-func _pcam_is_in_host_layer(pcam: Node) -> bool:
-	if pcam.host_layers & host_layers != 0: return true
-	return false
+func _check_pcam_priority(pcam: Node) -> void:
+	if not _pcam_is_in_host_layer(pcam): return
+	if not pcam.visible: return # Prevents hidden PCams from becoming active
+	if pcam.get_priority() >= _active_pcam_priority:
+		_assign_new_active_pcam(pcam)
+		_active_pcam_missing = false
+	else:
+		pcam.set_tween_skip(self, false)
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
@@ -651,15 +651,13 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		else:
 			_prev_active_pcam_3d_transform = _active_pcam_3d.get_transform_output()
 
-	if pcam.get_tween_skip():
+	if pcam.get_tween_skip() or pcam.tween_duration == 0:
 		_tween_elapsed_time = pcam.tween_duration
-	else:
-		_tween_elapsed_time = 0
-
-	if pcam.tween_duration == 0:
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 3:
 			_tween_is_instant = true
+	else:
+		_tween_elapsed_time = 0
 
 	_check_pcam_physics()
 
@@ -850,6 +848,7 @@ func _camera_3d_resource_property_changed(property: StringName, value: Variant) 
 
 
 func _pcam_tween(delta: float) -> void:
+	# TODO - Should be optimised
 	# Run at the first tween frame
 	if _tween_elapsed_time == 0:
 		if _is_2d:
@@ -857,13 +856,6 @@ func _pcam_tween(delta: float) -> void:
 			_active_pcam_2d.reset_limit()
 		else:
 			_active_pcam_3d.tween_started.emit()
-
-	# Forcefully disables physics interpolation when tweens are instant
-	if _tween_is_instant:
-		if _is_2d:
-			camera_2d.set("physics_interpolation_mode", 2)
-		else:
-			camera_3d.set("physics_interpolation_mode", 2)
 
 	_tween_elapsed_time = min(_tween_duration, _tween_elapsed_time + delta)
 
@@ -1127,7 +1119,6 @@ func _pcam_tween(delta: float) -> void:
 					_active_pcam_3d.tween_ease
 				)
 
-
 		if _cam_near_changed:
 			camera_3d.near = \
 				_tween_interpolate_value(
@@ -1148,7 +1139,21 @@ func _pcam_tween(delta: float) -> void:
 					_active_pcam_3d.tween_ease
 				)
 
+	# Forcefully disables physics interpolation when tweens are instant
+	if _tween_is_instant:
+			if _is_2d:
+				if Engine.get_version_info().major == 4 and \
+				Engine.get_version_info().minor >= 3:
+					camera_2d.set("physics_interpolation_mode", 2)
+					camera_2d.call("reset_physics_interpolation")
+			else:
+				if Engine.get_version_info().major == 4 and \
+				Engine.get_version_info().minor >= 4:
+					camera_3d.set("physics_interpolation_mode", 2)
+					camera_3d.call("reset_physics_interpolation")
+
 	if _tween_elapsed_time < _tween_duration: return
+
 	_trigger_pcam_tween = false
 	_tween_elapsed_time = 0
 	viewfinder_update.emit(true)
@@ -1156,6 +1161,7 @@ func _pcam_tween(delta: float) -> void:
 	if _is_2d:
 		_active_pcam_2d.update_limit_all_sides()
 		_active_pcam_2d.tween_completed.emit()
+		_active_pcam_2d.set_tween_skip(self, false)
 		if Engine.is_editor_hint():
 			_active_pcam_2d.queue_redraw()
 	else:
@@ -1174,6 +1180,7 @@ func _pcam_tween(delta: float) -> void:
 		_cam_far_changed = false
 		_cam_attribute_changed = false
 
+		_active_pcam_3d.set_tween_skip(self, false)
 		_active_pcam_3d.tween_completed.emit()
 
 
@@ -1256,7 +1263,6 @@ func _pcam_visibility_changed(pcam: Node) -> void:
 
 
 func _pcam_teleported() -> void:
-#	return
 	if _is_2d:
 		if not is_instance_valid(camera_2d): return
 		camera_2d.global_position = _active_pcam_2d.global_position

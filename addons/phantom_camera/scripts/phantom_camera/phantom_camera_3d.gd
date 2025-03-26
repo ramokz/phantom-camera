@@ -694,6 +694,8 @@ func _validate_property(property: Dictionary) -> void:
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
+	_tween_skip = !tween_on_load
+
 	_phantom_camera_manager.pcam_added(self)
 
 	priority_override = false
@@ -706,8 +708,6 @@ func _enter_tree() -> void:
 		_follow_targets_size_check()
 	elif follow_mode == FollowMode.NONE:
 		_is_parents_physics()
-
-	_tween_skip = false if tween_on_load else true
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
