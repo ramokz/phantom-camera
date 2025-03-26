@@ -10,7 +10,6 @@
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
 [node name="PlayerCharacterBody3D2" type="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.083587, 0.507, 2.05493)
 script = ExtResource("1_6hh6c")
 metadata/_edit_group_ = true
 
