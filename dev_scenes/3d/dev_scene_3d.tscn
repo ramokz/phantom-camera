@@ -99,6 +99,7 @@ transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
 script = ExtResource("3_4sdb7")
 priority = 10
 tween_resource = SubResource("Resource_sj6ok")
+tween_on_load = false
 camera_3d_resource = SubResource("Resource_a3u85")
 
 [node name="Floor" parent="." instance=ExtResource("1_7n673")]

@@ -32,7 +32,7 @@ uv1_world_triplanar = true
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.793353, 0.608762, 0, -0.608762, 0.793353, 1.52213e-33, 2.93468, 3.17294)
+transform = Transform3D(1, 0, 0, 0, 0.793353, 0.608762, 0, -0.608762, 0.793353, 0, 2.93468, 3.17294)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
