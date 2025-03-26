@@ -9,8 +9,14 @@ extends Resource
 ## [PhantomCamera3D] becoming active.
 
 enum KeepAspect {
-	KEEP_WIDTH = 0,
-	KEEP_HEIGHT = 1,
+	KEEP_WIDTH = 0, ## Preserves the horizontal aspect ratio; also known as Vert- scaling. This is usually the best option for projects running in portrait mode, as taller aspect ratios will benefit from a wider vertical FOV.
+	KEEP_HEIGHT = 1, ## Preserves the vertical aspect ratio; also known as Hor+ scaling. This is usually the best option for projects running in landscape mode, as wider aspect ratios will automatically benefit from a wider horizontal FOV.
+}
+
+enum ProjectionType {
+	PERSPECTIVE = 	0, ## Perspective projection. Objects on the screen becomes smaller when they are far away.
+	ORTHOGONAL = 	1, ## Orthogonal projection, also known as orthographic projection. Objects remain the same size on the screen no matter how far away they are.
+	FRUSTUM = 		2, ## Frustum projection. This mode allows adjusting frustum_offset to create "tilted frustum" effects.
 }
 
 ## Overrides [member Camera3D.keep_aspect].
@@ -42,14 +48,6 @@ enum KeepAspect {
 	set(value):
 		v_offset = value
 		emit_changed()
-
-
-
-enum ProjectionType {
-	PERSPECTIVE = 	0, ## Perspective projection. Objects on the screen becomes smaller when they are far away.
-	ORTHOGONAL = 	1, ## Orthogonal projection, also known as orthographic projection. Objects remain the same size on the screen no matter how far away they are.
-	FRUSTUM = 		2, ## Frustum projection. This mode allows adjusting frustum_offset to create "tilted frustum" effects.
-}
 
 ## Overrides [member Camera3D.projection].
 @export var projection: ProjectionType = ProjectionType.PERSPECTIVE:
