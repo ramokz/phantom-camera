@@ -504,7 +504,8 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"follow_offset", \
 			"follow_damping", \
-			"follow_damping_value":
+			"follow_damping_value", \
+			"follow_axis_lock":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
