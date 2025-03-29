@@ -475,6 +475,18 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
 
+@export_subgroup("Up Direction")
+
+## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set.
+@export var up: Vector3 = Vector3.UP:
+	set = set_up,
+	get = get_up
+
+## Applies the upward direction (
+@export var up_target: Node3D = null:
+	set = set_up_target,
+	get = get_up_target
+
 
 @export_group("Noise")
 ## Applies a noise, or shake, to a [Camera3D].[br]
@@ -513,7 +525,7 @@ var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
-var _follow_targets: Array[Node3D]
+var _follow_targets: Array[Node3D] = []
 
 var _should_look_at: bool = false
 var _look_at_target_physics_based: bool = false
@@ -521,24 +533,29 @@ var _look_at_target_physics_based: bool = false
 var _has_multiple_look_at_targets: bool = false
 var _look_at_targets_single_target_index: int = 0
 
+var _current_rotation: Vector3 = Vector3.ZERO
+
+var _up: Vector3 = Vector3.UP
+var _has_up_target: bool = false
+
+var _target_transform: Transform3D = Transform3D()
+
+var _transform_output: Transform3D = Transform3D()
+var _transform_noise: Transform3D = Transform3D()
+
 var _tween_skip: bool = false
 
 var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the velocity of the movement
 
 var _follow_framed_initial_set: bool = false
-var _follow_framed_offset: Vector3
+var _follow_framed_offset: Vector3 = Vector3.ZERO
 
 var _follow_spring_arm: SpringArm3D
 var _has_follow_spring_arm: bool = false
 
-var _current_rotation: Vector3
 
 var _has_noise_resource: bool = false
 
-var _target_transform: Transform3D
-
-var _transform_output: Transform3D
-var _transform_noise: Transform3D
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
 var _phantom_camera_manager: Node
@@ -702,6 +719,9 @@ func _validate_property(property: Dictionary) -> void:
 
 	if property.name == "look_at_damping_value" and \
 	not look_at_damping:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "up" and _has_up_target:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
@@ -1033,7 +1053,12 @@ func _interpolate_position(target_position: Vector3, delta: float, camera_target
 
 func _interpolate_rotation(target_trans: Vector3, delta: float) -> void:
 	var direction: Vector3 = (target_trans - global_position + look_at_offset).normalized()
-	var target_basis: Basis = Basis().looking_at(direction)
+
+	# Grabs the Up vector of the up_target if present
+	if _has_up_target:
+		_up = up_target.get_global_transform().basis.y
+
+	var target_basis: Basis = Basis().looking_at(direction, _up)
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
 	if look_at_damping:
 		var current_quat: Quaternion = quaternion.normalized()
@@ -1191,6 +1216,8 @@ func _look_at_target_tree_exiting(target: Node) -> void:
 	if look_at_targets.has(target):
 		erase_look_at_targets(target)
 
+func _up_target_tree_exiting() -> void:
+	up_target = null
 
 func _look_at_targets_size_check() -> void:
 	var targets_size: int = 0
@@ -1835,6 +1862,38 @@ func set_follow_axis_lock(value: FollowLockAxis) -> void:
 ## Gets the current [member follow_axis_lock] property. Value is based on [enum FollowLockAxis] enum.
 func get_follow_axis_lock() -> FollowLockAxis:
 	return follow_axis_lock
+
+
+## Sets the [member up] value.
+func set_up(value: Vector3) -> void:
+	if value == Vector3.ZERO:
+		value = Vector3.UP
+		push_warning("Up value cannot be (0, 0, 0), resetting to (0, 1, 0).")
+
+	up = value
+	if not _has_up_target:
+		_up = value
+
+## Gets the [member up] value.
+func get_up() -> Vector3:
+	return up
+
+
+## Sets the [member up_target].
+func set_up_target(value: Node3D) -> void:
+	up_target = value
+	if is_instance_valid(value):
+		_has_up_target = true
+		if not value.tree_exiting.is_connected(_up_target_tree_exiting):
+			value.tree_exiting.connect(_up_target_tree_exiting)
+	else:
+		_has_up_target = false
+		_up = up
+	notify_property_list_changed()
+
+## Gets the [member up_target].
+func get_up_target() -> Node3D:
+	return up_target
 
 
 ## Sets a [PhantomCameraNoise3D] resource.
