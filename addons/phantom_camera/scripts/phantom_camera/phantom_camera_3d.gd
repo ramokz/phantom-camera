@@ -141,6 +141,7 @@ enum FollowLockAxis {
 	get:
 		return priority_override
 
+
 ## It defines which [param PhantomCamera3D] a scene's [param Camera3D] should
 ## be corresponding with and be attached to. This is decided by the
 ## [param PhantomCamera3D] with the highest [param priority].
@@ -154,6 +155,7 @@ enum FollowLockAxis {
 @export var priority: int = 0:
 	set = set_priority,
 	get = get_priority
+
 
 ## Determines the positional logic for a given [param PhantomCamera3D].
 ## The different modes have different functionalities and purposes, so
@@ -221,6 +223,7 @@ enum FollowLockAxis {
 	set = set_follow_path,
 	get = get_follow_path
 
+
 ## Determines the rotational logic for a given [param PhantomCamera3D].
 ## The different modes has different functionalities and purposes,
 ## so choosing the correct mode depends on what each
@@ -260,6 +263,7 @@ enum FollowLockAxis {
 	set = set_look_at_targets,
 	get = get_look_at_targets
 
+
 ## Defines how [param ]PhantomCamera3Ds] transition between one another.
 ## Changing the tween values for a given [param PhantomCamera3D]
 ## determines how transitioning to that instance will look like.
@@ -281,6 +285,7 @@ enum FollowLockAxis {
 	set = set_tween_on_load,
 	get = get_tween_on_load
 
+
 ## Determines how often an inactive [param PhantomCamera3D] should update
 ## its positional and rotational values. This is meant to reduce the amount
 ## of calculations inactive [param PhantomCamera3Ds] are doing when idling
@@ -289,11 +294,13 @@ enum FollowLockAxis {
 	set = set_inactive_update_mode,
 	get = get_inactive_update_mode
 
+
 ## Determines which layers this [PhantomCamera2D] should be able to find [PhantomCamera2D] / [PhantomCamera3D].
 ## A corresponding layer needs to be set on the PhantomCamera node.
 @export_flags_3d_render var host_layers: int = 1:
 	set = set_host_layers,
 	get = get_host_layers
+
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
@@ -301,15 +308,18 @@ enum FollowLockAxis {
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
+
 ## Overrides the [member Camera3D.attribuets] resource property.
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes
 
+
 ## Overrides the [member Camera3D.environment] resource property.
 @export var environment: Environment = null:
 	set = set_environment,
 	get = get_environment
+
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
@@ -387,6 +397,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_auto_follow_distance_divisor,
 	get = get_auto_follow_distance_divisor
 
+
 @export_subgroup("Dead Zones")
 ## Defines the horizontal dead zone area. While the target is within it, the
 ## [param PhantomCamera3D] will not move in the horizontal axis.
@@ -440,6 +451,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export var margin: float = 0.01:
 	set = set_margin,
 	get = get_margin
+
 
 @export_group("Look At Parameters")
 ## Offsets the target's [param Vector3] position that the
@@ -803,24 +815,24 @@ func process_logic(delta: float) -> void:
 	if _follow_axis_is_locked:
 		match follow_axis_lock:
 			FollowLockAxis.X:
-				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
+				_transform_output.origin.x = _follow_axis_lock_value.x
 			FollowLockAxis.Y:
-				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
+				_transform_output.origin.y = _follow_axis_lock_value.y
 			FollowLockAxis.Z:
-				_transform_output.origin.z = _follow_axis_lock_value.z + follow_offset.z
+				_transform_output.origin.z = _follow_axis_lock_value.z
 			FollowLockAxis.XY:
-				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
-				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
+				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.y = _follow_axis_lock_value.y
 			FollowLockAxis.XZ:
-				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
-				_transform_output.origin.z = _follow_axis_lock_value.z + follow_offset.z
+				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.z = _follow_axis_lock_value.z
 			FollowLockAxis.YZ:
-				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
-				_transform_output.origin.z = _follow_axis_lock_value.z + follow_offset.z
+				_transform_output.origin.y = _follow_axis_lock_value.y
+				_transform_output.origin.z = _follow_axis_lock_value.z
 			FollowLockAxis.XYZ:
-				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
-				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
-				_transform_output.origin.z = _follow_axis_lock_value.z + follow_offset.z
+				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.y = _follow_axis_lock_value.y
+				_transform_output.origin.z = _follow_axis_lock_value.z
 
 
 func _follow(delta: float) -> void:
@@ -1488,7 +1500,31 @@ func get_follow_targets() -> Array[Node3D]:
 
 ## Assigns a new [param Vector3] for the [param follow_offset] property.
 func set_follow_offset(value: Vector3) -> void:
+	var temp_offset: Vector3 = follow_offset
 	follow_offset = value
+
+	if follow_axis_lock != FollowLockAxis.NONE:
+		temp_offset = temp_offset - value
+		match value:
+			FollowLockAxis.X:
+				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
+			FollowLockAxis.Y:
+				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
+			FollowLockAxis.Z:
+				_follow_axis_lock_value.z = _transform_output.origin.z + temp_offset.z
+			FollowLockAxis.XY:
+				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
+				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
+			FollowLockAxis.XZ:
+				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
+				_follow_axis_lock_value.z = _transform_output.origin.z + temp_offset.z
+			FollowLockAxis.YZ:
+				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
+				_follow_axis_lock_value.z = _transform_output.origin.z + temp_offset.z
+			FollowLockAxis.XYZ:
+				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
+				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
+				_follow_axis_lock_value.z = _transform_output.origin.z + temp_offset.z
 
 ## Gets the current [param Vector3] for the [param follow_offset] property.
 func get_follow_offset() -> Vector3:
