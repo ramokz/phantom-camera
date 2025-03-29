@@ -114,6 +114,7 @@ enum FollowLockAxis {
 	get:
 		return priority_override
 
+
 ## It defines which [param PhantomCamera2D] a scene's [param Camera2D] should
 ## be corresponding with and be attached to. This is decided by the PCam with
 ## the highest [param Priority].
@@ -126,6 +127,7 @@ enum FollowLockAxis {
 @export var priority: int = 0:
 	set = set_priority,
 	get = get_priority
+
 
 ## Determines the positional logic for a given [param PhantomCamera2D].
 ## The different modes have different functionalities and purposes, so
@@ -185,11 +187,13 @@ enum FollowLockAxis {
 	set = set_follow_path,
 	get = get_follow_path
 
+
 ## Applies a zoom level to the [param PhantomCamera2D], which effectively
 ## overrides the [param zoom] property of the [param Camera2D] node.
 @export var zoom: Vector2 = Vector2.ONE:
 	set = set_zoom,
 	get = get_zoom
+
 
 ## If enabled, will snap the [param Camera2D] to whole pixels as it moves.
 ## [br][br]
@@ -199,6 +203,7 @@ enum FollowLockAxis {
 @export var snap_to_pixel: bool = false:
 	set = set_snap_to_pixel,
 	get = get_snap_to_pixel
+
 
 ## Enables a preview of what the [PhantomCamera2D] will see in the
 ## scene. It works identically to how a [param Camera2D] shows which area
@@ -211,6 +216,7 @@ enum FollowLockAxis {
 		queue_redraw()
 	get:
 		return frame_preview
+
 
 ## Defines how the [param PhantomCamera2D] transition between one another.
 ## Changing the tween values for a given [param PhantomCamera2D]
@@ -233,17 +239,20 @@ enum FollowLockAxis {
 	set = set_tween_on_load,
 	get = get_tween_on_load
 
+
 ## Determines how often an inactive [param PhantomCamera2D] should update
 ## its positional and rotational values. This is meant to reduce the amount
 ## of calculations inactive [param PhantomCamera2Ds] are doing when idling
 ## to improve performance.
 @export var inactive_update_mode: InactiveUpdateMode = InactiveUpdateMode.ALWAYS
 
+
 ## Determines which layers this [PhantomCamera2D] should be able to find [PhantomCamera2D] / [PhantomCamera3D].
 ## A corresponding layer needs to be set on the PhantomCamera node.
 @export_flags_2d_render var host_layers: int = 1:
 	set = set_host_layers,
 	get = get_host_layers
+
 
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
@@ -310,6 +319,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 	set = set_auto_zoom_margin,
 	get = get_auto_zoom_margin
 
+
 @export_subgroup("Dead Zones")
 ## Defines the horizontal dead zone area. While the target is within it, the
 ## [param PhantomCamera2D] will not move in the horizontal axis.
@@ -339,6 +349,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 ## [br]
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool = false
+
 
 @export_group("Limit")
 
@@ -628,7 +639,7 @@ func process_logic(delta: float) -> void:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
 	_limit_checker()
-#	if not Engine.is_editor_hint(): print(_should_follow)
+
 	if _should_follow:
 		_follow(delta)
 	else:
@@ -637,12 +648,12 @@ func process_logic(delta: float) -> void:
 	if _follow_axis_is_locked:
 		match follow_axis_lock:
 			FollowLockAxis.X:
-				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
+				_transform_output.origin.x = _follow_axis_lock_value.x
 			FollowLockAxis.Y:
-				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
+				_transform_output.origin.y = _follow_axis_lock_value.y
 			FollowLockAxis.XY:
-				_transform_output.origin.x = _follow_axis_lock_value.x + follow_offset.x
-				_transform_output.origin.y = _follow_axis_lock_value.y + follow_offset.y
+				_transform_output.origin.x = _follow_axis_lock_value.x
+				_transform_output.origin.y = _follow_axis_lock_value.y
 
 
 func _limit_checker() -> void:
@@ -1277,7 +1288,21 @@ func get_follow_targets() -> Array[Node2D]:
 
 ## Assigns a new Vector2 for the Follow Target Offset property.
 func set_follow_offset(value: Vector2) -> void:
+	var temp_offset: Vector2 = follow_offset
+
 	follow_offset = value
+
+	if follow_axis_lock != FollowLockAxis.NONE:
+		temp_offset = temp_offset - value
+		match value:
+			FollowLockAxis.X:
+				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
+			FollowLockAxis.Y:
+				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
+			FollowLockAxis.XY:
+				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
+				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
+
 
 ## Gets the current Vector2 for the Follow Target Offset property.
 func get_follow_offset() -> Vector2:
