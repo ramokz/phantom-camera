@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_8md3q"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_dqss1"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="4_2i811"]
-[ext_resource type="Script" uid="uid://bc2tn187qiatp" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_m3qpq"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_m3qpq"]
 [ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="5_u5qhp"]
 
 [sub_resource type="Resource" id="Resource_pwcgo"]
@@ -16,6 +16,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_ft2w3"]
 script = ExtResource("4_m3qpq")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -55,7 +56,7 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 metadata/_edit_lock_ = true
 
 [node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target")]
-transform = Transform3D(0.998682, 0.0324725, -0.0397495, 0, 0.774433, 0.632656, 0.0513272, -0.631822, 0.773413, -0.137901, 4.03222, 6.36446)
+transform = Transform3D(0.999694, 0.0136487, -0.0206552, -0.000166996, 0.838005, 0.545663, 0.0247567, -0.545492, 0.837751, -0.137901, 4.03222, 6.36446)
 script = ExtResource("2_8md3q")
 priority = 10
 look_at_mode = 2
