@@ -750,9 +750,15 @@ func _physics_process(delta: float) -> void:
 
 func _tween_follow_checker(delta: float) -> void:
 	if _is_2d:
+		if not is_instance_valid(_active_pcam_2d):
+			return
+
 		_active_pcam_2d.process_logic(delta)
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
 	else:
+		if not is_instance_valid(_active_pcam_3d):
+			return
+
 		_active_pcam_3d.process_logic(delta)
 		_active_pcam_3d_glob_transform = _active_pcam_3d.get_transform_output()
 
