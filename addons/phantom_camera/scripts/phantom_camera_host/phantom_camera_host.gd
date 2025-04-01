@@ -751,12 +751,14 @@ func _physics_process(delta: float) -> void:
 func _tween_follow_checker(delta: float) -> void:
 	if _is_2d:
 		if not is_instance_valid(_active_pcam_2d):
+			_active_pcam_missing = true
 			return
 
 		_active_pcam_2d.process_logic(delta)
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
 	else:
 		if not is_instance_valid(_active_pcam_3d):
+			_active_pcam_missing = true
 			return
 
 		_active_pcam_3d.process_logic(delta)
@@ -780,12 +782,6 @@ func _tween_follow_checker(delta: float) -> void:
 
 
 func _pcam_follow(_delta: float) -> void:
-	# TODO - Should be optimised
-	if _is_2d:
-		if not is_instance_valid(_active_pcam_2d): return
-	else:
-		if not is_instance_valid(_active_pcam_3d): return
-
 	if _active_pcam_missing or not _is_child_of_camera: return
 
 	if _is_2d:
