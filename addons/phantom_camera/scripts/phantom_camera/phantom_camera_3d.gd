@@ -477,12 +477,14 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 @export_subgroup("Up Direction")
 
-## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set.
+## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set. [br]
+## This value will be overriden if [member up_target] is defined.
 @export var up: Vector3 = Vector3.UP:
 	set = set_up,
 	get = get_up
 
-## Applies the upward direction (
+## Applies the up direction of the assigned node to the [param PhantomCamera3D] when [member look_at_mode] is set.[br]
+## Setting a value here will override the [member up] value.
 @export var up_target: Node3D = null:
 	set = set_up_target,
 	get = get_up_target
