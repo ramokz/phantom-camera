@@ -6,10 +6,11 @@
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="3_1eb12"]
 [ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="3_a5igg"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_wr1tj"]
-[ext_resource type="Script" uid="uid://bc2tn187qiatp" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_70gws"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_70gws"]
 
 [sub_resource type="Resource" id="Resource_1iman"]
 script = ExtResource("5_70gws")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -54,7 +55,7 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_targets")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -7.26116, 5.72974, 12.279)
+transform = Transform3D(0.999954, 0, 0, 0, 0.906188, 0.422588, 0, -0.422562, 0.906243, -7.30295, 5.45858, 11.2744)
 top_level = true
 script = ExtResource("2_pi7mp")
 priority = 5
