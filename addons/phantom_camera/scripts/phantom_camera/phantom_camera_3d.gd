@@ -483,7 +483,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_up,
 	get = get_up
 
-## Applies the up direction of the assigned node to the [param PhantomCamera3D] when [member look_at_mode] is set.[br]
+## Applies and continuously updates the [param up] direction of the [param PhantomCamera3D] based on this target when [member look_at_mode] is set.[br]
 ## Setting a value here will override the [member up] value.
 @export var up_target: Node3D = null:
 	set = set_up_target,
