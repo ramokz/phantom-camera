@@ -1054,15 +1054,19 @@ func _interpolate_position(target_position: Vector3, delta: float, camera_target
 		_transform_output.origin = global_position
 
 
-func _interpolate_rotation(target_trans: Vector3, delta: float) -> void:
-	var direction: Vector3 = (target_trans - global_position + look_at_offset).normalized()
+func _interpolate_rotation(target_position: Vector3, delta: float) -> void:
+	var direction: Vector3 = -(target_position - global_position + look_at_offset).normalized()
 
-	# Grabs the Up vector of the up_target if present
 	if _has_up_target:
 		_up = up_target.get_global_transform().basis.y
 
-	var target_basis: Basis = Basis().looking_at(direction, _up)
+	var basis_z: Vector3 = direction.normalized()
+	var basis_x: Vector3 = _up.cross(basis_z)
+	var basis_y: Vector3 = basis_z.cross(basis_x.normalized())
+
+	var target_basis: Basis = Basis(basis_x, basis_y, basis_z)
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
+
 	if look_at_damping:
 		var current_quat: Quaternion = quaternion.normalized()
 		var damping_time: float = max(0.0001, look_at_damping_value)
