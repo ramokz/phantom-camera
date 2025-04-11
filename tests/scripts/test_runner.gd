@@ -12,4 +12,4 @@ func _ready() -> void:
 			add_child(test)
 			test.Test()
 			remove_child(test)
-	get_tree().quit()
+	#get_tree().quit()

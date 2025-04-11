@@ -23,7 +23,6 @@
     <Content Include="addons\phantom_camera\scripts\resources\PhantomCameraNoise3D.cs.uid" />
     <Content Include="addons\phantom_camera\scripts\resources\PhantomCameraTween.cs.uid" />
     <Content Include="dev_scenes\3d\scripts\DevSceneCSharp3D.cs.uid" />
-    <Content Include="dev_scenes\3d\scripts\dev_scene_3d_script.gd.uid" />
     <Content Include="tests\scripts\TestPhantomCameraWrapper.cs.uid" />
     <Content Include="tests\scripts\test_phantom_camera.gd.uid" />
     <Content Include="tests\scripts\test_runner.gd.uid" />

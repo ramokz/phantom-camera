@@ -17,7 +17,7 @@ ease = 2
 [node name="TestScene2D" type="Node2D"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-physics_interpolation_mode = 2
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 process_priority = 300

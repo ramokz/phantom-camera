@@ -25,9 +25,9 @@ public enum EaseType
     OutIn
 }
 
-public class PhantomCameraTween
+public class PhantomCameraTween(Resource tweenResource)
 {
-    public Resource Resource { get; }
+    public Resource Resource { get; } = tweenResource;
 
     public float Duration
     {
@@ -46,8 +46,6 @@ public class PhantomCameraTween
         get => (EaseType)(int)Resource.Get(PropertyName.Ease);
         set => Resource.Set(PropertyName.Ease, (int)value);
     }
-
-    public PhantomCameraTween(Resource tweenResource) => Resource = tweenResource;
 
     public static class PropertyName
     {

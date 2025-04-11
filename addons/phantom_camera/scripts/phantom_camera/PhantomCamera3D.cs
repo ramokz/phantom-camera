@@ -43,6 +43,10 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
     }
     
+    public void AppendFollowTarget(Node3D target) => Node3D.Call(PhantomCamera.MethodName.AppendFollowTargets, target);
+    public void AppendFollowTargetArray(Node3D[] targets) => Node3D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
+    public void EraseFollowTarget(Node3D target) => Node3D.Call(PhantomCamera.MethodName.EraseFollowTargets, target);
+    
     public Path3D FollowPath
     {
         get => (Path3D)Node3D.Call(PhantomCamera.MethodName.GetFollowPath);

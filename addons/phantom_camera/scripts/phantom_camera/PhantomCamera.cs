@@ -80,6 +80,16 @@ public static class PhantomCameraExtension
     {
         return new PhantomCameraHost(node);
     }
+
+    public static Camera3DResource AsCamera3DResource(this Resource resource)
+    {
+        return new Camera3DResource(resource);
+    }
+
+    public static PhantomCameraTween AsPhantomCameraTween(this Resource resource)
+    {
+        return new PhantomCameraTween(resource);
+    }
 }
 
 public abstract class PhantomCamera
@@ -246,6 +256,10 @@ public abstract class PhantomCamera
         
         public const string GetFollowTargets = "get_follow_targets";
         public const string SetFollowTargets = "set_follow_targets";
+        
+        public const string AppendFollowTargets = "append_follow_targets";
+        public const string AppendFollowTargetsArray = "append_follow_targets_array";
+        public const string EraseFollowTargets = "erase_follow_targets";
         
         public const string GetFollowPath = "get_follow_path";
         public const string SetFollowPath = "set_follow_path";

@@ -5,24 +5,31 @@ using PhantomCamera;
 
 namespace PhantomCamera;
 
-public enum InterpolationMode
-{
-    Auto,
-    Idle,
-    Physics
-}
+// public enum InterpolationMode
+// {
+//     Auto,
+//     Idle,
+//     Physics
+// }
 
 public class PhantomCameraHost
 {
     public Node Node { get; }
-
-    // TODO: Multiple PCamHosts ? idk if that actually changes anything in here
     
-    public InterpolationMode InterpolationMode
+    // For when Godot becomes the minimum version
+    // public InterpolationMode InterpolationMode
+    // {
+    //      get => (InterpolationMode)(int)Node.Call(MethodName.GetInterpolationMode);
+    //      set => Node.Call(MethodName.SetInterpolationMode, (int)value);
+    // }
+    
+    public int HostLayers
     {
-         get => (InterpolationMode)(int)Node.Call(MethodName.GetInterpolationMode);
-         set => Node.Call(MethodName.SetInterpolationMode, (int)value);
+        get => (int)Node.Call(PhantomCamera.MethodName.GetHostLayers);
+        set => Node.Call(PhantomCamera.MethodName.SetHostLayers, value);
     }
+
+    public void SetHostLayersValue(int layer, bool value) => Node.Call(MethodName.SetHostLayersValue, layer, value);
 
     public Camera2D? Camera2D => (Camera2D?)Node.Get(PropertyName.Camera2D);
 
@@ -51,6 +58,8 @@ public class PhantomCameraHost
 
         public const string GetInterpolationMode = "get_interpolation_mode";
         public const string SetInterpolationMode = "set_interpolation_mode";
+        
+        public const string SetHostLayersValue = "set_host_layers_value";
     }
 }
 

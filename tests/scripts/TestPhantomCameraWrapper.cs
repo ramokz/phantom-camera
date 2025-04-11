@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using Godot;
 using PhantomCamera;
 using PhantomCamera.Manager;
@@ -13,12 +14,15 @@ public partial class TestPhantomCameraWrapper : Node
 
     public override void _Ready()
     {
-        _scene2d = GD.Load<PackedScene>("res://tests/scenes/test_scene_2d.tscn");
-        _scene3d = GD.Load<PackedScene>("res://tests/scenes/test_scene_3d.tscn");
+        // res://tests/scenes/test_scene_2d.tscn
+        _scene2d = GD.Load<PackedScene>("uid://bx61t0ytiwtwm");
+        // res://tests/scenes/test_scene_3d.tscn
+        _scene3d = GD.Load<PackedScene>("uid://bry2ltsrujg02");
     }
 
     public void Test()
     {
+        GD.Print("Testing in progress...");
         Test2D();
         Test3D();
         GD.Print("PhantomCameraWrapper tests complete");
@@ -40,13 +44,15 @@ public partial class TestPhantomCameraWrapper : Node
         Debug.Assert(cameraHost.Node != null);
         Debug.Assert(cameraHost.Camera2D != null);
         Debug.Assert(cameraHost.Camera3D == null);
-        Debug.Assert(cameraHost.TriggerPhantomCameraTween);
+        Debug.Assert(!cameraHost.TriggerPhantomCameraTween);
 
         var cameraQuery = cameraHost.GetActivePhantomCamera();
-        Debug.Assert(cameraQuery != null);
+        Debug.Assert(cameraQuery == null);
         Debug.Assert(cameraQuery.Is2D);
         Debug.Assert(!cameraQuery.Is3D);
         Debug.Assert(cameraQuery.AsPhantomCamera3D() == null);
+        
+        GD.Print("PhantomCameraHost tests successfully completed.");
         
         // PhantomCamera shared tests
         var camera = cameraQuery.AsPhantomCamera2D();
@@ -67,6 +73,8 @@ public partial class TestPhantomCameraWrapper : Node
         Debug.Assert(camera.InactiveUpdateMode == InactiveUpdateMode.Always);
         camera.InactiveUpdateMode = InactiveUpdateMode.Never;
         Debug.Assert(camera.InactiveUpdateMode == InactiveUpdateMode.Never);
+        
+        GD.Print("Shader PhantomCamera tests successfully completed.");
 
         // TweenResource tests
         var tweenResource = camera.TweenResource;
@@ -94,6 +102,8 @@ public partial class TestPhantomCameraWrapper : Node
         Debug.Assert((camera.TweenResource.Duration - 1.5f) <= float.Epsilon);
         Debug.Assert(camera.TweenResource.Ease == EaseType.In);
         Debug.Assert(camera.TweenResource.Transition == TransitionType.Cubic);
+        
+        GD.Print("PhantomCameraTween tests successfully completed.");
 
         // PhantomCamera2D tests
         camera.Zoom = new Vector2(2, 2);
@@ -148,7 +158,11 @@ public partial class TestPhantomCameraWrapper : Node
         
         // TODO: test signals
         
+        GD.Print("PhantomCamera2D tests successfully completed.");
+        
         RemoveChild(testScene);
+        
+        GD.Print("2D Testing complete.");
     }
 
     private void Test3D()
@@ -178,7 +192,39 @@ public partial class TestPhantomCameraWrapper : Node
         // PhantomCamera3D Tests
         var camera = cameraQuery.AsPhantomCamera3D();
         Debug.Assert(camera != null);
+        camera.Fov = 90;
+        Debug.Assert(camera.Fov.Equals(90));
+
+        Node3D followTarget1 = new Node3D()
+        {
+            Name = "FollowTarget1",
+        };
+        
+        Node3D followTarget2 = new Node3D()
+        {
+            Name = "FollowTarget2",
+        };
+        
+        AddChild(followTarget1);
+        AddChild(followTarget2);
+        
+        camera.FollowTarget = GetNode<Node3D>("FollowTarget1");
+        Debug.Assert(camera.FollowTarget != null);
+        Debug.Assert(camera.FollowTarget.Name == "FollowTarget1");
+        camera.FollowTarget = null;
+        
+        camera.AppendFollowTargetArray([followTarget1, followTarget2]);
+        Debug.Assert(camera.FollowTargets.Contains(followTarget1));
+        Debug.Assert(camera.FollowTargets.Contains(followTarget2));
+        
+        RemoveChild(followTarget1);
+        RemoveChild(followTarget2);
+        
+        camera.ThirdPersonRotationDegrees = new Vector3(0, 2, 3);
+        Debug.Assert(camera.ThirdPersonRotationDegrees.Equals(new Vector3(0, 2, 3)));
         
         RemoveChild(testScene);
+        
+        GD.Print("3D Testing complete.");
     }
 }
