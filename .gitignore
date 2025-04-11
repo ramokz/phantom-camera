@@ -26,3 +26,15 @@ export_presets.cfg
 node_modules
 cache
 dist
+
+# Dotnet specific ignores
+*.DotSettings
+*.csproj
+*.csproj.old
+*.sln
+
+# Dotnet specific ignores
+*.DotSettings
+*.csproj
+*.csproj.old
+*.sln

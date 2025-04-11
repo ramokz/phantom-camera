@@ -9,6 +9,5 @@ public partial class DevSceneCSharp3D : Node3D
         
         GD.Print(pCam.Node3D);
         
-        
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using Godot;
-using PhantomCamera.Cameras;
-using PhantomCamera.Hosts;
+using PhantomCamera;
 
 #nullable enable
 
-namespace PhantomCamera.Managers;
+namespace PhantomCamera.Manager;
 
 public static class PhantomCameraManager
 {

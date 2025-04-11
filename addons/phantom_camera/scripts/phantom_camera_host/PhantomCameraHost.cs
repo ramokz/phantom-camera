@@ -1,9 +1,9 @@
 ﻿using Godot;
-using PhantomCamera.Cameras;
+using PhantomCamera;
 
 #nullable enable
 
-namespace PhantomCamera.Hosts;
+namespace PhantomCamera;
 
 public enum InterpolationMode
 {
@@ -16,12 +16,13 @@ public class PhantomCameraHost
 {
     public Node Node { get; }
 
-    // TODO: For Godot 4.3
-    // public InterpolationMode InterpolationMode
-    // {
-    //     get => (InterpolationMode)(int)Node.Call(MethodName.GetInterpolationMode);
-    //     set => Node.Call(MethodName.SetInterpolationMode, (int)value);
-    // }
+    // TODO: Multiple PCamHosts
+    
+    public InterpolationMode InterpolationMode
+    {
+         get => (InterpolationMode)(int)Node.Call(MethodName.GetInterpolationMode);
+         set => Node.Call(MethodName.SetInterpolationMode, (int)value);
+    }
 
     public Camera2D? Camera2D => (Camera2D?)Node.Get(PropertyName.Camera2D);
 

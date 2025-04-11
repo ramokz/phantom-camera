@@ -8,4 +8,5 @@ func _init() -> void:
 	set_gizmo_name("PhantomCamera")
 	set_gizmo_spatial_script(_spatial_script)
 	set_gizmo_icon(_icon)
+
 	super()

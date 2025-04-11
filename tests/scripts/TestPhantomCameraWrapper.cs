@@ -1,13 +1,11 @@
 ﻿using System.Diagnostics;
 using Godot;
 using PhantomCamera;
-using PhantomCamera.Cameras;
-using PhantomCamera.Managers;
-using PhantomCamera.Resources;
+using PhantomCamera.Manager;
 
 namespace PhantomCameraTests;
 
-public partial class TestPhantomCameraWrapper: Node
+public partial class TestPhantomCameraWrapper : Node
 {
     private PackedScene _scene2d;
 

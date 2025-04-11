@@ -4,16 +4,15 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c3mskbmvnpwux"
 path.s3tc="res://.godot/imported/target.png-878c5e8d057c8a9a4c2322d4ab88e9ef.s3tc.ctex"
-path.etc2="res://.godot/imported/target.png-878c5e8d057c8a9a4c2322d4ab88e9ef.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://addons/phantom_camera/examples/textures/3D/target.png"
-dest_files=["res://.godot/imported/target.png-878c5e8d057c8a9a4c2322d4ab88e9ef.s3tc.ctex", "res://.godot/imported/target.png-878c5e8d057c8a9a4c2322d4ab88e9ef.etc2.ctex"]
+dest_files=["res://.godot/imported/target.png-878c5e8d057c8a9a4c2322d4ab88e9ef.s3tc.ctex"]
 
 [params]
 

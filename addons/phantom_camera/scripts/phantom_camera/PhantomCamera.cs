@@ -1,10 +1,9 @@
 ﻿using Godot;
-using PhantomCamera.Hosts;
-using PhantomCamera.Resources;
+using PhantomCamera;
 
 #nullable enable
 
-namespace PhantomCamera.Cameras;
+namespace PhantomCamera;
 
 public enum FollowMode
 {
@@ -29,6 +28,38 @@ public enum InactiveUpdateMode
 {
     Always,
     Never
+}
+
+public enum FollowLockAxis
+{
+    None,
+    X,
+    Y,
+    Z,
+    // ReSharper disable InconsistentNaming
+    XY,
+    XZ,
+    YZ,
+    XYZ
+    // ReSharper restore InconsistentNaming
+}
+
+public static class PhantomCameraExtension
+{
+    public static PhantomCamera3D AsPhantomCamera3D(this Node3D node3D)
+    {
+        return new PhantomCamera3D(node3D);
+    }
+
+    public static PhantomCamera2D AsPhantomCamera2D(this Node2D node2D)
+    {
+        return new PhantomCamera2D(node2D);
+    }
+
+    public static PhantomCameraHost AsPhantomCameraHost(this Node node)
+    {
+        return new PhantomCameraHost(node);
+    }
 }
 
 public abstract class PhantomCamera
@@ -196,6 +227,9 @@ public abstract class PhantomCamera
         public const string GetFollowDampingValue = "get_follow_damping_value";
         public const string SetFollowDampingValue = "set_follow_damping_value";
         
+        public const string GetFollowAxisLock = "get_follow_axis_lock";
+        public const string SetFollowAxisLock = "set_follow_axis_lock";
+        
         public const string GetTweenResource = "get_tween_resource";
         public const string SetTweenResource = "set_tween_resource";
 
@@ -231,9 +265,11 @@ public abstract class PhantomCamera
         public const string FollowTargetChanged = "follow_target_changed";
         public const string LookAtTargetChanged = "look_at_target_changed";
         public const string DeadZoneChanged = "dead_zone_changed";
+        public const string DeadZoneReached = "dead_zone_reached";
         public const string TweenStarted = "tween_started";
         public const string IsTweening = "is_tweening";
         public const string TweenCompleted = "tween_completed";
         public const string TweenInterrupted = "tween_interrupted";
+        public const string NoiseEmitted = "noise_emitted";
     }
 }

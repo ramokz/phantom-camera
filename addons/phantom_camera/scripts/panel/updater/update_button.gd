@@ -69,11 +69,7 @@ func _request_request_completed(result: int, response_code: int, headers: Packed
 	)
 
 	if versions.size() > 0:
-		# Safeguard forks from being updated itself
-		if FileAccess.file_exists("res://dev_scenes/3d/dev_scene_3d.tscn") or \
-			not ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_enabled):
-
-			if not ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_notify_release): return
+		if ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_mode) == 1: ## For console output mode
 
 			print_rich("
 [color=#3AB99A]   ********[/color]
@@ -160,6 +156,10 @@ func _on_timer_timeout() -> void:
 
 # Convert a version number to an actually comparable number
 func version_to_number(version: String) -> int:
+	var regex = RegEx.new()
+	regex.compile("[a-zA-Z]+")
+	if regex.search(str(version)): return 0
+
 	var bits = version.split(".")
 	var version_bit: int
 	var multiplier: int = 10000
@@ -170,6 +170,8 @@ func version_to_number(version: String) -> int:
 
 
 func check_for_update() -> void:
+	if ProjectSettings.get_setting(UPDATER_CONSTANTS.setting_updater_mode) == 0:  return
+
 	http_request.request(REMOTE_RELEASE_URL)
 
 #endregion

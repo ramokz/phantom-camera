@@ -3,17 +3,23 @@ using Godot;
 
 #nullable enable
 
-namespace PhantomCamera.Cameras;
+namespace PhantomCamera;
 
 public class PhantomCamera2D : PhantomCamera
 {
     public Node2D Node2D => (Node2D)Node;
     
     public delegate void TweenInterruptedEventHandler(Node2D pCam);
+    public delegate void DeadZoneReachedEventHandler(Vector2 side);
+    public delegate void NoiseEmittedEventHandler(Transform2D output);
     
     public event TweenInterruptedEventHandler? TweenInterrupted;
+    public event DeadZoneReachedEventHandler? DeadZoneReached;
+    public event NoiseEmittedEventHandler? NoiseEmitted;
     
     private readonly Callable _callableTweenInterrupted;
+    private readonly Callable _callableDeadZoneReached;
+    private readonly Callable _callableNoiseEmitted;
 
     public Node2D FollowTarget
     {
@@ -47,44 +53,44 @@ public class PhantomCamera2D : PhantomCamera
     
     public Vector2 Zoom
     {
-        get => (Vector2)Node.Call(MethodName.GetZoom);
-        set => Node.Call(MethodName.SetZoom, value);
+        get => (Vector2)Node2D.Call(MethodName.GetZoom);
+        set => Node2D.Call(MethodName.SetZoom, value);
     }
 
     public bool SnapToPixel
     {
-        get => (bool)Node.Call(MethodName.GetSnapToPixel);
-        set => Node.Call(MethodName.SetSnapToPixel, value);
+        get => (bool)Node2D.Call(MethodName.GetSnapToPixel);
+        set => Node2D.Call(MethodName.SetSnapToPixel, value);
     }
 
     public int LimitLeft
     {
-        get => (int)Node.Call(MethodName.GetLimitLeft);
-        set => Node.Call(MethodName.SetLimitLeft, value);
+        get => (int)Node2D.Call(MethodName.GetLimitLeft);
+        set => Node2D.Call(MethodName.SetLimitLeft, value);
     }
 
     public int LimitTop
     {
-        get => (int)Node.Call(MethodName.GetLimitTop);
-        set => Node.Call(MethodName.SetLimitTop, value);
+        get => (int)Node2D.Call(MethodName.GetLimitTop);
+        set => Node2D.Call(MethodName.SetLimitTop, value);
     }
 
     public int LimitRight
     {
-        get => (int)Node.Call(MethodName.GetLimitRight);
-        set => Node.Call(MethodName.SetLimitRight, value);
+        get => (int)Node2D.Call(MethodName.GetLimitRight);
+        set => Node2D.Call(MethodName.SetLimitRight, value);
     }
 
     public int LimitBottom
     {
-        get => (int)Node.Call(MethodName.GetLimitBottom);
-        set => Node.Call(MethodName.SetLimitBottom, value);
+        get => (int)Node2D.Call(MethodName.GetLimitBottom);
+        set => Node2D.Call(MethodName.SetLimitBottom, value);
     }
     
     public Vector4I LimitMargin
     {
-        get => (Vector4I)Node.Call(MethodName.GetLimitMargin);
-        set => Node.Call(MethodName.SetLimitMargin, value);
+        get => (Vector4I)Node2D.Call(MethodName.GetLimitMargin);
+        set => Node2D.Call(MethodName.SetLimitMargin, value);
     }
     
     public bool AutoZoom
@@ -123,12 +129,19 @@ public class PhantomCamera2D : PhantomCamera
     public PhantomCamera2D(GodotObject phantomCameraNode) : base(phantomCameraNode)
     {
         _callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
-        Node.Connect(SignalName.TweenInterrupted, _callableTweenInterrupted);
+        _callableDeadZoneReached = Callable.From((Vector2 side) => DeadZoneReached?.Invoke(side));
+        _callableNoiseEmitted = Callable.From((Transform2D output) => NoiseEmitted?.Invoke(output));
+        
+        Node2D.Connect(SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node2D.Connect(SignalName.DeadZoneReached, _callableDeadZoneReached);
+        Node2D.Connect(SignalName.NoiseEmitted, _callableNoiseEmitted);
     }
 
     ~PhantomCamera2D()
     {
-        Node.Disconnect(SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node2D.Disconnect(SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node2D.Disconnect(SignalName.DeadZoneReached, _callableDeadZoneReached);
+        Node2D.Disconnect(SignalName.NoiseEmitted, _callableNoiseEmitted);
     }
 
     public void SetLimitTarget(TileMap tileMap)

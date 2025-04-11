@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace PhantomCamera.Resources;
+namespace PhantomCamera;
 
 public enum TransitionType
 {

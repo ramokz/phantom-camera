@@ -1,23 +1,35 @@
 ﻿using System.Linq;
 using Godot;
-using PhantomCamera.Resources;
+using PhantomCamera.Noise;
 
 #nullable enable
 
-namespace PhantomCamera.Cameras;
+namespace PhantomCamera;
 
 public class PhantomCamera3D : PhantomCamera
 {
     public Node3D Node3D => (Node3D)Node;
     
     public delegate void LookAtTargetChangedEventHandler();
+    public delegate void DeadZoneReachedEventHandler();
+    public delegate void Camera3DResourceChangedEventHandler();
+    public delegate void Camera3DResourcePropertyChangedEventHandler(StringName property, Variant value);
     public delegate void TweenInterruptedEventHandler(Node3D pCam);
+    public delegate void NoiseEmittedEventHandler(Transform3D output);
     
     public event LookAtTargetChangedEventHandler? LookAtTargetChanged;
+    public event DeadZoneReachedEventHandler? DeadZoneReached;
+    public event Camera3DResourceChangedEventHandler? Camera3DResourceChanged;
+    public event Camera3DResourcePropertyChangedEventHandler? Camera3DResourcePropertyChanged;
     public event TweenInterruptedEventHandler? TweenInterrupted;
+    public event NoiseEmittedEventHandler? NoiseEmitted;
     
     private readonly Callable _callableLookAtTargetChanged;
+    private readonly Callable _callableDeadZoneReached;
+    private readonly Callable _callableCamera3DResourceChanged;
+    private readonly Callable _callableCamera3DResourcePropertyChanged;
     private readonly Callable _callableTweenInterrupted;
+    private readonly Callable _callableNoiseEmitted;
 
     public Node3D FollowTarget
     {
@@ -49,36 +61,48 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(PhantomCamera.MethodName.SetFollowDampingValue, value);
     }
 
-    public LookAtMode LookAtMode => (LookAtMode)(int)Node.Call(MethodName.GetLookAtMode);
+    public FollowLockAxis FollowAxisLock
+    {
+        get => (FollowLockAxis)(int)Node3D.Call(PhantomCamera.MethodName.GetFollowAxisLock);
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowAxisLock, (int)value);
+    }
 
+    public LookAtMode LookAtMode => (LookAtMode)(int)Node3D.Call(MethodName.GetLookAtMode);
+
+    public int HostLayers
+    {
+        get => (int)Node3D.Call(MethodName.GetHostLayers);
+        set => Node3D.Call(MethodName.SetHostLayers, value);
+    }
+    
     public Camera3DResource Camera3DResource
     {
-        get => new((Resource)Node.Call(MethodName.GetCamera3DResource));
-        set => Node.Call(MethodName.SetCamera3DResource, value.Resource);
+        get => new((Resource)Node3D.Call(MethodName.GetCamera3DResource));
+        set => Node3D.Call(MethodName.SetCamera3DResource, value.Resource);
     }
 
     public Vector3 ThirdPersonRotation
     {
-        get => (Vector3)Node.Call(MethodName.GetThirdPersonRotation);
-        set => Node.Call(MethodName.SetThirdPersonRotation, value);
+        get => (Vector3)Node3D.Call(MethodName.GetThirdPersonRotation);
+        set => Node3D.Call(MethodName.SetThirdPersonRotation, value);
     }
     
     public Vector3 ThirdPersonRotationDegrees
     {
-        get => (Vector3)Node.Call(MethodName.GetThirdPersonRotationDegrees);
-        set => Node.Call(MethodName.SetThirdPersonRotationDegrees, value);
+        get => (Vector3)Node3D.Call(MethodName.GetThirdPersonRotationDegrees);
+        set => Node3D.Call(MethodName.SetThirdPersonRotationDegrees, value);
     }
     
     public Quaternion ThirdPersonQuaternion
     {
-        get => (Quaternion)Node.Call(MethodName.GetThirdPersonQuaternion);
-        set => Node.Call(MethodName.SetThirdPersonQuaternion, value);
+        get => (Quaternion)Node3D.Call(MethodName.GetThirdPersonQuaternion);
+        set => Node3D.Call(MethodName.SetThirdPersonQuaternion, value);
     }
 
     public float SpringLength
     {
-        get => (float)Node.Call(MethodName.GetSpringLength);
-        set => Node.Call(MethodName.SetSpringLength, value);
+        get => (float)Node3D.Call(MethodName.GetSpringLength);
+        set => Node3D.Call(MethodName.SetSpringLength, value);
     }
     
     public float FollowDistance
@@ -164,73 +188,96 @@ public class PhantomCamera3D : PhantomCamera
         get => (float)Node3D.Call(MethodName.GetLookAtDampingValue);
         set => Node3D.Call(MethodName.SetLookAtDampingValue, value);
     }
+
+    public Node3D Up
+    {
+        get => (Node3D)Node3D.Call(MethodName.GetUp);
+        set => Node3D.Call(MethodName.SetUp, value);
+    }
+    
+    public Vector3 UpTarget
+    {
+        get => (Vector3)Node3D.Call(MethodName.GetUpTarget);
+        set => Node3D.Call(MethodName.SetUpTarget, value);
+    }
     
     public int CullMask
     {
-        get => (int)Node.Call(MethodName.GetCullMask);
-        set => Node.Call(MethodName.SetCullMask, value);
+        get => (int)Node3D.Call(MethodName.GetCullMask);
+        set => Node3D.Call(MethodName.SetCullMask, value);
     }
     
     public float HOffset
     {
-        get => (float)Node.Call(MethodName.GetHOffset);
-        set => Node.Call(MethodName.SetHOffset, value);
+        get => (float)Node3D.Call(MethodName.GetHOffset);
+        set => Node3D.Call(MethodName.SetHOffset, value);
     }
     
     public float VOffset
     {
-        get => (float)Node.Call(MethodName.GetVOffset);
-        set => Node.Call(MethodName.SetVOffset, value);
+        get => (float)Node3D.Call(MethodName.GetVOffset);
+        set => Node3D.Call(MethodName.SetVOffset, value);
     }
     
     public ProjectionType Projection
     {
-        get => (ProjectionType)(int)Node.Call(MethodName.GetProjection);
-        set => Node.Call(MethodName.SetProjection, (int)value);
+        get => (ProjectionType)(int)Node3D.Call(MethodName.GetProjection);
+        set => Node3D.Call(MethodName.SetProjection, (int)value);
     }
     
     public float Fov
     {
-        get => (float)Node.Call(MethodName.GetFov);
-        set => Node.Call(MethodName.SetFov, value);
+        get => (float)Node3D.Call(MethodName.GetFov);
+        set => Node3D.Call(MethodName.SetFov, value);
     }
     
     public float Size
     {
-        get => (float)Node.Call(MethodName.GetSize);
-        set => Node.Call(MethodName.SetSize, value);
+        get => (float)Node3D.Call(MethodName.GetSize);
+        set => Node3D.Call(MethodName.SetSize, value);
     }
     
     public Vector2 FrustumOffset
     {
-        get => (Vector2)Node.Call(MethodName.GetFrustumOffset);
-        set => Node.Call(MethodName.SetFrustumOffset, value);
+        get => (Vector2)Node3D.Call(MethodName.GetFrustumOffset);
+        set => Node3D.Call(MethodName.SetFrustumOffset, value);
     }
     
     public float Far
     {
-        get => (float)Node.Call(MethodName.GetFar);
-        set => Node.Call(MethodName.SetFar, value);
+        get => (float)Node3D.Call(MethodName.GetFar);
+        set => Node3D.Call(MethodName.SetFar, value);
     }
     
     public float Near
     {
-        get => (float)Node.Call(MethodName.GetNear);
-        set => Node.Call(MethodName.SetNear, value);
+        get => (float)Node3D.Call(MethodName.GetNear);
+        set => Node3D.Call(MethodName.SetNear, value);
     }
     
     public Environment Environment
     {
-        get => (Environment)Node.Call(MethodName.GetEnvironment);
-        set => Node.Call(MethodName.SetEnvironment, value);
+        get => (Environment)Node3D.Call(MethodName.GetEnvironment);
+        set => Node3D.Call(MethodName.SetEnvironment, value);
     }
     
     public CameraAttributes Attributes
     {
-        get => (CameraAttributes)Node.Call(MethodName.GetAttributes);
-        set => Node.Call(MethodName.SetAttributes, value);
+        get => (CameraAttributes)Node3D.Call(MethodName.GetAttributes);
+        set => Node3D.Call(MethodName.SetAttributes, value);
     }
-    
+
+    public PhantomCameraNoise3D Noise
+    {
+        get => new((Resource)Node3D.Call(MethodName.GetNoise));
+        set => Node3D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
+    }
+
+    public int NoiseEmitterLayer
+    {
+        get => (int)Node3D.Call(MethodName.GetNoiseEmitterLayer);
+        set => Node3D.Call(MethodName.SetNoiseEmitterLayer, value);
+    }
     
     public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
@@ -238,21 +285,36 @@ public class PhantomCamera3D : PhantomCamera
     public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
     {
         _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
+        _callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
+        _callableCamera3DResourceChanged = Callable.From(() => Camera3DResourceChanged?.Invoke());
+        _callableCamera3DResourcePropertyChanged = Callable.From((StringName property, Variant value) => 
+            Camera3DResourcePropertyChanged?.Invoke(property, value));
         _callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
+        _callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
         
-        Node.Connect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
-        Node.Connect(SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node3D.Connect(PhantomCamera.SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
+        Node3D.Connect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
+        Node3D.Connect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
+        Node3D.Connect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
+        Node3D.Connect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node3D.Connect(PhantomCamera.SignalName.NoiseEmitted, _callableNoiseEmitted);
     }
     
     ~PhantomCamera3D()
     {
-        Node.Disconnect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
-        Node.Disconnect(SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node3D.Disconnect(PhantomCamera.SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
+        Node3D.Disconnect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
+        Node3D.Disconnect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
+        Node3D.Disconnect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);
+        Node3D.Disconnect(PhantomCamera.SignalName.NoiseEmitted, _callableNoiseEmitted);
     }
 
     public new static class MethodName
     {
         public const string GetLookAtMode = "get_look_at_mode";
+        
+        public const string GetHostLayers = "get_host_layers";
+        public const string SetHostLayers = "set_host_layers";
 
         public const string GetCamera3DResource = "get_camera_3d_resource";
         public const string SetCamera3DResource = "set_camera_3d_resource";
@@ -289,6 +351,12 @@ public class PhantomCamera3D : PhantomCamera
         
         public const string GetLookAtTargets = "get_look_at_targets";
         public const string SetLookAtTargets = "set_look_at_targets";
+        
+        public const string GetUp = "get_up";
+        public const string SetUp = "set_up";
+        
+        public const string GetUpTarget = "get_up_target";
+        public const string SetUpTarget = "set_up_target";
         
         public const string GetViewportPosition = "get_viewport_position";
         public const string SetViewportPosition = "set_viewport_position";
@@ -343,5 +411,17 @@ public class PhantomCamera3D : PhantomCamera
 
         public const string GetAttributes = "get_attributes";
         public const string SetAttributes = "set_attributes";
+        
+        public const string GetNoise = "get_noise";
+        public const string SetNoise = "set_noise";
+        
+        public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
+        public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
+    }
+
+    public new static class SignalName
+    {
+        public const string Camera3DResourceChanged = "camera_3d_resource_changed";
+        public const string Camera3DResourcePropertyChanged = "camera_3d_resource_property_changed";
     }
 }

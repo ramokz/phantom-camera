@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace PhantomCamera.Resources;
+namespace PhantomCamera;
 
 public enum ProjectionType
 {
@@ -9,9 +9,9 @@ public enum ProjectionType
     Frustum
 }
 
-public class Camera3DResource
+public class Camera3DResource(Resource resource)
 {
-    public readonly Resource Resource;
+    public readonly Resource Resource = resource;
 
     public const float MinOffset = 0;
     public const float MaxOffset = 1;
@@ -81,8 +81,6 @@ public class Camera3DResource
         get => (float)Resource.Call(MethodName.GetFar);
         set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, MinFar, MaxFar));
     }
-    
-    public Camera3DResource(Resource resource) => Resource = resource;
 
     public void SetCullMaskValue(int layerNumber, bool value)
     {

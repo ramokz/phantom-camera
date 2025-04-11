@@ -1,0 +1,87 @@
+[gd_scene load_steps=8 format=3 uid="uid://mbjdav5oqves"]
+
+[ext_resource type="Script" uid="uid://c84cxry3t35ny" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="1_h6ayt"]
+[ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="1_xlgqb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w002y"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kq7gm"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.960784, 0.960784, 0.960784, 1)
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ynag5"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.960784, 0.960784, 0.960784, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_right = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q2svd"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0jvt"]
+content_margin_left = 0.0
+content_margin_top = 8.0
+content_margin_right = 0.0
+content_margin_bottom = 8.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_right = 10
+
+[node name="PCamHostList" type="VBoxContainer"]
+anchors_preset = 9
+anchor_bottom = 1.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = -2
+alignment = 2
+script = ExtResource("1_h6ayt")
+
+[node name="HostListButton" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/icon_hover_color = Color(0.0784314, 0.109804, 0.129412, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.0784314, 0.109804, 0.129412, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_w002y")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_kq7gm")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ynag5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kq7gm")
+theme_override_styles/normal = SubResource("StyleBoxFlat_q2svd")
+icon = ExtResource("1_xlgqb")
+expand_icon = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_e0jvt")
+horizontal_scroll_mode = 0
+
+[node name="HostListContainer" type="VBoxContainer" parent="ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
