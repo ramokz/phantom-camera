@@ -303,6 +303,7 @@ public class PhantomCamera3D : PhantomCamera
     ~PhantomCamera3D()
     {
         Node3D.Disconnect(PhantomCamera.SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
+        Node3D.Disconnect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
         Node3D.Disconnect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
         Node3D.Disconnect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
         Node3D.Disconnect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);

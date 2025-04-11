@@ -60,10 +60,6 @@ var phantom_camera_3ds: Array[Node]: ## Note: To support disable_3d export templ
 	get:
 		return _phantom_camera_3d_list
 
-func _ready():
-	if not Engine.has_singleton(PHANTOM_CAMERA_CONSTS.PCAM_MANAGER_NODE_NAME):
-		Engine.register_singleton(PHANTOM_CAMERA_CONSTS.PCAM_MANAGER_NODE_NAME, self)
-
 var screen_size: Vector2i
 
 #endregion

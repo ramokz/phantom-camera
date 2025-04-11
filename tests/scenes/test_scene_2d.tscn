@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://bx61t0ytiwtwm"]
 
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_qr8fr"]
-[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="2_53jhm"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_aqfsy"]
+[ext_resource type="Script" uid="uid://duw6t1t5xeacx" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_qr8fr"]
+[ext_resource type="Script" uid="uid://c8g4soajr2jpi" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="2_53jhm"]
+[ext_resource type="Script" uid="uid://dxr4p1lpkjsry" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_aqfsy"]
 
 [sub_resource type="Resource" id="Resource_f0onm"]
 script = ExtResource("3_aqfsy")
@@ -20,12 +20,14 @@ ease = 2
 physics_interpolation_mode = 2
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("1_qr8fr")
-host_layers = null
 
 [node name="PhantomCamera2D" type="Node2D" parent="."]
 script = ExtResource("2_53jhm")
 tween_resource = SubResource("Resource_f0onm")
+draw_limits = true
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_lpbxs")
