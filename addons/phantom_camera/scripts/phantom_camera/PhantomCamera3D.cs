@@ -68,12 +68,6 @@ public class PhantomCamera3D : PhantomCamera
     }
 
     public LookAtMode LookAtMode => (LookAtMode)(int)Node3D.Call(MethodName.GetLookAtMode);
-
-    public int HostLayers
-    {
-        get => (int)Node3D.Call(MethodName.GetHostLayers);
-        set => Node3D.Call(MethodName.SetHostLayers, value);
-    }
     
     public Camera3DResource Camera3DResource
     {
@@ -272,12 +266,6 @@ public class PhantomCamera3D : PhantomCamera
         get => new((Resource)Node3D.Call(MethodName.GetNoise));
         set => Node3D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
     }
-
-    public int NoiseEmitterLayer
-    {
-        get => (int)Node3D.Call(MethodName.GetNoiseEmitterLayer);
-        set => Node3D.Call(MethodName.SetNoiseEmitterLayer, value);
-    }
     
     public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
@@ -313,9 +301,6 @@ public class PhantomCamera3D : PhantomCamera
     public new static class MethodName
     {
         public const string GetLookAtMode = "get_look_at_mode";
-        
-        public const string GetHostLayers = "get_host_layers";
-        public const string SetHostLayers = "set_host_layers";
 
         public const string GetCamera3DResource = "get_camera_3d_resource";
         public const string SetCamera3DResource = "set_camera_3d_resource";
@@ -415,9 +400,6 @@ public class PhantomCamera3D : PhantomCamera
         
         public const string GetNoise = "get_noise";
         public const string SetNoise = "set_noise";
-        
-        public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
-        public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
     }
 
     public new static class SignalName

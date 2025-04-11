@@ -4,7 +4,6 @@ namespace PhantomCamera.Noise;
 
 public class PhantomCameraNoiseEmitter3D(GodotObject node)
 {
-    
     public Node3D Node3D = (Node3D)node;
     
     public PhantomCameraNoise3D Noise

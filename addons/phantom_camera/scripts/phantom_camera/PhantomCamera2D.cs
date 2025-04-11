@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Godot;
+using PhantomCamera.Noise;
 
 #nullable enable
 
@@ -122,6 +123,12 @@ public class PhantomCamera2D : PhantomCamera
         get => (bool)Node2D.Get(PropertyName.DrawLimits);
         set => Node2D.Set(PropertyName.DrawLimits, value);
     }
+
+    public PhantomCameraNoise2D Noise
+    {
+        get => new((Resource)Node2D.Call(MethodName.GetNoise));
+        set => Node2D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
+    }
     
     public static PhantomCamera2D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera2D FromScript(GDScript script) => new(script.New().AsGodotObject());
@@ -215,6 +222,9 @@ public class PhantomCamera2D : PhantomCamera
         
         public const string GetAutoZoomMargin = "get_auto_zoom_margin";
         public const string SetAutoZoomMargin = "set_auto_zoom_margin";
+        
+        public const string GetNoise = "get_noise";
+        public const string SetNoise = "set_noise";
     }
 
     public new static class PropertyName

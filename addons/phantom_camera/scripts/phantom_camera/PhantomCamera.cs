@@ -1,5 +1,5 @@
 ﻿using Godot;
-using PhantomCamera;
+using PhantomCamera.Noise;
 
 #nullable enable
 
@@ -51,9 +51,29 @@ public static class PhantomCameraExtension
         return new PhantomCamera3D(node3D);
     }
 
+    public static PhantomCameraNoiseEmitter3D AsPhantomCameraNoiseEmitter3D(this Node3D node3D)
+    {
+        return new PhantomCameraNoiseEmitter3D(node3D);
+    }
+    
+    public static PhantomCameraNoise3D AsPhantomCameraNoise3D(this Resource resource)
+    {
+        return new PhantomCameraNoise3D(resource);
+    }
+
     public static PhantomCamera2D AsPhantomCamera2D(this Node2D node2D)
     {
         return new PhantomCamera2D(node2D);
+    }
+    
+    public static PhantomCameraNoiseEmitter2D AsPhantomCameraNoiseEmitter2D(this Node2D node2D)
+    {
+        return new PhantomCameraNoiseEmitter2D(node2D);
+    }
+
+    public static PhantomCameraNoise2D AsPhantomCameraNoise2D(this Resource resource)
+    {
+        return new PhantomCameraNoise2D(resource);
     }
 
     public static PhantomCameraHost AsPhantomCameraHost(this Node node)
@@ -145,13 +165,13 @@ public abstract class PhantomCamera
     public TransitionType TweenTransition
     {
         get => (TransitionType)(int)Node.Call(MethodName.GetTweenTransition);
-        set => Node.Call(MethodName.GetTweenTransition, (int)value);
+        set => Node.Call(MethodName.SetTweenTransition, (int)value);
     }
     
     public EaseType TweenEase
     {
         get => (EaseType)(int)Node.Call(MethodName.GetTweenEase);
-        set => Node.Call(MethodName.GetTweenEase, (int)value);
+        set => Node.Call(MethodName.SetTweenEase, (int)value);
     }
 
     public bool TweenOnLoad
@@ -164,6 +184,18 @@ public abstract class PhantomCamera
     {
         get => (InactiveUpdateMode)(int)Node.Call(MethodName.GetInactiveUpdateMode);
         set => Node.Call(MethodName.SetInactiveUpdateMode, (int)value);
+    }
+    
+    public int HostLayers
+    {
+        get => (int)Node.Call(MethodName.GetHostLayers);
+        set => Node.Call(MethodName.SetHostLayers, value);
+    }
+    
+    public int NoiseEmitterLayer
+    {
+        get => (int)Node.Call(MethodName.GetNoiseEmitterLayer);
+        set => Node.Call(MethodName.SetNoiseEmitterLayer, value);
     }
 
     protected PhantomCamera(GodotObject phantomCameraNode)
@@ -250,6 +282,12 @@ public abstract class PhantomCamera
 
         public const string GetInactiveUpdateMode = "get_inactive_update_mode";
         public const string SetInactiveUpdateMode = "set_inactive_update_mode";
+        
+        public const string GetHostLayers = "get_host_layers";
+        public const string SetHostLayers = "set_host_layers";
+        
+        public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
+        public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
     }
 
     public static class PropertyName
