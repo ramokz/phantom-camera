@@ -6,6 +6,44 @@ using PhantomCamera.Noise;
 
 namespace PhantomCamera;
 
+public enum FollowMode2D
+{
+    None,
+    Glued,
+    Simple,
+    Group,
+    Path,
+    Framed
+}
+
+public enum FollowLockAxis2D
+{
+    None,
+    X,
+    Y,
+    Z,
+    // ReSharper disable once InconsistentNaming
+    XY
+}
+
+public static class PhantomCamera2DExtensions
+{
+    public static PhantomCamera2D AsPhantomCamera2D(this Node2D node2D)
+    {
+        return new PhantomCamera2D(node2D);
+    }
+    
+    public static PhantomCameraNoiseEmitter2D AsPhantomCameraNoiseEmitter2D(this Node2D node2D)
+    {
+        return new PhantomCameraNoiseEmitter2D(node2D);
+    }
+
+    public static PhantomCameraNoise2D AsPhantomCameraNoise2D(this Resource resource)
+    {
+        return new PhantomCameraNoise2D(resource);
+    }
+}
+
 public class PhantomCamera2D : PhantomCamera
 {
     public Node2D Node2D => (Node2D)Node;
@@ -34,9 +72,11 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
     }
     
-    public void AppendFollowTarget(Node2D target) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargets, target);
-    public void AppendFollowTargetArray(Node2D[] targets) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
-    public void EraseFollowTarget(Node2D target) => Node2D.Call(PhantomCamera.MethodName.EraseFollowTargets, target);
+    public void AppendFollowTargets(Node2D target) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargets, target);
+    public void AppendFollowTargetsArray(Node2D[] targets) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
+    public void EraseFollowTargets(Node2D target) => Node2D.Call(PhantomCamera.MethodName.EraseFollowTargets, target);
+    
+    public FollowMode2D FollowMode => (FollowMode2D)(int)Node.Call(PhantomCamera.MethodName.GetFollowMode);
     
     public Path2D FollowPath
     {
@@ -54,6 +94,12 @@ public class PhantomCamera2D : PhantomCamera
     {
         get => (Vector2)Node2D.Call(PhantomCamera.MethodName.GetFollowDampingValue);
         set => Node2D.Call(PhantomCamera.MethodName.SetFollowDampingValue, value);
+    }
+    
+    public FollowLockAxis2D FollowAxisLock
+    {
+        get => (FollowLockAxis2D)(int)Node2D.Call(PhantomCamera.MethodName.GetFollowAxisLock);
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowAxisLock, (int)value);
     }
     
     public Vector2 Zoom
@@ -157,33 +203,33 @@ public class PhantomCamera2D : PhantomCamera
 
     public void SetLimitTarget(TileMap tileMap)
     {
-        Node.Call(MethodName.SetLimitTarget, tileMap.GetPath());
+        Node2D.Call(MethodName.SetLimitTarget, tileMap.GetPath());
     }
 
     public void SetLimitTarget(TileMapLayer tileMapLayer)
     {
-        Node.Call(MethodName.SetLimitTarget, tileMapLayer.GetPath());
+        Node2D.Call(MethodName.SetLimitTarget, tileMapLayer.GetPath());
     }
 
     public void SetLimitTarget(CollisionShape2D shape2D)
     {
-        Node.Call(MethodName.SetLimitTarget, shape2D.GetPath());
+        Node2D.Call(MethodName.SetLimitTarget, shape2D.GetPath());
     }
 
     public LimitTargetQueryResult? GetLimitTarget()
     {
-        var result = (NodePath)Node.Call(MethodName.GetLimitTarget);
+        var result = (NodePath)Node2D.Call(MethodName.GetLimitTarget);
         return result.IsEmpty ? null : new LimitTargetQueryResult(Node2D.GetNode(result));
     }
 
     public void SetLimit(Side side, int value)
     {
-        Node.Call(MethodName.SetLimit, (int)side, value);
+        Node2D.Call(MethodName.SetLimit, (int)side, value);
     }
 
     public int GetLimit(Side side)
     {
-        return (int)Node.Call(MethodName.GetLimit, (int)side);
+        return (int)Node2D.Call(MethodName.GetLimit, (int)side);
     }
 
     public new static class MethodName
@@ -237,30 +283,26 @@ public class PhantomCamera2D : PhantomCamera
     }
 }
 
-public class LimitTargetQueryResult
+public class LimitTargetQueryResult(GodotObject godotObject)
 {
-    private readonly GodotObject _obj;
+    public bool IsTileMap => godotObject.IsClass("TileMap");
 
-    public bool IsTileMap => _obj.IsClass("TileMap");
+    public bool IsTileMapLayer => godotObject.IsClass("TileMapLayer");
 
-    public bool IsTileMapLayer => _obj.IsClass("TileMapLayer");
+    public bool IsCollisionShape2D => godotObject.IsClass("CollisionShape2D");
 
-    public bool IsCollisionShape2D => _obj.IsClass("CollisionShape2D");
-
-    public LimitTargetQueryResult(GodotObject godotObject) => _obj = godotObject;
-    
     public TileMap? AsTileMap()
     {
-        return IsTileMap ? (TileMap)_obj : null;
+        return IsTileMap ? (TileMap)godotObject : null;
     }
 
     public TileMapLayer? AsTileMapLayer()
     {
-        return IsTileMapLayer ? (TileMapLayer)_obj : null;
+        return IsTileMapLayer ? (TileMapLayer)godotObject : null;
     }
 
     public CollisionShape2D? AsCollisionShape2D()
     {
-        return IsCollisionShape2D ? (CollisionShape2D)_obj : null;
+        return IsCollisionShape2D ? (CollisionShape2D)godotObject : null;
     }
 }

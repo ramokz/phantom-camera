@@ -5,91 +5,10 @@ using PhantomCamera.Noise;
 
 namespace PhantomCamera;
 
-public enum FollowMode
-{
-    None,
-    Glued,
-    Simple,
-    Group,
-    Path,
-    Framed,
-    ThirdPerson
-}
-
-public enum LookAtMode
-{
-    None,
-    Mimic,
-    Simple,
-    Group
-}
-
 public enum InactiveUpdateMode
 {
     Always,
     Never
-}
-
-public enum FollowLockAxis
-{
-    None,
-    X,
-    Y,
-    Z,
-    // ReSharper disable InconsistentNaming
-    XY,
-    XZ,
-    YZ,
-    XYZ
-    // ReSharper restore InconsistentNaming
-}
-
-public static class PhantomCameraExtension
-{
-    public static PhantomCamera3D AsPhantomCamera3D(this Node3D node3D)
-    {
-        return new PhantomCamera3D(node3D);
-    }
-
-    public static PhantomCameraNoiseEmitter3D AsPhantomCameraNoiseEmitter3D(this Node3D node3D)
-    {
-        return new PhantomCameraNoiseEmitter3D(node3D);
-    }
-    
-    public static PhantomCameraNoise3D AsPhantomCameraNoise3D(this Resource resource)
-    {
-        return new PhantomCameraNoise3D(resource);
-    }
-
-    public static PhantomCamera2D AsPhantomCamera2D(this Node2D node2D)
-    {
-        return new PhantomCamera2D(node2D);
-    }
-    
-    public static PhantomCameraNoiseEmitter2D AsPhantomCameraNoiseEmitter2D(this Node2D node2D)
-    {
-        return new PhantomCameraNoiseEmitter2D(node2D);
-    }
-
-    public static PhantomCameraNoise2D AsPhantomCameraNoise2D(this Resource resource)
-    {
-        return new PhantomCameraNoise2D(resource);
-    }
-
-    public static PhantomCameraHost AsPhantomCameraHost(this Node node)
-    {
-        return new PhantomCameraHost(node);
-    }
-
-    public static Camera3DResource AsCamera3DResource(this Resource resource)
-    {
-        return new Camera3DResource(resource);
-    }
-
-    public static PhantomCameraTween AsPhantomCameraTween(this Resource resource)
-    {
-        return new PhantomCameraTween(resource);
-    }
 }
 
 public abstract class PhantomCamera
@@ -125,8 +44,6 @@ public abstract class PhantomCamera
         get => (int)Node.Call(MethodName.GetPriority);
         set => Node.Call(MethodName.SetPriority, value);
     }
-    
-    public FollowMode FollowMode => (FollowMode)(int)Node.Call(MethodName.GetFollowMode);
     
     public bool IsActive => (bool)Node.Call(MethodName.IsActive);
 
@@ -315,7 +232,6 @@ public abstract class PhantomCamera
         public const string BecameActive = "became_active";
         public const string BecameInactive = "became_inactive";
         public const string FollowTargetChanged = "follow_target_changed";
-        public const string LookAtTargetChanged = "look_at_target_changed";
         public const string DeadZoneChanged = "dead_zone_changed";
         public const string DeadZoneReached = "dead_zone_reached";
         public const string TweenStarted = "tween_started";

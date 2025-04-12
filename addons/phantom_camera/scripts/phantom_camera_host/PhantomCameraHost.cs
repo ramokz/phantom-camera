@@ -12,10 +12,19 @@ namespace PhantomCamera;
 //     Physics
 // }
 
-public class PhantomCameraHost
+public static class PhantomCameraHostExtensions
 {
-    public Node Node { get; }
+    public static PhantomCameraHost AsPhantomCameraHost(this Node node)
+    {
+        return new PhantomCameraHost(node);
+    }
+}
+
+public class PhantomCameraHost(Node node)
+{
     
+    public Node Node { get; } = node;
+
     // For when Godot becomes the minimum version
     // public InterpolationMode InterpolationMode
     // {
@@ -36,8 +45,6 @@ public class PhantomCameraHost
     public Camera3D? Camera3D => (Camera3D?)Node.Get(PropertyName.Camera3D);
 
     public bool TriggerPhantomCameraTween => (bool)Node.Call(MethodName.GetTriggerPhantomCameraTween);
-
-    public PhantomCameraHost(Node node) => Node = node;
 
     public ActivePhantomCameraQueryResult? GetActivePhantomCamera()
     {
@@ -63,23 +70,19 @@ public class PhantomCameraHost
     }
 }
 
-public class ActivePhantomCameraQueryResult
+public class ActivePhantomCameraQueryResult(GodotObject godotObject)
 {
-    private readonly GodotObject _obj;
+    public bool Is2D => godotObject.IsClass("Node2D");
 
-    public bool Is2D => _obj.IsClass("Node2D");
-
-    public bool Is3D => _obj.IsClass("Node3D");
-
-    public ActivePhantomCameraQueryResult(GodotObject godotObject) => _obj = godotObject;
+    public bool Is3D => godotObject.IsClass("Node3D");
 
     public PhantomCamera2D? AsPhantomCamera2D()
     {
-        return Is2D ? new PhantomCamera2D(_obj) : null;
+        return Is2D ? new PhantomCamera2D(godotObject) : null;
     }
 
     public PhantomCamera3D? AsPhantomCamera3D()
     {
-        return Is3D ? new PhantomCamera3D(_obj) : null;
+        return Is3D ? new PhantomCamera3D(godotObject) : null;
     }
 }

@@ -6,6 +6,62 @@ using PhantomCamera.Noise;
 
 namespace PhantomCamera;
 
+public enum LookAtMode
+{
+    None,
+    Mimic,
+    Simple,
+    Group
+}
+
+public enum FollowMode3D
+{
+    None,
+    Glued,
+    Simple,
+    Group,
+    Path,
+    Framed,
+    ThirdPerson
+}
+
+public enum FollowLockAxis3D
+{
+    None,
+    X,
+    Y,
+    Z,
+    // ReSharper disable InconsistentNaming
+    XY,
+    XZ,
+    YZ,
+    XYZ
+    // ReSharper restore InconsistentNaming
+}
+
+public static class PhantomCamera3DExtensions
+{
+    public static PhantomCamera3D AsPhantomCamera3D(this Node3D node3D)
+    {
+        return new PhantomCamera3D(node3D);
+    }
+
+    public static PhantomCameraNoiseEmitter3D AsPhantomCameraNoiseEmitter3D(this Node3D node3D)
+    {
+        return new PhantomCameraNoiseEmitter3D(node3D);
+    }
+    
+    public static PhantomCameraNoise3D AsPhantomCameraNoise3D(this Resource resource)
+    {
+        return new PhantomCameraNoise3D(resource);
+    }
+
+    public static Camera3DResource AsCamera3DResource(this Resource resource)
+    {
+        return new Camera3DResource(resource);
+    }
+}
+
 public class PhantomCamera3D : PhantomCamera
 {
     public Node3D Node3D => (Node3D)Node;
@@ -47,6 +103,8 @@ public class PhantomCamera3D : PhantomCamera
     public void AppendFollowTargetArray(Node3D[] targets) => Node3D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
     public void EraseFollowTarget(Node3D target) => Node3D.Call(PhantomCamera.MethodName.EraseFollowTargets, target);
     
+    public FollowMode3D FollowMode => (FollowMode3D)(int)Node.Call(PhantomCamera.MethodName.GetFollowMode);
+    
     public Path3D FollowPath
     {
         get => (Path3D)Node3D.Call(PhantomCamera.MethodName.GetFollowPath);
@@ -65,9 +123,9 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(PhantomCamera.MethodName.SetFollowDampingValue, value);
     }
 
-    public FollowLockAxis FollowAxisLock
+    public FollowLockAxis3D FollowAxisLock
     {
-        get => (FollowLockAxis)(int)Node3D.Call(PhantomCamera.MethodName.GetFollowAxisLock);
+        get => (FollowLockAxis3D)(int)Node3D.Call(PhantomCamera.MethodName.GetFollowAxisLock);
         set => Node3D.Call(PhantomCamera.MethodName.SetFollowAxisLock, (int)value);
     }
 
@@ -284,7 +342,7 @@ public class PhantomCamera3D : PhantomCamera
         _callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
         _callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
         
-        Node3D.Connect(PhantomCamera.SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
+        Node3D.Connect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
         Node3D.Connect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
         Node3D.Connect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
         Node3D.Connect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
@@ -294,7 +352,7 @@ public class PhantomCamera3D : PhantomCamera
     
     ~PhantomCamera3D()
     {
-        Node3D.Disconnect(PhantomCamera.SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
+        Node3D.Disconnect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
         Node3D.Disconnect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
         Node3D.Disconnect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
         Node3D.Disconnect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
@@ -408,6 +466,7 @@ public class PhantomCamera3D : PhantomCamera
 
     public new static class SignalName
     {
+        public const string LookAtTargetChanged = "look_at_target_changed";
         public const string Camera3DResourceChanged = "camera_3d_resource_changed";
         public const string Camera3DResourcePropertyChanged = "camera_3d_resource_property_changed";
     }

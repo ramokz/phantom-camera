@@ -25,6 +25,14 @@ public enum EaseType
     OutIn
 }
 
+public static class PhantomCameraTweenExtensions
+{
+    public static PhantomCameraTween AsPhantomCameraTween(this Resource resource)
+    {
+        return new PhantomCameraTween(resource);
+    }
+}
+
 public class PhantomCameraTween(Resource tweenResource)
 {
     public Resource Resource { get; } = tweenResource;
