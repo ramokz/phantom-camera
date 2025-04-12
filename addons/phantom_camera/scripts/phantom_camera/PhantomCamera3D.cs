@@ -214,6 +214,9 @@ public class PhantomCamera3D : PhantomCamera
         get => (int)Node3D.Call(MethodName.GetCollisionMask);
         set => Node3D.Call(MethodName.SetCollisionMask, value);
     }
+
+    public void SetCollisionMaskValue(int maskLayer, bool enable) => 
+        Node3D.Call(MethodName.SetCollisionMaskValue, maskLayer, enable);
         
     public Shape3D Shape
     {
@@ -411,6 +414,8 @@ public class PhantomCamera3D : PhantomCamera
         
         public const string GetCollisionMask = "get_collision_mask";
         public const string SetCollisionMask = "set_collision_mask";
+
+        public const string SetCollisionMaskValue = "set_collision_mask_value";
         
         public const string GetShape = "get_shape";
         public const string SetShape = "set_shape";

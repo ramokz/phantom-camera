@@ -34,6 +34,8 @@ public class Camera3DResource(Resource resource)
         set => Resource.Call(MethodName.SetCullMask, value);
     }
     
+    public void SetCullMaskValue(int layer, bool value) => Resource.Call(MethodName.SetCullMaskValue, layer, value);
+    
     public float HOffset
     {
         get => (float)Resource.Call(MethodName.GetHOffset);
@@ -80,11 +82,6 @@ public class Camera3DResource(Resource resource)
     {
         get => (float)Resource.Call(MethodName.GetFar);
         set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, MinFar, MaxFar));
-    }
-
-    public void SetCullMaskValue(int layerNumber, bool value)
-    {
-        Resource.Call(MethodName.SetCullMaskValue, layerNumber, value);
     }
 
     public static class MethodName
