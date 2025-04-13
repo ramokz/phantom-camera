@@ -702,7 +702,9 @@ func _validate_property(property: Dictionary) -> void:
 			"look_at_target", \
 			"look_at_offset" , \
 			"look_at_damping", \
-			"look_at_damping_value":
+			"look_at_damping_value", \
+			"up", \
+			"up_target":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 	elif look_at_mode == LookAtMode.GROUP:
 		match property.name:
