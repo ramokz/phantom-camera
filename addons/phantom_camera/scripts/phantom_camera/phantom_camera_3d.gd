@@ -1069,6 +1069,16 @@ func _interpolate_rotation(target_position: Vector3, delta: float) -> void:
 	var basis_y: Vector3 = basis_z.cross(basis_x.normalized())
 
 	var target_basis: Basis = Basis(basis_x, basis_y, basis_z)
+
+	if target_basis.determinant() == 0:
+		if target_basis.z == Vector3.UP:
+			global_rotation_degrees.x = -90
+		else:
+			global_rotation_degrees.x = 90
+
+		_transform_output.basis = global_basis
+		return
+
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
 
 	if look_at_damping:
