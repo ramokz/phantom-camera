@@ -738,10 +738,15 @@ func _enter_tree() -> void:
 		visibility_changed.connect(_check_visibility)
 
 	_should_follow_checker()
+	_should_look_at_checker()
+
 	if follow_mode == FollowMode.GROUP:
 		_follow_targets_size_check()
 	elif follow_mode == FollowMode.NONE:
 		_is_parents_physics()
+
+	if look_at_mode == LookAtMode.GROUP:
+		_look_at_targets_size_check()
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
@@ -1224,6 +1229,19 @@ func _look_at_target_tree_exiting(target: Node) -> void:
 
 func _up_target_tree_exiting() -> void:
 	up_target = null
+
+
+func _should_look_at_checker() -> void:
+	if look_at_mode == LookAtMode.NONE:
+		_should_look_at = false
+		return
+
+	if not look_at_mode == LookAtMode.GROUP:
+		if is_instance_valid(look_at_target):
+			_should_look_at = true
+		else:
+			_should_look_at = false
+
 
 func _look_at_targets_size_check() -> void:
 	var targets_size: int = 0
