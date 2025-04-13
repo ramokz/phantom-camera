@@ -304,7 +304,7 @@ enum FollowLockAxis {
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
-@export var camera_3d_resource: Camera3DResource: # = Camera3DResource.new():
+@export var camera_3d_resource: Camera3DResource = null:
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
@@ -493,7 +493,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export_group("Noise")
 ## Applies a noise, or shake, to a [Camera3D].[br]
 ## Once set, the noise will run continuously after the tween to the [PhantomCamera3D] instance is complete.
-@export var noise: PhantomCameraNoise3D:
+@export var noise: PhantomCameraNoise3D = null:
 	set = set_noise,
 	get = get_noise
 
@@ -509,7 +509,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
 ## to make this [PhantomCamera3D] be affect by it.
-@export_flags_3d_render var noise_emitter_layer: int:
+@export_flags_3d_render var noise_emitter_layer: int = 0:
 	set = set_noise_emitter_layer,
 	get = get_noise_emitter_layer
 
@@ -552,15 +552,14 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
 
-var _follow_spring_arm: SpringArm3D
+var _follow_spring_arm: SpringArm3D = null
 var _has_follow_spring_arm: bool = false
-
 
 var _has_noise_resource: bool = false
 
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
-var _phantom_camera_manager: Node
+var _phantom_camera_manager: Node = null
 
 #endregion
 
@@ -739,10 +738,15 @@ func _enter_tree() -> void:
 		visibility_changed.connect(_check_visibility)
 
 	_should_follow_checker()
+	_should_look_at_checker()
+
 	if follow_mode == FollowMode.GROUP:
 		_follow_targets_size_check()
 	elif follow_mode == FollowMode.NONE:
 		_is_parents_physics()
+
+	if look_at_mode == LookAtMode.GROUP:
+		_look_at_targets_size_check()
 
 	#if not get_parent() is SpringArm3D:
 		#if look_at_target:
@@ -1065,6 +1069,16 @@ func _interpolate_rotation(target_position: Vector3, delta: float) -> void:
 	var basis_y: Vector3 = basis_z.cross(basis_x.normalized())
 
 	var target_basis: Basis = Basis(basis_x, basis_y, basis_z)
+
+	if target_basis.determinant() == 0:
+		if target_basis.z == Vector3.UP:
+			global_rotation_degrees.x = -90
+		else:
+			global_rotation_degrees.x = 90
+
+		_transform_output.basis = global_basis
+		return
+
 	var target_quat: Quaternion = target_basis.get_rotation_quaternion().normalized()
 
 	if look_at_damping:
@@ -1225,6 +1239,19 @@ func _look_at_target_tree_exiting(target: Node) -> void:
 
 func _up_target_tree_exiting() -> void:
 	up_target = null
+
+
+func _should_look_at_checker() -> void:
+	if look_at_mode == LookAtMode.NONE:
+		_should_look_at = false
+		return
+
+	if not look_at_mode == LookAtMode.GROUP:
+		if is_instance_valid(look_at_target):
+			_should_look_at = true
+		else:
+			_should_look_at = false
+
 
 func _look_at_targets_size_check() -> void:
 	var targets_size: int = 0
@@ -1915,6 +1942,9 @@ func set_noise(value: PhantomCameraNoise3D) -> void:
 
 func get_noise() -> PhantomCameraNoise3D:
 	return noise
+
+func has_noise_resource() -> bool:
+	return _has_noise_resource
 
 
 ## Sets the [member noise_emitter_layer] value.

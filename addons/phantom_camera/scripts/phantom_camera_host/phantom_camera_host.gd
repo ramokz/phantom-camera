@@ -5,8 +5,8 @@ extends Node
 
 ## Controls a scene's [Camera2D] (2D scenes) and [Camera3D] (3D scenes).
 ##
-## All instantiated [param PhantomCameras] in a scene are assign to and managed by a
-## PhantomCameraHost. It is what determines which [param PhantomCamera] should
+## All instantiated [param PhantomCameras] in a scene are assigned to a specific layer, where a
+## PhantomCameraHost will react to those that corresponds. It is what determines which [param PhantomCamera] should
 ## be active.
 
 #region Signals
@@ -190,6 +190,7 @@ var _active_pcam_2d_glob_transform: Transform2D = Transform2D()
 var _active_pcam_3d_glob_transform: Transform3D = Transform3D()
 
 var _has_noise_emitted: bool = false
+var _reset_noise_offset_2d: bool = false
 var _noise_emitted_output_2d: Transform2D = Transform2D()
 var _noise_emitted_output_3d: Transform3D = Transform3D()
 
@@ -734,14 +735,6 @@ func _process(delta: float) -> void:
 
 	if not _follow_target_physics_based: _tween_follow_checker(delta)
 
-	if not _has_noise_emitted: return
-	if _is_2d:
-		camera_2d.offset += _noise_emitted_output_2d.origin
-		camera_2d.rotation += _noise_emitted_output_2d.get_rotation() # + _noise_emitted_output_2d.get_rotation()
-	else:
-		camera_3d.global_transform *= _noise_emitted_output_3d
-	_has_noise_emitted = false
-
 
 func _physics_process(delta: float) -> void:
 	if _active_pcam_missing or not _follow_target_physics_based: return
@@ -756,6 +749,10 @@ func _tween_follow_checker(delta: float) -> void:
 
 		_active_pcam_2d.process_logic(delta)
 		_active_pcam_2d_glob_transform = _active_pcam_2d.get_transform_output()
+
+		if _reset_noise_offset_2d:
+			camera_2d.offset = Vector2.ZERO # Resets noise position
+			_reset_noise_offset_2d = false
 	else:
 		if not is_instance_valid(_active_pcam_3d):
 			_active_pcam_missing = true
@@ -773,12 +770,20 @@ func _tween_follow_checker(delta: float) -> void:
 	else:
 		_pcam_tween(delta)
 
+	# Camera Noise
 	if _is_2d:
-		camera_2d.offset = Vector2.ZERO
-		camera_2d.offset = _active_pcam_2d.get_noise_transform().origin # + _noise_emitted_output_2d.origin
-		camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation() # + _noise_emitted_output_2d.get_rotation()
+		if not _has_noise_emitted and not _active_pcam_2d.has_noise_resource(): return
+		camera_2d.offset += _active_pcam_2d.get_noise_transform().origin + _noise_emitted_output_2d.origin
+		if camera_2d.ignore_rotation and _noise_emitted_output_2d.get_rotation() != 0:
+			push_warning(camera_2d.name, " has ignore_rotation enabled. Uncheck the property if you want to apply rotational noise.")
+		else:
+			camera_2d.rotation += _active_pcam_2d.get_noise_transform().get_rotation() + _noise_emitted_output_2d.get_rotation()
+		_has_noise_emitted = false
+		_reset_noise_offset_2d = true
 	else:
-		camera_3d.global_transform *= _active_pcam_3d.get_noise_transform()
+		if not _has_noise_emitted and not _active_pcam_3d.has_noise_resource(): return
+		camera_3d.global_transform *= _active_pcam_3d.get_noise_transform() * _noise_emitted_output_3d
+		_has_noise_emitted = false
 
 
 func _pcam_follow(_delta: float) -> void:
@@ -1246,11 +1251,13 @@ func _pcam_added_to_scene(pcam: Node) -> void:
 func _pcam_removed_from_scene(pcam: Node) -> void:
 	if _is_2d:
 		if pcam == _active_pcam_2d:
+			_active_pcam_2d = null
 			_active_pcam_missing = true
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 	else:
 		if pcam == _active_pcam_3d:
+			_active_pcam_3d = null
 			_active_pcam_missing = true
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()

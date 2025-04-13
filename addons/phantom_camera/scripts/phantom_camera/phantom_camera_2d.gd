@@ -402,7 +402,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 ## Applies an offset to the [TileMap]/[TileMapLayer] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
-@export var limit_margin: Vector4i:
+@export var limit_margin: Vector4i = Vector4.ZERO:
 	set = set_limit_margin,
 	get = get_limit_margin
 #@export var limit_smoothed: bool = false: # TODO - Needs proper support
@@ -412,7 +412,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 @export_group("Noise")
 ## Applies a noise, or shake, to a [Camera2D].[br]
 ## Once set, the noise will run continuously after the tween to the [PhantomCamera2D] is complete.
-@export var noise: PhantomCameraNoise2D:
+@export var noise: PhantomCameraNoise2D = null:
 	set = set_noise,
 	get = get_noise
 
@@ -428,7 +428,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter2D.noise_emitter_layer]
 ## to make this [PhantomCamera2D] be affect by it.
-@export_flags_2d_render var noise_emitter_layer: int:
+@export_flags_2d_render var noise_emitter_layer: int = 0:
 	set = set_noise_emitter_layer,
 	get = get_noise_emitter_layer
 
@@ -443,7 +443,7 @@ var _physics_interpolation_enabled: bool = false # NOTE - Enable for Godot 4.3 a
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
-var _follow_targets: Array[Node2D]
+var _follow_targets: Array[Node2D] = []
 
 var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
 
@@ -455,24 +455,25 @@ var _tween_skip: bool = false
 ## This is only used for when [member follow_mode] is set to [param Framed].
 var _follow_framed_initial_set: bool = false
 
-static var _draw_limits: bool
+static var _draw_limits: bool = false
 
-var _limit_sides: Vector4i
+var _limit_sides: Vector4i = _limit_sides_default
 var _limit_sides_default: Vector4i = Vector4i(-10000000, -10000000, 10000000, 10000000)
 
-var _limit_node: Node2D
+var _limit_node: Node2D = null
+var _tile_size_perspective_scaler: Vector2 = Vector2.ONE
 
-var _limit_inactive_pcam: bool
+var _limit_inactive_pcam: bool = false
 
-var _target_transform: Transform2D
+var _target_transform: Transform2D = Transform2D()
 
-var _transform_output: Transform2D
-var _transform_noise: Transform2D
+var _transform_output: Transform2D = Transform2D()
+var _transform_noise: Transform2D = Transform2D()
 
 var _has_noise_resource: bool = false
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
-var _phantom_camera_manager: Node
+var _phantom_camera_manager: Node = null
 
 #endregion
 
@@ -1554,6 +1555,9 @@ func set_noise(value: PhantomCameraNoise2D) -> void:
 ## Returns the [PhantomCameraNoise2D] resource.
 func get_noise() -> PhantomCameraNoise2D:
 	return noise
+
+func has_noise_resource() -> bool:
+	return _has_noise_resource
 
 
 ## Sets the [member noise_emitter_layer] value.
