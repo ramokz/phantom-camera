@@ -1555,6 +1555,9 @@ func set_noise(value: PhantomCameraNoise2D) -> void:
 func get_noise() -> PhantomCameraNoise2D:
 	return noise
 
+func has_noise_resource() -> bool:
+	return _has_noise_resource
+
 
 ## Sets the [member noise_emitter_layer] value.
 func set_noise_emitter_layer(value: int) -> void:
