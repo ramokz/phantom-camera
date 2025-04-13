@@ -555,7 +555,6 @@ var _follow_framed_offset: Vector3 = Vector3.ZERO
 var _follow_spring_arm: SpringArm3D
 var _has_follow_spring_arm: bool = false
 
-
 var _has_noise_resource: bool = false
 
 
@@ -1915,6 +1914,9 @@ func set_noise(value: PhantomCameraNoise3D) -> void:
 
 func get_noise() -> PhantomCameraNoise3D:
 	return noise
+
+func has_noise_resource() -> bool:
+	return _has_noise_resource
 
 
 ## Sets the [member noise_emitter_layer] value.
