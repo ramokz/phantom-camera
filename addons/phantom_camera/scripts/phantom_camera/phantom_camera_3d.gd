@@ -304,7 +304,7 @@ enum FollowLockAxis {
 
 ## A resource type that allows for overriding the [param Camera3D] node's
 ## properties.
-@export var camera_3d_resource: Camera3DResource: # = Camera3DResource.new():
+@export var camera_3d_resource: Camera3DResource = null:
 	set = set_camera_3d_resource,
 	get = get_camera_3d_resource
 
@@ -493,7 +493,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export_group("Noise")
 ## Applies a noise, or shake, to a [Camera3D].[br]
 ## Once set, the noise will run continuously after the tween to the [PhantomCamera3D] instance is complete.
-@export var noise: PhantomCameraNoise3D:
+@export var noise: PhantomCameraNoise3D = null:
 	set = set_noise,
 	get = get_noise
 
@@ -509,7 +509,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 ## Enable a corresponding layer for a [member PhantomCameraNoiseEmitter3D.noise_emitter_layer]
 ## to make this [PhantomCamera3D] be affect by it.
-@export_flags_3d_render var noise_emitter_layer: int:
+@export_flags_3d_render var noise_emitter_layer: int = 0:
 	set = set_noise_emitter_layer,
 	get = get_noise_emitter_layer
 
@@ -552,14 +552,14 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
 
-var _follow_spring_arm: SpringArm3D
+var _follow_spring_arm: SpringArm3D = null
 var _has_follow_spring_arm: bool = false
 
 var _has_noise_resource: bool = false
 
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
-var _phantom_camera_manager: Node
+var _phantom_camera_manager: Node = null
 
 #endregion
 
