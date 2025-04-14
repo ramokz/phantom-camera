@@ -197,7 +197,7 @@ var _noise_emitted_output_3d: Transform3D = Transform3D()
 #endregion
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
-var _phantom_camera_manager: Node
+var _phantom_camera_manager: Node = null
 
 #region Public Variables
 
@@ -1271,15 +1271,17 @@ func _pcam_visibility_changed(pcam: Node) -> void:
 	_check_pcam_priority(pcam)
 
 
-func _pcam_teleported() -> void:
+func _pcam_teleported(pcam: Node) -> void:
 	if _is_2d:
+		if not pcam == _active_pcam_2d: return
 		if not is_instance_valid(camera_2d): return
-		camera_2d.global_position = _active_pcam_2d.global_position
+		camera_2d.global_position = _active_pcam_2d.get_transform_output().origin
 		camera_2d.call("reset_physics_interpolation")
 #		camera_2d.reset_physics_interpolation() # TODO - For when Godot 4.3 becomes the minimum version
 	else:
+		if not pcam == _active_pcam_3d: return
 		if not is_instance_valid(camera_3d): return
-		camera_3d.global_position = _active_pcam_3d.global_position
+		camera_3d.global_position = _active_pcam_3d.get_transform_output().origin
 		camera_3d.call("reset_physics_interpolation")
 #		camera_3d.reset_physics_interpolation() # TODO - For when Godot 4.3 becomes the minimum version
 
