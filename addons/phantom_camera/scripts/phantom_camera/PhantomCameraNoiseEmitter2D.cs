@@ -2,50 +2,50 @@
 
 namespace PhantomCamera.Noise;
 
-public class PhantomCameraNoiseEmitter2D(GodotObject node)
+public partial class PhantomCameraNoiseEmitter2D(GodotObject node) : GodotObject
 {
     public Node2D Node2D = (Node2D)node;
     
     public PhantomCameraNoise2D Noise
     {
-        get => new((Resource)Node2D.Call(MethodName.GetNoise));
-        set => Node2D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
+        get => new((Resource)Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.GetNoise));
+        set => Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetNoise, (GodotObject)value.Resource);
     }
     
     public bool Continuous
     {
-        get => (bool)Node2D.Call(MethodName.GetContinuous);
-        set => Node2D.Call(MethodName.SetContinuous, value);
+        get => (bool)Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.GetContinuous);
+        set => Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetContinuous, value);
     }
     
     public float GrowthTime
     {
-        get => (float)Node2D.Call(MethodName.GetGrowthTime);
-        set => Node2D.Call(MethodName.SetGrowthTime, value);
+        get => (float)Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.GetGrowthTime);
+        set => Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetGrowthTime, value);
     }
 
     public float Duration
     {
-        get => (float)Node2D.Call(MethodName.GetDuration);
-        set => Node2D.Call(MethodName.SetDuration, value);
+        get => (float)Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.GetDuration);
+        set => Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetDuration, value);
     }
 
     public float DecayTime
     {
-        get => (float)Node2D.Call(MethodName.GetDecayTime);
-        set => Node2D.Call(MethodName.SetDecayTime, value);
+        get => (float)Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.GetDecayTime);
+        set => Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetDecayTime, value);
     }
     
     public int NoiseEmitterLayer
     {
-        get => (int)Node2D.Call(MethodName.GetNoiseEmitterLayer);
-        set => Node2D.Call(MethodName.SetNoiseEmitterLayer, value);
+        get => (int)Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.GetNoiseEmitterLayer);
+        set => Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetNoiseEmitterLayer, value);
     }
     
     public void SetNoiseEmitterLayerValue(int layer, bool value) => 
-        Node2D.Call(MethodName.SetNoiseEmitterLayerValue, layer, value);
+        Node2D.Call(PhantomCameraNoiseEmitter2DMethodName.SetNoiseEmitterLayerValue, layer, value);
     
-    public static class MethodName
+    public static class PhantomCameraNoiseEmitter2DMethodName
     {
         public const string GetNoise = "get_noise";
         public const string SetNoise = "set_noise";

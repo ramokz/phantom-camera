@@ -6,83 +6,83 @@ namespace PhantomCamera.Noise;
 /// <para>A resource type used to apply noise, or shake, to Camera3Ds that have a PhantomCameraHost as a child.</para>
 /// <para>It can be applied to either PhantomCameraNoiseEmitter3D or a PhantomCamera3D noise property directly</para>
 /// </summary>
-public class PhantomCameraNoise3D(Resource resource)
+public partial class PhantomCameraNoise3D(Resource resource) : Resource
 {
     public readonly Resource Resource = resource;
 
     public float Amplitude
     {
-        get => (float)Resource.Call(MethodName.GetAmplitude);
-        set => Resource.Call(MethodName.SetAmplitude, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetAmplitude);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetAmplitude, value);
     }
 
     public float Frequency
     {
-        get => (float)Resource.Call(MethodName.GetFrequency);
-        set => Resource.Call(MethodName.SetFrequency, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetFrequency);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetFrequency, value);
     }
 
     public bool RandomizeNoiseSeed
     {
-        get => (bool)Resource.Call(MethodName.GetRandomizeNoiseSeed);
-        set => Resource.Call(MethodName.SetRandomizeNoiseSeed, value);
+        get => (bool)Resource.Call(PhantomCameraNoise3DMethodName.GetRandomizeNoiseSeed);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetRandomizeNoiseSeed, value);
     }
 
     public int NoiseSeed
     {
-        get => (int)Resource.Call(MethodName.GetNoiseSeed);
-        set => Resource.Call(MethodName.SetNoiseSeed, value);
+        get => (int)Resource.Call(PhantomCameraNoise3DMethodName.GetNoiseSeed);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetNoiseSeed, value);
     }
 
     public bool RotationalNoise
     {
-        get => (bool)Resource.Call(MethodName.GetRotationalNoise);
-        set => Resource.Call(MethodName.SetRotationalNoise, value);
+        get => (bool)Resource.Call(PhantomCameraNoise3DMethodName.GetRotationalNoise);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetRotationalNoise, value);
     }
 
     public bool PositionalNoise
     {
-        get => (bool)Resource.Call(MethodName.GetPositionalNoise);
-        set => Resource.Call(MethodName.SetPositionalNoise, value);
+        get => (bool)Resource.Call(PhantomCameraNoise3DMethodName.GetPositionalNoise);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetPositionalNoise, value);
     }
 
     public float RotationalMultiplierX
     {
-        get => (float)Resource.Call(MethodName.GetRotationalMultiplierX);
-        set => Resource.Call(MethodName.SetRotationalMultiplierX, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetRotationalMultiplierX);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetRotationalMultiplierX, value);
     }
     
     public float RotationalMultiplierY
     {
-        get => (float)Resource.Call(MethodName.GetRotationalMultiplierY);
-        set => Resource.Call(MethodName.SetRotationalMultiplierY, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetRotationalMultiplierY);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetRotationalMultiplierY, value);
     }
     
     public float RotationalMultiplierZ
     {
-        get => (float)Resource.Call(MethodName.GetRotationalMultiplierZ);
-        set => Resource.Call(MethodName.SetRotationalMultiplierZ, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetRotationalMultiplierZ);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetRotationalMultiplierZ, value);
     }
 
     public float PositionalMultiplierX
     {
-        get => (float)Resource.Call(MethodName.GetPositionalMultiplierX);
-        set => Resource.Call(MethodName.SetPositionalMultiplierX, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetPositionalMultiplierX);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetPositionalMultiplierX, value);
     }
     
     public float PositionalMultiplierY
     {
-        get => (float)Resource.Call(MethodName.GetPositionalMultiplierY);
-        set => Resource.Call(MethodName.SetPositionalMultiplierY, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetPositionalMultiplierY);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetPositionalMultiplierY, value);
     }
     
     public float PositionalMultiplierZ
     {
-        get => (float)Resource.Call(MethodName.GetPositionalMultiplierZ);
-        set => Resource.Call(MethodName.SetPositionalMultiplierZ, value);
+        get => (float)Resource.Call(PhantomCameraNoise3DMethodName.GetPositionalMultiplierZ);
+        set => Resource.Call(PhantomCameraNoise3DMethodName.SetPositionalMultiplierZ, value);
     }
 
-    public static class MethodName
+    public static class PhantomCameraNoise3DMethodName
     {
         public const string GetAmplitude = "get_amplitude";
         public const string SetAmplitude = "set_amplitude";

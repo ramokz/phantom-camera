@@ -8,8 +8,8 @@ public partial class DevSceneCSharp3D : Node3D
     
     public override void _Ready()
     {
-        _pCam3D1 = GetNode<Node3D>("Cam1").AsPhantomCamera3D();
-        _pCam3D2 = GetNode<Node3D>("Cam2").AsPhantomCamera3D();
+        _pCam3D1 = GetNode<PhantomCamera3D>("Cam1");
+        _pCam3D2 = GetNode<PhantomCamera3D>("Cam2");
 
         GD.Print(_pCam3D1.Node3D.Name);
         GD.Print(_pCam3D2.Node3D.Name);
