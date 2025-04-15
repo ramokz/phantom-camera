@@ -11,13 +11,22 @@ project.godot
 /icon.svg
 /icon.svg.import
 export_presets.cfg
+.editorconfig
 
 /addons/*
 !/addons/phantom_camera
 
 .godot/
 
-# Docs specic ignores
+# CSharp
+*.DotSettings
+*.DotSettings.user
+*.csproj.old
+*.csproj.old.1
+*.csproj.old.2
+*.csproj.old.3
+
+# Docs specific ignores
 #/docs/
 node_modules
 cache
