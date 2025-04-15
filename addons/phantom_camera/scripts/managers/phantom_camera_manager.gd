@@ -21,7 +21,7 @@ signal pcam_removed_from_scene(pcam: Node)
 signal pcam_priority_changed(pcam: Node)
 signal pcam_visibility_changed(pcam: Node)
 
-signal pcam_teleport
+signal pcam_teleport(pcam: Node)
 
 # Limit (2D)
 signal limit_2d_changed(side: int, limit: int)
