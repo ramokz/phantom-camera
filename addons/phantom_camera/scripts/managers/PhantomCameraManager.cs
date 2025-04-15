@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Godot;
-using Godot.Collections;
 using PhantomCamera;
 
 #nullable enable
@@ -13,14 +12,17 @@ public static class PhantomCameraManager
 
     public static GodotObject Instance => _instance ??= Engine.GetSingleton("PhantomCameraManager");
 
-    public static Array<PhantomCamera2D> PhantomCamera2Ds =>
-        Instance.Call(MethodName.GetPhantomCamera2Ds).AsGodotArray<PhantomCamera2D>();
+    public static PhantomCamera2D[] PhantomCamera2Ds =>
+        Instance.Call(MethodName.GetPhantomCamera2Ds).AsGodotArray<Node2D>()
+            .Select(node => new PhantomCamera2D(node)).ToArray();
     
-    public static Array<PhantomCamera3D> PhantomCamera3Ds =>
-        Instance.Call(MethodName.GetPhantomCamera3Ds).AsGodotArray<PhantomCamera3D>();
-
-    public static Array<PhantomCameraHost> PhantomCameraHosts =>
-        Instance.Call(MethodName.GetPhantomCameraHosts).AsGodotArray<PhantomCameraHost>();
+    public static PhantomCamera3D[] PhantomCamera3Ds =>
+        Instance.Call(MethodName.GetPhantomCamera3Ds).AsGodotArray<Node3D>()
+            .Select(node => new PhantomCamera3D(node)).ToArray();
+    
+    public static PhantomCameraHost[] PhantomCameraHosts =>
+        Instance.Call(MethodName.GetPhantomCameraHosts).AsGodotArray<Node>()
+            .Select(node => new PhantomCameraHost(node)).ToArray();
     
     public static class MethodName
     {

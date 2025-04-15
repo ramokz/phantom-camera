@@ -25,29 +25,37 @@ public enum EaseType
     OutIn
 }
 
-public partial class PhantomCameraTween(Resource tweenResource) : Resource
+public static class PhantomCameraTweenExtensions
+{
+    public static PhantomCameraTween AsPhantomCameraTween(this Resource resource)
+    {
+        return new PhantomCameraTween(resource);
+    }
+}
+
+public class PhantomCameraTween(Resource tweenResource)
 {
     public Resource Resource { get; } = tweenResource;
 
     public float Duration
     {
-        get => (float)Resource.Get(PhantomCameraTweenPropertyName.Duration);
-        set => Resource.Set(PhantomCameraTweenPropertyName.Duration, value);
+        get => (float)Resource.Get(PropertyName.Duration);
+        set => Resource.Set(PropertyName.Duration, value);
     }
 
     public TransitionType Transition
     {
-        get => (TransitionType)(int)Resource.Get(PhantomCameraTweenPropertyName.Transition);
-        set => Resource.Set(PhantomCameraTweenPropertyName.Transition, (int)value);
+        get => (TransitionType)(int)Resource.Get(PropertyName.Transition);
+        set => Resource.Set(PropertyName.Transition, (int)value);
     }
 
     public EaseType Ease
     {
-        get => (EaseType)(int)Resource.Get(PhantomCameraTweenPropertyName.Ease);
-        set => Resource.Set(PhantomCameraTweenPropertyName.Ease, (int)value);
+        get => (EaseType)(int)Resource.Get(PropertyName.Ease);
+        set => Resource.Set(PropertyName.Ease, (int)value);
     }
 
-    public static class PhantomCameraTweenPropertyName
+    public static class PropertyName
     {
         public const string Duration = "durartion";
         public const string Transition = "transition";

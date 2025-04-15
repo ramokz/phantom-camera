@@ -9,7 +9,7 @@ public enum ProjectionType
     Frustum
 }
 
-public partial class Camera3DResource(Resource resource) : Resource
+public class Camera3DResource(Resource resource)
 {
     public readonly Resource Resource = resource;
 
@@ -30,61 +30,61 @@ public partial class Camera3DResource(Resource resource) : Resource
 
     public int CullMask
     {
-        get => (int)Resource.Call(Camera3DResourceMethodName.GetCullMask);
-        set => Resource.Call(Camera3DResourceMethodName.SetCullMask, value);
+        get => (int)Resource.Call(MethodName.GetCullMask);
+        set => Resource.Call(MethodName.SetCullMask, value);
     }
     
-    public void SetCullMaskValue(int layer, bool value) => Resource.Call(Camera3DResourceMethodName.SetCullMaskValue, layer, value);
+    public void SetCullMaskValue(int layer, bool value) => Resource.Call(MethodName.SetCullMaskValue, layer, value);
     
     public float HOffset
     {
-        get => (float)Resource.Call(Camera3DResourceMethodName.GetHOffset);
-        set => Resource.Call(Camera3DResourceMethodName.SetHOffset, Mathf.Clamp(value, MinOffset, MaxOffset));
+        get => (float)Resource.Call(MethodName.GetHOffset);
+        set => Resource.Call(MethodName.SetHOffset, Mathf.Clamp(value, MinOffset, MaxOffset));
     }
 
     public float VOffset
     {
-        get => (float)Resource.Call(Camera3DResourceMethodName.GetVOffset);
-        set => Resource.Call(Camera3DResourceMethodName.SetVOffset, Mathf.Clamp(value, MinOffset, MaxOffset));
+        get => (float)Resource.Call(MethodName.GetVOffset);
+        set => Resource.Call(MethodName.SetVOffset, Mathf.Clamp(value, MinOffset, MaxOffset));
     }
 
     public ProjectionType Projection
     {
-        get => (ProjectionType)(int)Resource.Call(Camera3DResourceMethodName.GetProjection);
-        set => Resource.Call(Camera3DResourceMethodName.SetProjection, (int)value);
+        get => (ProjectionType)(int)Resource.Call(MethodName.GetProjection);
+        set => Resource.Call(MethodName.SetProjection, (int)value);
     }
 
     public float Fov
     {
-        get => (float)Resource.Call(Camera3DResourceMethodName.GetFov);
-        set => Resource.Call(Camera3DResourceMethodName.SetFov, Mathf.Clamp(value, MinFov, MaxFov));
+        get => (float)Resource.Call(MethodName.GetFov);
+        set => Resource.Call(MethodName.SetFov, Mathf.Clamp(value, MinFov, MaxFov));
     }
 
     public float Size
     {
-        get => (float)Resource.Call(Camera3DResourceMethodName.GetSize);
-        set => Resource.Call(Camera3DResourceMethodName.SetSize, Mathf.Clamp(value, MinSize, MaxSize));
+        get => (float)Resource.Call(MethodName.GetSize);
+        set => Resource.Call(MethodName.SetSize, Mathf.Clamp(value, MinSize, MaxSize));
     }
 
     public Vector2 FrustumOffset
     {
-        get => (Vector2)Resource.Call(Camera3DResourceMethodName.GetFrustumOffset);
-        set => Resource.Call(Camera3DResourceMethodName.SetFrustumOffset, value);
+        get => (Vector2)Resource.Call(MethodName.GetFrustumOffset);
+        set => Resource.Call(MethodName.SetFrustumOffset, value);
     }
     
     public float Near
     {
-        get => (float)Resource.Call(Camera3DResourceMethodName.GetNear);
-        set => Resource.Call(Camera3DResourceMethodName.SetNear, Mathf.Clamp(value, MinNear, MaxNear));
+        get => (float)Resource.Call(MethodName.GetNear);
+        set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, MinNear, MaxNear));
     }
     
     public float Far
     {
-        get => (float)Resource.Call(Camera3DResourceMethodName.GetFar);
-        set => Resource.Call(Camera3DResourceMethodName.SetFar, Mathf.Clamp(value, MinFar, MaxFar));
+        get => (float)Resource.Call(MethodName.GetFar);
+        set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, MinFar, MaxFar));
     }
 
-    public static class Camera3DResourceMethodName
+    public static class MethodName
     {
         public const string GetCullMask = "get_cull_mask";
         public const string SetCullMask = "set_cull_mask";
