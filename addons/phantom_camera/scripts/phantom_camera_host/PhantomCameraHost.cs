@@ -1,5 +1,4 @@
 ﻿using Godot;
-using PhantomCamera;
 
 #nullable enable
 
@@ -72,9 +71,13 @@ public class PhantomCameraHost(Node node)
 
 public class ActivePhantomCameraQueryResult(GodotObject godotObject)
 {
-    public bool Is2D => godotObject.IsClass("Node2D");
+    public bool Is2D => godotObject.IsClass("Node2D") || ((Node)godotObject).Name.ToString().Contains("PhantomCamera2D") 
+                                               || ((Node)godotObject).Name.ToString().Contains("PCam2D") 
+                                               || ((Node)godotObject).Name.ToString().Contains("2D");
 
-    public bool Is3D => godotObject.IsClass("Node3D");
+    public bool Is3D => godotObject.IsClass("Node3D") || ((Node)godotObject).Name.ToString().Contains("PhantomCamera3D") 
+                                               || ((Node)godotObject).Name.ToString().Contains("PCam3D") 
+                                               || ((Node)godotObject).Name.ToString().Contains("3D");
 
     public PhantomCamera2D? AsPhantomCamera2D()
     {

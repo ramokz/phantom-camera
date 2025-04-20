@@ -21,7 +21,6 @@ public enum FollowLockAxis2D
     None,
     X,
     Y,
-    Z,
     // ReSharper disable once InconsistentNaming
     XY
 }

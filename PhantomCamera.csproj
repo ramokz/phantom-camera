@@ -6,25 +6,4 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="tests\scenes\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include=".editorconfig" />
-    <Content Include="addons\phantom_camera\scripts\managers\PhantomCameraManager.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\phantom_camera\PhantomCamera.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\phantom_camera\PhantomCamera2D.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\phantom_camera\PhantomCamera3D.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\phantom_camera\PhantomCameraNoiseEmitter2D.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\phantom_camera\PhantomCameraNoiseEmitter3D.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\phantom_camera_host\PhantomCameraHost.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\resources\Camera3DResource.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\resources\PhantomCameraNoise2D.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\resources\PhantomCameraNoise3D.cs.uid" />
-    <Content Include="addons\phantom_camera\scripts\resources\PhantomCameraTween.cs.uid" />
-    <Content Include="dev_scenes\3d\scripts\DevSceneCSharp3D.cs.uid" />
-    <Content Include="tests\scripts\TestPhantomCameraWrapper.cs.uid" />
-    <Content Include="tests\scripts\test_phantom_camera.gd.uid" />
-    <Content Include="tests\scripts\test_runner.gd.uid" />
-  </ItemGroup>
 </Project>
