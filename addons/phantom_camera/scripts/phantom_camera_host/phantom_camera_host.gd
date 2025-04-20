@@ -497,10 +497,11 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			# Assigns a default shape to SpringArm3D node is none is supplied
 			if _active_pcam_3d.follow_mode == _active_pcam_3d.FollowMode.THIRD_PERSON:
 				if not _active_pcam_3d.shape:
-					var pyramid_shape_data = PhysicsServer3D.shape_get_data(
+
+					var pyramid_shape_data = Engine.get_singleton("PhysicsServer3D").call("shape_get_data",
 						camera_3d.get_pyramid_shape_rid()
 					)
-					var shape = ConvexPolygonShape3D.new()
+					var shape = ClassDB.instantiate("ConvexPolygonShape3D")
 					shape.points = pyramid_shape_data
 					_active_pcam_3d.shape = shape
 

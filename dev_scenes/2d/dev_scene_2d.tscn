@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_g1jp6"]
 [ext_resource type="Texture2D" uid="uid://bbsii3tcnsmr2" path="res://addons/phantom_camera/examples/textures/2D/floor_N.png" id="3_iwhil"]
 [ext_resource type="Texture2D" uid="uid://rl3ojvpbnrhl" path="res://addons/phantom_camera/examples/textures/2D/tilesheet_complete.png" id="3_q20j0"]
-[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_tm0ws"]
+[ext_resource type="Script" uid="uid://c8g4soajr2jpi" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_tm0ws"]
 [ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="4_dfyri"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_qq8ep"]
 [ext_resource type="Texture2D" uid="uid://c7x3fsdth3mj7" path="res://addons/phantom_camera/examples/textures/2D/floor_S.png" id="4_v3ieq"]
@@ -554,7 +554,6 @@ tween_resource = SubResource("Resource_f4kig")
 tween_on_load = false
 follow_offset = Vector2(0, -40)
 follow_damping = true
-follow_damping_value = Vector2(7, 7)
 auto_zoom = true
 auto_zoom_margin = Vector4(50, 0, 50, 0)
 dead_zone_width = 0.197
