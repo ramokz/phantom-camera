@@ -2,10 +2,6 @@
 
 namespace PhantomCamera.Noise;
 
-/// <summary>
-/// <para>A resource type used to apply noise, or shake, to Camera3Ds that have a PhantomCameraHost as a child.</para>
-/// <para>It can be applied to either PhantomCameraNoiseEmitter3D or a PhantomCamera3D noise property directly</para>
-/// </summary>
 public class PhantomCameraNoise3D(Resource resource)
 {
     public readonly Resource Resource = resource;
