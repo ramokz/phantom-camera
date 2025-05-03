@@ -32,6 +32,12 @@ signal viewfinder_disable_dead_zone
 ## The result will be visible in the viewfinder when multiple instances are present.
 signal has_error()
 
+## Called when a new [param PhantomCamera] becomes active and assigned to this [param PhantomCameraHost].
+signal pcam_became_active(pcam: Node)
+
+## Called when an active [param PhantomCamera] becomes inactive.
+signal pcam_became_inactive(pcam: Node)
+
 #endregion
 
 
@@ -391,6 +397,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_active_pcam_2d.queue_redraw()
 			_active_pcam_2d.set_is_active(self, false)
 			_active_pcam_2d.became_inactive.emit()
+			pcam_became_inactive.emit(_active_pcam_2d)
 
 			if _active_pcam_2d.physics_target_changed.is_connected(_check_pcam_physics):
 				_active_pcam_2d.physics_target_changed.disconnect(_check_pcam_physics)
@@ -404,6 +411,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			_prev_active_pcam_3d_transform = camera_3d.global_transform
 			_active_pcam_3d.set_is_active(self, false)
 			_active_pcam_3d.became_inactive.emit()
+			pcam_became_inactive.emit(_active_pcam_3d)
 
 			if _active_pcam_3d.physics_target_changed.is_connected(_check_pcam_physics):
 				_active_pcam_3d.physics_target_changed.disconnect(_check_pcam_physics)
@@ -635,6 +643,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
+		pcam_became_active.emit(_active_pcam_2d)
 		_camera_zoom = camera_2d.zoom
 	else:
 		if _active_pcam_3d.show_viewfinder_in_play:
@@ -642,6 +651,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 		_active_pcam_3d.set_is_active(self, true)
 		_active_pcam_3d.became_active.emit()
+		pcam_became_active.emit(_active_pcam_3d)
 		if _active_pcam_3d.camera_3d_resource:
 			camera_3d.keep_aspect = _active_pcam_3d.keep_aspect
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
