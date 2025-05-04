@@ -2,6 +2,12 @@
 
 namespace PhantomCamera;
 
+public enum KeepAspect
+{
+    KeepWidth,
+    KeepHeight
+}
+
 public enum ProjectionType
 {
     Perspective,
@@ -12,22 +18,22 @@ public enum ProjectionType
 public class Camera3DResource(Resource resource)
 {
     public readonly Resource Resource = resource;
-
-    public const float MinOffset = 0;
-    public const float MaxOffset = 1;
     
     public const float MinFov = 1;
     public const float MaxFov = 179;
 
     public const float MinSize = 0.001f;
-    public const float MaxSize = 100;
 
     public const float MinNear = 0.001f;
-    public const float MaxNear = 10;
     
     public const float MinFar = 0.01f;
-    public const float MaxFar = 4000;
 
+    public KeepAspect KeepAspect
+    {
+        get => (KeepAspect)(int)Resource.Call(MethodName.GetKeepAspect);
+        set => Resource.Call(MethodName.SetKeepAspect, (int)value);
+    }
+    
     public int CullMask
     {
         get => (int)Resource.Call(MethodName.GetCullMask);
@@ -39,13 +45,13 @@ public class Camera3DResource(Resource resource)
     public float HOffset
     {
         get => (float)Resource.Call(MethodName.GetHOffset);
-        set => Resource.Call(MethodName.SetHOffset, Mathf.Clamp(value, MinOffset, MaxOffset));
+        set => Resource.Call(MethodName.SetHOffset, value);
     }
 
     public float VOffset
     {
         get => (float)Resource.Call(MethodName.GetVOffset);
-        set => Resource.Call(MethodName.SetVOffset, Mathf.Clamp(value, MinOffset, MaxOffset));
+        set => Resource.Call(MethodName.SetVOffset, value);
     }
 
     public ProjectionType Projection
@@ -63,7 +69,7 @@ public class Camera3DResource(Resource resource)
     public float Size
     {
         get => (float)Resource.Call(MethodName.GetSize);
-        set => Resource.Call(MethodName.SetSize, Mathf.Clamp(value, MinSize, MaxSize));
+        set => Resource.Call(MethodName.SetSize, Mathf.Clamp(value, MinSize, 99999));
     }
 
     public Vector2 FrustumOffset
@@ -75,17 +81,20 @@ public class Camera3DResource(Resource resource)
     public float Near
     {
         get => (float)Resource.Call(MethodName.GetNear);
-        set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, MinNear, MaxNear));
+        set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, MinNear, 99999));
     }
     
     public float Far
     {
         get => (float)Resource.Call(MethodName.GetFar);
-        set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, MinFar, MaxFar));
+        set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, MinFar, 99999));
     }
 
     public static class MethodName
     {
+        public const string GetKeepAspect = "get_keep_aspect";
+        public const string SetKeepAspect = "set_keep_aspect";
+        
         public const string GetCullMask = "get_cull_mask";
         public const string SetCullMask = "set_cull_mask";
         public const string SetCullMaskValue = "set_cull_mask_value";

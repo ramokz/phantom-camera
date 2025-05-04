@@ -44,6 +44,14 @@ public class PhantomCameraNoiseEmitter3D(GodotObject node)
     
     public void SetNoiseEmitterLayerValue(int layer, bool value) => 
         Node3D.Call(MethodName.SetNoiseEmitterLayerValue, layer, value);
+
+    public void Emit() => Node3D.Call(MethodName.Emit);
+    
+    public bool IsEmitting() => (bool)Node3D.Call(MethodName.IsEmitting);
+    
+    public void Stop() => Node3D.Call(MethodName.Stop);
+    
+    public void Toggle() => Node3D.Call(MethodName.Toggle);
     
     public static class MethodName
     {
@@ -66,5 +74,10 @@ public class PhantomCameraNoiseEmitter3D(GodotObject node)
         public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
         
         public const string SetNoiseEmitterLayerValue = "set_noise_emitter_layer_value";
+
+        public const string Emit = "emit";
+        public const string IsEmitting = "is_emitting";
+        public const string Stop = "stop";
+        public const string Toggle = "toggle";
     }
 }

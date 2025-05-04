@@ -46,12 +46,6 @@ public abstract class PhantomCamera
     }
     
     public bool IsActive => (bool)Node.Call(MethodName.IsActive);
-
-    public PhantomCameraHost PhantomCameraHostOwner
-    {
-        get => new((Node)Node.Call(MethodName.GetPCamHostOwner));
-        set => Node.Call(MethodName.SetPCamHostOwner, value.Node);
-    }
     
     public bool FollowDamping
     {
@@ -164,9 +158,6 @@ public abstract class PhantomCamera
         
         public const string GetPriority = "get_priority";
         public const string SetPriority = "set_priority";
-        
-        public const string GetPCamHostOwner = "get_pcam_host_owner";
-        public const string SetPCamHostOwner = "set_pcam_host_owner";
         
         public const string GetFollowTarget = "get_follow_target";
         public const string SetFollowTarget = "set_follow_target";

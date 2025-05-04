@@ -31,12 +31,10 @@ public enum FollowLockAxis3D
     X,
     Y,
     Z,
-    // ReSharper disable InconsistentNaming
     XY,
     XZ,
     YZ,
     XYZ
-    // ReSharper restore InconsistentNaming
 }
 
 public static class PhantomCamera3DExtensions
@@ -60,6 +58,25 @@ public static class PhantomCamera3DExtensions
     {
         return new Camera3DResource(resource);
     }
+    
+    public static Vector3 GetThirdPersonRotation(this PhantomCamera3D pCam3D) => 
+        (Vector3)pCam3D.Node3D.Call(PhantomCamera3D.MethodName.GetThirdPersonRotation);
+    
+    public static void SetThirdPersonRotation(this PhantomCamera3D pCam3D) => 
+        pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonRotation);
+    
+    public static Vector3 GetThirdPersonRotationDegrees(this PhantomCamera3D pCam3D) => 
+        (Vector3)pCam3D.Node3D.Call(PhantomCamera3D.MethodName.GetThirdPersonRotationDegrees);
+    
+    public static void SetThirdPersonDegrees(this PhantomCamera3D pCam3D) => 
+        pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonRotationDegrees);
+    
+    public static Quaternion GetThirdPersonRotationQuaternion(this PhantomCamera3D pCam3D) => 
+        (Quaternion)pCam3D.Node3D.Call(PhantomCamera3D.MethodName.GetThirdPersonRotation);
+    
+    public static void SetThirdPersonRotationQuaternion(this PhantomCamera3D pCam3D) => 
+        pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonRotation);
+    
 }
 
 public class PhantomCamera3D : PhantomCamera
@@ -137,24 +154,6 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetCamera3DResource, value.Resource);
     }
 
-    public Vector3 ThirdPersonRotation
-    {
-        get => (Vector3)Node3D.Call(MethodName.GetThirdPersonRotation);
-        set => Node3D.Call(MethodName.SetThirdPersonRotation, value);
-    }
-    
-    public Vector3 ThirdPersonRotationDegrees
-    {
-        get => (Vector3)Node3D.Call(MethodName.GetThirdPersonRotationDegrees);
-        set => Node3D.Call(MethodName.SetThirdPersonRotationDegrees, value);
-    }
-    
-    public Quaternion ThirdPersonQuaternion
-    {
-        get => (Quaternion)Node3D.Call(MethodName.GetThirdPersonQuaternion);
-        set => Node3D.Call(MethodName.SetThirdPersonQuaternion, value);
-    }
-
     public float SpringLength
     {
         get => (float)Node3D.Call(MethodName.GetSpringLength);
@@ -201,12 +200,6 @@ public class PhantomCamera3D : PhantomCamera
     {
         get => Node3D.Call(MethodName.GetLookAtTargets).AsGodotArray<Node3D>().ToArray();
         set => Node3D.Call(MethodName.SetLookAtTargets, value);
-    }
-        
-    public Vector2 ViewportPosition
-    {
-        get => (Vector2)Node3D.Call(MethodName.GetViewportPosition);
-        set => Node3D.Call(MethodName.SetViewportPosition, value);
     }
         
     public int CollisionMask
@@ -408,9 +401,6 @@ public class PhantomCamera3D : PhantomCamera
         
         public const string GetUpTarget = "get_up_target";
         public const string SetUpTarget = "set_up_target";
-        
-        public const string GetViewportPosition = "get_viewport_position";
-        public const string SetViewportPosition = "set_viewport_position";
         
         public const string GetCollisionMask = "get_collision_mask";
         public const string SetCollisionMask = "set_collision_mask";

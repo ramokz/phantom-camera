@@ -6,10 +6,10 @@ public enum TransitionType
 {
     Linear,
     Sine,
-    Quintic,
-    Quartic,
-    Quadratic,
-    Exponential,
+    Quint,
+    Quart,
+    Quad,
+    Expo,
     Elastic,
     Cubic,
     Circ,
@@ -19,10 +19,10 @@ public enum TransitionType
 
 public enum EaseType
 {
-    In,
-    Out,
-    InOut,
-    OutIn
+    EaseIn,
+    EaseOut,
+    EaseInOut,
+    EaseOutIn
 }
 
 public static class PhantomCameraTweenExtensions
@@ -57,7 +57,7 @@ public class PhantomCameraTween(Resource tweenResource)
 
     public static class PropertyName
     {
-        public const string Duration = "durartion";
+        public const string Duration = "duration";
         public const string Transition = "transition";
         public const string Ease = "ease";
     }

@@ -230,6 +230,8 @@ public class PhantomCamera2D : PhantomCamera
         return (int)Node2D.Call(MethodName.GetLimit, (int)side);
     }
 
+    public void TeleportPosition() => Node2D.Call(MethodName.TeleportPosition);
+
     public new static class MethodName
     {
         public const string GetZoom = "get_zoom";
@@ -273,6 +275,8 @@ public class PhantomCamera2D : PhantomCamera
         
         public const string GetNoise = "get_noise";
         public const string SetNoise = "set_noise";
+
+        public const string TeleportPosition = "teleport_position";
     }
 
     public new static class PropertyName
