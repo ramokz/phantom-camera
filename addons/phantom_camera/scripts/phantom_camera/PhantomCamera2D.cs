@@ -177,6 +177,12 @@ public class PhantomCamera2D : PhantomCamera
         get => new((Resource)Node2D.Call(MethodName.GetNoise));
         set => Node2D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
     }
+
+    public NodePath LimitTarget
+    {
+        get => (NodePath)Node2D.Call(MethodName.GetLimitTarget);
+        set => Node2D.Call(MethodName.SetLimitTarget, value);
+    }
     
     public static PhantomCamera2D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera2D FromScript(GDScript script) => new(script.New().AsGodotObject());

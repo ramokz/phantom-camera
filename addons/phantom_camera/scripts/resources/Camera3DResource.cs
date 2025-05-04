@@ -18,15 +18,6 @@ public enum ProjectionType
 public class Camera3DResource(Resource resource)
 {
     public readonly Resource Resource = resource;
-    
-    public const float MinFov = 1;
-    public const float MaxFov = 179;
-
-    public const float MinSize = 0.001f;
-
-    public const float MinNear = 0.001f;
-    
-    public const float MinFar = 0.01f;
 
     public KeepAspect KeepAspect
     {
@@ -63,13 +54,13 @@ public class Camera3DResource(Resource resource)
     public float Fov
     {
         get => (float)Resource.Call(MethodName.GetFov);
-        set => Resource.Call(MethodName.SetFov, Mathf.Clamp(value, MinFov, MaxFov));
+        set => Resource.Call(MethodName.SetFov, Mathf.Clamp(value, 1, 179));
     }
 
     public float Size
     {
         get => (float)Resource.Call(MethodName.GetSize);
-        set => Resource.Call(MethodName.SetSize, Mathf.Clamp(value, MinSize, 99999));
+        set => Resource.Call(MethodName.SetSize, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
     }
 
     public Vector2 FrustumOffset
@@ -81,13 +72,13 @@ public class Camera3DResource(Resource resource)
     public float Near
     {
         get => (float)Resource.Call(MethodName.GetNear);
-        set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, MinNear, 99999));
+        set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
     }
     
     public float Far
     {
         get => (float)Resource.Call(MethodName.GetFar);
-        set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, MinFar, 99999));
+        set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, 0.01f, float.PositiveInfinity));
     }
 
     public static class MethodName

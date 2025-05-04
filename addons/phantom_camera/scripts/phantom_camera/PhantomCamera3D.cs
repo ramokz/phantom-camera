@@ -71,11 +71,11 @@ public static class PhantomCamera3DExtensions
     public static void SetThirdPersonDegrees(this PhantomCamera3D pCam3D) => 
         pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonRotationDegrees);
     
-    public static Quaternion GetThirdPersonRotationQuaternion(this PhantomCamera3D pCam3D) => 
-        (Quaternion)pCam3D.Node3D.Call(PhantomCamera3D.MethodName.GetThirdPersonRotation);
+    public static Quaternion GetThirdPersonQuaternion(this PhantomCamera3D pCam3D) => 
+        (Quaternion)pCam3D.Node3D.Call(PhantomCamera3D.MethodName.GetThirdPersonQuaternion);
     
-    public static void SetThirdPersonRotationQuaternion(this PhantomCamera3D pCam3D) => 
-        pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonRotation);
+    public static void SetThirdPersonQuaternion(this PhantomCamera3D pCam3D) => 
+        pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonQuaternion);
     
 }
 
