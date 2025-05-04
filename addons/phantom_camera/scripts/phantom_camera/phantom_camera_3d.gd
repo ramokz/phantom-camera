@@ -1058,9 +1058,8 @@ func _interpolate_position(delta: float) -> void:
 					follow_damping_value[i],
 					delta
 				)
-				_transform_output.origin = global_position
-				_transform_output.basis = global_basis
-				_camera_target.global_position = _target_transform.origin
+			_transform_output.origin = global_position
+			_transform_output.basis = global_basis
 	else:
 		_camera_target.global_position = _target_transform.origin
 		_transform_output.origin = global_position
