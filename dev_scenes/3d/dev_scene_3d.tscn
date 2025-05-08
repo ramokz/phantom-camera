@@ -1,12 +1,12 @@
 [gd_scene load_steps=13 format=3 uid="uid://ctqdyuxek2ere"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="1_7n673"]
-[ext_resource type="Script" uid="uid://bipcntac0qilo" path="res://dev_scenes/3d/scripts/dev_scene_3d.gd" id="1_gnrfx"]
-[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_4sdb7"]
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
+[ext_resource type="Script" path="res://dev_scenes/3d/scripts/dev_scene_3d.gd" id="1_gnrfx"]
+[ext_resource type="Script" uid="uid://ehk2k534jov0" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_4sdb7"]
+[ext_resource type="Script" uid="uid://duw6t1t5xeacx" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
 [ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D-4.4/sub_scenes/playable_character_3d.tscn" id="6_g6hwc"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
-[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_fioii"]
+[ext_resource type="Script" uid="uid://dxr4p1lpkjsry" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
+[ext_resource type="Script" uid="uid://dmxskck0d7ynb" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_fioii"]
 
 [sub_resource type="Environment" id="Environment_0s7cr"]
 ssil_intensity = 3.25
@@ -63,7 +63,7 @@ script = ExtResource("1_gnrfx")
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.894427, 0.447214, 0, -0.447214, 0.894427, 0.083587, 1.507, 4.05493)
+transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0.083587, 1.507, 4.05493)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300

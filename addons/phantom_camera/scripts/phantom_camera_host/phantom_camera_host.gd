@@ -1403,15 +1403,14 @@ func refresh_pcam_list_priorty() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
 
+#endregion
+
+#region Setters / Getters
 
 #func set_interpolation_mode(value: int) -> void:
 	#interpolation_mode = value
 #func get_interpolation_mode() -> int:
 	#return interpolation_mode
-
-#endregion
-
-##region Setters / Getters
 
 ## Sets the [member host_layers] value.
 func set_host_layers(value: int) -> void:
@@ -1435,4 +1434,4 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 func get_host_layers() -> int:
 	return host_layers
 
-##endregion
+#endregion
