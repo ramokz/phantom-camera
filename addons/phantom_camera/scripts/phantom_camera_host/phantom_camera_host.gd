@@ -379,8 +379,7 @@ func _check_pcam_priority(pcam: Node) -> void:
 	if pcam.get_priority() > _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		_active_pcam_missing = false
-	else:
-		pcam.set_tween_skip(self, false)
+	pcam.set_tween_skip(self, false)
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
