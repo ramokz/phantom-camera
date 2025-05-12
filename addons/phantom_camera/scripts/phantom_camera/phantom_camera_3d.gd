@@ -190,8 +190,10 @@ enum FollowLockAxis {
 
 		if follow_mode == FollowMode.THIRD_PERSON:
 			top_level = false
+			_is_third_person_follow = true
 		else:
 			top_level = true
+			_is_third_person_follow = false
 
 		follow_mode_changed.emit()
 		notify_property_list_changed()
@@ -1675,33 +1677,51 @@ func get_auto_follow_distance_divisor() -> float:
 ## Assigns new rotation (in radians) value to [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func set_third_person_rotation(value: Vector3) -> void:
+	if not _is_third_person_follow:
+		printerr("Follow Mode is not set to Third Person")
+		return
 	_follow_spring_arm.rotation = value
 
 ## Gets the rotation value (in radians) from the [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func get_third_person_rotation() -> Vector3:
+	if not _is_third_person_follow:
+		printerr("Follow Mode is not set to Third Person")
+		return Vector3.ZERO
 	return _follow_spring_arm.rotation
 
 
 ## Assigns new rotation (in degrees) value to [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func set_third_person_rotation_degrees(value: Vector3) -> void:
+	if not _is_third_person_follow:
+		printerr("Follow Mode is not set to Third Person")
+		return
 	_follow_spring_arm.rotation_degrees = value
 
 ## Gets the rotation value (in degrees) from the [SpringArm3D] for
 ## [param ThirdPerson] [enum FollowMode].
 func get_third_person_rotation_degrees() -> Vector3:
+	if not _is_third_person_follow:
+		printerr("Follow Mode is not set to Third Person")
+		return Vector3.ZERO
 	return _follow_spring_arm.rotation_degrees
 
 
 ## Assigns new [Quaternion] value to [SpringArm3D] for [param ThirdPerson]
 ## [enum FollowMode].
 func set_third_person_quaternion(value: Quaternion) -> void:
+	if not _is_third_person_follow:
+		printerr("Follow Mode is not set to Third Person")
+		return
 	_follow_spring_arm.quaternion = value
 
 ## Gets the [Quaternion] value of the [SpringArm3D] for [param ThirdPerson]
 ## [enum Follow mode].
 func get_third_person_quaternion() -> Quaternion:
+	if not _is_third_person_follow:
+		printerr("Follow Mode is not set to Third Person")
+		return Quaternion.IDENTITY
 	return _follow_spring_arm.quaternion
 
 
