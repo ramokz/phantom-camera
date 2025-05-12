@@ -1,3 +1,4 @@
+@tool
 extends EditorNode3DGizmoPlugin
 
 const PhantomCamera3DNode: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd")
