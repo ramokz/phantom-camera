@@ -764,7 +764,7 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 		target_position = _set_limit_clamp_position(target_position)
 
 	global_position = target_position
-	if follow_damping:
+	if follow_damping and not Engine.is_editor_hint():
 		var output_position: Vector2
 		for i in 2:
 			output_position[i] = _smooth_damp(

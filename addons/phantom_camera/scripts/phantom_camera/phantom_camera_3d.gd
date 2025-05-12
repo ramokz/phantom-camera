@@ -1030,7 +1030,7 @@ func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
 
 func _interpolate_position(delta: float) -> void:
-	if follow_damping:
+	if follow_damping and not Engine.is_editor_hint():
 		if not _is_third_person_follow:
 			global_position = _follow_target_position
 			for i in 3:
