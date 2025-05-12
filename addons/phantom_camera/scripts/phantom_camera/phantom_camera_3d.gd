@@ -1022,9 +1022,9 @@ func _get_target_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
 	transform.basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
-func _get_target_position_offset_distance_direction() -> Vector3:
-	return (_get_target_position_offset() + \
-	follow_target.global_basis.z * Vector3(follow_distance, follow_distance, follow_distance)) * Quaternion.from_euler(rotational_offset)
+#func _get_target_position_offset_distance_direction() -> Vector3:
+#	return (_get_target_position_offset() + \
+#	follow_target.global_basis.z * Vector3(follow_distance, follow_distance, follow_distance)) * Quaternion.from_euler(rotational_offset)
 
 
 func _set_follow_velocity(index: int, value: float) -> void:
