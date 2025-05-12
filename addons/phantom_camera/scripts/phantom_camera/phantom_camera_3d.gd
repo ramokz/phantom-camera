@@ -171,6 +171,8 @@ enum FollowLockAxis {
 			_is_parents_physics()
 			notify_property_list_changed()
 			return
+		else:
+			top_level = true
 
 		match follow_mode:
 			FollowMode.PATH:
@@ -190,9 +192,9 @@ enum FollowLockAxis {
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
 
 		if follow_mode == FollowMode.THIRD_PERSON:
-			top_level = false
+			_is_third_person_follow = true
 		else:
-			top_level = true
+			_is_third_person_follow = false
 
 		follow_mode_changed.emit()
 		notify_property_list_changed()
@@ -430,6 +432,13 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed].
 @export_subgroup("Spring Arm")
+
+## Applies a rotational offset to the Third Person [member follow_mode].
+## By default, the rotation of the [param PhantomCamera3D] will be the same as its [member follow_target].
+@export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.25, exp, or_greater, or_less, radians_as_degrees ")
+var rotational_offset: Vector3:
+	set = set_rotational_offset,
+	get = get_rotational_offset
 
 ## Defines the [member SpringArm3D.spring_length].
 @export var spring_length: float = 1:
@@ -689,6 +698,7 @@ func _validate_property(property: Dictionary) -> void:
 	######################
 	if not follow_mode == FollowMode.THIRD_PERSON:
 		match property.name:
+			"rotational_offset", \
 			"spring_length", \
 			"collision_mask", \
 			"shape", \
@@ -796,6 +806,7 @@ func _ready():
 					_follow_spring_arm.position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
 					_follow_spring_arm.global_rotation = global_rotation
 					_has_follow_spring_arm = true
+					top_level = false
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
 				if is_instance_valid(follow_target):
@@ -846,7 +857,7 @@ func process_logic(delta: float) -> void:
 
 	if _should_look_at:
 		_look_at(delta)
-	else:
+	elif not _is_third_person_follow:
 		_transform_output.basis = global_basis
 
 	if _follow_axis_is_locked:
@@ -991,8 +1002,7 @@ func _set_follow_position() -> void:
 				if not _has_follow_spring_arm: return
 				_follow_target_position = _get_target_position_offset()
 			else:
-				_follow_target_position = _get_target_position_offset_distance()
-#				_follow_target_position = _get_target_position_offset_distance_direction()
+				_follow_target_position = _get_target_position_offset_distance_direction()
 
 
 func _set_look_at_position() -> void:
@@ -1055,11 +1065,14 @@ func _interpolate_position(delta: float) -> void:
 					delta
 				)
 			_transform_output.origin = global_position
-			_transform_output.basis = global_basis
 	else:
 		_camera_target.global_position = _follow_target_position
 		_transform_output.origin = global_position
 
+	if _is_third_person_follow:
+		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset())
+		_transform_output.basis = Basis(target_quat)
+		global_basis = Basis(target_quat)
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
@@ -1722,6 +1735,13 @@ func set_third_person_quaternion(value: Quaternion) -> void:
 ## [enum Follow mode].
 func get_third_person_quaternion() -> Quaternion:
 	return _follow_spring_arm.quaternion
+
+
+func set_rotational_offset(value: Vector3) -> void:
+	rotational_offset = value
+
+func get_rotational_offset() -> Vector3:
+	return rotational_offset
 
 
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
