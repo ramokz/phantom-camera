@@ -429,7 +429,6 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed].
-
 @export_subgroup("Spring Arm")
 
 ## Defines the [member SpringArm3D.spring_length].
@@ -1326,6 +1325,7 @@ func _camera_resource_changed() -> void:
 
 #endregion
 
+#region Public Functions
 
 # TBD
 #func get_unprojected_position() -> Vector2:
