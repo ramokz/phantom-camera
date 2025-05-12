@@ -991,8 +991,8 @@ func _set_follow_position() -> void:
 				if not _has_follow_spring_arm: return
 				_follow_target_position = _get_target_position_offset()
 			else:
-				_target_transform.origin = _get_target_position_offset_distance()
 				_follow_target_position = _get_target_position_offset_distance()
+#				_follow_target_position = _get_target_position_offset_distance_direction()
 
 
 func _set_look_at_position() -> void:
@@ -1374,6 +1374,13 @@ func teleport_position() -> void:
 	_set_follow_position()
 	_transform_output.origin = _follow_target_position
 	_phantom_camera_manager.pcam_teleport.emit(self)
+
+
+func is_following() -> bool:
+	return _should_follow
+
+func is_looking_at() -> bool:
+	return _should_look_at
 
 #endregion
 

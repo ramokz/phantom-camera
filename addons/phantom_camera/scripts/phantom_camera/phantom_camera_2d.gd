@@ -1090,6 +1090,10 @@ func teleport_position() -> void:
 	_transform_output.origin = _target_transform.origin
 	_phantom_camera_manager.pcam_teleport.emit(self)
 
+
+func is_following() -> bool:
+	return _should_follow
+
 #endregion
 
 
