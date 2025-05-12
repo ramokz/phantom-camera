@@ -57,6 +57,20 @@ func _redraw() -> void:
 	frustum_lines.push_back(Vector3(width, height, forward))
 	frustum_lines.push_back(Vector3(-width, height, forward))
 
+	##############
+	# Up Direction
+	##############
+	var up_height: float = height + 0.15
+	var up_width: float = width / 3
+
+	## Left
+	frustum_lines.push_back(Vector3(0, up_height, forward))
+	frustum_lines.push_back(Vector3(-up_width, height, forward))
+
+	## Right
+	frustum_lines.push_back(Vector3(0, up_height, forward))
+	frustum_lines.push_back(Vector3(up_width, height, forward))
+
 	var frustum_material: StandardMaterial3D = get_plugin().get_material("frustum", self)
 	add_lines(frustum_lines, frustum_material, false)
 
