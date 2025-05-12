@@ -465,7 +465,7 @@ var _tile_size_perspective_scaler: Vector2 = Vector2.ONE
 
 var _limit_inactive_pcam: bool = false
 
-var _target_transform: Transform2D = Transform2D()
+var _follow_target_position: Vector2 = Vector2.ZERO
 
 var _transform_output: Transform2D = Transform2D()
 var _transform_noise: Transform2D = Transform2D()
@@ -670,16 +670,16 @@ func _limit_checker() -> void:
 
 func _follow(delta: float) -> void:
 	_set_follow_position()
-	_interpolate_position(_target_transform.origin, delta)
+	_interpolate_position(_follow_target_position, delta)
 
 
 func _set_follow_position() -> void:
 	match follow_mode:
 		FollowMode.GLUED:
-			_target_transform.origin = follow_target.global_position
+			_follow_target_position = follow_target.global_position
 
 		FollowMode.SIMPLE:
-			_target_transform.origin = _get_target_position_offset()
+			_follow_target_position = _get_target_position_offset()
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
@@ -698,14 +698,14 @@ func _set_follow_position() -> void:
 						zoom = clamp(_phantom_camera_manager.screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(_phantom_camera_manager.screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
-				_target_transform.origin = rect.get_center() + follow_offset
+				_follow_target_position = rect.get_center() + follow_offset
 			else:
-				_target_transform.origin = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
+				_follow_target_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
 
 		FollowMode.PATH:
 			var path_position: Vector2 = follow_path.global_position
 
-			_target_transform.origin = \
+			_follow_target_position = \
 			follow_path.curve.get_closest_point(
 				_get_target_position_offset() - path_position
 			) + path_position
@@ -713,7 +713,7 @@ func _set_follow_position() -> void:
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
 				if not _is_active:
-					_target_transform.origin = _get_target_position_offset()
+					_follow_target_position = _get_target_position_offset()
 				else:
 					viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
 					var framed_side_offset: Vector2 = _get_framed_side_offset()
@@ -724,35 +724,35 @@ func _set_follow_position() -> void:
 
 						if dead_zone_width == 0 || dead_zone_height == 0:
 							if dead_zone_width == 0 && dead_zone_height != 0:
-								_target_transform.origin = _get_target_position_offset()
+								_follow_target_position = _get_target_position_offset()
 							elif dead_zone_width != 0 && dead_zone_height == 0:
 								glo_pos = _get_target_position_offset()
 								glo_pos.x += target_position.x - global_position.x
-								_target_transform.origin = glo_pos
+								_follow_target_position = glo_pos
 							else:
-								_target_transform.origin = _get_target_position_offset()
+								_follow_target_position = _get_target_position_offset()
 
 						# If a horizontal dead zone is reached
 						if framed_side_offset.x != 0 and framed_side_offset.y == 0:
-							_target_transform.origin.y = _transform_output.origin.y
-							_target_transform.origin.x = target_position.x
+							_follow_target_position.y = _transform_output.origin.y
+							_follow_target_position.x = target_position.x
 							_follow_framed_offset.y = global_position.y - _get_target_position_offset().y
 							dead_zone_reached.emit(Vector2(framed_side_offset.x, 0))
 							# If a vertical dead zone is reached
 						elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
-							_target_transform.origin.x = _transform_output.origin.x
-							_target_transform.origin.y = target_position.y
+							_follow_target_position.x = _transform_output.origin.x
+							_follow_target_position.y = target_position.y
 							_follow_framed_offset.x = global_position.x - _get_target_position_offset().x
 							dead_zone_reached.emit(Vector2(0, framed_side_offset.y))
 						# If a deadzone corner is reached
 						else:
-							_target_transform.origin = target_position
+							_follow_target_position = target_position
 							dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
 					else:
 						_follow_framed_offset = _transform_output.origin - _get_target_position_offset()
 						return
 			else:
-				_target_transform.origin = _get_target_position_offset()
+				_follow_target_position = _get_target_position_offset()
 
 
 func _set_follow_velocity(index: int, value: float):
@@ -1071,6 +1071,13 @@ func get_transform_output() -> Transform2D:
 	return _transform_output
 
 
+func get_follow_target_position() -> Vector2:
+	if not _should_follow:
+		printerr("Follow Mode or Follow Target not assigned")
+		return Vector2.ZERO
+	return _follow_target_position
+
+
 ## Returns the noise [Transform3D] value.
 func get_noise_transform() -> Transform2D:
 	return _transform_noise
@@ -1087,7 +1094,7 @@ func emit_noise(value: Transform2D) -> void:
 func teleport_position() -> void:
 	_follow_velocity_ref = Vector2.ZERO
 	_set_follow_position()
-	_transform_output.origin = _target_transform.origin
+	_transform_output.origin = _follow_target_position
 	_phantom_camera_manager.pcam_teleport.emit(self)
 
 
