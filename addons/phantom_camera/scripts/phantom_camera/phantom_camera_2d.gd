@@ -944,6 +944,7 @@ func _check_physics_body(target: Node2D) -> void:
 	if target is PhysicsBody2D:
 		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
 		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
+		var always_process_on_idle := ProjectSettings.get_setting("phantom_camera/general/always_process_on_idle")
 
 		## NOTE - Feature Toggle
 		if Engine.get_version_info().major == 4 and \
@@ -955,7 +956,7 @@ func _check_physics_body(target: Node2D) -> void:
 				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
 			return
 			## NOTE - Only supported in Godot 4.3 or above
-		elif not physics_interpolation_enabled and show_jitter_tips == null: # Default value is null when referencing custom Project Setting
+		elif not physics_interpolation_enabled and show_jitter_tips == null and (not always_process_on_idle): # Default value is null when referencing custom Project Setting
 			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
 		_follow_target_physics_based = true
