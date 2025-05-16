@@ -677,11 +677,13 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 
 func _check_pcam_physics() -> void:
+	var always_process_on_idle := ProjectSettings.get_setting("phantom_camera/general/always_process_on_idle")
+
 	if _is_2d:
 		## NOTE - Only supported in Godot 4.3 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 3:
-			if _active_pcam_2d.get_follow_target_physics_based():
+			if _active_pcam_2d.get_follow_target_physics_based() and (not always_process_on_idle):
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
@@ -707,7 +709,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.4 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 4:
-			if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
+			if (get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based()) and (not always_process_on_idle):
 				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2

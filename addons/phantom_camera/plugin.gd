@@ -22,6 +22,7 @@ const PHANTOM_CAMERA_MANAGER: StringName = "PhantomCameraManager"
 var _settings_show_jitter_tips: String = "phantom_camera/tips/show_jitter_tips"
 var _settings_enable_editor_shortcut: String = "phantom_camera/general/enable_editor_shortcut"
 var _settings_editor_shortcut: String = "phantom_camera/general/editor_shortcut"
+var _settings_always_process_on_idle: String = "phantom_camera/general/always_process_on_idle"
 
 # 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after the release that is featured in
 #var _editor_shortcut: Shortcut = Shortcut.new()
@@ -96,6 +97,16 @@ func _enter_tree() -> void:
 	})
 	ProjectSettings.set_initial_value(_settings_show_jitter_tips, true)
 	ProjectSettings.set_as_basic(_settings_show_jitter_tips, true)
+
+	## Setting to always process Phantom Camera on Idle updates
+	if not ProjectSettings.has_setting(_settings_always_process_on_idle):
+		ProjectSettings.set_setting(_settings_always_process_on_idle, false)
+	ProjectSettings.add_property_info({
+		"name": _settings_always_process_on_idle,
+		"type": TYPE_BOOL,
+	})
+	ProjectSettings.set_initial_value(_settings_always_process_on_idle, false)
+	ProjectSettings.set_as_basic(_settings_always_process_on_idle, false)
 
 
 # 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after this release
