@@ -9,7 +9,7 @@ const PCAM_3D: String = "PhantomCamera3D"
 const PCAM_NOISE_EMITTER_2D: String = "PhantomCameraNoiseEmitter2D"
 const PCAM_NOISE_EMITTER_3D: String = "PhantomCameraNoiseEmitter3D"
 
-const PCam3DPlugin: Script = preload("res://addons/phantom_camera/scripts/gizmos/phantom_camera_gizmo_plugin_3d.gd")
+const PCam3DPlugin: Script = preload("res://addons/phantom_camera/scripts/gizmos/phantom_camera_3d_gizmo_plugin.gd")
 const PCam3DNoiseEmitterPlugin: Script = preload("res://addons/phantom_camera/scripts/gizmos/phantom_camera_noise_emitter_gizmo_plugin_3d.gd")
 const EditorPanel: PackedScene = preload("res://addons/phantom_camera/panel/editor.tscn")
 const updater_constants: Script = preload("res://addons/phantom_camera/scripts/panel/updater/updater_constants.gd")
