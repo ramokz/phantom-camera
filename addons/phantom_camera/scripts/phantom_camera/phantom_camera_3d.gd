@@ -1392,7 +1392,7 @@ func teleport_position() -> void:
 func is_following() -> bool:
 	return _should_follow
 
-func is_looking_at() -> bool:
+func is_looking() -> bool:
 	return _should_look_at
 
 #endregion
