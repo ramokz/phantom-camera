@@ -14,7 +14,7 @@ public enum InactiveUpdateMode
 public abstract class PhantomCamera
 {
     protected readonly GodotObject Node;
-    
+
     public delegate void BecameActiveEventHandler();
     public delegate void BecameInactiveEventHandler();
     public delegate void FollowTargetChangedEventHandler();
@@ -22,7 +22,7 @@ public abstract class PhantomCamera
     public delegate void TweenStartedEventHandler();
     public delegate void IsTweeningEventHandler();
     public delegate void TweenCompletedEventHandler();
-    
+
     public event BecameActiveEventHandler? BecameActive;
     public event BecameInactiveEventHandler? BecameInactive;
     public event FollowTargetChangedEventHandler? FollowTargetChanged;
@@ -38,15 +38,15 @@ public abstract class PhantomCamera
     private readonly Callable _callableTweenStarted;
     private readonly Callable _callableIsTweening;
     private readonly Callable _callableTweenCompleted;
-    
+
     public int Priority
     {
         get => (int)Node.Call(MethodName.GetPriority);
         set => Node.Call(MethodName.SetPriority, value);
     }
-    
+
     public bool IsActive => (bool)Node.Call(MethodName.IsActive);
-    
+
     public bool FollowDamping
     {
         get => (bool)Node.Call(MethodName.GetFollowDamping);
@@ -58,7 +58,7 @@ public abstract class PhantomCamera
         get => (float)Node.Get(PropertyName.DeadZoneWidth);
         set => Node.Set(PropertyName.DeadZoneWidth, value);
     }
-    
+
     public float DeadZoneHeight
     {
         get => (float)Node.Get(PropertyName.DeadZoneHeight);
@@ -70,7 +70,7 @@ public abstract class PhantomCamera
         get => new((Resource)Node.Call(MethodName.GetTweenResource));
         set => Node.Call(MethodName.SetTweenResource, (GodotObject)value.Resource);
     }
-    
+
     public bool TweenSkip
     {
         get => (bool)Node.Call(MethodName.GetTweenSkip);
@@ -82,13 +82,13 @@ public abstract class PhantomCamera
         get => (float)Node.Call(MethodName.GetTweenDuration);
         set => Node.Call(MethodName.SetTweenDuration, value);
     }
-    
+
     public TransitionType TweenTransition
     {
         get => (TransitionType)(int)Node.Call(MethodName.GetTweenTransition);
         set => Node.Call(MethodName.SetTweenTransition, (int)value);
     }
-    
+
     public EaseType TweenEase
     {
         get => (EaseType)(int)Node.Call(MethodName.GetTweenEase);
@@ -106,13 +106,13 @@ public abstract class PhantomCamera
         get => (InactiveUpdateMode)(int)Node.Call(MethodName.GetInactiveUpdateMode);
         set => Node.Call(MethodName.SetInactiveUpdateMode, (int)value);
     }
-    
+
     public int HostLayers
     {
         get => (int)Node.Call(MethodName.GetHostLayers);
         set => Node.Call(MethodName.SetHostLayers, value);
     }
-    
+
     public int NoiseEmitterLayer
     {
         get => (int)Node.Call(MethodName.GetNoiseEmitterLayer);
@@ -122,7 +122,7 @@ public abstract class PhantomCamera
     protected PhantomCamera(GodotObject phantomCameraNode)
     {
         Node = phantomCameraNode;
-        
+
         _callableBecameActive = Callable.From(() => BecameActive?.Invoke());
         _callableBecameInactive = Callable.From(() => BecameInactive?.Invoke());
         _callableFollowTargetChanged = Callable.From(() => FollowTargetChanged?.Invoke());
@@ -130,7 +130,7 @@ public abstract class PhantomCamera
         _callableTweenStarted = Callable.From(() => TweenStarted?.Invoke());
         _callableIsTweening = Callable.From(() => IsTweening?.Invoke());
         _callableTweenCompleted = Callable.From(() => TweenCompleted?.Invoke());
-        
+
         Node.Connect(SignalName.BecameActive, _callableBecameActive);
         Node.Connect(SignalName.BecameInactive, _callableBecameInactive);
         Node.Connect(SignalName.FollowTargetChanged, _callableFollowTargetChanged);
@@ -150,40 +150,42 @@ public abstract class PhantomCamera
         Node.Disconnect(SignalName.IsTweening, _callableIsTweening);
         Node.Disconnect(SignalName.TweenCompleted, _callableTweenCompleted);
     }
-    
+
     public static class MethodName
     {
         public const string GetFollowMode = "get_follow_mode";
         public const string IsActive = "is_active";
-        
+
         public const string GetPriority = "get_priority";
         public const string SetPriority = "set_priority";
         
+
         public const string GetFollowTarget = "get_follow_target";
         public const string SetFollowTarget = "set_follow_target";
-        
+
         public const string GetFollowTargets = "get_follow_targets";
         public const string SetFollowTargets = "set_follow_targets";
         
+
         public const string AppendFollowTargets = "append_follow_targets";
         public const string AppendFollowTargetsArray = "append_follow_targets_array";
         public const string EraseFollowTargets = "erase_follow_targets";
-        
+
         public const string GetFollowPath = "get_follow_path";
         public const string SetFollowPath = "set_follow_path";
-        
+
         public const string GetFollowOffset = "get_follow_offset";
         public const string SetFollowOffset = "set_follow_offset";
-        
+
         public const string GetFollowDamping = "get_follow_damping";
         public const string SetFollowDamping = "set_follow_damping";
-        
+
         public const string GetFollowDampingValue = "get_follow_damping_value";
         public const string SetFollowDampingValue = "set_follow_damping_value";
-        
+
         public const string GetFollowAxisLock = "get_follow_axis_lock";
         public const string SetFollowAxisLock = "set_follow_axis_lock";
-        
+
         public const string GetTweenResource = "get_tween_resource";
         public const string SetTweenResource = "set_tween_resource";
 
@@ -204,10 +206,10 @@ public abstract class PhantomCamera
 
         public const string GetInactiveUpdateMode = "get_inactive_update_mode";
         public const string SetInactiveUpdateMode = "set_inactive_update_mode";
-        
+
         public const string GetHostLayers = "get_host_layers";
         public const string SetHostLayers = "set_host_layers";
-        
+
         public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
         public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
     }

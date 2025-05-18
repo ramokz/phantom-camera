@@ -14,19 +14,19 @@ public static class PhantomCameraManager
     public static PhantomCamera2D[] PhantomCamera2Ds =>
         Instance.Call(MethodName.GetPhantomCamera2Ds).AsGodotArray<Node2D>()
             .Select(node => new PhantomCamera2D(node)).ToArray();
-    
+
     public static PhantomCamera3D[] PhantomCamera3Ds =>
         Instance.Call(MethodName.GetPhantomCamera3Ds).AsGodotArray<Node3D>()
             .Select(node => new PhantomCamera3D(node)).ToArray();
-    
+
     public static PhantomCameraHost[] PhantomCameraHosts =>
         Instance.Call(MethodName.GetPhantomCameraHosts).AsGodotArray<Node>()
             .Select(node => new PhantomCameraHost(node)).ToArray();
-    
+
     public static PhantomCamera2D[] GetPhantomCamera2Ds() => PhantomCamera2Ds;
     public static PhantomCamera3D[] GetPhantomCamera3Ds() => PhantomCamera3Ds;
     public static PhantomCameraHost[] GetPhantomCameraHosts() => PhantomCameraHosts;
-    
+
     public static class MethodName
     {
         public const string GetPhantomCamera2Ds = "get_phantom_camera_2ds";

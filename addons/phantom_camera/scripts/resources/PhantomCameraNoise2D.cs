@@ -5,7 +5,7 @@ namespace PhantomCamera.Noise;
 public class PhantomCameraNoise2D(Resource resource)
 {
     public readonly Resource Resource = resource;
-    
+
     public float Amplitude
     {
         get => (float)Resource.Call(MethodName.GetAmplitude);
@@ -47,13 +47,13 @@ public class PhantomCameraNoise2D(Resource resource)
         get => (float)Resource.Call(MethodName.GetRotationalMultiplier);
         set => Resource.Call(MethodName.SetRotationalMultiplier, value);
     }
-    
+
     public float PositionalMultiplierX
     {
         get => (float)Resource.Call(MethodName.GetPositionalMultiplierX);
         set => Resource.Call(MethodName.SetPositionalMultiplierX, value);
     }
-    
+
     public float PositionalMultiplierY
     {
         get => (float)Resource.Call(MethodName.GetPositionalMultiplierY);
