@@ -53,6 +53,8 @@ public abstract class PhantomCamera
         set => Node.Call(MethodName.SetFollowDamping, value);
     }
 
+    public bool IsFollowing => (bool)Node.Call(PhantomCamera.MethodName.IsFollowing);
+
     public float DeadZoneWidth
     {
         get => (float)Node.Get(PropertyName.DeadZoneWidth);
@@ -119,6 +121,11 @@ public abstract class PhantomCamera
         set => Node.Call(MethodName.SetNoiseEmitterLayer, value);
     }
 
+    public void TeleportPosition()
+    {
+        Node.Call(MethodName.TeleportPosition);
+    }
+
     protected PhantomCamera(GodotObject phantomCameraNode)
     {
         Node = phantomCameraNode;
@@ -158,14 +165,18 @@ public abstract class PhantomCamera
 
         public const string GetPriority = "get_priority";
         public const string SetPriority = "set_priority";
-        
+
+        public const string IsFollowing = "is_following";
 
         public const string GetFollowTarget = "get_follow_target";
         public const string SetFollowTarget = "set_follow_target";
 
         public const string GetFollowTargets = "get_follow_targets";
         public const string SetFollowTargets = "set_follow_targets";
-        
+
+        public const string GetFollowTargetPosition = "get_follow_target_position";
+
+        public const string TeleportPosition = "teleport_position";
 
         public const string AppendFollowTargets = "append_follow_targets";
         public const string AppendFollowTargetsArray = "append_follow_targets_array";

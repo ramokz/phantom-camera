@@ -69,7 +69,9 @@ public class PhantomCamera2D : PhantomCamera
         get => Node2D.Call(PhantomCamera.MethodName.GetFollowTargets).AsGodotArray<Node2D>().ToArray();
         set => Node2D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
     }
-    
+
+    public Vector2 GetFollowTargetPosition => (Vector2)Node2D.Call(PhantomCamera.MethodName.GetFollowTargetPosition);
+
 
     public void AppendFollowTargets(Node2D target) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargets, target);
     public void AppendFollowTargetsArray(Node2D[] targets) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
@@ -237,8 +239,6 @@ public class PhantomCamera2D : PhantomCamera
         return (int)Node2D.Call(MethodName.GetLimit, (int)side);
     }
 
-    public void TeleportPosition() => Node2D.Call(MethodName.TeleportPosition);
-
     public new static class MethodName
     {
         public const string GetZoom = "get_zoom";
@@ -282,8 +282,6 @@ public class PhantomCamera2D : PhantomCamera
 
         public const string GetNoise = "get_noise";
         public const string SetNoise = "set_noise";
-
-        public const string TeleportPosition = "teleport_position";
     }
 
     public new static class PropertyName
