@@ -24,15 +24,15 @@ public class Camera3DResource(Resource resource)
         get => (KeepAspect)(int)Resource.Call(MethodName.GetKeepAspect);
         set => Resource.Call(MethodName.SetKeepAspect, (int)value);
     }
-    
+
     public int CullMask
     {
         get => (int)Resource.Call(MethodName.GetCullMask);
         set => Resource.Call(MethodName.SetCullMask, value);
     }
-    
+
     public void SetCullMaskValue(int layer, bool value) => Resource.Call(MethodName.SetCullMaskValue, layer, value);
-    
+
     public float HOffset
     {
         get => (float)Resource.Call(MethodName.GetHOffset);
@@ -68,13 +68,13 @@ public class Camera3DResource(Resource resource)
         get => (Vector2)Resource.Call(MethodName.GetFrustumOffset);
         set => Resource.Call(MethodName.SetFrustumOffset, value);
     }
-    
+
     public float Near
     {
         get => (float)Resource.Call(MethodName.GetNear);
         set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
     }
-    
+
     public float Far
     {
         get => (float)Resource.Call(MethodName.GetFar);
@@ -85,32 +85,32 @@ public class Camera3DResource(Resource resource)
     {
         public const string GetKeepAspect = "get_keep_aspect";
         public const string SetKeepAspect = "set_keep_aspect";
-        
+
         public const string GetCullMask = "get_cull_mask";
         public const string SetCullMask = "set_cull_mask";
         public const string SetCullMaskValue = "set_cull_mask_value";
-        
+
         public const string GetHOffset = "get_h_offset";
         public const string SetHOffset = "set_h_offset";
-        
+
         public const string GetVOffset = "get_v_offset";
         public const string SetVOffset = "set_v_offset";
-        
+
         public const string GetProjection = "get_projection";
         public const string SetProjection = "set_projection";
-        
+
         public const string GetFov = "get_fov";
         public const string SetFov = "set_fov";
-        
+
         public const string GetSize = "get_size";
         public const string SetSize = "set_size";
-        
+
         public const string GetFrustumOffset = "get_frustum_offset";
         public const string SetFrustumOffset = "set_frustum_offset";
-        
+
         public const string GetNear = "get_near";
         public const string SetNear = "set_near";
-        
+
         public const string GetFar = "get_far";
         public const string SetFar = "set_far";
     }
