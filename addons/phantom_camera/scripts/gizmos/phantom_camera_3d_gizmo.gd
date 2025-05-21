@@ -12,9 +12,9 @@ func _redraw() -> void:
 	var pcam_3d: PhantomCamera3D = get_node_3d()
 
 #	if pcam_3d.is_following():
-#		_draw_target(pcam_3d, pcam_3d.get_follow_target_position(), "follow_target")
+#		_draw_target(pcam_3d, "follow_target")
 #	if pcam_3d.is_looking_at():
-#		_draw_target(pcam_3d, pcam_3d.get_look_at_target_position(), "look_at_target")
+#		_draw_target(pcam_3d, "look_at_target")
 
 	if pcam_3d.is_active(): return
 
@@ -73,12 +73,16 @@ func _redraw() -> void:
 	add_lines(frustum_lines, frustum_material, false)
 
 
-func _draw_target(pcam_3d: Node3D, target_position: Vector3, type: String) -> void:
+func _draw_target(pcam_3d: PhantomCamera3D, type: String) -> void:
 	var target_lines: PackedVector3Array = PackedVector3Array()
-	var direction: Vector3 = target_position - pcam_3d.global_position
+	var direction: Vector3 = pcam_3d.global_position - pcam_3d.follow_target.global_position
+	var distance: float = pcam_3d.global_position.distance_to(pcam_3d.follow_target.global_position)
+	var direction_normalized: Vector3 = direction.normalized()
+
 	var end_position: Vector3 = pcam_3d.global_basis.z * direction
 
 	target_lines.push_back(Vector3.ZERO)
-	target_lines.push_back(end_position)
+	target_lines.push_back(-end_position)
+
 	var target_material: StandardMaterial3D = get_plugin().get_material(type, self)
 	add_lines(target_lines, target_material, false)

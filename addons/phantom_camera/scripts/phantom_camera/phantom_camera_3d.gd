@@ -196,6 +196,7 @@ enum FollowLockAxis {
 			_is_third_person_follow = false
 
 		follow_mode_changed.emit()
+		update_gizmos()
 		notify_property_list_changed()
 
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
@@ -819,6 +820,8 @@ func _ready():
 
 	_phantom_camera_manager.noise_3d_emitted.connect(_noise_emitted)
 
+	tween_completed.connect(_tween_complete)
+
 
 func _process(delta: float) -> void:
 	if _follow_target_physics_based or _is_active: return
@@ -1325,6 +1328,10 @@ func _is_parents_physics(target: Node = self) -> void:
 func _camera_resource_changed() -> void:
 	camera_3d_resource_changed.emit()
 
+
+func _tween_complete() -> void:
+	update_gizmos()
+
 #endregion
 
 #region Public Functions
@@ -1464,6 +1471,8 @@ func set_is_active(node: Node, value: bool) -> void:
 		_is_active = value
 		if value:
 			_should_follow_checker()
+		else:
+			update_gizmos()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
@@ -1526,6 +1535,7 @@ func set_follow_target(value: Node3D) -> void:
 		if not follow_mode == FollowMode.GROUP:
 			_should_follow = false
 	follow_target_changed.emit()
+	update_gizmos()
 	notify_property_list_changed()
 ## Removes the current [Node3D] [member follow_target].
 func erase_follow_target() -> void:
@@ -1620,6 +1630,7 @@ func set_follow_offset(value: Vector3) -> void:
 				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
 				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
 				_follow_axis_lock_value.z = _transform_output.origin.z + temp_offset.z
+	update_gizmos()
 
 ## Gets the current [param Vector3] for the [param follow_offset] property.
 func get_follow_offset() -> Vector3:
@@ -1748,6 +1759,7 @@ func get_third_person_quaternion() -> Quaternion:
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
+	update_gizmos()
 	if not is_instance_valid(_follow_spring_arm): return
 	_follow_spring_arm.spring_length = value
 
