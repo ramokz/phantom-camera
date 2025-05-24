@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Godot;
+using Godot.Collections;
 using PhantomCamera.Noise;
 
 #nullable enable
@@ -67,7 +68,7 @@ public class PhantomCamera2D : PhantomCamera
     public Node2D[] FollowTargets
     {
         get => Node2D.Call(PhantomCamera.MethodName.GetFollowTargets).AsGodotArray<Node2D>().ToArray();
-        set => Node2D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
+        set => Node2D.Call(PhantomCamera.MethodName.SetFollowTargets, new Array<Node2D>(value));
     }
 
     public Vector2 GetFollowTargetPosition => (Vector2)Node2D.Call(PhantomCamera.MethodName.GetFollowTargetPosition);

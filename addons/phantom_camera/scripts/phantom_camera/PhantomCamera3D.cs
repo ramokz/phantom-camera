@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Godot;
+using Godot.Collections;
 using PhantomCamera.Noise;
 
 #nullable enable
@@ -113,7 +114,7 @@ public class PhantomCamera3D : PhantomCamera
     public Node3D[] FollowTargets
     {
         get => Node3D.Call(PhantomCamera.MethodName.GetFollowTargets).AsGodotArray<Node3D>().ToArray();
-        set => Node3D.Call(PhantomCamera.MethodName.SetFollowTargets, value);
+        set => Node3D.Call(PhantomCamera.MethodName.SetFollowTargets, new Array<Node3D>(value));
     }
 
     public Vector3 GetFollowTargetPosition => (Vector3)Node3D.Call(PhantomCamera.MethodName.GetFollowTargetPosition);
@@ -201,7 +202,7 @@ public class PhantomCamera3D : PhantomCamera
     public Node3D[] LookAtTargets
     {
         get => Node3D.Call(MethodName.GetLookAtTargets).AsGodotArray<Node3D>().ToArray();
-        set => Node3D.Call(MethodName.SetLookAtTargets, value);
+        set => Node3D.Call(MethodName.SetLookAtTargets, new Array<Node3D>(value));
     }
 
     public bool IsLooking => (bool)Node3D.Call(MethodName.IsLooking);
