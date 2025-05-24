@@ -454,6 +454,13 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_margin
 
 
+@export_subgroup("Follow Debug")
+## Draws a line between the [param PhantomCamera3D] and its follow target position.[br]
+## This is only drawn when a valid [member follow_target] or [member follow_targets] is set.
+@export var draw_follow_line: bool = false:
+	set = set_draw_follow_line,
+	get = get_draw_follow_line
+
 @export_group("Look At Parameters")
 ## Offsets the target's [param Vector3] position that the
 ## [param PhantomCamera3D] is looking at.
@@ -822,6 +829,29 @@ func _ready():
 
 	tween_completed.connect(_tween_complete)
 
+
+func _connect_property_edited() -> void:
+	if not Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_properties_changed):
+		Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.connect(_properties_changed)
+
+	if not editor_state_changed.is_connected(_state_changed):
+		editor_state_changed.connect(_state_changed)
+
+func _disconnect_property_edited() -> void:
+	if Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_properties_changed):
+		Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.disconnect(_properties_changed)
+
+	if editor_state_changed.is_connected(_state_changed):
+		editor_state_changed.disconnect(_state_changed)
+
+
+func _properties_changed(value: String) -> void:
+	if not Engine.get_singleton(&"EditorInterface").get_inspector().get_edited_object() == self: return
+	if value == "rotation":
+		update_gizmos()
+
+func _state_changed() -> void:
+	print("State Changed")
 
 func _process(delta: float) -> void:
 	if _follow_target_physics_based or _is_active: return
@@ -1607,6 +1637,7 @@ func get_follow_targets() -> Array[Node3D]:
 func set_follow_offset(value: Vector3) -> void:
 	var temp_offset: Vector3 = follow_offset
 	follow_offset = value
+	update_gizmos()
 
 	if follow_axis_lock != FollowLockAxis.NONE:
 		temp_offset = temp_offset - value
@@ -1630,7 +1661,6 @@ func set_follow_offset(value: Vector3) -> void:
 				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
 				_follow_axis_lock_value.y = _transform_output.origin.y + temp_offset.y
 				_follow_axis_lock_value.z = _transform_output.origin.z + temp_offset.z
-	update_gizmos()
 
 ## Gets the current [param Vector3] for the [param follow_offset] property.
 func get_follow_offset() -> Vector3:
@@ -1813,6 +1843,19 @@ func set_margin(value: float) -> void:
 func get_margin() -> float:
 	return margin
 
+
+func set_draw_follow_line(value: bool) -> void:
+	draw_follow_line = value
+	update_gizmos()
+
+	if not Engine.is_editor_hint(): return
+	if value:
+		_connect_property_edited()
+	else:
+		_disconnect_property_edited()
+
+func get_draw_follow_line() -> bool:
+	return draw_follow_line
 
 ## Gets the current [member look_at_mode]. Value is based on [enum LookAtMode]
 ## enum.[br]
