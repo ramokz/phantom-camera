@@ -71,9 +71,6 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(PhantomCamera.MethodName.SetFollowTargets, new Array<Node2D>(value));
     }
 
-    public Vector2 GetFollowTargetPosition => (Vector2)Node2D.Call(PhantomCamera.MethodName.GetFollowTargetPosition);
-
-
     public void AppendFollowTargets(Node2D target) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargets, target);
     public void AppendFollowTargetsArray(Node2D[] targets) => Node2D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
     public void EraseFollowTargets(Node2D target) => Node2D.Call(PhantomCamera.MethodName.EraseFollowTargets, target);

@@ -174,8 +174,6 @@ public abstract class PhantomCamera
         public const string GetFollowTargets = "get_follow_targets";
         public const string SetFollowTargets = "set_follow_targets";
 
-        public const string GetFollowTargetPosition = "get_follow_target_position";
-
         public const string TeleportPosition = "teleport_position";
 
         public const string AppendFollowTargets = "append_follow_targets";

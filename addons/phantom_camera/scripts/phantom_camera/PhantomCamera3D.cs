@@ -117,8 +117,6 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(PhantomCamera.MethodName.SetFollowTargets, new Array<Node3D>(value));
     }
 
-    public Vector3 GetFollowTargetPosition => (Vector3)Node3D.Call(PhantomCamera.MethodName.GetFollowTargetPosition);
-
     public void AppendFollowTarget(Node3D target) => Node3D.Call(PhantomCamera.MethodName.AppendFollowTargets, target);
     public void AppendFollowTargetArray(Node3D[] targets) => Node3D.Call(PhantomCamera.MethodName.AppendFollowTargetsArray, targets);
     public void EraseFollowTarget(Node3D target) => Node3D.Call(PhantomCamera.MethodName.EraseFollowTargets, target);
@@ -206,8 +204,6 @@ public class PhantomCamera3D : PhantomCamera
     }
 
     public bool IsLooking => (bool)Node3D.Call(MethodName.IsLooking);
-
-    public Vector3 GetLookAtTargetPosition => (Vector3)Node3D.Call(MethodName.GetLookAtPosition);
 
     public int CollisionMask
     {
@@ -404,8 +400,6 @@ public class PhantomCamera3D : PhantomCamera
         public const string SetLookAtTargets = "set_look_at_targets";
 
         public const string IsLooking = "is_looking";
-
-        public const string GetLookAtPosition = "get_look_at_position";
 
         public const string GetUp = "get_up";
         public const string SetUp = "set_up";
