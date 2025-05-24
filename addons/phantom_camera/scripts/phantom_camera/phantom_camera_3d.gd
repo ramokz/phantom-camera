@@ -1357,18 +1357,6 @@ func get_transform_output() -> Transform3D:
 	return _transform_output
 
 
-func get_follow_target_position() -> Vector3:
-	if not _should_follow:
-		printerr("Follow Mode or Follow Target not assigned")
-		return Vector3.ZERO
-	return _follow_target_position
-
-func get_look_at_target_position() -> Vector3:
-	if not _should_look_at:
-		printerr("Look At Mode or Look At Target not assigned")
-		return Vector3.ZERO
-	return _look_at_target_position
-
 ## Returns the noise [Transform3D] value.
 func get_noise_transform() -> Transform3D:
 	return _transform_noise
@@ -1392,7 +1380,7 @@ func teleport_position() -> void:
 func is_following() -> bool:
 	return _should_follow
 
-func is_looking_at() -> bool:
+func is_looking() -> bool:
 	return _should_look_at
 
 #endregion
