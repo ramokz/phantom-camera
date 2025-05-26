@@ -32,10 +32,10 @@ signal viewfinder_disable_dead_zone
 ## The result will be visible in the viewfinder when multiple instances are present.
 signal has_error()
 
-## Called when a new [param PhantomCamera] becomes active and assigned to this [param PhantomCameraHost].
+## Emitted when a new [param PhantomCamera] becomes active and assigned to this [param PhantomCameraHost].
 signal pcam_became_active(pcam: Node)
 
-## Called when an active [param PhantomCamera] becomes inactive.
+## Emitted when an active [param PhantomCamera] becomes inactive.
 signal pcam_became_inactive(pcam: Node)
 
 #endregion
