@@ -1071,13 +1071,6 @@ func get_transform_output() -> Transform2D:
 	return _transform_output
 
 
-func get_follow_target_position() -> Vector2:
-	if not _should_follow:
-		printerr("Follow Mode or Follow Target not assigned")
-		return Vector2.ZERO
-	return _follow_target_position
-
-
 ## Returns the noise [Transform3D] value.
 func get_noise_transform() -> Transform2D:
 	return _transform_noise
