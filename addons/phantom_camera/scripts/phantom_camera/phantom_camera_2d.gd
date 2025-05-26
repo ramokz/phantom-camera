@@ -1091,6 +1091,9 @@ func teleport_position() -> void:
 	_phantom_camera_manager.pcam_teleport.emit(self)
 
 
+# TODO: Enum link does link to anywhere is being tracked in: https://github.com/godotengine/godot/issues/106828
+## Returns true if this [param PhantomCamera2D]'s [member follow_mode] is not set to [enum FollowMode]
+## and has a valid [member follow_target].
 func is_following() -> bool:
 	return _should_follow
 
