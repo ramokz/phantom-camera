@@ -126,6 +126,11 @@ public abstract class PhantomCamera
         Node.Call(MethodName.TeleportPosition);
     }
 
+    public void SetHostLayersValue(int layer, bool enabled)
+    {
+        Node.Call(MethodName.SetHostLayersValue, layer, enabled);
+    }
+
     protected PhantomCamera(GodotObject phantomCameraNode)
     {
         Node = phantomCameraNode;
@@ -218,6 +223,7 @@ public abstract class PhantomCamera
 
         public const string GetHostLayers = "get_host_layers";
         public const string SetHostLayers = "set_host_layers";
+        public const string SetHostLayersValue = "set_host_layers_value";
 
         public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
         public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
