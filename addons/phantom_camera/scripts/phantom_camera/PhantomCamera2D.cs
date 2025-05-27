@@ -179,6 +179,8 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
     }
 
+    public void EmitNoise(Transform2D transform) => Node2D.Call(PhantomCamera.MethodName.EmitNoise, transform);
+
     public NodePath LimitTarget
     {
         get => (NodePath)Node2D.Call(MethodName.GetLimitTarget);

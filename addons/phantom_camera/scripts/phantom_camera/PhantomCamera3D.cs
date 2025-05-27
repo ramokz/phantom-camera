@@ -328,6 +328,8 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetNoise, (GodotObject)value.Resource);
     }
 
+    public void EmitNoise(Transform3D transform) => Node3D.Call(PhantomCamera.MethodName.EmitNoise, transform);
+
     public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
     public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
 
@@ -337,7 +339,7 @@ public class PhantomCamera3D : PhantomCamera
         _callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
         _callableCamera3DResourceChanged = Callable.From(() => Camera3DResourceChanged?.Invoke());
         _callableCamera3DResourcePropertyChanged = Callable.From((StringName property, Variant value) =>
-            Camera3DResourcePropertyChanged?.Invoke(property, value));
+        Camera3DResourcePropertyChanged?.Invoke(property, value));
         _callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
         _callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
 

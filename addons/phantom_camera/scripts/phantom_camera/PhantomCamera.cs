@@ -227,6 +227,8 @@ public abstract class PhantomCamera
 
         public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
         public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
+
+        public const string EmitNoise = "emit_noise";
     }
 
     public static class PropertyName
