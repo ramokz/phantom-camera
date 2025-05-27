@@ -19,11 +19,36 @@ public static class PhantomCameraHostExtensions
     }
 }
 
-public class PhantomCameraHost(Node node)
+public class PhantomCameraHost()
 {
+    public Node Node { get; } = null!;
 
-    public Node Node { get; } = node;
+    public PhantomCameraHost(Node node) : this()
+    {
+        Node = node;
 
+        _callablePCamBecameActive = Callable.From<Node>(pCam => PCamBecameActive?.Invoke(pCam));
+        _callablePCamBecameInactive = Callable.From<Node>(pCam => PCamBecameInactive?.Invoke(pCam));
+
+        Node.Connect(SignalName.PCamBecameActive, _callablePCamBecameActive);
+        Node.Connect(SignalName.PCamBecameInactive, _callablePCamBecameInactive);
+    }
+
+    ~PhantomCameraHost()
+    {
+        Node.Disconnect(SignalName.PCamBecameActive, _callablePCamBecameActive);
+        Node.Disconnect(SignalName.PCamBecameInactive, _callablePCamBecameInactive);
+    }
+
+    public delegate void PCamBecameActiveEventHandler(Node pCam);
+    public delegate void PCamBecameInactiveEventHandler(Node pCam);
+
+    public event PCamBecameActiveEventHandler? PCamBecameActive;
+    public event PCamBecameInactiveEventHandler? PCamBecameInactive;
+
+
+    private readonly Callable _callablePCamBecameActive;
+    private readonly Callable _callablePCamBecameInactive;
     // For when Godot becomes the minimum version
     // public InterpolationMode InterpolationMode
     // {
@@ -66,6 +91,12 @@ public class PhantomCameraHost(Node node)
         public const string SetInterpolationMode = "set_interpolation_mode";
 
         public const string SetHostLayersValue = "set_host_layers_value";
+    }
+
+    public static class SignalName
+    {
+        public const string PCamBecameActive = "pcam_became_active";
+        public const string PCamBecameInactive = "pcam_became_inactive";
     }
 }
 
