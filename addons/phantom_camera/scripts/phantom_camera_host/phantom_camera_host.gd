@@ -35,7 +35,7 @@ signal has_error()
 ## Emitted when a new [param PhantomCamera] becomes active and assigned to this [param PhantomCameraHost].
 signal pcam_became_active(pcam: Node)
 
-## Emitted when an active [param PhantomCamera] becomes inactive.
+## Emitted when the currently active [param PhantomCamera] goes from being active to inactive.
 signal pcam_became_inactive(pcam: Node)
 
 #endregion
