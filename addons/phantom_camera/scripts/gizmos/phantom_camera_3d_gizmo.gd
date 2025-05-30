@@ -1,9 +1,7 @@
+@tool
 extends EditorNode3DGizmo
 
 #var pcam_3d: PhantomCamera3D
-
-func _set_handle(id: int, secondary: bool, camera: Camera3D, point: Vector2) -> void:
-	pass
 
 func _redraw() -> void:
 	clear()
