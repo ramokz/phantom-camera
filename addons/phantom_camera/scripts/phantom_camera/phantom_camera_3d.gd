@@ -432,12 +432,17 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## This is only used for when [member follow_mode] is set to [param Framed].
 @export_subgroup("Spring Arm")
 
-## Applies a rotational offset to the Third Person [member follow_mode].
-## By default, the rotation of the [param PhantomCamera3D] will be the same as its [member follow_target].
-@export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.25, exp, or_greater, or_less, radians_as_degrees ")
-var rotational_offset: Vector3:
-	set = set_rotational_offset,
-	get = get_rotational_offset
+## Applies a rotational offset to the Third Person [member follow_mode] in the [code]X[/code] axis.
+@export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.1, exp, or_greater, or_less, radians_as_degrees")
+var rotational_offset_x: float = 0:
+	set = set_rotational_offset_x,
+	get = get_rotational_offset_x
+
+## Applies a rotational offset to the Third Person [member follow_mode] in the [code]Y[/code] axis.
+@export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.1, exp, or_greater, or_less, radians_as_degrees")
+var rotational_offset_y: float = 0:
+	set = set_rotational_offset_y,
+	get = get_rotational_offset_y
 
 ## Defines the [member SpringArm3D.spring_length].
 @export var spring_length: float = 1:
@@ -697,7 +702,8 @@ func _validate_property(property: Dictionary) -> void:
 	######################
 	if not follow_mode == FollowMode.THIRD_PERSON:
 		match property.name:
-			"rotational_offset", \
+			"rotational_offset_x", \
+			"rotational_offset_y", \
 			"spring_length", \
 			"collision_mask", \
 			"shape", \
@@ -1030,9 +1036,13 @@ func _get_target_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
 	transform.basis.z * Vector3(follow_distance, follow_distance, follow_distance)
 
+# Used in the editor for setting initial Third Person position and angle
 func _get_target_position_offset_distance_direction() -> Vector3:
-	return (_get_target_position_offset() + \
-	follow_target.global_basis.z * Vector3(follow_distance, follow_distance, follow_distance)) * Quaternion.from_euler(rotational_offset)
+	return _get_target_position_offset() + \
+	follow_target.global_basis.z * \
+	Vector3(follow_distance, follow_distance, follow_distance) * \
+	Quaternion(follow_target.global_basis.x, rotational_offset_x) * \
+	Quaternion(follow_target.global_basis.y, rotational_offset_y)
 
 
 func _set_follow_velocity(index: int, value: float) -> void:
@@ -1750,11 +1760,18 @@ func get_third_person_quaternion() -> Quaternion:
 	return _follow_spring_arm.quaternion
 
 
-func set_rotational_offset(value: Vector3) -> void:
-	rotational_offset = value
+func set_rotational_offset_x(value: float) -> void:
+	rotational_offset_x = value
 
-func get_rotational_offset() -> Vector3:
-	return rotational_offset
+func get_rotational_offset_x() -> float:
+	return rotational_offset_x
+
+
+func set_rotational_offset_y(value: float) -> void:
+	rotational_offset_y = value
+
+func get_rotational_offset_y() -> float:
+	return rotational_offset_y
 
 
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
