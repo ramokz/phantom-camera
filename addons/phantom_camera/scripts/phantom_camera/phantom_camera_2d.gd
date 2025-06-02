@@ -439,7 +439,7 @@ var _is_active: bool = false
 var _should_follow: bool = false
 var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled: bool = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
+var _physics_interpolation_enabled: bool = false
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
@@ -1607,6 +1607,11 @@ func get_inactive_update_mode() -> int:
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
 
+func get_physics_interpolation_enabled() -> bool:
+	return _physics_interpolation_enabled
+
+func set_physics_interpolation_enabled(value: bool) -> void:
+	_physics_interpolation_enabled = value
 
 func get_class() -> String:
 	return "PhantomCamera2D"

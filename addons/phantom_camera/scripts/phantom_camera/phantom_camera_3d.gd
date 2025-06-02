@@ -524,7 +524,7 @@ var _camera_target: Node3D = self # Calculates the position of the camera in the
 
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
+var _physics_interpolation_enabled: bool = false 
 
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
@@ -821,12 +821,12 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	if _follow_target_physics_based or _is_active: return
+	if _follow_target_physics_based or _physics_interpolation_enabled or _is_active: return
 	process_logic(delta)
 
 
 func _physics_process(delta: float) -> void:
-	if not _follow_target_physics_based or _is_active: return
+	if not (_follow_target_physics_based and _physics_interpolation_enabled) or _is_active: return
 	process_logic(delta)
 
 
@@ -2224,6 +2224,11 @@ func get_far() -> Variant:
 func get_follow_target_physics_based() -> bool:
 	return _follow_target_physics_based
 
+func get_physics_interpolation_enabled() -> bool:
+	return _physics_interpolation_enabled
+
+func set_physics_interpolation_enabled(value: bool) -> void:
+	_physics_interpolation_enabled = value
 
 func get_class() -> String:
 	return "PhantomCamera3D"
