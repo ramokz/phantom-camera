@@ -1127,9 +1127,7 @@ func _interpolate_rotation(delta: float) -> void:
 		var sin_theta: float = sin(theta)
 		var sin_theta_total: float = sin(acos(dot))
 
-		# Stop interpolating once sin_theta_total reaches a very low value or 0
-		if sin_theta_total < 0.00001:
-			return
+		if is_zero_approx(sin_theta_total): return
 
 		var ratio_a: float = cos(theta) - dot * sin_theta / sin_theta_total
 		var ratio_b: float = sin_theta / sin_theta_total
