@@ -60,7 +60,6 @@ var phantom_camera_3ds: Array[Node]: ## Note: To support disable_3d export templ
 	get:
 		return _phantom_camera_3d_list
 
-
 var screen_size: Vector2i
 
 #endregion
