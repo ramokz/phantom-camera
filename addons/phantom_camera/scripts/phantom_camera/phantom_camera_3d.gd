@@ -985,11 +985,11 @@ func _set_follow_position() -> void:
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
 				var viewport_width: float = get_viewport().size.x
 				var viewport_height: float = get_viewport().size.y
-				var camera_aspect: Camera3D.KeepAspect = get_viewport().get_camera_3d().keep_aspect
+				var camera_aspect: int = get_viewport().get_camera_3d().keep_aspect
 				var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
 
 				unprojected_position = unprojected_position - visible_rect_size / 2
-				if camera_aspect == Camera3D.KeepAspect.KEEP_HEIGHT:
+				if camera_aspect == Camera3D.KEEP_HEIGHT:
 					# Landscape View
 					var aspect_ratio_scale: float = viewport_width / viewport_height
 					unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
