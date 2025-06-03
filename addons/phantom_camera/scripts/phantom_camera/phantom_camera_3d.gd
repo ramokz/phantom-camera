@@ -1079,9 +1079,10 @@ func _interpolate_position(delta: float) -> void:
 		_transform_output.origin = global_position
 
 	if _is_third_person_follow:
-		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset())
-		_transform_output.basis = Basis(target_quat)
-		global_basis = Basis(target_quat)
+		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset(), follow_target.global_basis.y)
+		var target_basis: Basis = Basis(target_quat)
+		_transform_output.basis = target_basis
+		global_basis = target_basis
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
