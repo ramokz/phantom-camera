@@ -1409,6 +1409,8 @@ func refresh_pcam_list_priorty() -> void:
 
 func set_interpolation_mode(value: int) -> void:
 	interpolation_mode = value
+	if is_inside_tree():
+		_check_pcam_physics()
 func get_interpolation_mode() -> int:
 	return interpolation_mode
 
