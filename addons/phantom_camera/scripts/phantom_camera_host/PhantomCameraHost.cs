@@ -68,6 +68,12 @@ public class PhantomCameraHost()
 
     public Camera3D? Camera3D => (Camera3D?)Node.Get(PropertyName.Camera3D);
 
+    public int InterpolationMode
+    {
+        get => (int)Node.Call(MethodName.GetInterpolationMode);
+        set => Node.Call(MethodName.SetInterpolationMode, value);
+    }
+
     public bool TriggerPhantomCameraTween => (bool)Node.Call(MethodName.GetTriggerPhantomCameraTween);
 
     public ActivePhantomCameraQueryResult? GetActivePhantomCamera()
