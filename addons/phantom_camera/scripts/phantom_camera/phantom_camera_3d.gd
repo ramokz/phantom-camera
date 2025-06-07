@@ -1034,13 +1034,13 @@ func _get_target_position_offset() -> Vector3:
 
 func _get_target_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
-	transform.basis.z * Vector3(follow_distance, follow_distance, follow_distance)
+	transform.basis.z * follow_distance
 
 # Used in the editor for setting initial Third Person position and angle
 func _get_target_position_offset_distance_direction() -> Vector3:
 	return _get_target_position_offset() + \
 	follow_target.global_basis.z * \
-	Vector3(follow_distance, follow_distance, follow_distance) * \
+	follow_distance * \
 	Quaternion(follow_target.global_basis.x, rotational_offset_x) * \
 	Quaternion(follow_target.global_basis.y, rotational_offset_y)
 
