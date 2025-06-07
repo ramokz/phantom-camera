@@ -283,6 +283,29 @@ enum FollowLockAxis {
 var _follow_axis_is_locked: bool = false
 var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 
+## Makes the [param PhantomCamera2D] copy the rotation of its [member follow_target][br]
+## This behavior is only available when [member follow_mode] is set and only has one [member follow_target].[br][br]
+## [b]Important:[/b] Be sure to disable [member Camera2D.ignore_rotation] to enable this mechanic.
+@export var rotate_with_target: bool = false:
+	set = set_rotate_with_target,
+	get = get_rotate_with_target
+var _should_rotate_with_target: bool = false
+
+## Offsets the rotation when [member rotate_with_target] is enabled.
+@export_range(-360, 360, 0.001, "radians_as_degrees") var rotation_offset: float = 0:
+	set = set_rotation_offset,
+	get = get_rotation_offset
+
+## Enables rotational damping when [member rotate_with_target] is enabled.
+@export var rotation_damping: bool = false:
+	set = set_rotation_damping,
+	get = get_rotation_damping
+
+## Defines the damping amount for the [member rotate_with_target].
+@export_range(0, 1) var rotation_damping_value: float = 0.1:
+	set = set_rotation_damping_value,
+	get = get_rotation_damping_value
+
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -445,7 +468,8 @@ var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
 var _follow_targets: Array[Node2D] = []
 
-var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the movement
+var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the follow movement
+var _rotation_velocity_ref: float = 0 # Stores and applies the velocity of the rotation movement
 
 var _has_follow_path: bool = false
 
@@ -517,7 +541,8 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_offset", \
 			"follow_damping", \
 			"follow_damping_value", \
-			"follow_axis_lock":
+			"follow_axis_lock", \
+			"rotate_with_target":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
@@ -525,8 +550,6 @@ func _validate_property(property: Dictionary) -> void:
 		follow_mode == FollowMode.GLUED:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "follow_damping_value" and not follow_damping:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
 	## Follow Group
@@ -553,6 +576,26 @@ func _validate_property(property: Dictionary) -> void:
 			"dead_zone_height", \
 			"show_viewfinder_in_play":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+
+	#####################
+	## Rotate With Target
+	#####################
+	if property.name == "rotate_with_target" and follow_mode == FollowMode.GROUP:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+
+	if not rotate_with_target or follow_mode == FollowMode.GROUP:
+		match property.name:
+			"rotation_damping", \
+			"rotation_offset", \
+			"rotation_damping_value":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "rotation_damping_value":
+		if not rotation_damping:
+			property.usage = PROPERTY_USAGE_NO_EDITOR
+
 
 	#######
 	## Zoom
@@ -758,12 +801,30 @@ func _set_follow_position() -> void:
 func _set_follow_velocity(index: int, value: float):
 	_follow_velocity_ref[index] = value
 
+func _set_rotation_velocity(index: int, value: float):
+	_rotation_velocity_ref = value
 
 func _interpolate_position(target_position: Vector2, delta: float) -> void:
 	if _limit_inactive_pcam and not _tween_skip:
 		target_position = _set_limit_clamp_position(target_position)
 
 	global_position = target_position
+	var output_rotation: float = global_transform.get_rotation()
+
+	if rotate_with_target:
+		if rotation_damping and not Engine.is_editor_hint():
+			output_rotation = _smooth_damp(
+				global_transform.get_rotation(),
+				_transform_output.get_rotation(),
+				0,
+				_rotation_velocity_ref,
+				_set_rotation_velocity,
+				rotation_damping_value,
+				delta
+			) + rotation_offset
+		else:
+			output_rotation = follow_target.get_rotation() + rotation_offset
+
 	if follow_damping and not Engine.is_editor_hint():
 		var output_position: Vector2
 		for i in 2:
@@ -776,9 +837,9 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 				follow_damping_value[i],
 				delta
 			)
-		_transform_output = Transform2D(global_rotation, output_position)
+		_transform_output = Transform2D(output_rotation, output_position)
 	else:
-		_transform_output = Transform2D(global_rotation, target_position)
+		_transform_output = Transform2D(output_rotation, target_position)
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
@@ -1349,6 +1410,7 @@ func set_follow_damping_value(value: Vector2) -> void:
 func get_follow_damping_value() -> Vector2:
 	return follow_damping_value
 
+
 ## Assigns a new [member follow_axis] member. Value is based on [enum FollowLockAxis] enum.
 func set_lock_axis(value: FollowLockAxis) -> void:
 	follow_axis_lock = value
@@ -1373,6 +1435,44 @@ func set_lock_axis(value: FollowLockAxis) -> void:
 ## Gets the current [member follow_axis_lock] value. Value is based on [enum FollowLockAxis] enum.
 func get_lock_axis() -> FollowLockAxis:
 	return follow_axis_lock
+
+
+## Enables or disables [member rotate_with_target].
+func set_rotate_with_target(value: bool) -> void:
+	rotate_with_target = value
+	notify_property_list_changed()
+
+## Gets the current [member rotate_with_target] value.
+func get_rotate_with_target() -> bool:
+	return rotate_with_target
+
+
+## Sets the [member rotation_offset].
+func set_rotation_offset(value: float) -> void:
+	rotation_offset = value
+
+## Gets the current [member rotation_offset] value.
+func get_rotation_offset() -> float:
+	return rotation_offset
+
+
+## Enables or disables [member rotation_damping].
+func set_rotation_damping(value: bool) -> void:
+	rotation_damping = value
+	notify_property_list_changed()
+
+## Gets the [member rotation_damping] value.
+func get_rotation_damping() -> bool:
+	return rotation_damping
+
+
+## Set the [member rotation_damping_value].
+func set_rotation_damping_value(value: float) -> void:
+	rotation_damping_value = value
+
+## Gets the [member rotation_damping_value] value.
+func get_rotation_damping_value() -> float:
+	return rotation_damping_value
 
 
 ## Enables or disables [member snap_to_pixel].
