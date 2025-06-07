@@ -567,6 +567,7 @@ var _has_follow_spring_arm: bool = false
 
 var _has_noise_resource: bool = false
 
+var _draw_gizmo: bool = false
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
 var _phantom_camera_manager: Node = null
@@ -830,30 +831,10 @@ func _ready():
 	tween_completed.connect(_tween_complete)
 
 
-func _connect_property_edited() -> void:
-	if not Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_properties_changed):
-		Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.connect(_properties_changed)
-
-	if not editor_state_changed.is_connected(_state_changed):
-		editor_state_changed.connect(_state_changed)
-
-func _disconnect_property_edited() -> void:
-	if Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_properties_changed):
-		Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.disconnect(_properties_changed)
-
-	if editor_state_changed.is_connected(_state_changed):
-		editor_state_changed.disconnect(_state_changed)
-
-
-func _properties_changed(value: String) -> void:
-	if not Engine.get_singleton(&"EditorInterface").get_inspector().get_edited_object() == self: return
-	if value == "rotation":
+func _process(delta: float) -> void:
+	if Engine.is_editor_hint() and _draw_gizmo:
 		update_gizmos()
 
-func _state_changed() -> void:
-	print("State Changed")
-
-func _process(delta: float) -> void:
 	if _follow_target_physics_based or _is_active: return
 	process_logic(delta)
 
@@ -1841,16 +1822,29 @@ func get_margin() -> float:
 
 func set_draw_follow_line(value: bool) -> void:
 	draw_follow_line = value
-	update_gizmos()
 
-	if not Engine.is_editor_hint(): return
-	if value:
-		_connect_property_edited()
+	if not draw_follow_line and not draw_look_at_line:
+		_draw_gizmo = false
 	else:
-		_disconnect_property_edited()
+		_draw_gizmo = true
+	update_gizmos()
 
 func get_draw_follow_line() -> bool:
 	return draw_follow_line
+
+
+func set_draw_look_at_line(value: bool) -> void:
+	draw_look_at_line = value
+
+	if not draw_follow_line and not draw_look_at_line:
+		_draw_gizmo = false
+	else:
+		_draw_gizmo = true
+	update_gizmos()
+
+func get_draw_look_at_line() -> bool:
+	return draw_look_at_line
+
 
 ## Gets the current [member look_at_mode]. Value is based on [enum LookAtMode]
 ## enum.[br]
