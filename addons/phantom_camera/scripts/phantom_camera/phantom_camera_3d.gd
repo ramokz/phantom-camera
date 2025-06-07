@@ -1035,7 +1035,7 @@ func _set_look_at_position() -> void:
 			_look_at_target_position = global_position - look_at_target.global_basis.z
 
 		LookAtMode.SIMPLE:
-			_look_at_target_position =look_at_target.global_position
+			_look_at_target_position = look_at_target.global_position
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
@@ -1044,8 +1044,9 @@ func _set_look_at_position() -> void:
 				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 				for node in look_at_targets:
 					bounds = bounds.expand(node.global_position)
-				_look_at_target_position =bounds.get_center()
+				_look_at_target_position = bounds.get_center()
 
+	_look_at_target_position += look_at_offset
 
 func _get_target_position_offset() -> Vector3:
 	return follow_target.global_position + follow_offset
@@ -1097,7 +1098,7 @@ func _interpolate_position(delta: float) -> void:
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
-	var direction: Vector3 = -(target_position - global_position + look_at_offset).normalized()
+	var direction: Vector3 = -(target_position - global_position).normalized()
 
 	var basis_z: Vector3 = direction.normalized()
 	var basis_x: Vector3 = up_direction.cross(basis_z)
