@@ -816,7 +816,7 @@ func _ready():
 			if is_instance_valid(follow_target):
 				_transform_output.origin = _get_target_position_offset()
 			else:
-				_transform_output.origin = global_transform.origin
+				_transform_output.origin = global_position
 
 	if not Engine.is_editor_hint():
 		_preview_noise = true
@@ -876,7 +876,7 @@ func process_logic(delta: float) -> void:
 	if _should_follow:
 		_follow(delta)
 	else:
-		_transform_output.origin = global_transform.origin
+		_transform_output.origin = global_position
 
 	if _should_look_at:
 		_look_at(delta)
@@ -938,13 +938,13 @@ func _set_follow_position() -> void:
 				_follow_target_position = \
 					bounds.get_center() + \
 					follow_offset + \
-					global_transform.basis.z * \
+					global_basis.z * \
 					Vector3(distance, distance, distance)
 			else:
 				_follow_target_position = \
 					follow_targets[_follow_targets_single_target_index].global_position + \
 					follow_offset + \
-					global_transform.basis.z * \
+					global_basis.z * \
 					Vector3(auto_follow_distance_min, auto_follow_distance_min, auto_follow_distance_min)
 
 		FollowMode.PATH:
@@ -1118,7 +1118,7 @@ func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vect
 
 func _interpolate_rotation(delta: float) -> void:
 	if _has_up_target:
-		_up = up_target.get_global_transform().basis.y
+		_up = up_target.global_basis.y
 
 	var target_quat: Quaternion = _look_at_target_quat(_look_at_target_position, _up)
 
@@ -1394,18 +1394,6 @@ func get_transform_output() -> Transform3D:
 	return _transform_output
 
 
-func get_follow_target_position() -> Vector3:
-	if not _should_follow:
-		printerr("Follow Mode or Follow Target not assigned")
-		return Vector3.ZERO
-	return _follow_target_position
-
-func get_look_at_target_position() -> Vector3:
-	if not _should_look_at:
-		printerr("Look At Mode or Look At Target not assigned")
-		return Vector3.ZERO
-	return _look_at_target_position
-
 ## Returns the noise [Transform3D] value.
 func get_noise_transform() -> Transform3D:
 	return _transform_noise
@@ -1426,10 +1414,16 @@ func teleport_position() -> void:
 	_phantom_camera_manager.pcam_teleport.emit(self)
 
 
+# TODO: Enum link does link to anywhere is being tracked in: https://github.com/godotengine/godot/issues/106828
+## Returns [code]true[/code] if this [param PhantomCamera3D]'s [member follow_mode] is not set to [constant FollowMode.NONE]
+## and has a valid [member follow_target].
 func is_following() -> bool:
 	return _should_follow
 
-func is_looking_at() -> bool:
+# TODO: Enum link does link to anywhere is being tracked in: https://github.com/godotengine/godot/issues/106828
+## Returns [code]true[/code] if this [param PhantomCamera3D]'s [member look_at_mode] is not set to [constant LookAtMode.NONE]
+## and has a valid [member look_at_target].
+func is_looking() -> bool:
 	return _should_look_at
 
 #endregion

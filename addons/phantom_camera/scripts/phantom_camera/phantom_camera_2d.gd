@@ -1071,13 +1071,6 @@ func get_transform_output() -> Transform2D:
 	return _transform_output
 
 
-func get_follow_target_position() -> Vector2:
-	if not _should_follow:
-		printerr("Follow Mode or Follow Target not assigned")
-		return Vector2.ZERO
-	return _follow_target_position
-
-
 ## Returns the noise [Transform3D] value.
 func get_noise_transform() -> Transform2D:
 	return _transform_noise
@@ -1098,6 +1091,9 @@ func teleport_position() -> void:
 	_phantom_camera_manager.pcam_teleport.emit(self)
 
 
+# TODO: Enum link does link to anywhere is being tracked in: https://github.com/godotengine/godot/issues/106828
+## Returns true if this [param PhantomCamera2D]'s [member follow_mode] is not set to [enum FollowMode]
+## and has a valid [member follow_target].
 func is_following() -> bool:
 	return _should_follow
 

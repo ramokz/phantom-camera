@@ -9,16 +9,12 @@ extends Node
 ## PhantomCameraHost will react to those that corresponds. It is what determines which [param PhantomCamera] should
 ## be active.
 
-#region Signals
-
-
-#endregion
-
 #region Constants
 
 const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 
 #endregion
+
 
 #region Signals
 
@@ -32,10 +28,10 @@ signal viewfinder_disable_dead_zone
 ## The result will be visible in the viewfinder when multiple instances are present.
 signal has_error()
 
-## Called when a new [param PhantomCamera] becomes active and assigned to this [param PhantomCameraHost].
+## Emitted when a new [param PhantomCamera] becomes active and assigned to this [param PhantomCameraHost].
 signal pcam_became_active(pcam: Node)
 
-## Called when an active [param PhantomCamera] becomes inactive.
+## Emitted when the currently active [param PhantomCamera] goes from being active to inactive.
 signal pcam_became_inactive(pcam: Node)
 
 #endregion
@@ -60,10 +56,10 @@ enum InterpolationMode {
 	set = set_host_layers,
 	get = get_host_layers
 
-## TBD - For when Godot 4.3 becomes the minimum version
-#@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
-	#set = set_interpolation_mode,
-	#get = get_interpolation_mode
+## Determines whether the [PhantomCamera2D] / [PhantomCamera3D] nodes this [param PhantomCameraHost] controls should use physics interpolation or not.
+@export var interpolation_mode: InterpolationMode = InterpolationMode.AUTO:
+	set = set_interpolation_mode,
+	get = get_interpolation_mode
 
 #endregion
 
@@ -681,7 +677,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.3 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 3:
-			if _active_pcam_2d.get_follow_target_physics_based():
+			if _active_pcam_2d.get_follow_target_physics_based() and (interpolation_mode != InterpolationMode.IDLE):
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
@@ -707,7 +703,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.4 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 4:
-			if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
+			if (get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based()) and (interpolation_mode != InterpolationMode.IDLE):
 				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
@@ -1403,15 +1399,16 @@ func refresh_pcam_list_priorty() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
 
-
-#func set_interpolation_mode(value: int) -> void:
-	#interpolation_mode = value
-#func get_interpolation_mode() -> int:
-	#return interpolation_mode
-
 #endregion
 
-##region Setters / Getters
+#region Setters / Getters
+
+func set_interpolation_mode(value: int) -> void:
+	interpolation_mode = value
+	if is_inside_tree():
+		_check_pcam_physics()
+func get_interpolation_mode() -> int:
+	return interpolation_mode
 
 ## Sets the [member host_layers] value.
 func set_host_layers(value: int) -> void:
@@ -1435,4 +1432,4 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 func get_host_layers() -> int:
 	return host_layers
 
-##endregion
+#endregion
