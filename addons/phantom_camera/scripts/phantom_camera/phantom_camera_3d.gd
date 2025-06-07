@@ -432,7 +432,6 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed].
 @export_subgroup("Spring Arm")
-
 ## Defines the [member SpringArm3D.spring_length].
 @export var spring_length: float = 1:
 	set = set_spring_length,
@@ -453,8 +452,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_margin,
 	get = get_margin
 
-
-@export_subgroup("Follow Debug")
+@export_subgroup("Debug")
 ## Draws a line between the [param PhantomCamera3D] and its follow target position.[br]
 ## This is only drawn when a valid [member follow_target] or [member follow_targets] is set.
 @export var draw_follow_line: bool = false:
@@ -484,7 +482,6 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_look_at_damping_value
 
 @export_subgroup("Up Direction")
-
 ## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set. [br]
 ## This value will be overriden if [member up_target] is defined.
 @export var up: Vector3 = Vector3.UP:
@@ -496,6 +493,14 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export var up_target: Node3D = null:
 	set = set_up_target,
 	get = get_up_target
+
+
+@export_subgroup("Debug")
+## Draws a line between the [param PhantomCamera3D] and its look at target position.[br]
+## This is only drawn when a valid [member follow_target] or [member look_at_targets] is set.
+@export var draw_look_at_line: bool = false:
+	set = set_draw_look_at_line,
+	get = get_draw_look_at_line
 
 
 @export_group("Noise")
@@ -628,10 +633,6 @@ func _validate_property(property: Dictionary) -> void:
 	################
 	## Follow Target
 	################
-	if property.name == "follow_target":
-		if follow_mode == FollowMode.NONE or \
-		follow_mode == FollowMode.GROUP:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_path" and \
 	follow_mode != FollowMode.PATH:
@@ -642,10 +643,17 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	if follow_mode == FollowMode.NONE:
 		match property.name:
+			"follow_target", \
 			"follow_offset", \
 			"follow_damping", \
 			"follow_damping_value", \
-			"follow_axis_lock":
+			"follow_axis_lock", \
+			"draw_follow_line":
+				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if follow_mode == FollowMode.GROUP:
+		match property.name:
+			"follow_target":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
@@ -715,11 +723,13 @@ func _validate_property(property: Dictionary) -> void:
 			"look_at_damping", \
 			"look_at_damping_value", \
 			"up", \
-			"up_target":
+			"up_target", \
+			"draw_look_at_line":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 	elif look_at_mode == LookAtMode.GROUP:
 		match property.name:
-			"look_at_target":
+			"look_at_target", \
+			"draw_look_at_line":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "look_at_target":
