@@ -805,25 +805,25 @@ func _set_rotation_velocity(index: int, value: float):
 	_rotation_velocity_ref = value
 
 func _interpolate_position(target_position: Vector2, delta: float) -> void:
-	if _limit_inactive_pcam and not _tween_skip:
-		target_position = _set_limit_clamp_position(target_position)
-
-	global_position = target_position
 	var output_rotation: float = global_transform.get_rotation()
-
 	if rotate_with_target:
 		if rotation_damping and not Engine.is_editor_hint():
 			output_rotation = _smooth_damp(
-				global_transform.get_rotation(),
+				follow_target.get_rotation() + rotation_offset,
 				_transform_output.get_rotation(),
 				0,
 				_rotation_velocity_ref,
 				_set_rotation_velocity,
 				rotation_damping_value,
 				delta
-			) + rotation_offset
+			)
 		else:
 			output_rotation = follow_target.get_rotation() + rotation_offset
+
+	if _limit_inactive_pcam and not _tween_skip:
+		target_position = _set_limit_clamp_position(target_position)
+
+	global_position = target_position
 
 	if follow_damping and not Engine.is_editor_hint():
 		var output_position: Vector2
