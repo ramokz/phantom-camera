@@ -1536,8 +1536,6 @@ func set_is_active(node: Node, value: bool) -> void:
 		_is_active = value
 		if value:
 			_should_follow_checker()
-		else:
-			update_gizmos()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
@@ -1672,7 +1670,6 @@ func get_follow_targets() -> Array[Node3D]:
 func set_follow_offset(value: Vector3) -> void:
 	var temp_offset: Vector3 = follow_offset
 	follow_offset = value
-	update_gizmos()
 
 	if follow_axis_lock != FollowLockAxis.NONE:
 		temp_offset = temp_offset - value
@@ -1824,7 +1821,6 @@ func get_third_person_quaternion() -> Quaternion:
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
 func set_spring_length(value: float) -> void:
 	follow_distance = value
-	update_gizmos()
 	if not is_instance_valid(_follow_spring_arm): return
 	_follow_spring_arm.spring_length = value
 
