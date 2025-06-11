@@ -434,15 +434,15 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]X[/code] axis.
 @export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.1, exp, or_greater, or_less, radians_as_degrees")
-var rotational_offset_x: float = 0:
-	set = set_rotational_offset_x,
-	get = get_rotational_offset_x
+var vertical_rotation_offset: float = 0:
+	set = set_vertical_rotation_offset,
+	get = get_vertical_rotation_offset
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]Y[/code] axis.
 @export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.1, exp, or_greater, or_less, radians_as_degrees")
-var rotational_offset_y: float = 0:
-	set = set_rotational_offset_y,
-	get = get_rotational_offset_y
+var horizontal_rotation_offset: float = 0:
+	set = set_horizontal_rotation_offset,
+	get = get_horizontal_rotation_offset
 
 ## Defines the [member SpringArm3D.spring_length].
 @export var spring_length: float = 1:
@@ -795,21 +795,23 @@ func _ready():
 				if not is_instance_valid(_follow_spring_arm):
 					_follow_spring_arm = SpringArm3D.new()
 					_follow_spring_arm.top_level = true
-					_follow_spring_arm.rotation = global_rotation
 					_follow_spring_arm.spring_length = spring_length
 					_follow_spring_arm.collision_mask = collision_mask
 					_follow_spring_arm.shape = shape
 					_follow_spring_arm.margin = margin
+                    # Stores the rotation value as the rotation gets skewed after
+					# the SpringArm3D is instantiated for some reason...
+					var initial_rotation: Vector3 = global_rotation
 					if _should_follow: _follow_spring_arm.add_excluded_object(follow_target)
 					get_parent().add_child.call_deferred(_follow_spring_arm)
-					reparent.call_deferred(_follow_spring_arm)
 
 					# Waits for the SpringArm3D to be ready and then apply rotation
 					# Resolves an issue most prominent in Godot 4.4
 					await _follow_spring_arm.ready
+					reparent.call_deferred(_follow_spring_arm)
 					_camera_target = _follow_spring_arm
 					_follow_spring_arm.global_position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
-					_follow_spring_arm.global_rotation = global_rotation
+					_follow_spring_arm.global_rotation = initial_rotation
 					_has_follow_spring_arm = true
 					top_level = false
 		FollowMode.FRAMED:
@@ -1041,8 +1043,8 @@ func _get_target_position_offset_distance_direction() -> Vector3:
 	return _get_target_position_offset() + \
 	follow_target.global_basis.z * \
 	follow_distance * \
-	Quaternion(follow_target.global_basis.x, rotational_offset_x) * \
-	Quaternion(follow_target.global_basis.y, rotational_offset_y)
+	Quaternion(follow_target.global_basis.x, vertical_rotation_offset) * \
+	Quaternion(follow_target.global_basis.y, horizontal_rotation_offset)
 
 
 func _set_follow_velocity(index: int, value: float) -> void:
@@ -1759,18 +1761,21 @@ func get_third_person_quaternion() -> Quaternion:
 	return _follow_spring_arm.quaternion
 
 
-func set_rotational_offset_x(value: float) -> void:
-	rotational_offset_x = value
+## Assigns a new [member set_vertical_rotation_offset] value.
+func set_vertical_rotation_offset(value: float) -> void:
+	vertical_rotation_offset = value
 
-func get_rotational_offset_x() -> float:
-	return rotational_offset_x
+## Gets the [member vertical_rotation] value.
+func get_vertical_rotation_offset() -> float:
+	return vertical_rotation_offset
 
 
-func set_rotational_offset_y(value: float) -> void:
-	rotational_offset_y = value
+func set_horizontal_rotation_offset(value: float) -> void:
+	horizontal_rotation_offset = value
 
-func get_rotational_offset_y() -> float:
-	return rotational_offset_y
+## Gets the [member horizontal_rotation] value.
+func get_horizontal_rotation_offset() -> float:
+	return horizontal_rotation_offset
 
 
 ## Assigns a new ThirdPerson [member SpringArm3D.length] value.
