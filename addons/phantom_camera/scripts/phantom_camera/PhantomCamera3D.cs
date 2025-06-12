@@ -161,6 +161,18 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetSpringLength, value);
     }
 
+    public float VerticalRotationOffset
+    {
+        get => (float)Node3D.Call(MethodName.GetVerticalRotationOffset);
+        set => Node3D.Call(MethodName.SetVerticalRotationOffset, value);
+    }
+
+    public float HorizontalRotationOffset
+    {
+        get => (float)Node3D.Call(MethodName.GetHorizontalRotationOffset);
+        set => Node3D.Call(MethodName.SetHorizontalRotationOffset, value);
+    }
+
     public float FollowDistance
     {
         get => (float)Node3D.Call(MethodName.GetFollowDistance);
@@ -376,6 +388,12 @@ public class PhantomCamera3D : PhantomCamera
 
         public const string GetThirdPersonQuaternion = "get_third_person_quaternion";
         public const string SetThirdPersonQuaternion = "set_third_person_quaternion";
+
+        public const string GetVerticalRotationOffset = "get_vertical_rotation_offset";
+        public const string SetVerticalRotationOffset = "set_vertical_rotation_offset";
+
+        public const string GetHorizontalRotationOffset = "get_horizontal_rotation_offset";
+        public const string SetHorizontalRotationOffset = "set_horizontal_rotation_offset";
 
         public const string GetSpringLength = "get_spring_length";
         public const string SetSpringLength = "set_spring_length";
