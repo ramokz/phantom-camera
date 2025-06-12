@@ -923,13 +923,13 @@ func _set_follow_position() -> void:
 					bounds.get_center() + \
 					follow_offset + \
 					global_basis.z * \
-					Vector3(distance, distance, distance)
+					distance
 			else:
 				_follow_target_position = \
 					follow_targets[_follow_targets_single_target_index].global_position + \
 					follow_offset + \
 					global_basis.z * \
-					Vector3(auto_follow_distance_min, auto_follow_distance_min, auto_follow_distance_min)
+					auto_follow_distance_min
 
 		FollowMode.PATH:
 			var path_position: Vector3 = follow_path.global_position
