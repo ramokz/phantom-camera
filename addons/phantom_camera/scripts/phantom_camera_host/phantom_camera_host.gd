@@ -39,10 +39,11 @@ signal pcam_became_inactive(pcam: Node)
 
 #region Enums
 
+## Dictates whether if [param PhantomCameraHost]'s logic should be called in the physics or idle (process) frames.
 enum InterpolationMode {
-	AUTO    = 0,
-	IDLE    = 1,
-	PHYSICS = 2,
+	AUTO    = 0, ## Automatically sets the [param Camera]'s logic to run in either physics or idle (process) frames depending on its active [param PhantomCamera]'s [param Follow] / [param Look At] Target
+	IDLE    = 1, ## Always run the [param Camera] logic in idle (process) frames
+	PHYSICS = 2, ## Always run the [param Camera] logic in physics frames
 }
 
 #endregion
@@ -677,7 +678,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.3 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 3:
-			if _active_pcam_2d.get_follow_target_physics_based() and (interpolation_mode != InterpolationMode.IDLE):
+			if _active_pcam_2d.get_follow_target_physics_based() and interpolation_mode != InterpolationMode.IDLE:
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
 				## Remove line below and uncomment the following once Godot 4.3 is min verison.
@@ -703,7 +704,7 @@ func _check_pcam_physics() -> void:
 		## NOTE - Only supported in Godot 4.4 or later
 		if Engine.get_version_info().major == 4 and \
 		Engine.get_version_info().minor >= 4:
-			if (get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based()) and (interpolation_mode != InterpolationMode.IDLE):
+			if (get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based()) and interpolation_mode != InterpolationMode.IDLE:
 				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
 				_follow_target_physics_based = true
 				## TODO - Temporary solution to support Godot 4.2
