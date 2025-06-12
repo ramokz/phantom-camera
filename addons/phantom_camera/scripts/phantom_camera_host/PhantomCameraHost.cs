@@ -4,12 +4,12 @@
 
 namespace PhantomCamera;
 
-// public enum InterpolationMode
-// {
-//     Auto,
-//     Idle,
-//     Physics
-// }
+public enum InterpolationMode
+{
+    Auto,
+    Idle,
+    Physics
+}
 
 public static class PhantomCameraHostExtensions
 {
@@ -68,10 +68,10 @@ public class PhantomCameraHost()
 
     public Camera3D? Camera3D => (Camera3D?)Node.Get(PropertyName.Camera3D);
 
-    public int InterpolationMode
+    public InterpolationMode InterpolationMode
     {
-        get => (int)Node.Call(MethodName.GetInterpolationMode);
-        set => Node.Call(MethodName.SetInterpolationMode, value);
+        get => (InterpolationMode)(int)Node.Call(MethodName.GetInterpolationMode);
+        set => Node.Call(MethodName.SetInterpolationMode, (int)value);
     }
 
     public bool TriggerPhantomCameraTween => (bool)Node.Call(MethodName.GetTriggerPhantomCameraTween);
