@@ -799,7 +799,7 @@ func _ready():
 					_follow_spring_arm.collision_mask = collision_mask
 					_follow_spring_arm.shape = shape
 					_follow_spring_arm.margin = margin
-                    # Stores the rotation value as the rotation gets skewed after
+					# Stores the rotation value as the rotation gets skewed after
 					# the SpringArm3D is instantiated for some reason...
 					var initial_rotation: Vector3 = global_rotation
 					if _should_follow: _follow_spring_arm.add_excluded_object(follow_target)
