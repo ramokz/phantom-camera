@@ -192,7 +192,7 @@ enum FollowLockAxis {
 
 ## Applies a zoom level to the [param PhantomCamera2D], which effectively
 ## overrides the [param zoom] property of the [param Camera2D] node.
-@export var zoom: Vector2 = Vector2.ONE:
+@export_custom(PROPERTY_HINT_LINK, "") var zoom: Vector2 = Vector2.ONE:
 	set = set_zoom,
 	get = get_zoom
 
