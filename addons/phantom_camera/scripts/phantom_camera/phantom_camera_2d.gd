@@ -629,11 +629,19 @@ func _enter_tree() -> void:
 
 	priority_override = false
 
-	_should_follow_checker()
-	if follow_mode == FollowMode.GROUP:
-		_follow_targets_size_check()
-	elif follow_mode == FollowMode.NONE:
-		_is_parents_physics()
+	match follow_mode:
+		FollowMode.NONE:
+			_is_parents_physics()
+		FollowMode.PATH:
+			if is_instance_valid(follow_path):
+				_should_follow_checker()
+			else:
+				_should_follow = false
+		FollowMode.GROUP:
+			_follow_targets_size_check()
+			_should_follow_checker()
+		_:
+			_should_follow_checker()
 
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)

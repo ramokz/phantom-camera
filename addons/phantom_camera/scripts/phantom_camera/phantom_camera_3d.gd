@@ -758,14 +758,21 @@ func _enter_tree() -> void:
 	if not visibility_changed.is_connected(_check_visibility):
 		visibility_changed.connect(_check_visibility)
 
-	_should_follow_checker()
+	match follow_mode:
+		FollowMode.NONE:
+			_is_parents_physics()
+		FollowMode.PATH:
+			if is_instance_valid(follow_path):
+				_should_follow_checker()
+			else:
+				_should_follow = false
+		FollowMode.GROUP:
+			_follow_targets_size_check()
+			_should_follow_checker()
+		_:
+			_should_follow_checker()
+
 	_should_look_at_checker()
-
-	if follow_mode == FollowMode.GROUP:
-		_follow_targets_size_check()
-	elif follow_mode == FollowMode.NONE:
-		_is_parents_physics()
-
 	if look_at_mode == LookAtMode.GROUP:
 		_look_at_targets_size_check()
 
