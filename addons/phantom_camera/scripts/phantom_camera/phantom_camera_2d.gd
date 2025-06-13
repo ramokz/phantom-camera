@@ -287,7 +287,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 
 ## Makes the [param PhantomCamera2D] copy the rotation of its [member follow_target][br]
 ## This behavior is only available when [member follow_mode] is set and only has one [member follow_target].[br][br]
-## [b]Important:[/b] Be sure to disable [member Camera2D.ignore_rotation] to enable this mechanic.
+## [b]Important:[/b] Be sure to disable [member Camera2D.ignore_rotation] on the [Camera2D] node to enable this feature.
 @export var rotate_with_target: bool = false:
 	set = set_rotate_with_target,
 	get = get_rotate_with_target
