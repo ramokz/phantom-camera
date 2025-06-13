@@ -702,8 +702,8 @@ func _validate_property(property: Dictionary) -> void:
 	######################
 	if not follow_mode == FollowMode.THIRD_PERSON:
 		match property.name:
-			"rotational_offset_x", \
-			"rotational_offset_y", \
+			"vertical_rotation_offset", \
+			"horizontal_rotation_offset", \
 			"spring_length", \
 			"collision_mask", \
 			"shape", \
