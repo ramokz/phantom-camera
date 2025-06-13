@@ -148,6 +148,8 @@ enum FollowLockAxis {
 			FollowMode.PATH:
 				if is_instance_valid(follow_path):
 					_should_follow_checker()
+				else:
+					_should_follow = false
 			FollowMode.GROUP:
 				_follow_targets_size_check()
 			_:
