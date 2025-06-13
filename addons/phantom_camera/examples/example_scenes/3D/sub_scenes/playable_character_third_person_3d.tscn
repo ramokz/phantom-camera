@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://mskcwn1a1v6d"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="1_0dnfe"]
+[ext_resource type="Script" uid="uid://34uhyq3cpi67" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="1_0dnfe"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s61dn"]
 
@@ -13,7 +13,7 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 size = Vector3(0.5, 0.5, 0.3)
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D"]
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, -0.0163251)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, 0, 0, 0)
 collision_layer = 2
 script = ExtResource("1_0dnfe")
 metadata/_edit_group_ = true

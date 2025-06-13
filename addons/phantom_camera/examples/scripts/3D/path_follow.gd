@@ -15,4 +15,3 @@ func _entered_area(area_3D: Area3D) -> void:
 func _exited_area(area_3D: Area3D) -> void:
 	if area_3D.get_parent() is CharacterBody3D:
 		path_pcam.set_priority(0)
-

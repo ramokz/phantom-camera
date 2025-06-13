@@ -1,12 +1,12 @@
 [gd_scene load_steps=14 format=3 uid="uid://dw2yflu7up2rr"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_pmeux"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_q1ygp"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_hpix1"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_pmeux"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_q1ygp"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_hpix1"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="4_8qqha"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_evdoo"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_evdoo"]
 [ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_vqgn5"]
-[ext_resource type="Texture2D" uid="uid://c7ja4woxol8yc" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="5_wr3bq"]
+[ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="5_wr3bq"]
 
 [sub_resource type="Resource" id="Resource_ucp3e"]
 script = ExtResource("3_hpix1")
@@ -16,6 +16,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_ab013"]
 script = ExtResource("4_evdoo")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -43,9 +44,11 @@ uv1_world_triplanar = true
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -5.60519e-45, 6.39, 7)
+transform = Transform3D(1, 0, 0, 0, 0.638767, 0.7694, 0, -0.7694, 0.638768, 0, 6.39, 7)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+process_priority = 300
+process_physics_priority = 300
 script = ExtResource("1_pmeux")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -56,7 +59,8 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, -5.60519e-45, 6.39, 7)
+transform = Transform3D(0.999954, 0, 0, 0, 0.638683, 0.769345, 0, -0.769298, 0.638723, 0, 6.39, 7)
+top_level = true
 script = ExtResource("2_q1ygp")
 priority = 5
 follow_mode = 1
