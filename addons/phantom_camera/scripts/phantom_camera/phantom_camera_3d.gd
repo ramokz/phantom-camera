@@ -436,13 +436,13 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export_subgroup("Spring Arm")
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]X[/code] axis.
-@export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.1, exp, or_greater, or_less, radians_as_degrees")
+@export_range(-360, 360, 0.1,"or_greater", "or_less", "radians_as_degrees")
 var vertical_rotation_offset: float = 0:
 	set = set_vertical_rotation_offset,
 	get = get_vertical_rotation_offset
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]Y[/code] axis.
-@export_custom(PROPERTY_HINT_RANGE,"-360, 360, 0.1, exp, or_greater, or_less, radians_as_degrees")
+@export_range(-360, 360, 0.1, "or_greater", "or_less", "radians_as_degrees")
 var horizontal_rotation_offset: float = 0:
 	set = set_horizontal_rotation_offset,
 	get = get_horizontal_rotation_offset
