@@ -1174,23 +1174,24 @@ func is_following() -> bool:
 
 #region Setter & Getter Functions
 
-## Assigns new Zoom value.
+## Assigns new [member zoom] value.
 func set_zoom(value: Vector2) -> void:
 	zoom = value
 	queue_redraw()
 
-## Gets current Zoom value.
+## Gets current [member zoom] value.
 func get_zoom() -> Vector2:
 	return zoom
 
 
-## Assigns new Priority value.
+## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
-	priority = abs(value)
+	priority = maxi(0, value)
+	if not is_node_ready(): return
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
 	Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_changed.emit(self)
 
-## Gets current Priority value.
+## Gets current [member priority] value.
 func get_priority() -> int:
 	return priority
 
