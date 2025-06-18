@@ -804,6 +804,7 @@ func _set_follow_position() -> void:
 							dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
 					else:
 						_follow_framed_offset = _transform_output.origin - _get_target_position_offset()
+						_follow_target_position = global_position
 						return
 			else:
 				_follow_target_position = _get_target_position_offset()
