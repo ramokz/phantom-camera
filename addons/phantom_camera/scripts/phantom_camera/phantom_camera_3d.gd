@@ -990,6 +990,7 @@ func _set_follow_position() -> void:
 								_follow_target_position = target_position
 					else:
 						_follow_framed_offset = global_position - _get_target_position_offset()
+						_follow_target_position = global_position
 						_current_rotation = global_rotation
 						return
 			else:
