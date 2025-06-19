@@ -639,7 +639,6 @@ func _enter_tree() -> void:
 				_should_follow = false
 		FollowMode.GROUP:
 			_follow_targets_size_check()
-			_should_follow_checker()
 		_:
 			_should_follow_checker()
 
@@ -647,7 +646,6 @@ func _enter_tree() -> void:
 		visibility_changed.connect(_check_visibility)
 
 	update_limit_all_sides()
-
 
 
 func _exit_tree() -> void:
@@ -973,7 +971,7 @@ func _follow_targets_size_check() -> void:
 	_follow_targets = []
 	for i in follow_targets.size():
 		if follow_targets[i] == null: continue
-		if follow_targets[i].is_inside_tree():
+		if is_instance_valid(follow_targets[i]):
 			_follow_targets.append(follow_targets[i])
 			targets_size += 1
 			_follow_targets_single_target_index = i

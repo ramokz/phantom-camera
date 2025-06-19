@@ -100,6 +100,7 @@ var _cam_attribute_changed: bool = false
 var _cam_attribute_assigned: bool = false
 
 #region CameraAttributes
+
 var _prev_cam_auto_exposure_scale: float = 0.4
 var _cam_auto_exposure_scale_changed: bool = false
 
@@ -137,9 +138,11 @@ var _cam_dof_blur_near_distance_changed: bool = false
 var _cam_dof_blur_near_transition_default: float = 1
 var _prev_cam_dof_blur_near_transition: float = _cam_dof_blur_near_transition_default
 var _cam_dof_blur_near_transition_changed: bool = false
+
 #endregion
 
 #region CameraAttributesPhysical
+
 var _prev_cam_exposure_min_exposure_value: float = 10.0
 var _cam_exposure_min_exposure_value_changed: bool = false
 
