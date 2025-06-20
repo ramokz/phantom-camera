@@ -499,6 +499,8 @@ var _transform_noise: Transform2D = Transform2D()
 
 var _has_noise_resource: bool = false
 
+var _viewport_size: Vector2i = Vector2i.ZERO
+
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
 var _phantom_camera_manager: Node = null
 
@@ -667,8 +669,17 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		_preview_noise = true
 
-	if follow_mode == FollowMode.GROUP:
-		_follow_targets_size_check()
+
+	## Used for runtime Group Follow
+	if not Engine.is_editor_hint():
+		_viewport_size = get_viewport().get_visible_rect().size
+		get_viewport().size_changed.connect(func():
+			_viewport_size = get_viewport().get_visible_rect().size
+		)
+	else:
+		_phantom_camera_manager.project_viewport_size_changed.connect(func():
+			_viewport_size = _phantom_camera_manager.screen_size
+		)
 
 
 func _process(delta: float) -> void:
@@ -746,10 +757,10 @@ func _set_follow_position() -> void:
 						auto_zoom_margin.w
 					)
 
-					if rect.size.x > rect.size.y * _phantom_camera_manager.screen_size.aspect():
-						zoom = clamp(_phantom_camera_manager.screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
+					if rect.size.x > rect.size.y * _viewport_size.aspect():
+						zoom = clampf(_viewport_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
-						zoom = clamp(_phantom_camera_manager.screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
+						zoom = clampf(_viewport_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 				_follow_target_position = rect.get_center() + follow_offset
 			else:
 				_follow_target_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
@@ -892,7 +903,6 @@ func _draw() -> void:
 
 func _camera_frame_rect() -> Rect2:
 	var screen_size_zoom: Vector2 = Vector2(_phantom_camera_manager.screen_size.x / get_zoom().x, _phantom_camera_manager.screen_size.y / get_zoom().y)
-
 	return Rect2(-screen_size_zoom / 2, screen_size_zoom)
 
 

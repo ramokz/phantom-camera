@@ -35,7 +35,7 @@ signal viewfinder_pcam_host_switch(pcam_host: PhantomCameraHost)
 signal pcam_priority_override(pcam: Node, shouldOverride: bool)
 signal pcam_dead_zone_changed(pcam: Node)
 signal pcam_host_layer_changed(pcam: Node)
-
+signal project_viewport_size_changed
 #endregion
 
 #region Private Variables
@@ -73,25 +73,10 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
-	# Setting default screensize
-	screen_size = Vector2i(
-		ProjectSettings.get_setting("display/window/size/viewport_width"),
-		ProjectSettings.get_setting("display/window/size/viewport_height")
-	)
+	set_window_viewport_size()
 
-	# For editor
 	if Engine.is_editor_hint():
-		ProjectSettings.settings_changed.connect(func():
-			screen_size = Vector2i(
-				ProjectSettings.get_setting("display/window/size/viewport_width"),
-				ProjectSettings.get_setting("display/window/size/viewport_height")
-			)
-		)
-	# For runtime
-	else:
-		get_tree().get_root().size_changed.connect(func():
-			screen_size = get_viewport().get_visible_rect().size
-		)
+		ProjectSettings.settings_changed.connect(set_window_viewport_size)
 
 #endregion
 
@@ -101,6 +86,8 @@ func pcam_host_added(caller: Node) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
 		_phantom_camera_host_list.append(caller)
 		pcam_host_added_to_scene.emit(caller)
+		if not caller.is_node_ready(): caller.ready
+		caller.set_up_pcam_host()
 	else:
 		printerr("This method can only be called from a PhantomCameraHost node")
 
@@ -145,5 +132,16 @@ func scene_changed() -> void:
 	_phantom_camera_2d_list.clear()
 	_phantom_camera_3d_list.clear()
 	_phantom_camera_host_list.clear()
+
+#endregion
+
+#region Private Function
+
+func set_window_viewport_size() -> void:
+	screen_size = Vector2i(
+		ProjectSettings.get_setting("display/window/size/viewport_width"),
+		ProjectSettings.get_setting("display/window/size/viewport_height")
+	)
+	project_viewport_size_changed.emit()
 
 #endregion
