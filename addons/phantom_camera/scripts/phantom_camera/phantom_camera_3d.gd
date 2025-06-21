@@ -824,11 +824,6 @@ func _ready():
 					_follow_spring_arm.global_rotation = initial_rotation
 					_has_follow_spring_arm = true
 					top_level = false
-		FollowMode.FRAMED:
-			if not Engine.is_editor_hint():
-				if is_instance_valid(follow_target):
-					_follow_framed_offset = global_position - _get_target_position_offset()
-				_current_rotation = global_rotation
 		FollowMode.GROUP:
 			_follow_targets_size_check()
 		_:
