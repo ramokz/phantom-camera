@@ -553,6 +553,8 @@ func _validate_property(property: Dictionary) -> void:
 		follow_mode == FollowMode.GLUED:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
+	if property.name == "follow_damping_value" and not follow_damping:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
 	## Follow Group
