@@ -125,7 +125,7 @@ metadata/_edit_lock_ = true
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2.5, 2)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0, 2.5, 3.19136)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -136,7 +136,7 @@ script = ExtResource("2_d1opf")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0, 2.5, 2)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0, 2.5, 3.19136)
 top_level = true
 script = ExtResource("3_4whss")
 priority = 3
@@ -149,7 +149,7 @@ follow_offset = Vector3(0, 2, 2)
 follow_damping = true
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("6_lr46m")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 1.19136)
 script = ExtResource("7_x1jex")
 
 [node name="-------------------" type="Node" parent="."]
