@@ -659,18 +659,12 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
-	if is_instance_valid(follow_target):
-		_transform_output.origin = _get_target_position_offset()
-	else:
-		_transform_output = global_transform
+	_transform_output = global_transform
 
 	_phantom_camera_manager.noise_2d_emitted.connect(_noise_emitted)
 
 	if not Engine.is_editor_hint():
 		_preview_noise = true
-
-	if follow_mode == FollowMode.GROUP:
-		_follow_targets_size_check()
 
 
 func _process(delta: float) -> void:

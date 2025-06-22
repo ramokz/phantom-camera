@@ -824,13 +824,8 @@ func _ready():
 					_follow_spring_arm.global_rotation = initial_rotation
 					_has_follow_spring_arm = true
 					top_level = false
-		FollowMode.GROUP:
-			_follow_targets_size_check()
 		_:
-			if is_instance_valid(follow_target):
-				_transform_output.origin = _get_target_position_offset()
-			else:
-				_transform_output.origin = global_position
+			_transform_output.origin = global_position
 
 	if not Engine.is_editor_hint():
 		_preview_noise = true
@@ -1028,7 +1023,7 @@ func _set_look_at_position() -> void:
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
-				_look_at_target_position =look_at_targets[_look_at_targets_single_target_index].global_position
+				_look_at_target_position = look_at_targets[_look_at_targets_single_target_index].global_position
 			else:
 				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 				for node in look_at_targets:
