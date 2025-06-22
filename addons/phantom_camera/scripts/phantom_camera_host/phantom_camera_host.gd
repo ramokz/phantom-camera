@@ -294,10 +294,11 @@ func _exit_tree() -> void:
 		_phantom_camera_manager.pcam_host_removed(self)
 
 
-func _ready() -> void:
+func set_up_pcam_host() -> void:
 	# Waits for the first process tick to finish before initializing any logic
 	# This should help with avoiding ocassional erratic camera movement upon running a scene
 	await get_tree().process_frame
+#	await get_tree().process_frame
 
 	process_priority = 300
 	process_physics_priority = 300
@@ -305,18 +306,28 @@ func _ready() -> void:
 	# PCam Host Signals
 	if Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
 		_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
-		_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
+
+		if not _phantom_camera_manager.pcam_host_layer_changed.is_connected(_pcam_host_layer_changed):
+			_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
 
 		# PCam Signals
-		_phantom_camera_manager.pcam_added_to_scene.connect(_pcam_added_to_scene)
-		_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
+		if not _phantom_camera_manager.pcam_added_to_scene.is_connected(_pcam_added_to_scene):
+			_phantom_camera_manager.pcam_added_to_scene.connect(_pcam_added_to_scene)
 
-		_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
-		_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
+		if not _phantom_camera_manager.pcam_removed_from_scene.is_connected(_pcam_removed_from_scene):
+			_phantom_camera_manager.pcam_removed_from_scene.connect(_pcam_removed_from_scene)
 
-		_phantom_camera_manager.pcam_visibility_changed.connect(_pcam_visibility_changed)
+		if not _phantom_camera_manager.pcam_priority_changed.is_connected(pcam_priority_updated):
+			_phantom_camera_manager.pcam_priority_changed.connect(pcam_priority_updated)
 
-		_phantom_camera_manager.pcam_teleport.connect(_pcam_teleported)
+		if not _phantom_camera_manager.pcam_priority_override.is_connected(_pcam_priority_override):
+			_phantom_camera_manager.pcam_priority_override.connect(_pcam_priority_override)
+
+		if not _phantom_camera_manager.pcam_visibility_changed.is_connected(_pcam_visibility_changed):
+			_phantom_camera_manager.pcam_visibility_changed.connect(_pcam_visibility_changed)
+
+		if not _phantom_camera_manager.pcam_teleport.is_connected(_pcam_teleported):
+			_phantom_camera_manager.pcam_teleport.connect(_pcam_teleported)
 
 		if _is_2d:
 			if not _phantom_camera_manager.limit_2d_changed.is_connected(_update_limit_2d):

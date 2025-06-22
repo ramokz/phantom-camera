@@ -101,6 +101,8 @@ func pcam_host_added(caller: Node) -> void:
 	if is_instance_of(caller, PhantomCameraHost):
 		_phantom_camera_host_list.append(caller)
 		pcam_host_added_to_scene.emit(caller)
+		if not caller.is_node_ready(): await caller.ready
+		caller.set_up_pcam_host()
 	else:
 		printerr("This method can only be called from a PhantomCameraHost node")
 
