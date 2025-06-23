@@ -324,6 +324,12 @@ enum FollowLockAxis {
 	get = get_environment
 
 
+## Overrides the [member Camera3D.compositor] resource property.
+@export var compositor: Compositor = null:
+	set = set_compositor,
+	get = get_compositor
+
+
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
@@ -2124,6 +2130,15 @@ func set_attributes(value: CameraAttributes) -> void:
 ## Gets the [Camera3D.attributes] value assigned to the [Camera3DResource].
 func get_attributes() -> CameraAttributes:
 	return attributes
+
+## Assigns a new [Compositor] resource to the [Camera3DResource].
+func set_compositor(value: Compositor) -> void:
+	compositor = value
+	camera_3d_resource_property_changed.emit("compositor", value)
+
+## Gets the [Camera3D.compositor] value assigned to the [Camera3DResource].
+func get_compositor() -> Compositor:
+	return compositor
 
 
 ## Assigns a new [member Camera3D.h_offset] value.[br]
