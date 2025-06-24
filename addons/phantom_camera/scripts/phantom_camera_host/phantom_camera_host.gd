@@ -510,7 +510,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 						camera_3d.get_pyramid_shape_rid()
 					)
 
-					# Expand each point by 0.1 units on X, Y, Z axes
+					# Scale up the pyramid shape to avoid clipping issues
 					var expanded_points := PackedVector3Array()
 					for point in pyramid_shape_data:
 						var expanded_point := Vector3(
