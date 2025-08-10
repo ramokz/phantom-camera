@@ -113,6 +113,30 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetSnapToPixel, value);
     }
 
+    public bool RotateWithTarget
+    {
+        get => (bool)Node2D.Call(MethodName.GetRotateWithTarget);
+        set => Node2D.Call(MethodName.SetRotateWithTarget, value);
+    }
+
+    public float RotationOffset
+    {
+        get => (float)Node2D.Call(MethodName.GetRotationOffset);
+        set => Node2D.Call(MethodName.SetRotationOffset, value);
+    }
+
+    public bool RotationDamping
+    {
+        get => (bool)Node2D.Call(MethodName.GetRotationDamping);
+        set  => Node2D.Call(MethodName.SetRotationDamping, value);
+    }
+
+    public float RotationDampingValue
+    {
+        get => (float)Node2D.Call(MethodName.GetRotationDampingValue);
+        set => Node2D.Call(MethodName.SetRotationDampingValue, value);
+    }
+
     public int LimitLeft
     {
         get => (int)Node2D.Call(MethodName.GetLimitLeft);
@@ -246,6 +270,18 @@ public class PhantomCamera2D : PhantomCamera
 
         public const string GetSnapToPixel = "get_snap_to_pixel";
         public const string SetSnapToPixel = "set_snap_to_pixel";
+
+        public const string GetRotateWithTarget = "get_rotate_with_target";
+        public const string SetRotateWithTarget = "set_rotate_with_target";
+
+        public const string GetRotationOffset = "get_rotation_offset";
+        public const string SetRotationOffset = "set_rotation_offset";
+
+        public const string GetRotationDamping = "get_rotation_damping";
+        public const string SetRotationDamping = "set_rotation_damping";
+
+        public const string GetRotationDampingValue = "get_rotation_damping_value";
+        public const string SetRotationDampingValue = "set_rotation_damping_value";
 
         public const string GetLimit = "get_limit";
         public const string SetLimit = "set_limit";

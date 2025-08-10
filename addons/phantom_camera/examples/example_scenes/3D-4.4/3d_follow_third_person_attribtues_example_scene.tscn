@@ -104,7 +104,7 @@ uv1_offset = Vector3(0.025, -0.927, 0)
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 9.63713)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 8.76853)
 script = ExtResource("1_s26cy")
 priority = 10
 follow_mode = 6
@@ -119,7 +119,7 @@ spring_length = 3.5
 
 [node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.953716, -0.0418501, 0.297778, 0, 0.990266, 0.139173, -0.300705, -0.132731, 0.944432, 0.427258, 1.68564, 7.6237)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 1.47688, 6.36953)
 script = ExtResource("1_s26cy")
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -134,13 +134,13 @@ spring_length = 1.5
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("4_qcyfd")]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 6.60605)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 5.26853)
 script = ExtResource("5_tarnu")
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -0.0194088, 2.25688, 9.63713)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 8.76853)
 attributes = SubResource("CameraAttributesPractical_fnb35")
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
@@ -218,5 +218,3 @@ surface_material_override/0 = SubResource("StandardMaterial3D_hp48l")
 transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0.0525861, 1.60477, 9.98156)
 mesh = SubResource("CylinderMesh_sm466")
 surface_material_override/0 = SubResource("StandardMaterial3D_hp48l")
-
-[editable path="PlayerCharacterBody3D"]
