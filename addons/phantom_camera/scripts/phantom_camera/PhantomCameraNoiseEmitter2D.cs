@@ -52,6 +52,27 @@ public class PhantomCameraNoiseEmitter2D(GodotObject node)
     public void Stop() => Node2D.Call(MethodName.Stop);
 
     public void Toggle() => Node2D.Call(MethodName.Toggle);
+    
+    public static PhantomCameraNoiseEmitter2D New()
+    {
+        Node2D node = new Node2D();
+#if GODOT4_4_OR_GREATER
+        node.SetScript(GD.Load<GDScript>("uid://bhd4nuiu23e7l"));
+#else
+        node.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_2d.gd"));
+#endif
+        return new PhantomCameraNoiseEmitter2D(node);
+    }
+
+    public static PhantomCameraNoiseEmitter2D AddNewNode(Node parent)
+    {
+        PhantomCameraNoiseEmitter2D phantomCameraNoiseEmitter2D = New();
+        parent.AddChild(phantomCameraNoiseEmitter2D.Node2D);
+        return phantomCameraNoiseEmitter2D;
+    }
+
+    public void AddNode(Node parent) => parent.AddChild(Node2D);
+    public void RemoveNode(Node parent) => parent.RemoveChild(Node2D);
 
     public static class MethodName
     {

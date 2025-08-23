@@ -342,10 +342,28 @@ public class PhantomCamera3D : PhantomCamera
 
     public void EmitNoise(Transform3D transform) => Node3D.Call(PhantomCamera.MethodName.EmitNoise, transform);
 
-    public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
-    public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
+    public static PhantomCamera3D New()
+    {
+        Node3D node = new Node3D();
+#if GODOT4_4_OR_GREATER
+        node.SetScript(GD.Load<GDScript>("uid://csjccrhj5wnx7"));
+#else
+        node.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd"));
+#endif
+        return new PhantomCamera3D(node);
+    }
 
-    public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
+    public static PhantomCamera3D AddNewNode(Node parent)
+    {
+        PhantomCamera3D phantomCamera3D = New();
+        parent.AddChild(phantomCamera3D.Node3D);
+        return phantomCamera3D;
+    }
+
+    public void AddNode(Node parent) => parent.AddChild(Node3D);
+    public void RemoveNode(Node parent) => parent.RemoveChild(Node3D);
+
+    public PhantomCamera3D(Node3D phantomCamera3DNode) : base(phantomCamera3DNode)
     {
         _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
         _callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
