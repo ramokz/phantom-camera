@@ -76,10 +76,21 @@ public class PhantomCameraHost()
 
     public bool TriggerPhantomCameraTween => (bool)Node.Call(MethodName.GetTriggerPhantomCameraTween);
 
-    public ActivePhantomCameraQueryResult? GetActivePhantomCamera()
+    public PhantomCamera? GetActivePhantomCamera()
     {
         var result = Node.Call(MethodName.GetActivePhantomCamera);
-        return result.VariantType == Variant.Type.Nil ? null : new ActivePhantomCameraQueryResult(result.AsGodotObject());
+        
+        if (result.Obj is Node2D node2D)
+        {
+            return new PhantomCamera2D(node2D);
+        }
+
+        if (result.Obj is Node3D node3D)
+        {
+            return new PhantomCamera3D(node3D);
+        }
+
+        return null;
     }
 
     public static class PropertyName
@@ -103,26 +114,5 @@ public class PhantomCameraHost()
     {
         public const string PCamBecameActive = "pcam_became_active";
         public const string PCamBecameInactive = "pcam_became_inactive";
-    }
-}
-
-public class ActivePhantomCameraQueryResult(GodotObject godotObject)
-{
-    public bool Is2D => godotObject.IsClass("Node2D") || ((Node)godotObject).Name.ToString().Contains("PhantomCamera2D")
-                                               || ((Node)godotObject).Name.ToString().Contains("PCam2D")
-                                               || ((Node)godotObject).Name.ToString().Contains("2D");
-
-    public bool Is3D => godotObject.IsClass("Node3D") || ((Node)godotObject).Name.ToString().Contains("PhantomCamera3D")
-                                               || ((Node)godotObject).Name.ToString().Contains("PCam3D")
-                                               || ((Node)godotObject).Name.ToString().Contains("3D");
-
-    public PhantomCamera2D? AsPhantomCamera2D()
-    {
-        return Is2D ? new PhantomCamera2D(godotObject) : null;
-    }
-
-    public PhantomCamera3D? AsPhantomCamera3D()
-    {
-        return Is3D ? new PhantomCamera3D(godotObject) : null;
     }
 }
