@@ -131,7 +131,7 @@ public abstract class PhantomCamera
         Node.Call(MethodName.SetHostLayersValue, layer, enabled);
     }
 
-    protected PhantomCamera(GodotObject phantomCameraNode)
+    protected PhantomCamera(Node phantomCameraNode)
     {
         Node = phantomCameraNode;
 

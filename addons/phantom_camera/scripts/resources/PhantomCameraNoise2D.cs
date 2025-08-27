@@ -59,6 +59,17 @@ public class PhantomCameraNoise2D(Resource resource)
         get => (float)Resource.Call(MethodName.GetPositionalMultiplierY);
         set => Resource.Call(MethodName.SetPositionalMultiplierY, value);
     }
+    
+    public static PhantomCameraNoise2D New()
+    {
+        Resource resource = new();
+#if GODOT4_4_OR_GREATER
+        resource.SetScript(GD.Load<GDScript>("uid://dimvdouy8g0sv"));
+#else
+        resource.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/resources/phantom_camera_noise_2d.gd"));
+#endif
+        return new PhantomCameraNoise2D(resource);
+    }
 
     public static class MethodName
     {

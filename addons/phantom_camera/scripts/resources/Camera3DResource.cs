@@ -80,6 +80,17 @@ public class Camera3DResource(Resource resource)
         get => (float)Resource.Call(MethodName.GetFar);
         set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, 0.01f, float.PositiveInfinity));
     }
+    
+    public static Camera3DResource New()
+    {
+        Resource resource = new();
+#if GODOT4_4_OR_GREATER
+        resource.SetScript(GD.Load<GDScript>("uid://b8hhnqsugykly"));
+#else
+        resource.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd"));
+#endif
+        return new Camera3DResource(resource);
+    }
 
     public static class MethodName
     {

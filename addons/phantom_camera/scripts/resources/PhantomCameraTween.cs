@@ -54,6 +54,17 @@ public class PhantomCameraTween(Resource tweenResource)
         get => (EaseType)(int)Resource.Get(PropertyName.Ease);
         set => Resource.Set(PropertyName.Ease, (int)value);
     }
+    
+    public static PhantomCameraTween New()
+    {
+        Resource resource = new();
+#if GODOT4_4_OR_GREATER
+        resource.SetScript(GD.Load<GDScript>("uid://8umksf8e80fw"));
+#else
+        resource.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/resources/tween_resource.gd"));
+#endif
+        return new PhantomCameraTween(resource);
+    }
 
     public static class PropertyName
     {
