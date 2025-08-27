@@ -1065,8 +1065,7 @@ func _set_follow_position() -> void:
 				if not _has_follow_spring_arm: return
 				_follow_target_output_position = _get_target_position_offset()
 			else:
-				_follow_target_output_position = _get_target_position_offset_distance()
-				# _follow_target_position = _get_target_position_offset_distance_direction() TODO - Check if this is needed
+				_follow_target_output_position = _get_target_position_offset_distance_direction()
 #				_follow_target_position = _get_target_position_offset_distance_direction()
 				_set_follow_gizmo_line_position(follow_target.global_position)
 
@@ -1081,8 +1080,7 @@ func _set_look_at_position() -> void:
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
-				_look_at_target_output_position =look_at_targets[_look_at_targets_single_target_index].global_position
-				# _look_at_target_position = look_at_targets[_look_at_targets_single_target_index].global_position
+				_look_at_target_output_position = look_at_targets[_look_at_targets_single_target_index].global_position
 			else:
 				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 				for node in look_at_targets:
