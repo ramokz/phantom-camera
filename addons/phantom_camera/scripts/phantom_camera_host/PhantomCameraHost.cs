@@ -27,17 +27,11 @@ public class PhantomCameraHost()
     {
         Node = node;
 
-        _callablePCamBecameActive = Callable.From<Node>(pCam => PCamBecameActive?.Invoke(pCam));
-        _callablePCamBecameInactive = Callable.From<Node>(pCam => PCamBecameInactive?.Invoke(pCam));
+        var callablePCamBecameActive = Callable.From<Node>(pCam => PCamBecameActive?.Invoke(pCam));
+        var callablePCamBecameInactive = Callable.From<Node>(pCam => PCamBecameInactive?.Invoke(pCam));
 
-        Node.Connect(SignalName.PCamBecameActive, _callablePCamBecameActive);
-        Node.Connect(SignalName.PCamBecameInactive, _callablePCamBecameInactive);
-    }
-
-    ~PhantomCameraHost()
-    {
-        Node.Disconnect(SignalName.PCamBecameActive, _callablePCamBecameActive);
-        Node.Disconnect(SignalName.PCamBecameInactive, _callablePCamBecameInactive);
+        Node.Connect(SignalName.PCamBecameActive, callablePCamBecameActive);
+        Node.Connect(SignalName.PCamBecameInactive, callablePCamBecameInactive);
     }
 
     public delegate void PCamBecameActiveEventHandler(Node pCam);
@@ -46,9 +40,6 @@ public class PhantomCameraHost()
     public event PCamBecameActiveEventHandler? PCamBecameActive;
     public event PCamBecameInactiveEventHandler? PCamBecameInactive;
 
-
-    private readonly Callable _callablePCamBecameActive;
-    private readonly Callable _callablePCamBecameInactive;
     // For when Godot becomes the minimum version
     // public InterpolationMode InterpolationMode
     // {

@@ -31,14 +31,6 @@ public abstract class PhantomCamera
     public event IsTweeningEventHandler? IsTweening;
     public event TweenCompletedEventHandler? TweenCompleted;
 
-    private readonly Callable _callableBecameActive;
-    private readonly Callable _callableBecameInactive;
-    private readonly Callable _callableFollowTargetChanged;
-    private readonly Callable _callableDeadZoneChanged;
-    private readonly Callable _callableTweenStarted;
-    private readonly Callable _callableIsTweening;
-    private readonly Callable _callableTweenCompleted;
-
     public int Priority
     {
         get => (int)Node.Call(MethodName.GetPriority);
@@ -135,32 +127,21 @@ public abstract class PhantomCamera
     {
         Node = phantomCameraNode;
 
-        _callableBecameActive = Callable.From(() => BecameActive?.Invoke());
-        _callableBecameInactive = Callable.From(() => BecameInactive?.Invoke());
-        _callableFollowTargetChanged = Callable.From(() => FollowTargetChanged?.Invoke());
-        _callableDeadZoneChanged = Callable.From(() => DeadZoneChanged?.Invoke());
-        _callableTweenStarted = Callable.From(() => TweenStarted?.Invoke());
-        _callableIsTweening = Callable.From(() => IsTweening?.Invoke());
-        _callableTweenCompleted = Callable.From(() => TweenCompleted?.Invoke());
+        var callableBecameActive = Callable.From(() => BecameActive?.Invoke());
+        var callableBecameInactive = Callable.From(() => BecameInactive?.Invoke());
+        var callableFollowTargetChanged = Callable.From(() => FollowTargetChanged?.Invoke());
+        var callableDeadZoneChanged = Callable.From(() => DeadZoneChanged?.Invoke());
+        var callableTweenStarted = Callable.From(() => TweenStarted?.Invoke());
+        var callableIsTweening = Callable.From(() => IsTweening?.Invoke());
+        var callableTweenCompleted = Callable.From(() => TweenCompleted?.Invoke());
 
-        Node.Connect(SignalName.BecameActive, _callableBecameActive);
-        Node.Connect(SignalName.BecameInactive, _callableBecameInactive);
-        Node.Connect(SignalName.FollowTargetChanged, _callableFollowTargetChanged);
-        Node.Connect(SignalName.DeadZoneChanged, _callableDeadZoneChanged);
-        Node.Connect(SignalName.TweenStarted, _callableTweenStarted);
-        Node.Connect(SignalName.IsTweening, _callableIsTweening);
-        Node.Connect(SignalName.TweenCompleted, _callableTweenCompleted);
-    }
-
-    ~PhantomCamera()
-    {
-        Node.Disconnect(SignalName.BecameActive, _callableBecameActive);
-        Node.Disconnect(SignalName.BecameInactive, _callableBecameInactive);
-        Node.Disconnect(SignalName.FollowTargetChanged, _callableFollowTargetChanged);
-        Node.Disconnect(SignalName.DeadZoneChanged, _callableDeadZoneChanged);
-        Node.Disconnect(SignalName.TweenStarted, _callableTweenStarted);
-        Node.Disconnect(SignalName.IsTweening, _callableIsTweening);
-        Node.Disconnect(SignalName.TweenCompleted, _callableTweenCompleted);
+        Node.Connect(SignalName.BecameActive, callableBecameActive);
+        Node.Connect(SignalName.BecameInactive, callableBecameInactive);
+        Node.Connect(SignalName.FollowTargetChanged, callableFollowTargetChanged);
+        Node.Connect(SignalName.DeadZoneChanged, callableDeadZoneChanged);
+        Node.Connect(SignalName.TweenStarted, callableTweenStarted);
+        Node.Connect(SignalName.IsTweening, callableIsTweening);
+        Node.Connect(SignalName.TweenCompleted, callableTweenCompleted);
     }
 
     public static class MethodName
