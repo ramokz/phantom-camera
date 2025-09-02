@@ -211,27 +211,6 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetLimitTarget, value);
     }
 
-    public static PhantomCamera2D New()
-    {
-        Node2D node = new Node2D();
-#if GODOT4_4_OR_GREATER
-        node.SetScript(GD.Load<GDScript>("uid://bhexx6mj1xv3q"));
-#else
-        node.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd"));
-#endif
-        return new PhantomCamera2D(node);
-    }
-
-    public static PhantomCamera2D AddNewNode(Node parent)
-    {
-        PhantomCamera2D phantomCamera2D = New();
-        parent.AddChild(phantomCamera2D.Node2D);
-        return phantomCamera2D;
-    }
-
-    public void AddNode(Node parent) => parent.AddChild(Node2D);
-    public void RemoveNode(Node parent) => parent.RemoveChild(Node2D);
-
     public PhantomCamera2D(Node2D phantomCameraNode) : base(phantomCameraNode)
     {
         _callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));

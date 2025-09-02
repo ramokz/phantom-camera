@@ -22,27 +22,6 @@ public static class PhantomCameraHostExtensions
 public class PhantomCameraHost()
 {
     public Node Node { get; } = null!;
-    
-    public static PhantomCameraHost New()
-    {
-        Node node = new Node();
-#if GODOT4_4_OR_GREATER
-        node.SetScript(GD.Load<GDScript>("uid://bd046eokvcnu2"));
-#else
-        node.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"));
-#endif
-        return new PhantomCameraHost(node);
-    }
-
-    public static PhantomCameraHost AddNewNode(Node parent)
-    {
-        PhantomCameraHost phantomCameraHost = New();
-        parent.AddChild(phantomCameraHost.Node);
-        return phantomCameraHost;
-    }
-
-    public void AddNode(Node parent) => parent.AddChild(Node);
-    public void RemoveNode(Node parent) => parent.RemoveChild(Node);
 
     public PhantomCameraHost(Node node) : this()
     {

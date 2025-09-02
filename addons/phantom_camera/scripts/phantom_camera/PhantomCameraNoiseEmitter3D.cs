@@ -52,27 +52,6 @@ public class PhantomCameraNoiseEmitter3D(GodotObject node)
     public void Stop() => Node3D.Call(MethodName.Stop);
 
     public void Toggle() => Node3D.Call(MethodName.Toggle);
-    
-    public static PhantomCameraNoiseEmitter3D New()
-    {
-        Node3D node = new Node3D();
-#if GODOT4_4_OR_GREATER
-        node.SetScript(GD.Load<GDScript>("uid://ccmiitq0sdh7j"));
-#else
-        node.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd"));
-#endif
-        return new PhantomCameraNoiseEmitter3D(node);
-    }
-
-    public static PhantomCameraNoiseEmitter3D AddNewNode(Node parent)
-    {
-        PhantomCameraNoiseEmitter3D phantomCameraNoiseEmitter3D = New();
-        parent.AddChild(phantomCameraNoiseEmitter3D.Node3D);
-        return phantomCameraNoiseEmitter3D;
-    }
-
-    public void AddNode(Node parent) => parent.AddChild(Node3D);
-    public void RemoveNode(Node parent) => parent.RemoveChild(Node3D);
 
     public static class MethodName
     {
