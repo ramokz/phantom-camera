@@ -23,9 +23,9 @@ public class PhantomCameraHost()
 {
     public Node Node { get; } = null!;
 
-    public PhantomCameraHost(Node node) : this()
+    public PhantomCameraHost(GodotObject node) : this()
     {
-        Node = node;
+        Node = node as Node;
 
         _callablePCamBecameActive = Callable.From<Node>(pCam => PCamBecameActive?.Invoke(pCam));
         _callablePCamBecameInactive = Callable.From<Node>(pCam => PCamBecameInactive?.Invoke(pCam));

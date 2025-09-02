@@ -211,7 +211,7 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetLimitTarget, value);
     }
 
-    public PhantomCamera2D(Node2D phantomCameraNode) : base(phantomCameraNode)
+    public PhantomCamera2D(GodotObject phantomCameraNode) : base(phantomCameraNode)
     {
         _callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
         _callableDeadZoneReached = Callable.From((Vector2 side) => DeadZoneReached?.Invoke(side));

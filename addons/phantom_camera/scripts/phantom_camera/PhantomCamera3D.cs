@@ -342,7 +342,7 @@ public class PhantomCamera3D : PhantomCamera
 
     public void EmitNoise(Transform3D transform) => Node3D.Call(PhantomCamera.MethodName.EmitNoise, transform);
 
-    public PhantomCamera3D(Node3D phantomCamera3DNode) : base(phantomCamera3DNode)
+    public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
     {
         _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
         _callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
