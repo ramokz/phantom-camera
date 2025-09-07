@@ -256,15 +256,15 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetLookAtDampingValue, value);
     }
 
-    public Node3D Up
+    public Vector3 Up
     {
-        get => (Node3D)Node3D.Call(MethodName.GetUp);
+        get => (Vector3)Node3D.Call(MethodName.GetUp);
         set => Node3D.Call(MethodName.SetUp, value);
     }
 
-    public Vector3 UpTarget
+    public Node3D UpTarget
     {
-        get => (Vector3)Node3D.Call(MethodName.GetUpTarget);
+        get => (Node3D)Node3D.Call(MethodName.GetUpTarget);
         set => Node3D.Call(MethodName.SetUpTarget, value);
     }
 
