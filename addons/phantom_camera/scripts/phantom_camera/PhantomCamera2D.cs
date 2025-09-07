@@ -55,10 +55,6 @@ public class PhantomCamera2D : PhantomCamera
     public event DeadZoneReachedEventHandler? DeadZoneReached;
     public event NoiseEmittedEventHandler? NoiseEmitted;
 
-    private readonly Callable _callableTweenInterrupted;
-    private readonly Callable _callableDeadZoneReached;
-    private readonly Callable _callableNoiseEmitted;
-
     public Node2D FollowTarget
     {
         get => (Node2D)Node2D.Call(PhantomCamera.MethodName.GetFollowTarget);
@@ -216,20 +212,13 @@ public class PhantomCamera2D : PhantomCamera
 
     public PhantomCamera2D(GodotObject phantomCameraNode) : base(phantomCameraNode)
     {
-        _callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
-        _callableDeadZoneReached = Callable.From((Vector2 side) => DeadZoneReached?.Invoke(side));
-        _callableNoiseEmitted = Callable.From((Transform2D output) => NoiseEmitted?.Invoke(output));
+        var callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
+        var callableDeadZoneReached = Callable.From((Vector2 side) => DeadZoneReached?.Invoke(side));
+        var callableNoiseEmitted = Callable.From((Transform2D output) => NoiseEmitted?.Invoke(output));
 
-        Node2D.Connect(SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node2D.Connect(SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node2D.Connect(SignalName.NoiseEmitted, _callableNoiseEmitted);
-    }
-
-    ~PhantomCamera2D()
-    {
-        Node2D.Disconnect(SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node2D.Disconnect(SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node2D.Disconnect(SignalName.NoiseEmitted, _callableNoiseEmitted);
+        Node2D.Connect(SignalName.TweenInterrupted, callableTweenInterrupted);
+        Node2D.Connect(SignalName.DeadZoneReached, callableDeadZoneReached);
+        Node2D.Connect(SignalName.NoiseEmitted, callableNoiseEmitted);
     }
 
     public void SetLimitTarget(TileMap tileMap)

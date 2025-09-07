@@ -98,13 +98,6 @@ public class PhantomCamera3D : PhantomCamera
     public event TweenInterruptedEventHandler? TweenInterrupted;
     public event NoiseEmittedEventHandler? NoiseEmitted;
 
-    private readonly Callable _callableLookAtTargetChanged;
-    private readonly Callable _callableDeadZoneReached;
-    private readonly Callable _callableCamera3DResourceChanged;
-    private readonly Callable _callableCamera3DResourcePropertyChanged;
-    private readonly Callable _callableTweenInterrupted;
-    private readonly Callable _callableNoiseEmitted;
-
     public Node3D FollowTarget
     {
         get => (Node3D)Node3D.Call(PhantomCamera.MethodName.GetFollowTarget);
@@ -347,30 +340,20 @@ public class PhantomCamera3D : PhantomCamera
 
     public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
     {
-        _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
-        _callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
-        _callableCamera3DResourceChanged = Callable.From(() => Camera3DResourceChanged?.Invoke());
-        _callableCamera3DResourcePropertyChanged = Callable.From((StringName property, Variant value) =>
-        Camera3DResourcePropertyChanged?.Invoke(property, value));
-        _callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
-        _callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
+        var callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
+        var callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
+        var callableCamera3DResourceChanged = Callable.From(() => Camera3DResourceChanged?.Invoke());
+        var callableCamera3DResourcePropertyChanged = Callable.From((StringName property, Variant value) =>
+            Camera3DResourcePropertyChanged?.Invoke(property, value));
+        var callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
+        var callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
 
-        Node3D.Connect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
-        Node3D.Connect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node3D.Connect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
-        Node3D.Connect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
-        Node3D.Connect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node3D.Connect(PhantomCamera.SignalName.NoiseEmitted, _callableNoiseEmitted);
-    }
-
-    ~PhantomCamera3D()
-    {
-        Node3D.Disconnect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
-        Node3D.Disconnect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node3D.Disconnect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
-        Node3D.Disconnect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
-        Node3D.Disconnect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node3D.Disconnect(PhantomCamera.SignalName.NoiseEmitted, _callableNoiseEmitted);
+        Node3D.Connect(SignalName.LookAtTargetChanged, callableLookAtTargetChanged);
+        Node3D.Connect(PhantomCamera.SignalName.DeadZoneReached, callableDeadZoneReached);
+        Node3D.Connect(SignalName.Camera3DResourceChanged, callableCamera3DResourceChanged);
+        Node3D.Connect(SignalName.Camera3DResourcePropertyChanged, callableCamera3DResourcePropertyChanged);
+        Node3D.Connect(PhantomCamera.SignalName.TweenInterrupted, callableTweenInterrupted);
+        Node3D.Connect(PhantomCamera.SignalName.NoiseEmitted, callableNoiseEmitted);
     }
 
     public new static class MethodName
