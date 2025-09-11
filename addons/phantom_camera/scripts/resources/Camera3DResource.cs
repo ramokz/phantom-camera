@@ -83,35 +83,35 @@ public class Camera3DResource(Resource resource)
 
     public static class MethodName
     {
-        public const string GetKeepAspect = "get_keep_aspect";
-        public const string SetKeepAspect = "set_keep_aspect";
+        public static readonly StringName GetKeepAspect = new("get_keep_aspect");
+        public static readonly StringName SetKeepAspect = new("set_keep_aspect");
 
-        public const string GetCullMask = "get_cull_mask";
-        public const string SetCullMask = "set_cull_mask";
-        public const string SetCullMaskValue = "set_cull_mask_value";
+        public static readonly StringName GetCullMask = new("get_cull_mask");
+        public static readonly StringName SetCullMask = new("set_cull_mask");
+        public static readonly StringName SetCullMaskValue = new("set_cull_mask_value");
 
-        public const string GetHOffset = "get_h_offset";
-        public const string SetHOffset = "set_h_offset";
+        public static readonly StringName GetHOffset = new("get_h_offset");
+        public static readonly StringName SetHOffset = new("set_h_offset");
 
-        public const string GetVOffset = "get_v_offset";
-        public const string SetVOffset = "set_v_offset";
+        public static readonly StringName GetVOffset = new("get_v_offset");
+        public static readonly StringName SetVOffset = new("set_v_offset");
 
-        public const string GetProjection = "get_projection";
-        public const string SetProjection = "set_projection";
+        public static readonly StringName GetProjection = new("get_projection");
+        public static readonly StringName SetProjection = new("set_projection");
 
-        public const string GetFov = "get_fov";
-        public const string SetFov = "set_fov";
+        public static readonly StringName GetFov = new("get_fov");
+        public static readonly StringName SetFov = new("set_fov");
 
-        public const string GetSize = "get_size";
-        public const string SetSize = "set_size";
+        public static readonly StringName GetSize = new("get_size");
+        public static readonly StringName SetSize = new("set_size");
 
-        public const string GetFrustumOffset = "get_frustum_offset";
-        public const string SetFrustumOffset = "set_frustum_offset";
+        public static readonly StringName GetFrustumOffset = new("get_frustum_offset");
+        public static readonly StringName SetFrustumOffset = new("set_frustum_offset");
 
-        public const string GetNear = "get_near";
-        public const string SetNear = "set_near";
+        public static readonly StringName GetNear = new("get_near");
+        public static readonly StringName SetNear = new("set_near");
 
-        public const string GetFar = "get_far";
-        public const string SetFar = "set_far";
+        public static readonly StringName GetFar = new("get_far");
+        public static readonly StringName SetFar = new("set_far");
     }
 }
