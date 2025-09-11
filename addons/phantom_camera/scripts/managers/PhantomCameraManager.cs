@@ -29,8 +29,8 @@ public static class PhantomCameraManager
 
     public static class MethodName
     {
-        public const string GetPhantomCamera2Ds = "get_phantom_camera_2ds";
-        public const string GetPhantomCamera3Ds = "get_phantom_camera_3ds";
-        public const string GetPhantomCameraHosts = "get_phantom_camera_hosts";
+        public static readonly StringName GetPhantomCamera2Ds = new("get_phantom_camera_2ds");
+        public static readonly StringName GetPhantomCamera3Ds = new("get_phantom_camera_3ds");
+        public static readonly StringName GetPhantomCameraHosts = new("get_phantom_camera_hosts");
     }
 }

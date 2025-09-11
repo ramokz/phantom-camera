@@ -57,8 +57,8 @@ public class PhantomCameraTween(Resource tweenResource)
 
     public static class PropertyName
     {
-        public const string Duration = "duration";
-        public const string Transition = "transition";
-        public const string Ease = "ease";
+        public static readonly StringName Duration = new("duration");
+        public static readonly StringName Transition = new("transition");
+        public static readonly StringName Ease = new("ease");
     }
 }

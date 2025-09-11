@@ -55,29 +55,29 @@ public class PhantomCameraNoiseEmitter3D(GodotObject node)
 
     public static class MethodName
     {
-        public const string GetNoise = "get_noise";
-        public const string SetNoise = "set_noise";
+        public static readonly StringName GetNoise = new("get_noise");
+        public static readonly StringName SetNoise = new("set_noise");
 
-        public const string GetContinuous = "get_continuous";
-        public const string SetContinuous = "set_continuous";
+        public static readonly StringName GetContinuous = new("get_continuous");
+        public static readonly StringName SetContinuous = new("set_continuous");
 
-        public const string GetGrowthTime = "get_growth_time";
-        public const string SetGrowthTime = "set_growth_time";
+        public static readonly StringName GetGrowthTime = new("get_growth_time");
+        public static readonly StringName SetGrowthTime = new("set_growth_time");
 
-        public const string GetDuration = "get_duration";
-        public const string SetDuration = "set_duration";
+        public static readonly StringName GetDuration = new("get_duration");
+        public static readonly StringName SetDuration = new("set_duration");
 
-        public const string GetDecayTime = "get_decay_time";
-        public const string SetDecayTime = "set_decay_time";
+        public static readonly StringName GetDecayTime = new("get_decay_time");
+        public static readonly StringName SetDecayTime = new("set_decay_time");
 
-        public const string GetNoiseEmitterLayer = "get_noise_emitter_layer";
-        public const string SetNoiseEmitterLayer = "set_noise_emitter_layer";
+        public static readonly StringName GetNoiseEmitterLayer = new("get_noise_emitter_layer");
+        public static readonly StringName SetNoiseEmitterLayer = new("set_noise_emitter_layer");
 
-        public const string SetNoiseEmitterLayerValue = "set_noise_emitter_layer_value";
+        public static readonly StringName SetNoiseEmitterLayerValue = new("set_noise_emitter_layer_value");
 
-        public const string Emit = "emit";
-        public const string IsEmitting = "is_emitting";
-        public const string Stop = "stop";
-        public const string Toggle = "toggle";
+        public static readonly StringName Emit = new("emit");
+        public static readonly StringName IsEmitting = new("is_emitting");
+        public static readonly StringName Stop = new("stop");
+        public static readonly StringName Toggle = new("toggle");
     }
 }
