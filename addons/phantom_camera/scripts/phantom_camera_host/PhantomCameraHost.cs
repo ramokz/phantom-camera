@@ -86,24 +86,24 @@ public class PhantomCameraHost()
 
     public static class PropertyName
     {
-        public const string Camera2D = "camera_2d";
-        public const string Camera3D = "camera_3d";
+        public static readonly StringName Camera2D = new("camera_2d");
+        public static readonly StringName Camera3D = new("camera_3d");
     }
 
     public static class MethodName
     {
-        public const string GetActivePhantomCamera = "get_active_pcam";
-        public const string GetTriggerPhantomCameraTween = "get_trigger_pcam_tween";
+        public static readonly StringName GetActivePhantomCamera = new("get_active_pcam");
+        public static readonly StringName GetTriggerPhantomCameraTween = new("get_trigger_pcam_tween");
 
-        public const string GetInterpolationMode = "get_interpolation_mode";
-        public const string SetInterpolationMode = "set_interpolation_mode";
+        public static readonly StringName GetInterpolationMode = new("get_interpolation_mode");
+        public static readonly StringName SetInterpolationMode = new("set_interpolation_mode");
 
-        public const string SetHostLayersValue = "set_host_layers_value";
+        public static readonly StringName SetHostLayersValue = new("set_host_layers_value");
     }
 
     public static class SignalName
     {
-        public const string PCamBecameActive = "pcam_became_active";
-        public const string PCamBecameInactive = "pcam_became_inactive";
+        public static readonly StringName PCamBecameActive = new("pcam_became_active");
+        public static readonly StringName PCamBecameInactive = new("pcam_became_inactive");
     }
 }
