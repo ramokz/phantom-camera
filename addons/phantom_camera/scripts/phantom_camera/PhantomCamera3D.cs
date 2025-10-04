@@ -261,6 +261,12 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetUpTarget, value);
     }
 
+    public int KeepAspect
+    {
+        get => (int)Node3D.Call(MethodName.GetKeepAspect);
+        set => Node3D.Call(MethodName.SetKeepAspect, value);
+    }
+    
     public int CullMask
     {
         get => (int)Node3D.Call(MethodName.GetCullMask);
@@ -429,6 +435,9 @@ public class PhantomCamera3D : PhantomCamera
 
         public static readonly StringName GetLookAtDampingValue = new("get_look_at_damping_value");
         public static readonly StringName SetLookAtDampingValue = new("set_look_at_damping_value");
+
+        public static readonly StringName GetKeepAspect = new("get_keep_aspect");
+        public static readonly StringName SetKeepAspect = new("set_keep_aspect");
 
         public static readonly StringName GetCullMask = new("get_cull_mask");
         public static readonly StringName SetCullMask = new("set_cull_mask");
