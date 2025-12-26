@@ -537,8 +537,10 @@ var horizontal_rotation_offset: float = 0:
 
 @export_group("Editor")
 ## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's position and rotation.[br][br]
-## This editor button is not visible if the [param PhantomCamera3D] has a [member follow_mode] value set.[br]
-## If a [member look_at_mode] value is set, then only the viewport's position will be transferred over.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is following [i]and[/i] looking at a target, or
+## if [member follow_mode] is set to [member FollowMode.THIRD_PERSON].[br][br]
+## If the [param PhantomCamera3D] is following a target, then only the viewport's rotation will be changed.[br]
+## If the [param PhantomCamera3D] is looking at a target, then only the viewport's position will be changed.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align With Viewport", "CenterView")
 var align_with_viewport: Callable = func():
@@ -768,7 +770,7 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	##########################
-	## Align Transform to View
+	## Align With Viewport
 	##########################
 	if property.name == 'align_with_viewport' and \
 	(
