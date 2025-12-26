@@ -536,20 +536,45 @@ var horizontal_rotation_offset: float = 0:
 
 
 @export_group("Editor")
-## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's position and rotation.[br][br]
-## This editor button is not visible if the [param PhantomCamera3D] is following [i]and[/i] looking at a target, or
-## if [member follow_mode] is set to [member FollowMode.THIRD_PERSON].[br][br]
-## If the [param PhantomCamera3D] is following a target, then only the viewport's rotation will be changed.[br]
-## If the [param PhantomCamera3D] is looking at a target, then only the viewport's position will be changed.[br][br]
+@export_subgroup("Align with View")
+## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's transform.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is following [i]or[/i] looking at a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align With Viewport", "CenterView")
-var align_with_viewport: Callable = func():
+@export_tool_button("Align Transform with View", "ToolRotate")
+var align_transform_with_view: Callable = func():
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_transform"
-	undo_redo.create_action("Aligned " + name + "'s transform to view")
+	undo_redo.create_action("Aligned " + name + "'s transform with view")
 	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_transform)
 	undo_redo.add_undo_property(self, property, global_transform)
 	undo_redo.commit_action()
+
+## Adds an editor button that positions the [param PhantomCamera3D] to match the 3D viewport's position.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is following a target.[br][br]
+## [b]Note[/b]: This is only functional in the editor.
+@export_tool_button("Align Position with View", "ToolMove")
+var align_position_with_view: Callable = func():
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var property: StringName = &"global_position"
+	undo_redo.create_action("Aligned " + name + "'s position with view")
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_position)
+	undo_redo.add_undo_property(self, property, global_position)
+	undo_redo.commit_action()
+
+## Adds an editor button that rotates the [param PhantomCamera3D] to match the 3D viewport's rotation.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is looking at a target.[br][br]
+## [b]Note[/b]: This is only functional in the editor.
+@export_tool_button("Align Rotation with View", "ToolRotate")
+var align_rotation_with_view: Callable = func():
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var property: StringName = &"global_rotation"
+	undo_redo.create_action("Aligned " + name + "'s rotation with view")
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_rotation)
+	undo_redo.add_undo_property(self, property, global_rotation)
+	undo_redo.commit_action()
+
+
+
 
 #endregion
 
@@ -772,9 +797,20 @@ func _validate_property(property: Dictionary) -> void:
 	##########################
 	## Align With Viewport
 	##########################
-	if property.name == 'align_with_viewport' and \
+	if property.name == 'align_transform_with_view' and \
+	(_should_look_at == true or _should_follow == true):
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == 'align_position_with_view' and \
 	(
-		_should_look_at == true and _should_follow == true or \
+		_should_follow == true or \
+		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
+	):
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == 'align_rotation_with_view' and \
+	(
+		_should_look_at == true or \
 		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
 	):
 		property.usage = PROPERTY_USAGE_NO_EDITOR
