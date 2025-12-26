@@ -273,6 +273,8 @@ func _enter_tree() -> void:
 			_is_2d = false
 			camera_3d = parent
 
+		if not is_node_ready():	return
+
 		if _is_2d:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
