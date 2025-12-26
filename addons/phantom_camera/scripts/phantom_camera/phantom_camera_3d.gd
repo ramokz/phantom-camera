@@ -540,8 +540,8 @@ var horizontal_rotation_offset: float = 0:
 ## This editor button is not visible if the [param PhantomCamera3D] has a [member follow_mode] value set.[br]
 ## If a [member look_at_mode] value is set, then only the viewport's position will be transferred over.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Transform to View", "CenterView")
-var align_transform_to_view_action: Callable = func():
+@export_tool_button("Align With Viewport", "CenterView")
+var align_with_viewport: Callable = func():
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_transform"
 	undo_redo.create_action("Aligned " + name + "'s transform to view")
@@ -765,6 +765,16 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "up" and _has_up_target:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	##########################
+	## Align Transform to View
+	##########################
+	if property.name == 'align_with_viewport' and \
+	(
+		_should_look_at == true and _should_follow == true or \
+		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
+	):
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 
