@@ -378,7 +378,7 @@ func _find_pcam_with_highest_priority() -> void:
 func _check_pcam_priority(pcam: Node) -> void:
 	if not _pcam_is_in_host_layer(pcam): return
 	if not pcam.visible: return # Prevents hidden PCams from becoming active
-	if pcam.get_priority() > _active_pcam_priority:
+	if pcam.get_priority() >= _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		_active_pcam_missing = false
 	pcam.set_tween_skip(self, false)
