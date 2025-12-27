@@ -273,6 +273,8 @@ func _enter_tree() -> void:
 			_is_2d = false
 			camera_3d = parent
 
+		if not is_node_ready():	return
+
 		if _is_2d:
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
@@ -376,11 +378,10 @@ func _find_pcam_with_highest_priority() -> void:
 func _check_pcam_priority(pcam: Node) -> void:
 	if not _pcam_is_in_host_layer(pcam): return
 	if not pcam.visible: return # Prevents hidden PCams from becoming active
-	if pcam.get_priority() > _active_pcam_priority:
+	if pcam.get_priority() >= _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		_active_pcam_missing = false
-	else:
-		pcam.set_tween_skip(self, false)
+	pcam.set_tween_skip(self, false)
 
 
 func _assign_new_active_pcam(pcam: Node) -> void:
