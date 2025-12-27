@@ -324,6 +324,12 @@ enum FollowLockAxis {
 	get = get_environment
 
 
+## Overrides the [member Camera3D.compositor] resource property.
+@export var compositor: Compositor = null:
+	set = set_compositor,
+	get = get_compositor
+
+
 @export_group("Follow Parameters")
 ## Offsets the [member follow_target] position.
 @export var follow_offset: Vector3 = Vector3.ZERO:
@@ -527,6 +533,48 @@ var horizontal_rotation_offset: float = 0:
 @export_flags_3d_render var noise_emitter_layer: int = 0:
 	set = set_noise_emitter_layer,
 	get = get_noise_emitter_layer
+
+
+@export_group("Editor")
+@export_subgroup("Align with View")
+## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's transform.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is following [i]or[/i] looking at a target.[br][br]
+## [b]Note[/b]: This is only functional in the editor.
+@export_tool_button("Align Transform with View", "ToolRotate")
+var align_transform_with_view: Callable = func():
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var property: StringName = &"global_transform"
+	undo_redo.create_action("Aligned " + name + "'s transform with view")
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_transform)
+	undo_redo.add_undo_property(self, property, global_transform)
+	undo_redo.commit_action()
+
+## Adds an editor button that positions the [param PhantomCamera3D] to match the 3D viewport's position.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is following a target.[br][br]
+## [b]Note[/b]: This is only functional in the editor.
+@export_tool_button("Align Position with View", "ToolMove")
+var align_position_with_view: Callable = func():
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var property: StringName = &"global_position"
+	undo_redo.create_action("Aligned " + name + "'s position with view")
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_position)
+	undo_redo.add_undo_property(self, property, global_position)
+	undo_redo.commit_action()
+
+## Adds an editor button that rotates the [param PhantomCamera3D] to match the 3D viewport's rotation.[br][br]
+## This editor button is not visible if the [param PhantomCamera3D] is looking at a target.[br][br]
+## [b]Note[/b]: This is only functional in the editor.
+@export_tool_button("Align Rotation with View", "ToolRotate")
+var align_rotation_with_view: Callable = func():
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var property: StringName = &"global_rotation"
+	undo_redo.create_action("Aligned " + name + "'s rotation with view")
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_rotation)
+	undo_redo.add_undo_property(self, property, global_rotation)
+	undo_redo.commit_action()
+
+
+
 
 #endregion
 
@@ -746,6 +794,27 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "up" and _has_up_target:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
+	##########################
+	## Align With Viewport
+	##########################
+	if property.name == 'align_transform_with_view' and \
+	(_should_look_at == true or _should_follow == true):
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == 'align_position_with_view' and \
+	(
+		_should_follow == true or \
+		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
+	):
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == 'align_rotation_with_view' and \
+	(
+		_should_look_at == true or \
+		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
+	):
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
@@ -952,6 +1021,7 @@ func _set_follow_position() -> void:
 						_follow_target_position = _get_target_position_offset_distance()
 
 					if _get_framed_side_offset() != Vector2.ZERO:
+						var framed_offset = _get_framed_side_offset()
 						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
 						var glo_pos: Vector3
 
@@ -977,6 +1047,23 @@ func _set_follow_position() -> void:
 								_current_rotation = global_rotation
 							else:
 								dead_zone_reached.emit()
+
+								# FIX: Only move camera in the axis where dead zone is breached
+								var current_global_position = global_position
+								var current_offset = global_position - _get_target_position_offset()
+
+								# Update stored offset for non-breached axes
+								if framed_offset.x == 0:
+										_follow_framed_offset.x = current_offset.x
+								if framed_offset.y == 0:
+										_follow_framed_offset.z = current_offset.z
+
+								# Lock camera position on non-breached axes
+								if framed_offset.x == 0:
+										target_position.x = current_global_position.x
+								if framed_offset.y == 0:
+										target_position.z = current_global_position.z
+
 								_follow_target_position = target_position
 					else:
 						_follow_framed_offset = global_position - _get_target_position_offset()
@@ -1019,7 +1106,7 @@ func _set_look_at_position() -> void:
 			_look_at_target_position = global_position - look_at_target.global_basis.z
 
 		LookAtMode.SIMPLE:
-			_look_at_target_position =look_at_target.global_position
+			_look_at_target_position = look_at_target.global_position
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
@@ -1028,7 +1115,7 @@ func _set_look_at_position() -> void:
 				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 				for node in look_at_targets:
 					bounds = bounds.expand(node.global_position)
-				_look_at_target_position =bounds.get_center()
+				_look_at_target_position = bounds.get_center()
 
 
 func _get_target_position_offset() -> Vector3:
@@ -1089,7 +1176,7 @@ func _interpolate_position(delta: float) -> void:
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
-	var direction: Vector3 = -(target_position - global_position + look_at_offset).normalized()
+	var direction: Vector3 = - (target_position - global_position + look_at_offset).normalized()
 
 	var basis_z: Vector3 = direction.normalized()
 	var basis_x: Vector3 = up_direction.cross(basis_z)
@@ -1122,8 +1209,8 @@ func _interpolate_rotation(delta: float) -> void:
 		var dot: float = current_quat.dot(target_quat)
 
 		if dot < 0.0:
-			target_quat = -target_quat
-			dot = -dot
+			target_quat = - target_quat
+			dot = - dot
 
 		dot = clampf(dot, -1.0, 1.0)
 
@@ -2124,6 +2211,15 @@ func set_attributes(value: CameraAttributes) -> void:
 ## Gets the [Camera3D.attributes] value assigned to the [Camera3DResource].
 func get_attributes() -> CameraAttributes:
 	return attributes
+
+## Assigns a new [Compositor] resource to the [Camera3DResource].
+func set_compositor(value: Compositor) -> void:
+	compositor = value
+	camera_3d_resource_property_changed.emit("compositor", value)
+
+## Gets the [Camera3D.compositor] value assigned to the [Camera3DResource].
+func get_compositor() -> Compositor:
+	return compositor
 
 
 ## Assigns a new [member Camera3D.h_offset] value.[br]
