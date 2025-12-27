@@ -23,9 +23,9 @@ public class PhantomCameraHost()
 {
     public Node Node { get; } = null!;
 
-    public PhantomCameraHost(Node node) : this()
+    public PhantomCameraHost(GodotObject node) : this()
     {
-        Node = node;
+        Node = node as Node;
 
         var callablePCamBecameActive = Callable.From<Node>(pCam => PCamBecameActive?.Invoke(pCam));
         var callablePCamBecameInactive = Callable.From<Node>(pCam => PCamBecameInactive?.Invoke(pCam));
@@ -40,6 +40,10 @@ public class PhantomCameraHost()
     public event PCamBecameActiveEventHandler? PCamBecameActive;
     public event PCamBecameInactiveEventHandler? PCamBecameInactive;
 
+
+    private readonly Callable _callablePCamBecameActive;
+    private readonly Callable _callablePCamBecameInactive;
+    
     // For when Godot becomes the minimum version
     // public InterpolationMode InterpolationMode
     // {

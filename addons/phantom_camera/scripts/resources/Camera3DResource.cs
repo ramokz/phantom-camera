@@ -79,6 +79,17 @@ public class Camera3DResource(Resource resource)
         get => (float)Resource.Get(PropertyName.Far);
         set => Resource.Set(PropertyName.Far, Mathf.Clamp(value, 0.01f, float.PositiveInfinity));
     }
+    
+    public static Camera3DResource New()
+    {
+        Resource resource = new();
+#if GODOT4_4_OR_GREATER
+        resource.SetScript(GD.Load<GDScript>("uid://b8hhnqsugykly"));
+#else
+        resource.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd"));
+#endif
+        return new Camera3DResource(resource);
+    }
 
     public static class PropertyName
     {

@@ -207,9 +207,6 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetLimitTarget, value);
     }
 
-    public static PhantomCamera2D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
-    public static PhantomCamera2D FromScript(GDScript script) => new(script.New().AsGodotObject());
-
     public PhantomCamera2D(GodotObject phantomCameraNode) : base(phantomCameraNode)
     {
         var callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
