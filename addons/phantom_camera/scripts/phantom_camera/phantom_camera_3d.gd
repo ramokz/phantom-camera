@@ -540,7 +540,7 @@ var horizontal_rotation_offset: float = 0:
 ## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's transform.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is following [i]or[/i] looking at a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Transform with View", "ToolRotate")
+@export_tool_button("Align Transform with View", "CenterView")
 var align_transform_with_view: Callable = func():
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_transform"
