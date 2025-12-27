@@ -1176,7 +1176,7 @@ func _interpolate_position(delta: float) -> void:
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
-	var direction: Vector3 = - (target_position - global_position + look_at_offset).normalized()
+	var direction: Vector3 = -(target_position - global_position + look_at_offset).normalized()
 
 	var basis_z: Vector3 = direction.normalized()
 	var basis_x: Vector3 = up_direction.cross(basis_z)
@@ -1209,7 +1209,7 @@ func _interpolate_rotation(delta: float) -> void:
 		var dot: float = current_quat.dot(target_quat)
 
 		if dot < 0.0:
-			target_quat = - target_quat
+			target_quat = -target_quat
 			dot = - dot
 
 		dot = clampf(dot, -1.0, 1.0)
