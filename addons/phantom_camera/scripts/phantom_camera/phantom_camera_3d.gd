@@ -1021,6 +1021,7 @@ func _set_follow_position() -> void:
 						_follow_target_position = _get_target_position_offset_distance()
 
 					if _get_framed_side_offset() != Vector2.ZERO:
+						var framed_offset = _get_framed_side_offset()
 						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
 						var glo_pos: Vector3
 
@@ -1046,6 +1047,23 @@ func _set_follow_position() -> void:
 								_current_rotation = global_rotation
 							else:
 								dead_zone_reached.emit()
+
+								# FIX: Only move camera in the axis where dead zone is breached
+								var current_global_position = global_position
+								var current_offset = global_position - _get_target_position_offset()
+
+								# Update stored offset for non-breached axes
+								if framed_offset.x == 0:
+										_follow_framed_offset.x = current_offset.x
+								if framed_offset.y == 0:
+										_follow_framed_offset.z = current_offset.z
+
+								# Lock camera position on non-breached axes
+								if framed_offset.x == 0:
+										target_position.x = current_global_position.x
+								if framed_offset.y == 0:
+										target_position.z = current_global_position.z
+
 								_follow_target_position = target_position
 					else:
 						_follow_framed_offset = global_position - _get_target_position_offset()
@@ -1088,7 +1106,7 @@ func _set_look_at_position() -> void:
 			_look_at_target_position = global_position - look_at_target.global_basis.z
 
 		LookAtMode.SIMPLE:
-			_look_at_target_position =look_at_target.global_position
+			_look_at_target_position = look_at_target.global_position
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
@@ -1097,7 +1115,7 @@ func _set_look_at_position() -> void:
 				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
 				for node in look_at_targets:
 					bounds = bounds.expand(node.global_position)
-				_look_at_target_position =bounds.get_center()
+				_look_at_target_position = bounds.get_center()
 
 
 func _get_target_position_offset() -> Vector3:
@@ -1158,7 +1176,7 @@ func _interpolate_position(delta: float) -> void:
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
-	var direction: Vector3 = -(target_position - global_position + look_at_offset).normalized()
+	var direction: Vector3 = - (target_position - global_position + look_at_offset).normalized()
 
 	var basis_z: Vector3 = direction.normalized()
 	var basis_x: Vector3 = up_direction.cross(basis_z)
@@ -1191,8 +1209,8 @@ func _interpolate_rotation(delta: float) -> void:
 		var dot: float = current_quat.dot(target_quat)
 
 		if dot < 0.0:
-			target_quat = -target_quat
-			dot = -dot
+			target_quat = - target_quat
+			dot = - dot
 
 		dot = clampf(dot, -1.0, 1.0)
 
