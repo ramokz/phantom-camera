@@ -545,7 +545,7 @@ var align_transform_with_view: Callable = func():
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_transform"
 	undo_redo.create_action("Aligned " + name + "'s transform with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_transform)
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_transform)
 	undo_redo.add_undo_property(self, property, global_transform)
 	undo_redo.commit_action()
 
@@ -557,7 +557,7 @@ var align_position_with_view: Callable = func():
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_position"
 	undo_redo.create_action("Aligned " + name + "'s position with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_position)
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_position)
 	undo_redo.add_undo_property(self, property, global_position)
 	undo_redo.commit_action()
 
@@ -569,12 +569,17 @@ var align_rotation_with_view: Callable = func():
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_rotation"
 	undo_redo.create_action("Aligned " + name + "'s rotation with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d().get_camera_3d().global_rotation)
+	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_rotation)
 	undo_redo.add_undo_property(self, property, global_rotation)
 	undo_redo.commit_action()
 
-
-
+## Change which viewport the alignment buttons should be based on.[br]
+## [b]Note:[/b] If you are only using 1 viewport, keep the default value to 0.
+@export_range(0, 3) var viewport_index: int = 0:
+	set(value):
+		viewport_index = value
+	get:
+		return viewport_index
 
 #endregion
 
