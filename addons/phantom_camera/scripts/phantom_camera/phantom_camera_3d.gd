@@ -575,7 +575,7 @@ var horizontal_rotation_offset: float = 0:
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Transform with View", "CenterView")
 var align_transform_with_view: Callable = func():
-	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_transform"
 	undo_redo.create_action("Aligned " + name + "'s transform with view")
 	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_transform)
@@ -587,7 +587,7 @@ var align_transform_with_view: Callable = func():
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Position with View", "ToolMove")
 var align_position_with_view: Callable = func():
-	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_position"
 	undo_redo.create_action("Aligned " + name + "'s position with view")
 	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_position)
@@ -599,7 +599,7 @@ var align_position_with_view: Callable = func():
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Rotation with View", "ToolRotate")
 var align_rotation_with_view: Callable = func():
-	var undo_redo = EditorInterface.get_editor_undo_redo()
+	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
 	var property: StringName = &"global_rotation"
 	undo_redo.create_action("Aligned " + name + "'s rotation with view")
 	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_rotation)
@@ -1080,7 +1080,7 @@ func _set_follow_position() -> void:
 						_follow_target_output_position = _get_target_position_offset_distance()
 
 					if _get_framed_side_offset() != Vector2.ZERO:
-						var framed_offset = _get_framed_side_offset()
+						var framed_offset: Vector2 = _get_framed_side_offset()
 						var target_position: Vector3 = _get_target_position_offset() + _follow_framed_offset
 						var glo_pos: Vector3
 
@@ -1108,8 +1108,8 @@ func _set_follow_position() -> void:
 								dead_zone_reached.emit()
 
 								# FIX: Only move camera in the axis where dead zone is breached
-								var current_global_position = global_position
-								var current_offset = global_position - _get_target_position_offset()
+								var current_global_position: Vector3 = global_position
+								var current_offset: Vector3 = global_position - _get_target_position_offset()
 
 								# Update stored offset for non-breached axes
 								if framed_offset.x == 0:
@@ -1123,7 +1123,7 @@ func _set_follow_position() -> void:
 								if framed_offset.y == 0:
 										target_position.z = current_global_position.z
 
-								_follow_target_position = target_position
+								_follow_target_output_position = target_position
 					else:
 						_follow_framed_offset = global_position - _get_target_position_offset()
 						_follow_target_position = global_position
