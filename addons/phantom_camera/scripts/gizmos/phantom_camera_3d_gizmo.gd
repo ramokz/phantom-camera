@@ -1,7 +1,7 @@
 @tool
 extends EditorNode3DGizmo
 
-#var pcam_3d: PhantomCamera3D
+var pcam_3d: PhantomCamera3D
 
 func _redraw() -> void:
 	clear()
@@ -9,12 +9,12 @@ func _redraw() -> void:
 	var icon: Material = get_plugin().get_material(get_plugin().get_name(), self)
 	add_unscaled_billboard(icon, 0.035)
 
-	var pcam_3d: PhantomCamera3D = get_node_3d()
+	pcam_3d = get_node_3d()
 
-#	if pcam_3d.is_following():
-#		_draw_target(pcam_3d, pcam_3d.get_follow_target_position(), "follow_target")
-#	if pcam_3d.is_looking_at():
-#		_draw_target(pcam_3d, pcam_3d.get_look_at_target_position(), "look_at_target")
+	if pcam_3d.is_following() and pcam_3d.draw_follow_gizmo_line():
+		_draw_target(pcam_3d.get_follow_target_position(), "follow_target")
+	if pcam_3d.is_looking() and pcam_3d.draw_look_at_gizmo_line():
+		_draw_target(pcam_3d.get_look_at_target_position(),"look_at_target")
 
 	if pcam_3d.is_active(): return
 
@@ -73,12 +73,13 @@ func _redraw() -> void:
 	add_lines(frustum_lines, frustum_material, false)
 
 
-func _draw_target(pcam_3d: Node3D, target_position: Vector3, type: String) -> void:
+func _draw_target(target: Vector3, type: StringName) -> void:
 	var target_lines: PackedVector3Array = PackedVector3Array()
-	var direction: Vector3 = target_position - pcam_3d.global_position
-	var end_position: Vector3 = pcam_3d.global_basis.z * direction
+	var direction: Vector3 = pcam_3d.global_position - target
+	var end_position: Vector3 = -direction * pcam_3d.quaternion
 
 	target_lines.push_back(Vector3.ZERO)
 	target_lines.push_back(end_position)
+
 	var target_material: StandardMaterial3D = get_plugin().get_material(type, self)
 	add_lines(target_lines, target_material, false)
