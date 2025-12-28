@@ -1,11 +1,11 @@
 [gd_scene load_steps=22 format=3 uid="uid://bklrp02eywxsx"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="1_s26cy"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_m2d6w"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="3_l7kg8"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="1_s26cy"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_m2d6w"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="3_l7kg8"]
 [ext_resource type="PackedScene" uid="uid://mskcwn1a1v6d" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_third_person_3d.tscn" id="4_qcyfd"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_8von1"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person_4.4.gd" id="5_tarnu"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_8von1"]
+[ext_resource type="Script" uid="uid://bkr71vxe2t18n" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person_4.4.gd" id="5_tarnu"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="6_o1fj6"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_amcmx"]
 [ext_resource type="Texture2D" uid="uid://c3mskbmvnpwux" path="res://addons/phantom_camera/examples/textures/3D/target.png" id="8_rjcgw"]
@@ -18,6 +18,7 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_7m0fv"]
 script = ExtResource("3_l7kg8")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -43,6 +44,7 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_jogxh"]
 script = ExtResource("3_l7kg8")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 1.0
 v_offset = 0.0
@@ -59,7 +61,7 @@ dof_blur_far_distance = 31.1
 dof_blur_near_enabled = true
 dof_blur_near_distance = 1.79
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_5mfg2"]
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_fnb35"]
 dof_blur_far_enabled = true
 dof_blur_far_distance = 5.99
 dof_blur_near_enabled = true
@@ -77,6 +79,7 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_unpfd"]
 script = ExtResource("3_l7kg8")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -101,7 +104,7 @@ uv1_offset = Vector3(0.025, -0.927, 0)
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.499999, 0, -0.5, 0.866023, -0.0194088, 2.25688, 9.63713)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 8.76853)
 script = ExtResource("1_s26cy")
 priority = 10
 follow_mode = 6
@@ -116,7 +119,7 @@ spring_length = 3.5
 
 [node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.953716, -0.0418501, 0.297778, 0, 0.990266, 0.139173, -0.300705, -0.132731, 0.944432, 0.427258, 1.68564, 7.6237)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 1.47688, 6.36953)
 script = ExtResource("1_s26cy")
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -131,13 +134,14 @@ spring_length = 1.5
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("4_qcyfd")]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 6.60605)
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 5.26853)
 script = ExtResource("5_tarnu")
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -0.0194088, 2.25688, 9.63713)
-attributes = SubResource("CameraAttributesPractical_5mfg2")
+physics_interpolation_mode = 1
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, 8.76853)
+attributes = SubResource("CameraAttributesPractical_fnb35")
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -214,5 +218,3 @@ surface_material_override/0 = SubResource("StandardMaterial3D_hp48l")
 transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0.0525861, 1.60477, 9.98156)
 mesh = SubResource("CylinderMesh_sm466")
 surface_material_override/0 = SubResource("StandardMaterial3D_hp48l")
-
-[editable path="PlayerCharacterBody3D"]

@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://godotengine.org/download/windows/">
-      <img alt="Static Badge" src="https://img.shields.io/badge/Godot-4.2%2B-blue">
+      <img alt="Static Badge" src="https://img.shields.io/badge/Godot-4.3%2B-blue">
   </a>
   <a href="LICENSE">
     <img alt="GitHub License" src="https://img.shields.io/github/license/ramokz/phantom-camera">

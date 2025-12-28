@@ -3,14 +3,14 @@
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_h1rbo"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="2_1f2t2"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/ui_sign.tscn" id="3_o6nri"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_j7670"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="5_gvv7r"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="4_j7670"]
+[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="5_gvv7r"]
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_2d_tween.tres" id="6_rwobr"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_ylx0h"]
 [ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="8_ytsgf"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/2d_trigger_area.gd" id="9_3r1pw"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d_4.3.gd" id="9_5jy5e"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="10_guf2v"]
+[ext_resource type="Script" uid="uid://t8wa4e5y5hcf" path="res://addons/phantom_camera/examples/scripts/2D/2d_trigger_area.gd" id="9_3r1pw"]
+[ext_resource type="Script" uid="uid://cnnaky2ns2pn4" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d_4.3.gd" id="9_5jy5e"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="10_guf2v"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cvmao"]
 texture = ExtResource("1_h1rbo")
@@ -238,6 +238,7 @@ physics_interpolation_mode = 1
 position = Vector2(227, -28)
 process_callback = 0
 position_smoothing_speed = 10.0
+editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 process_priority = 300

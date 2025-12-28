@@ -1,18 +1,19 @@
 [gd_scene load_steps=25 format=3 uid="uid://oo1y1sjdmr6k"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_p8ccw"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_8itog"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_p8ccw"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_8itog"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="3_xqpq0"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_akuuo"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_akuuo"]
 [ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="5_0nadx"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="6_7h7mx"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_mkxip"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/path_follow.gd" id="7_g1m51"]
+[ext_resource type="Script" uid="uid://tgv6xpi88sd0" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="6_7h7mx"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_mkxip"]
+[ext_resource type="Script" uid="uid://cgknbkjar73w" path="res://addons/phantom_camera/examples/scripts/3D/path_follow.gd" id="7_g1m51"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="8_a1h2k"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="9_rk5lh"]
 
 [sub_resource type="Resource" id="Resource_ofv2c"]
 script = ExtResource("4_akuuo")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -31,6 +32,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_syh5m"]
 script = ExtResource("4_akuuo")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -60,6 +62,7 @@ albedo_color = Color(0.988235, 0.478431, 0.905882, 0.0901961)
 
 [sub_resource type="Resource" id="Resource_xci4c"]
 script = ExtResource("4_akuuo")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -95,7 +98,8 @@ albedo_color = Color(0.568403, 0.988235, 0.762724, 0.0901961)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999996, -0.00216283, 0.00184472, 0, 0.648938, 0.760841, -0.00284268, -0.760838, 0.648936, 0, 2.507, 1.5)
+physics_interpolation_mode = 1
+transform = Transform3D(0.999996, -0.00216283, 0.00184472, 0, 0.648938, 0.760841, -0.00284268, -0.760838, 0.648936, 0, 2.5, 1.5)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -108,7 +112,7 @@ metadata/_edit_lock_ = true
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 0, 2.507, 1.5)
+transform = Transform3D(0.999807, -0.00216249, 0.00184445, 0, 0.648836, 0.760728, -0.00284214, -0.760718, 0.648839, 0, 2.5, 1.5)
 top_level = true
 script = ExtResource("2_8itog")
 priority = 10
@@ -121,7 +125,7 @@ follow_offset = Vector3(0, 2, 1.5)
 follow_damping = true
 
 [node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("5_0nadx")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.507, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("6_7h7mx")
 
 [node name="Paths" type="Node" parent="."]

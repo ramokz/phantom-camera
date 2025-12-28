@@ -27,7 +27,6 @@ var _viewfinder_panel: Control
 
 func _ready() -> void:
 	_host_list_button.pressed.connect(_host_list_button_pressed)
-
 	if Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
 		_pcam_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
 		_pcam_manager.pcam_host_removed_from_scene.connect(_remove_pcam_host)
@@ -65,13 +64,12 @@ func _set_host_list_size() -> float:
 		return clampf(
 			_viewfinder_panel.size.y - \
 			_host_list_item_container.size.y - \
-			_host_list_button.size.y - \
-			20,
+			_host_list_button.size.y - 20,
 			0,
 			INF
 		)
 	else:
-		return _viewfinder_panel.size.y - _host_list_button.size.y + 20
+		return (_viewfinder_panel.size.y - _host_list_button.size.y / 2)
 
 
 func _remove_pcam_host(pcam_host: PhantomCameraHost) -> void:

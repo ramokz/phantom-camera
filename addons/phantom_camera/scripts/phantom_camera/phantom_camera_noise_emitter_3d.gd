@@ -254,7 +254,7 @@ func get_decay_time() -> float:
 func set_noise_emitter_layer(value: int) -> void:
 	noise_emitter_layer = value
 
-## Enables or disables a given layer of the [member noise_emitter_layer] value.
+## Enables or disables a given layer of [member noise_emitter_layer].
 func set_noise_emitter_value(value: int, enabled: bool) -> void:
 	noise_emitter_layer = _set_layer(noise_emitter_layer, value, enabled)
 
@@ -263,4 +263,3 @@ func get_noise_emitter_layer() -> int:
 	return noise_emitter_layer
 
 	#endregion
-

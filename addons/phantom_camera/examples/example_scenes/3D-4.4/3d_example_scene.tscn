@@ -1,19 +1,20 @@
 [gd_scene load_steps=41 format=3 uid="uid://cypbptekk8etg"]
 
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_u86qq"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_u86qq"]
 [ext_resource type="PackedScene" uid="uid://bulsh7s0ibmao" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="2_jl1he"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_an0dt"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="3_yfuq5"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="4_iy6qn"]
+[ext_resource type="Script" uid="uid://tgv6xpi88sd0" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_4.4.gd" id="3_yfuq5"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="4_iy6qn"]
 [ext_resource type="Resource" uid="uid://cptfoggk2ok67" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_3d_tween.tres" id="5_0ku52"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="6_prr6u"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/npc.gd" id="7_nl3ax"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="8_xvqcg"]
-[ext_resource type="Script" path="res://addons/phantom_camera/examples/scripts/3D/3d_trigger_area.gd" id="9_hqgwi"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="6_prr6u"]
+[ext_resource type="Script" uid="uid://uvw6pg1ut0ms" path="res://addons/phantom_camera/examples/scripts/3D/npc.gd" id="7_nl3ax"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="8_xvqcg"]
+[ext_resource type="Script" uid="uid://bnhxcejvr6wi3" path="res://addons/phantom_camera/examples/scripts/3D/3d_trigger_area.gd" id="9_hqgwi"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="10_cd0kn"]
 
 [sub_resource type="Resource" id="Resource_jtk1d"]
 script = ExtResource("6_prr6u")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -26,6 +27,7 @@ far = 4000.0
 
 [sub_resource type="Resource" id="Resource_o161n"]
 script = ExtResource("6_prr6u")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -61,6 +63,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_bxbnv"]
 script = ExtResource("6_prr6u")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -82,6 +85,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_4iyps"]
 script = ExtResource("6_prr6u")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -103,6 +107,7 @@ ease = 2
 
 [sub_resource type="Resource" id="Resource_pgiyx"]
 script = ExtResource("6_prr6u")
+keep_aspect = 1
 cull_mask = 1048575
 h_offset = 0.0
 v_offset = 0.0
@@ -156,6 +161,7 @@ size = Vector3(8, 6, 0.5)
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
+physics_interpolation_mode = 1
 transform = Transform3D(1, 0, 0, 0, 0.948876, 0.315649, 0, -0.315649, 0.948876, -2.53871, 2, 9.76232)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]

@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://bhppejri5dbsf" path="res://addons/phantom_camera/themes/theme.tres" id="1_wql5t"]
 [ext_resource type="Texture2D" uid="uid://rghrkoqrm2ig" path="res://addons/phantom_camera/icons/viewfinder/Select.svg" id="2_71b6g"]
 [ext_resource type="ButtonGroup" uid="uid://dfu0b8jbtyr1n" path="res://addons/phantom_camera/panel/viewfinder/host_list/host_list_item_group.tres" id="3_06a0y"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list_item.gd" id="3_a5o8b"]
+[ext_resource type="Script" uid="uid://bv24ubx8mutw7" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list_item.gd" id="3_a5o8b"]
 [ext_resource type="Texture2D" uid="uid://cjlv0bg7byjx0" path="res://addons/phantom_camera/icons/warning.svg" id="3_qgpy7"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0rxfi"]
