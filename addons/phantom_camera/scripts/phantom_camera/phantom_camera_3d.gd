@@ -493,13 +493,6 @@ var horizontal_rotation_offset: float = 0:
 	set = set_margin,
 	get = get_margin
 
-@export_subgroup("Debug")
-## Draws a line between the [param PhantomCamera3D] and its follow target position.[br]
-## This is only drawn when a valid [member follow_target] or [member follow_targets] is set.
-@export var draw_follow_line: bool = false:
-	set = set_draw_follow_line,
-	get = get_draw_follow_line
-
 @export_group("Look At Parameters")
 ## Offsets the target's [param Vector3] position that the
 ## [param PhantomCamera3D] is looking at.
@@ -534,14 +527,6 @@ var horizontal_rotation_offset: float = 0:
 @export var up_target: Node3D = null:
 	set = set_up_target,
 	get = get_up_target
-
-
-@export_subgroup("Debug")
-## Draws a line between the [param PhantomCamera3D] and its look at target position.[br]
-## This is only drawn when a valid [member follow_target] or [member look_at_targets] is set.
-@export var draw_look_at_line: bool = false:
-	set = set_draw_look_at_line,
-	get = get_draw_look_at_line
 
 
 @export_group("Noise")
@@ -613,6 +598,20 @@ var align_rotation_with_view: Callable = func():
 		viewport_index = value
 	get:
 		return viewport_index
+
+
+@export_subgroup("Gizmo Line")
+## Draws a line between the [param PhantomCamera3D] and its follow target position.[br]
+## This is only drawn when a valid [member follow_target] or [member follow_targets] is set.
+@export var draw_follow_line: bool = false:
+	set = set_draw_follow_line,
+	get = get_draw_follow_line
+
+## Draws a line between the [param PhantomCamera3D] and its look at target position.[br]
+## This is only drawn when a valid [member follow_target] or [member look_at_targets] is set.
+@export var draw_look_at_line: bool = false:
+	set = set_draw_look_at_line,
+	get = get_draw_look_at_line
 
 #endregion
 
@@ -737,8 +736,7 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_offset", \
 			"follow_damping", \
 			"follow_damping_value", \
-			"follow_axis_lock", \
-			"draw_follow_line":
+			"follow_axis_lock":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if follow_mode == FollowMode.GROUP:
@@ -763,6 +761,10 @@ func _validate_property(property: Dictionary) -> void:
 			if not follow_mode == FollowMode.GROUP or \
 			auto_follow_distance: \
 				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	## Editor - Follow
+	if property.name == "draw_follow_line" and not _should_follow:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
 	## Group Follow
@@ -844,6 +846,10 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "up" and _has_up_target:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	## Look At - Editor
+	if property.name == "draw_look_at_line" and not _should_look_at:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	##########################
