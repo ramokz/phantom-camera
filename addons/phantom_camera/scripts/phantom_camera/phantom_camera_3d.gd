@@ -736,7 +736,8 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_offset", \
 			"follow_damping", \
 			"follow_damping_value", \
-			"follow_axis_lock":
+			"follow_axis_lock", \
+			"draw_follow_line":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if follow_mode == FollowMode.GROUP:
