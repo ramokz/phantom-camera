@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bipcntac0qilo" path="res://dev_scenes/3d/scripts/dev_scene_3d.gd" id="1_gnrfx"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_4sdb7"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
-[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D-4.4/sub_scenes/playable_character_3d.tscn" id="6_g6hwc"]
+[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="6_g6hwc"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_fioii"]
 
@@ -19,42 +19,20 @@ adjustment_contrast = 1.19
 
 [sub_resource type="Resource" id="Resource_g6hwc"]
 script = ExtResource("6_pmc8r")
-duration = 1.0
 transition = 3
-ease = 2
 metadata/_custom_type_script = "uid://8umksf8e80fw"
 
 [sub_resource type="Resource" id="Resource_p3ogo"]
 script = ExtResource("7_fioii")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 metadata/_custom_type_script = "uid://b8hhnqsugykly"
 
 [sub_resource type="Resource" id="Resource_sj6ok"]
 script = ExtResource("6_pmc8r")
 duration = 0.6
 transition = 2
-ease = 2
 
 [sub_resource type="Resource" id="Resource_a3u85"]
 script = ExtResource("7_fioii")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
 far = 2000.0
 
 [node name="Root" type="Node3D"]
@@ -63,7 +41,7 @@ script = ExtResource("1_gnrfx")
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.894427, 0.447214, 0, -0.447214, 0.894427, 0.083587, 1.507, 4.05493)
+transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0.083587, 1.507, 4.0549297)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -75,7 +53,7 @@ environment = SubResource("Environment_0s7cr")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0.083587, 1.507, 4.05493)
+transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0.083587, 1.507, 4.0549297)
 top_level = true
 script = ExtResource("3_4sdb7")
 priority = 30
@@ -92,15 +70,22 @@ dead_zone_height = 0.467
 show_viewfinder_in_play = true
 spring_length = 1.247
 collision_mask = 0
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
 
-[node name="ScenePhantomCamera3D" type="Node3D" parent="."]
+[node name="ScenePhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 12.1449, 0)
+transform = Transform3D(-0.9991739, 0.04002259, -0.007072717, -1.8626451e-09, 0.17402166, 0.98474187, 0.04064272, 0.98392826, -0.17387795, 0, 12.1449, 0)
 script = ExtResource("3_4sdb7")
 priority = 10
+look_at_mode = 2
+look_at_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_sj6ok")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_a3u85")
+align_transform_with_view = Callable()
+align_rotation_with_view = Callable()
+draw_look_at_line = true
 
 [node name="Floor" parent="." instance=ExtResource("1_7n673")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
