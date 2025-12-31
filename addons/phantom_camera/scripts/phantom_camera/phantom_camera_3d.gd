@@ -746,16 +746,11 @@ func _validate_property(property: Dictionary) -> void:
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH or \
-		follow_mode == FollowMode.GLUED:
+		if follow_mode == FollowMode.GLUED:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
 		if not follow_mode == FollowMode.FRAMED:
@@ -1061,9 +1056,9 @@ func _set_follow_position() -> void:
 			var path_position: Vector3 = follow_path.global_position
 			_follow_target_output_position = \
 				follow_path.curve.get_closest_point(
-					follow_target.global_position - path_position
+					_get_target_position_offset() - path_position
 				) + path_position
-			_set_follow_gizmo_line_position(follow_target.global_position)
+			_set_follow_gizmo_line_position(_get_target_position_offset())
 
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
