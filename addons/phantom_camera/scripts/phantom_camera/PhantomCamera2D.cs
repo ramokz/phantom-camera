@@ -218,11 +218,6 @@ public class PhantomCamera2D : PhantomCamera
         Node2D.Connect(SignalName.NoiseEmitted, callableNoiseEmitted);
     }
 
-    public void SetLimitTarget(TileMap tileMap)
-    {
-        Node2D.Call(MethodName.SetLimitTarget, tileMap.GetPath());
-    }
-
     public void SetLimitTarget(TileMapLayer tileMapLayer)
     {
         Node2D.Call(MethodName.SetLimitTarget, tileMapLayer.GetPath());
@@ -314,16 +309,10 @@ public class PhantomCamera2D : PhantomCamera
 
 public class LimitTargetQueryResult(GodotObject godotObject)
 {
-    public bool IsTileMap => godotObject.IsClass("TileMap");
-
     public bool IsTileMapLayer => godotObject.IsClass("TileMapLayer");
 
     public bool IsCollisionShape2D => godotObject.IsClass("CollisionShape2D");
 
-    public TileMap? AsTileMap()
-    {
-        return IsTileMap ? (TileMap)godotObject : null;
-    }
 
     public TileMapLayer? AsTileMapLayer()
     {
