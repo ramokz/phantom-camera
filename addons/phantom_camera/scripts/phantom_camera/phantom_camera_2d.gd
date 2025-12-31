@@ -549,8 +549,7 @@ func _validate_property(property: Dictionary) -> void:
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH or \
-		follow_mode == FollowMode.GLUED:
+		if follow_mode == FollowMode.GLUED:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
