@@ -136,7 +136,6 @@ metadata/_edit_group_ = true
 [node name="PathPhantomCamera3D2" type="Node3D" parent="Paths" node_paths=PackedStringArray("follow_target", "follow_path")]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 7.9199, -13.4572)
 top_level = true
-visible = false
 script = ExtResource("2_8itog")
 priority = 2
 follow_mode = 4
