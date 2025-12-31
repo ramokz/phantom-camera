@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_g1jp6"]
 [ext_resource type="Texture2D" uid="uid://bbsii3tcnsmr2" path="res://addons/phantom_camera/examples/textures/2D/floor_N.png" id="3_iwhil"]
 [ext_resource type="Texture2D" uid="uid://rl3ojvpbnrhl" path="res://addons/phantom_camera/examples/textures/2D/tilesheet_complete.png" id="3_q20j0"]
-[ext_resource type="Script" uid="uid://c8g4soajr2jpi" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_tm0ws"]
+[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_tm0ws"]
 [ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="4_dfyri"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_qq8ep"]
 [ext_resource type="Texture2D" uid="uid://c7x3fsdth3mj7" path="res://addons/phantom_camera/examples/textures/2D/floor_S.png" id="4_v3ieq"]
@@ -475,19 +475,12 @@ sources/2 = SubResource("TileSetAtlasSource_5qdm8")
 script = ExtResource("4_qq8ep")
 duration = 0.6
 transition = 3
-ease = 2
 
 [sub_resource type="Resource" id="Resource_5vctl"]
 script = ExtResource("4_qq8ep")
-duration = 1.0
-transition = 0
-ease = 2
 
 [sub_resource type="Resource" id="Resource_m6epa"]
 script = ExtResource("4_qq8ep")
-duration = 1.0
-transition = 0
-ease = 2
 
 [node name="Root2" type="Node2D"]
 script = ExtResource("1_0ispe")
