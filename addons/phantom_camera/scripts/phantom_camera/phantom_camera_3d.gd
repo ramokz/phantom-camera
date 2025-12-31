@@ -736,7 +736,8 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_offset", \
 			"follow_damping", \
 			"follow_damping_value", \
-			"follow_axis_lock":
+			"follow_axis_lock", \
+			"draw_follow_line":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if follow_mode == FollowMode.GROUP:
@@ -761,10 +762,6 @@ func _validate_property(property: Dictionary) -> void:
 			if not follow_mode == FollowMode.GROUP or \
 			auto_follow_distance: \
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	## Editor - Follow
-	if property.name == "draw_follow_line" and not _should_follow:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	###############
 	## Group Follow
@@ -846,10 +843,6 @@ func _validate_property(property: Dictionary) -> void:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "up" and _has_up_target:
-		property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	## Look At - Editor
-	if property.name == "draw_look_at_line" and not _should_look_at:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	##########################
