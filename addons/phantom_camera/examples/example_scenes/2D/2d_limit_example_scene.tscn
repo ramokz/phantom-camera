@@ -165,7 +165,6 @@ sources/0 = SubResource("TileSetAtlasSource_easgx")
 script = ExtResource("7_ne05h")
 duration = 0.9
 transition = 2
-ease = 2
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xmxri"]
 size = Vector2(790, 410)
@@ -174,7 +173,6 @@ size = Vector2(790, 410)
 script = ExtResource("7_ne05h")
 duration = 0.9
 transition = 2
-ease = 2
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wtfjw"]
 size = Vector2(1530, 700)

@@ -166,7 +166,6 @@ sources/0 = SubResource("TileSetAtlasSource_3qxnm")
 script = ExtResource("7_awenl")
 duration = 0.3
 transition = 4
-ease = 2
 
 [node name="Root" type="Node2D"]
 
