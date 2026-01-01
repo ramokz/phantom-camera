@@ -85,7 +85,7 @@ top_level = true
 script = ExtResource("2_8itog")
 priority = 10
 follow_mode = 2
-follow_target = NodePath("../PlayerCharacterBody3D2")
+follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = ExtResource("3_xqpq0")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_ofv2c")
@@ -94,7 +94,7 @@ follow_damping = true
 align_transform_with_view = Callable()
 align_position_with_view = Callable()
 
-[node name="PlayerCharacterBody3D2" parent="." instance=ExtResource("5_0nadx")]
+[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("5_0nadx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="Paths" type="Node" parent="."]
@@ -105,7 +105,7 @@ top_level = true
 script = ExtResource("2_8itog")
 priority = 2
 follow_mode = 4
-follow_target = NodePath("../../PlayerCharacterBody3D2")
+follow_target = NodePath("../../PlayerCharacterBody3D")
 follow_path = NodePath("../FollowPath")
 tween_resource = SubResource("Resource_01tho")
 camera_3d_resource = SubResource("Resource_syh5m")
@@ -139,7 +139,7 @@ top_level = true
 script = ExtResource("2_8itog")
 priority = 2
 follow_mode = 4
-follow_target = NodePath("../../PlayerCharacterBody3D2")
+follow_target = NodePath("../../PlayerCharacterBody3D")
 follow_path = NodePath("../FollowPath2")
 tween_resource = SubResource("Resource_01tho")
 camera_3d_resource = SubResource("Resource_xci4c")

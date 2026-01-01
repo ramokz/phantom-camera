@@ -9,8 +9,7 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ldp"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
-[node name="PlayerCharacterBody3D2" type="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.083587, 0.507, 2.05493)
+[node name="PlayerCharacterBody3D" type="CharacterBody3D"]
 script = ExtResource("1_pl87s")
 metadata/_edit_group_ = true
 

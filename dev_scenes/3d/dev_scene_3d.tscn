@@ -41,7 +41,7 @@ script = ExtResource("1_gnrfx")
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0.083587, 1.507, 4.0549297)
+transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0, 1.5, 2)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -53,7 +53,7 @@ environment = SubResource("Environment_0s7cr")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0.083587, 1.507, 4.0549297)
+transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0, 1.5, 2)
 top_level = true
 script = ExtResource("3_4sdb7")
 priority = 30
@@ -75,7 +75,7 @@ align_position_with_view = Callable()
 
 [node name="ScenePhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target")]
 unique_name_in_owner = true
-transform = Transform3D(-0.9991739, 0.04002259, -0.007072717, -1.8626451e-09, 0.17402166, 0.98474187, 0.04064272, 0.98392826, -0.17387795, 0, 12.1449, 0)
+transform = Transform3D(-0.99917203, 0.040644497, -1.8626451e-09, -1.8626422e-09, 0, 1, 0.040644497, 0.99917203, 0, 0, 12.1449, 0)
 script = ExtResource("3_4sdb7")
 priority = 10
 look_at_mode = 2
@@ -92,6 +92,7 @@ transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("6_g6hwc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)

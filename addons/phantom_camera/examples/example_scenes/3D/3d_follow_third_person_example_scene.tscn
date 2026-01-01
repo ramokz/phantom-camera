@@ -1,7 +1,6 @@
-[gd_scene load_steps=17 format=3 uid="uid://ceelq6qrb41uf"]
+[gd_scene load_steps=16 format=3 uid="uid://ceelq6qrb41uf"]
 
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_47xf2"]
-[ext_resource type="Script" uid="uid://bkr71vxe2t18n" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="2_uhq7m"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_whx47"]
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="4_lii5s"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_jt2lp"]
@@ -17,16 +16,6 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_7m0fv"]
 script = ExtResource("5_jt2lp")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 
 [sub_resource type="Resource" id="Resource_e7t18"]
 script = ExtResource("2_47xf2")
@@ -36,16 +25,7 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_jogxh"]
 script = ExtResource("5_jt2lp")
-keep_aspect = 1
-cull_mask = 1048575
 h_offset = 1.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 10, 20)
@@ -61,27 +41,16 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_ioijp"]
 script = ExtResource("5_jt2lp")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 
-[node name="Root2" type="Node3D"]
+[node name="Root" type="Node3D"]
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("7_kut0u")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-script = ExtResource("2_uhq7m")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 2.25, 3.03109)
+transform = Transform3D(1, 0, 0, 0, 0.8660252, 0.5000003, 0, -0.5000003, 0.8660252, 0, 2.250001, 3.0310884)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
@@ -93,10 +62,13 @@ follow_damping = true
 follow_distance = 3.5
 vertical_rotation_offset = 0.523599
 spring_length = 3.5
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+align_rotation_with_view = Callable()
 
 [node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.584, 1.3, 1.101)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.584, 1.3, 1.1010001)
 script = ExtResource("2_whx47")
 follow_mode = 6
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -106,11 +78,14 @@ camera_3d_resource = SubResource("Resource_jogxh")
 follow_offset = Vector3(0.584, 0.8, -0.399)
 follow_distance = 1.5
 spring_length = 1.5
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+align_rotation_with_view = Callable()
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 2.25, 3.03109)
+transform = Transform3D(1, 0, 0, 0, 0.8660252, 0.5000003, 0, -0.5000003, 0.8660252, 0, 2.250001, 3.0310884)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
