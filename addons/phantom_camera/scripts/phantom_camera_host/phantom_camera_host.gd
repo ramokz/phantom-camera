@@ -62,6 +62,12 @@ enum InterpolationMode {
 	set = set_interpolation_mode,
 	get = get_interpolation_mode
 
+@export var tween_controllers: Array[TweenControllerResource]:
+	set(value):
+		tween_controllers = value
+	get:
+		return tween_controllers
+
 #endregion
 
 
@@ -77,10 +83,12 @@ var _follow_target_physics_based: bool = false
 var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
 var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
 
-var _trigger_pcam_tween: bool = false
-var _tween_elapsed_time: float = 0
-var _tween_duration: float = 0
-var _tween_is_instant: bool = false
+var _trigger_pcam_tween: bool   = false
+var _tween_elapsed_time: float  = 0.0
+var _tween_duration: float      = 0.0
+var _tween_transition: int      = 0
+var _tween_ease: int            = 0
+var _tween_is_instant: bool     = false
 
 var _multiple_pcam_hosts: bool = false
 
@@ -371,8 +379,22 @@ func _find_pcam_with_highest_priority() -> void:
 	else:
 		pcam_list = _phantom_camera_manager.phantom_camera_3ds
 
+	var pcam_with_highest_priority: Node = null
+	var pcam_priority: int = -1
+
 	for pcam in pcam_list:
-		_check_pcam_priority(pcam)
+		#_check_pcam_priority(pcam)
+		if not _pcam_is_in_host_layer(pcam): continue
+		if not pcam.visible: continue # Prevents hidden PCams from becoming active
+		if pcam.priority >= pcam_priority:
+			pcam_priority = pcam.priority
+			pcam_with_highest_priority = pcam
+
+	if pcam_with_highest_priority == null: return
+	_check_pcam_priority(pcam_with_highest_priority)
+
+	for pcam in pcam_list:
+		pcam.set_tween_skip(self, false)
 
 
 func _check_pcam_priority(pcam: Node) -> void:
@@ -486,10 +508,13 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 
 	## Assign newly active pcam
 	if _is_2d:
+		_tween_value_checker(_active_pcam_2d, pcam)
 		_active_pcam_2d = pcam
 		_active_pcam_priority = _active_pcam_2d.priority
 		_active_pcam_has_damping = _active_pcam_2d.follow_damping
-		_tween_duration = _active_pcam_2d.tween_duration
+#		_tween_duration = _active_pcam_2d.tween_duration # TODO - Tween Controller conditional
+#		_tween_transition = _active_pcam_2d.tween_transition # TODO - Tween Controller conditional
+#		_tween_ease = _active_pcam_2d.tween_ease # TODO - Tween Controller conditional
 
 		if not _active_pcam_2d.physics_target_changed.is_connected(_check_pcam_physics):
 			_active_pcam_2d.physics_target_changed.connect(_check_pcam_physics)
@@ -497,10 +522,13 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		if not _active_pcam_2d.noise_emitted.is_connected(_noise_emitted_2d):
 			_active_pcam_2d.noise_emitted.connect(_noise_emitted_2d)
 	else:
+		_tween_value_checker(_active_pcam_3d, pcam)
 		_active_pcam_3d = pcam
 		_active_pcam_priority = _active_pcam_3d.priority
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
-		_tween_duration = _active_pcam_3d.tween_duration
+#		_tween_duration = _active_pcam_3d.tween_duration # TODO - Tween Controller conditional
+#		_tween_transition = _active_pcam_3d.tween_transition # TODO - Tween Controller conditional
+#		_tween_ease = _active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 
 		if not Engine.is_editor_hint():
 			# Assigns a default shape to SpringArm3D node is none is supplied
@@ -675,6 +703,96 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 	_check_pcam_physics()
 
 	_trigger_pcam_tween = true
+
+
+func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
+	# Use Tween defined in newly active PCam
+	_tween_duration = new_pcam.tween_duration
+	_tween_transition = new_pcam.tween_transition
+	_tween_ease = new_pcam.tween_ease
+
+	# Check for conditional Tween Controller properties
+	if current_pcam == null: return
+	for tween_controller: TweenControllerResource in tween_controllers:
+		var tween_controller_resource: TweenControllerResource = tween_controller
+
+		## Checks if any of the required values are missing or isn't inherit
+		if tween_controller_resource == null: continue
+		if tween_controller_resource.tween_resource == null: continue
+
+		## From Target
+		match tween_controller_resource.from_type:
+			TweenControllerResource.Type.PHANTOM_CAMERA:
+				var has_valid_pcam: bool = false
+				for pcam_path: NodePath in tween_controller_resource.from_phantom_camera:
+					var from_pcam: Node = get_node_or_null(pcam_path)
+					match from_pcam:
+						null:
+							has_valid_pcam = false
+						current_pcam:
+							has_valid_pcam = true
+							break
+						_:
+							has_valid_pcam = false
+				if has_valid_pcam: pass
+				else: continue
+			TweenControllerResource.Type.TWEEN_RESOURCE:
+				var has_valid_resource: bool = false
+				for tween_resource: PhantomCameraTween in tween_controller_resource.from_tween_resource:
+					match tween_resource:
+						null:
+							has_valid_resource = false
+						current_pcam.tween_resource:
+							has_valid_resource = true
+							break
+						_:
+							has_valid_resource = false
+				if has_valid_resource: pass
+				else: continue
+
+			TweenControllerResource.Type.ANY: pass
+
+		## To Target
+		match tween_controller_resource.to_type:
+			TweenControllerResource.Type.PHANTOM_CAMERA:
+				var has_valid_pcam: bool = false
+				for pcam_path: NodePath in tween_controller_resource.to_phantom_camera:
+					var to_pcam: Node = get_node_or_null(pcam_path)
+					if current_pcam == to_pcam: has_valid_pcam = false
+					match to_pcam:
+						null:
+							has_valid_pcam = false
+						new_pcam:
+							has_valid_pcam = true
+							break
+						_:
+							has_valid_pcam = false
+				if has_valid_pcam: pass
+				else: continue
+			TweenControllerResource.Type.TWEEN_RESOURCE:
+				var has_valid_resource: bool = false
+				for tween_resource: PhantomCameraTween in tween_controller_resource.to_tween_resource:
+					match tween_resource:
+						null:
+							has_valid_resource = false
+						new_pcam.tween_resource:
+							has_valid_resource = true
+							break
+						_:
+							has_valid_resource = false
+				if has_valid_resource: pass
+				else: continue
+
+
+			TweenControllerResource.Type.ANY: pass
+
+		print("All checks are valid")
+#		print(tween_controller_resource.tween_resource.duration)
+#		print(_tween_duration)
+#		_tween_duration = tween_controller_resource.tween_resource.duration
+#		print(_tween_duration)
+#		_tween_transition = tween_controller_resource.tween_resource.transition
+#		_tween_ease = tween_controller_resource.tween_resource.ease
 
 
 func _check_pcam_physics() -> void:
@@ -867,9 +985,9 @@ func _pcam_tween(delta: float) -> void:
 		var interpolation_destination: Vector2 = _tween_interpolate_value(
 			_prev_active_pcam_2d_transform.origin,
 			_active_pcam_2d_glob_transform.origin,
-			_active_pcam_2d.tween_duration,
-			_active_pcam_2d.tween_transition,
-			_active_pcam_2d.tween_ease
+			_active_pcam_2d.tween_duration, # TODO - Tween Controller conditional
+			_active_pcam_2d.tween_transition, # TODO - Tween Controller conditional
+			_active_pcam_2d.tween_ease # TODO - Tween Controller conditional
 		)
 
 		if _active_pcam_2d.snap_to_pixel:
@@ -881,24 +999,24 @@ func _pcam_tween(delta: float) -> void:
 			_prev_active_pcam_2d_transform.get_rotation(),
 			_active_pcam_2d_glob_transform.get_rotation(),
 			_active_pcam_2d.tween_duration,
-			_active_pcam_2d.tween_transition,
-			_active_pcam_2d.tween_ease
+			_active_pcam_2d.tween_transition, # TODO - Tween Controller conditional
+			_active_pcam_2d.tween_ease # TODO - Tween Controller conditional
 		)
 		camera_2d.zoom = _tween_interpolate_value(
 			_camera_zoom,
 			_active_pcam_2d.zoom,
 			_active_pcam_2d.tween_duration,
-			_active_pcam_2d.tween_transition,
-			_active_pcam_2d.tween_ease
+			_active_pcam_2d.tween_transition, # TODO - Tween Controller conditional
+			_active_pcam_2d.tween_ease # TODO - Tween Controller conditional
 		)
 	else:
 		_active_pcam_3d.is_tweening.emit()
 		camera_3d.global_position = _tween_interpolate_value(
 			_prev_active_pcam_3d_transform.origin,
 			_active_pcam_3d_glob_transform.origin,
-			_active_pcam_3d.tween_duration,
-			_active_pcam_3d.tween_transition,
-			_active_pcam_3d.tween_ease
+			_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+			_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+			_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 		)
 
 		var prev_active_pcam_3d_quat: Quaternion = Quaternion(_prev_active_pcam_3d_transform.basis.orthonormalized())
@@ -907,9 +1025,9 @@ func _pcam_tween(delta: float) -> void:
 				prev_active_pcam_3d_quat, \
 				prev_active_pcam_3d_quat.inverse() * Quaternion(_active_pcam_3d_glob_transform.basis.orthonormalized()),
 				_tween_elapsed_time, \
-				_active_pcam_3d.tween_duration, \
-				_active_pcam_3d.tween_transition,
-				_active_pcam_3d.tween_ease
+				_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+				_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+				_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 			)
 
 		if _cam_attribute_changed:
@@ -919,18 +1037,18 @@ func _pcam_tween(delta: float) -> void:
 						_tween_interpolate_value(
 						_prev_cam_auto_exposure_scale,
 						_active_pcam_3d.attributes.auto_exposure_scale,
-						_active_pcam_3d.tween_duration,
-						_active_pcam_3d.tween_transition,
-						_active_pcam_3d.tween_ease
+						_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+						_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+						_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 					)
 				if _cam_auto_exposure_speed_changed:
 					camera_3d.attributes.auto_exposure_speed = \
 						_tween_interpolate_value(
 						_prev_cam_auto_exposure_scale,
 						_active_pcam_3d.attributes.auto_exposure_scale,
-						_active_pcam_3d.tween_duration,
-						_active_pcam_3d.tween_transition,
-						_active_pcam_3d.tween_ease
+						_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+						_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+						_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 					)
 
 			if _cam_attribute_type == 0: # CameraAttributePractical
@@ -940,63 +1058,63 @@ func _pcam_tween(delta: float) -> void:
 							_tween_interpolate_value(
 							_prev_cam_exposure_min_sensitivity,
 							_active_pcam_3d.attributes.auto_exposure_min_sensitivity,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 					if _cam_exposure_max_sensitivity_changed:
 						camera_3d.attributes.auto_exposure_max_sensitivity = \
 							_tween_interpolate_value(
 							_prev_cam_exposure_max_sensitivity,
 							_active_pcam_3d.attributes.auto_exposure_max_sensitivity,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_dof_blur_amount_changed:
 					camera_3d.attributes.dof_blur_amount = \
 						_tween_interpolate_value(
 							_prev_cam_dof_blur_amount,
 							_active_pcam_3d.attributes.dof_blur_amount,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_dof_blur_far_distance_changed:
 					camera_3d.attributes.dof_blur_far_distance = \
 						_tween_interpolate_value(
 							_prev_cam_dof_blur_far_distance,
 							_active_pcam_3d.attributes.dof_blur_far_distance,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_dof_blur_far_transition_changed:
 					camera_3d.attributes.dof_blur_far_transition = \
 						_tween_interpolate_value(
 							_prev_cam_dof_blur_far_transition,
 							_active_pcam_3d.attributes.dof_blur_far_transition,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_dof_blur_near_distance_changed:
 					camera_3d.attributes.dof_blur_near_distance = \
 						_tween_interpolate_value(
 							_prev_cam_dof_blur_near_distance,
 							_active_pcam_3d.attributes.dof_blur_near_distance,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_dof_blur_near_transition_changed:
 					camera_3d.attributes.dof_blur_near_transition = \
 						_tween_interpolate_value(
 							_prev_cam_dof_blur_near_transition,
 							_active_pcam_3d.attributes.dof_blur_near_transition,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 			elif _cam_attribute_type == 1: # CameraAttributePhysical
 				if _cam_dof_blur_near_transition_changed:
@@ -1004,72 +1122,72 @@ func _pcam_tween(delta: float) -> void:
 						_tween_interpolate_value(
 							_prev_cam_exposure_max_exposure_value,
 							_active_pcam_3d.attributes.auto_exposure_max_exposure_value,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_exposure_min_exposure_value_changed:
 					camera_3d.attributes.auto_exposure_min_exposure_value = \
 						_tween_interpolate_value(
 							_prev_cam_exposure_min_exposure_value,
 							_active_pcam_3d.attributes.auto_exposure_min_exposure_value,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_exposure_aperture_changed:
 					camera_3d.attributes.exposure_aperture = \
 						_tween_interpolate_value(
 							_prev_cam_exposure_aperture,
 							_active_pcam_3d.attributes.exposure_aperture,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_exposure_shutter_speed_changed:
 					camera_3d.attributes.exposure_shutter_speed = \
 						_tween_interpolate_value(
 							_prev_cam_exposure_shutter_speed,
 							_active_pcam_3d.attributes.exposure_shutter_speed,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_frustum_far_changed:
 					camera_3d.attributes.frustum_far = \
 						_tween_interpolate_value(
 							_prev_cam_frustum_far,
 							_active_pcam_3d.attributes.frustum_far,
-							_active_pcam_3d.tween_duration(),
-							_active_pcam_3d.tween_transition(),
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration(), # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition(), # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_frustum_near_changed:
 					camera_3d.attributes.frustum_near = \
 						_tween_interpolate_value(
 							_prev_cam_frustum_far,
 							_active_pcam_3d.attributes.frustum_near,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_frustum_focal_length_changed:
 					camera_3d.attributes.frustum_focal_length = \
 						_tween_interpolate_value(
 							_prev_cam_frustum_focal_length,
 							_active_pcam_3d.attributes.frustum_focal_length,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 				if _cam_frustum_focus_distance_changed:
 					camera_3d.attributes.frustum_focus_distance = \
 						_tween_interpolate_value(
 							_prev_cam_frustum_focus_distance,
 							_active_pcam_3d.attributes.frustum_focus_distance,
-							_active_pcam_3d.tween_duration,
-							_active_pcam_3d.tween_transition,
-							_active_pcam_3d.tween_ease
+							_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+							_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 						)
 
 		if _cam_h_offset_changed:
@@ -1077,9 +1195,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_h_offset,
 					_active_pcam_3d.h_offset,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 		if _cam_v_offset_changed:
@@ -1087,9 +1205,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_v_offset,
 					_active_pcam_3d.v_offset,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 		if _cam_fov_changed:
@@ -1097,9 +1215,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_fov,
 					_active_pcam_3d.fov,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 		if _cam_size_changed:
@@ -1107,9 +1225,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_size,
 					_active_pcam_3d.size,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 		if _cam_frustum_offset_changed:
@@ -1117,9 +1235,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_frustum_offset,
 					_active_pcam_3d.frustum_offset,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 		if _cam_near_changed:
@@ -1127,9 +1245,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_near,
 					_active_pcam_3d.near,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 		if _cam_far_changed:
@@ -1137,9 +1255,9 @@ func _pcam_tween(delta: float) -> void:
 				_tween_interpolate_value(
 					_prev_cam_far,
 					_active_pcam_3d.far,
-					_active_pcam_3d.tween_duration,
-					_active_pcam_3d.tween_transition,
-					_active_pcam_3d.tween_ease
+					_active_pcam_3d.tween_duration, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_transition, # TODO - Tween Controller conditional
+					_active_pcam_3d.tween_ease # TODO - Tween Controller conditional
 				)
 
 	# Forcefully disables physics interpolation when tweens are instant
@@ -1153,7 +1271,7 @@ func _pcam_tween(delta: float) -> void:
 					camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 					camera_3d.reset_physics_interpolation()
 
-	if _tween_elapsed_time < _tween_duration: return
+	if _tween_elapsed_time < _tween_duration: return # TODO - Tween Controller conditional for _tween_duration
 
 	_trigger_pcam_tween = false
 	_tween_elapsed_time = 0
@@ -1190,9 +1308,9 @@ func _tween_interpolate_value(from: Variant, to: Variant, duration: float, trans
 		from, \
 		to - from,
 		_tween_elapsed_time, \
-		duration, \
-		transition_type,
-		ease_type,
+		_tween_duration, \
+		_tween_transition,
+		_tween_ease,
 	)
 
 
