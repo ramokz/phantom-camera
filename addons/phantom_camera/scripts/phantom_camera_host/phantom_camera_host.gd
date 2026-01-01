@@ -1296,41 +1296,39 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 
 #region Public Functions
 
-## Triggers a recalculation to determine which PhantomCamera has the highest priority.
 func pcam_priority_updated(pcam: Node) -> void:
 	if not is_instance_valid(pcam): return
 	if not _pcam_is_in_host_layer(pcam): return
 
-	if pcam == _active_pcam_2d or pcam == _active_pcam_3d:
-		if not pcam.visible:
-			refresh_pcam_list_priorty()
-
 	if Engine.is_editor_hint():
 		if _is_2d:
-			if not is_instance_valid(_active_pcam_2d): return
 			if _active_pcam_2d.priority_override: return
+			if not is_instance_valid(_active_pcam_2d): return
 		else:
-			if not is_instance_valid(_active_pcam_3d): return
 			if _active_pcam_3d.priority_override: return
+			if not is_instance_valid(_active_pcam_3d): return
 
-	var current_pcam_priority: int = pcam.priority
-
-	if current_pcam_priority >= _active_pcam_priority:
-		if _is_2d:
-			if pcam != _active_pcam_2d:
-				_assign_new_active_pcam(pcam)
-		else:
-			if pcam != _active_pcam_3d:
-				_assign_new_active_pcam(pcam)
-		pcam.set_tween_skip(self, false)
-		_active_pcam_missing = false
-
+	## Currently active PCam changed Priority
 	if pcam == _active_pcam_2d or pcam == _active_pcam_3d:
-		if current_pcam_priority <= _active_pcam_priority:
-			_active_pcam_priority = current_pcam_priority
+		## If PCam Node has become invisible / disabled
+		if not pcam.visible:
+			refresh_pcam_list_priorty()
+		## If currently active PCam has a reduced Priority
+		elif pcam.priority < _active_pcam_priority:
+			_active_pcam_priority = pcam.priority
 			_find_pcam_with_highest_priority()
-		else:
-			_active_pcam_priority = current_pcam_priority
+	## Another PCam changed Priority
+	else:
+		## Make new PCam active if Priority is higher or equal to the currently active
+		if pcam.priority >= _active_pcam_priority:
+			if _is_2d:
+				if pcam != _active_pcam_2d:
+					_assign_new_active_pcam(pcam)
+			else:
+				if pcam != _active_pcam_3d:
+					_assign_new_active_pcam(pcam)
+			pcam.set_tween_skip(self, false)
+			_active_pcam_missing = false
 
 
 ## Updates the viewfinder when a [param PhantomCamera] has its
