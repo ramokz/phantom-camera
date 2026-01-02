@@ -62,11 +62,12 @@ enum InterpolationMode {
 	set = set_interpolation_mode,
 	get = get_interpolation_mode
 
-@export var tween_controllers: Array[TweenControllerResource]:
+## Override the [PhantomCameraTween] between specific [param PhantomCameras].
+@export var tween_director: Array[TweenDirectorResource]:
 	set(value):
-		tween_controllers = value
+		tween_director = value
 	get:
-		return tween_controllers
+		return tween_director
 
 #endregion
 
@@ -705,20 +706,19 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 	_tween_transition = new_pcam.tween_transition
 	_tween_ease = new_pcam.tween_ease
 
-	# Check for conditional Tween Controller properties
+	# Check for conditional Tween Director properties
 	if current_pcam == null: return
-	for tween_controller: TweenControllerResource in tween_controllers:
-		var tween_controller_resource: TweenControllerResource = tween_controller
+	for tween_director_resource: TweenDirectorResource in tween_director:
 
 		## Checks if any of the required values are missing or isn't inherit
-		if tween_controller_resource == null: continue
-		if tween_controller_resource.tween_resource == null: continue
+		if tween_director_resource == null: continue
+		if tween_director_resource.tween_resource == null: continue
 
 		## From Target
-		match tween_controller_resource.from_type:
-			TweenControllerResource.Type.PHANTOM_CAMERA:
+		match tween_director_resource.from_type:
+			TweenDirectorResource.Type.PHANTOM_CAMERA:
 				var has_valid_pcam: bool = false
-				for pcam_path: NodePath in tween_controller_resource.from_phantom_camera:
+				for pcam_path: NodePath in tween_director_resource.from_phantom_cameras:
 					var from_pcam: Node = get_node_or_null(pcam_path)
 					match from_pcam:
 						null:
@@ -730,9 +730,9 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 							has_valid_pcam = false
 				if has_valid_pcam: pass
 				else: continue
-			TweenControllerResource.Type.TWEEN_RESOURCE:
+			TweenDirectorResource.Type.TWEEN_RESOURCE:
 				var has_valid_resource: bool = false
-				for tween_resource: PhantomCameraTween in tween_controller_resource.from_tween_resource:
+				for tween_resource: PhantomCameraTween in tween_director_resource.from_tween_resources:
 					match tween_resource:
 						null:
 							has_valid_resource = false
@@ -743,14 +743,13 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 							has_valid_resource = false
 				if has_valid_resource: pass
 				else: continue
-
-			TweenControllerResource.Type.ANY: pass
+			TweenDirectorResource.Type.ANY: pass
 
 		## To Target
-		match tween_controller_resource.to_type:
-			TweenControllerResource.Type.PHANTOM_CAMERA:
+		match tween_director_resource.to_type:
+			TweenDirectorResource.Type.PHANTOM_CAMERA:
 				var has_valid_pcam: bool = false
-				for pcam_path: NodePath in tween_controller_resource.to_phantom_camera:
+				for pcam_path: NodePath in tween_director_resource.to_phantom_cameras:
 					var to_pcam: Node = get_node_or_null(pcam_path)
 					if current_pcam == to_pcam: has_valid_pcam = false
 					match to_pcam:
@@ -763,9 +762,9 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 							has_valid_pcam = false
 				if has_valid_pcam: pass
 				else: continue
-			TweenControllerResource.Type.TWEEN_RESOURCE:
+			TweenDirectorResource.Type.TWEEN_RESOURCE:
 				var has_valid_resource: bool = false
-				for tween_resource: PhantomCameraTween in tween_controller_resource.to_tween_resource:
+				for tween_resource: PhantomCameraTween in tween_director_resource.to_tween_resources:
 					match tween_resource:
 						null:
 							has_valid_resource = false
@@ -776,13 +775,11 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 							has_valid_resource = false
 				if has_valid_resource: pass
 				else: continue
+			TweenDirectorResource.Type.ANY: pass
 
-
-			TweenControllerResource.Type.ANY: pass
-
-		_tween_duration = tween_controller_resource.tween_resource.duration
-		_tween_transition = tween_controller_resource.tween_resource.transition
-		_tween_ease = tween_controller_resource.tween_resource.ease
+		_tween_duration = tween_director_resource.tween_resource.duration
+		_tween_transition = tween_director_resource.tween_resource.transition
+		_tween_ease = tween_director_resource.tween_resource.ease
 
 
 func _check_pcam_physics() -> void:
@@ -1177,7 +1174,7 @@ func _pcam_tween(delta: float) -> void:
 					camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 					camera_3d.reset_physics_interpolation()
 
-	if _tween_elapsed_time < _tween_duration: return # TODO - Tween Controller conditional for _tween_duration
+	if _tween_elapsed_time < _tween_duration: return
 
 	_trigger_pcam_tween = false
 	_tween_elapsed_time = 0
