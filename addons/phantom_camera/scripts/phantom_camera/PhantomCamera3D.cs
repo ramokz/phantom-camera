@@ -341,9 +341,6 @@ public class PhantomCamera3D : PhantomCamera
 
     public void EmitNoise(Transform3D transform) => Node3D.Call(PhantomCamera.MethodName.EmitNoise, transform);
 
-    public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
-    public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
-
     public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
     {
         var callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());

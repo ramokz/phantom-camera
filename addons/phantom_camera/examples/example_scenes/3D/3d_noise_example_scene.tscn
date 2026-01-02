@@ -1,31 +1,16 @@
-[gd_scene load_steps=22 format=3 uid="uid://p7s5t3tthmo"]
+[gd_scene load_steps=21 format=3 uid="uid://d0fyuvesb472p"]
 
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_ggfbg"]
-[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_dreow"]
-[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_f8fcw"]
-[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="4_mjtut"]
-[ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="4_poyyk"]
-[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="5_d6uqs"]
-[ext_resource type="Script" uid="uid://b3n22atuw76sm" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="6_fbad7"]
-[ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="6_n8u0x"]
-[ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="6_vpla5"]
-[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="10_0thai"]
-[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_i8r8q"]
-
-[sub_resource type="Resource" id="Resource_t3bgw"]
-script = ExtResource("4_poyyk")
-amplitude = 30.0
-frequency = 2.0
-randomize_noise_seed = 1
-noise_seed = 0
-rotational_noise = true
-positional_noise = false
-rotational_multiplier_x = 0.1
-rotational_multiplier_y = 0.1
-rotational_multiplier_z = 0.0
-positional_multiplier_x = 0.0
-positional_multiplier_y = 0.0
-positional_multiplier_z = 0.0
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_25rmy"]
+[ext_resource type="Script" uid="uid://x5g7kf5k2mac" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="2_7nd2u"]
+[ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="3_t4fhv"]
+[ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="4_tnm2f"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="5_4webr"]
+[ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="6_dmm4a"]
+[ext_resource type="Script" uid="uid://ccmiitq0sdh7j" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd" id="7_2vtho"]
+[ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="8_bw5oq"]
+[ext_resource type="Texture2D" uid="uid://bj7h2fc5jx4ax" path="res://addons/phantom_camera/examples/textures/3D/checker_pattern_dark.png" id="9_jpkpr"]
+[ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="10_8pr3k"]
+[ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="11_vp57v"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_yvgu3"]
 
@@ -36,56 +21,29 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 radius = 0.269454
 
 [sub_resource type="Resource" id="Resource_lhgur"]
-script = ExtResource("3_f8fcw")
-duration = 1.0
-transition = 0
-ease = 2
+script = ExtResource("5_4webr")
 
 [sub_resource type="Resource" id="Resource_ghjuj"]
-script = ExtResource("4_mjtut")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
+script = ExtResource("6_dmm4a")
 
 [sub_resource type="Resource" id="Resource_2l4w0"]
-script = ExtResource("4_poyyk")
+script = ExtResource("3_t4fhv")
 amplitude = 40.0
-frequency = 0.2
 randomize_noise_seed = 0
-noise_seed = 0
-rotational_noise = true
-positional_noise = false
-rotational_multiplier_x = 1.0
-rotational_multiplier_y = 1.0
 rotational_multiplier_z = 0.0
 positional_multiplier_x = 0.1
 positional_multiplier_y = 0.1
 positional_multiplier_z = 0.1
 
 [sub_resource type="Resource" id="Resource_6tnhy"]
-script = ExtResource("4_poyyk")
-amplitude = 10.0
-frequency = 4.2
+script = ExtResource("3_t4fhv")
+frequency = 20.0
 randomize_noise_seed = 0
 noise_seed = 928
-rotational_noise = true
-positional_noise = false
-rotational_multiplier_x = 1.0
-rotational_multiplier_y = 1.0
 rotational_multiplier_z = 0.1
-positional_multiplier_x = 1.0
-positional_multiplier_y = 1.0
-positional_multiplier_z = 1.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qi01t"]
-albedo_texture = ExtResource("6_vpla5")
+albedo_texture = ExtResource("9_jpkpr")
 uv1_triplanar = true
 uv1_world_triplanar = true
 
@@ -101,22 +59,22 @@ expand_margin_bottom = 6.0
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.0129783, 0.0962422, 0.995273, 0, 0.995357, -0.0962503, -0.999916, 0.00124916, 0.012918, -16.46, 0.503767, 4.249)
+physics_interpolation_mode = 1
+transform = Transform3D(0.096600816, -0.02989527, 0.9948742, 0, 0.99954885, 0.030035738, -0.99532324, -0.0029014763, 0.09655723, -16.46, 0.5, 4.249)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
 process_physics_priority = 300
-script = ExtResource("1_ggfbg")
+script = ExtResource("1_25rmy")
 
 [node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.46, 0.503767, 4.249)
-script = ExtResource("6_fbad7")
-run_noise = SubResource("Resource_t3bgw")
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.46, 0.5, 4.249)
+script = ExtResource("2_7nd2u")
 
 [node name="PlayerVisual" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
 unique_name_in_owner = true
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-05, 0.00331134, 0)
 mesh = SubResource("CapsuleMesh_yvgu3")
 surface_material_override/0 = SubResource("StandardMaterial3D_vc6km")
 
@@ -130,9 +88,9 @@ shape = SubResource("CapsuleShape3D_lsrh7")
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.00441533, 0, 0.999915, 0, 0.999995, 0, -0.999923, 0, 0.00441529, -16.46, 0.503767, 4.249)
+transform = Transform3D(0.00441533, 0, 0.999915, 0, 0.999995, 0, -0.999923, 0, 0.00441529, -16.46, 0.5, 4.249)
 top_level = true
-script = ExtResource("2_dreow")
+script = ExtResource("4_tnm2f")
 priority = 10
 follow_mode = 2
 follow_target = NodePath("../PlayerCharacterBody3D")
@@ -141,18 +99,20 @@ tween_on_load = false
 camera_3d_resource = SubResource("Resource_ghjuj")
 noise = SubResource("Resource_2l4w0")
 noise_emitter_layer = 1
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
 
 [node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
-script = ExtResource("6_n8u0x")
+script = ExtResource("7_2vtho")
 noise = SubResource("Resource_6tnhy")
 duration = 0.1
 decay_time = 0.1
 
 [node name="Environment" type="Node" parent="."]
 
-[node name="Floor" parent="Environment" instance=ExtResource("5_d6uqs")]
+[node name="Floor" parent="Environment" instance=ExtResource("8_bw5oq")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
@@ -201,8 +161,8 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 8
-theme_override_fonts/normal_font = ExtResource("10_0thai")
-theme_override_fonts/bold_font = ExtResource("11_i8r8q")
+theme_override_fonts/normal_font = ExtResource("10_8pr3k")
+theme_override_fonts/bold_font = ExtResource("11_vp57v")
 theme_override_font_sizes/normal_font_size = 18
 theme_override_font_sizes/bold_font_size = 24
 bbcode_enabled = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://4i5csj0s34nb"]
+[gd_scene load_steps=16 format=3 uid="uid://ceelq6qrb41uf"]
 
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_47xf2"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_whx47"]
@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="5_jt2lp"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_oc4q1"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_kg7u1"]
-[ext_resource type="PackedScene" uid="uid://mskcwn1a1v6d" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_third_person_3d.tscn" id="7_kut0u"]
+[ext_resource type="PackedScene" uid="uid://bhd1kwv2fwj1y" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_third_person_3d.tscn" id="7_kut0u"]
 
 [sub_resource type="Resource" id="Resource_8fhct"]
 script = ExtResource("2_47xf2")
@@ -16,35 +16,16 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_7m0fv"]
 script = ExtResource("5_jt2lp")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 
 [sub_resource type="Resource" id="Resource_e7t18"]
 script = ExtResource("2_47xf2")
-duration = 0.4
+duration = 0.3
 transition = 2
 ease = 1
 
 [sub_resource type="Resource" id="Resource_jogxh"]
 script = ExtResource("5_jt2lp")
-keep_aspect = 1
-cull_mask = 1048575
 h_offset = 1.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_wsigl"]
 size = Vector3(1, 10, 20)
@@ -60,30 +41,20 @@ ease = 1
 
 [sub_resource type="Resource" id="Resource_ioijp"]
 script = ExtResource("5_jt2lp")
-keep_aspect = 1
-cull_mask = 1048575
-h_offset = 0.0
-v_offset = 0.0
-projection = 0
-fov = 75.0
-size = 1.0
-frustum_offset = Vector2(0, 0)
-near = 0.05
-far = 4000.0
 
 [node name="Root" type="Node3D"]
 
 [node name="PlayerCharacterBody3D" parent="." instance=ExtResource("7_kut0u")]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, 0, 0.506884, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0120916, 0.0069811, -0.0139622, 0.865941, 0.499951, 6.98492e-10, -0.5, 0.866025, 0.0244338, 2.25671, 3.03109)
+transform = Transform3D(1, 0, 0, 0, 0.8660252, 0.5000003, 0, -0.5000003, 0.8660252, 0, 2.250001, 3.0310884)
 script = ExtResource("2_whx47")
 priority = 10
 follow_mode = 6
-follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_8fhct")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_7m0fv")
@@ -91,24 +62,30 @@ follow_damping = true
 follow_distance = 3.5
 vertical_rotation_offset = 0.523599
 spring_length = 3.5
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+align_rotation_with_view = Callable()
 
 [node name="PlayerAimPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, 0, 1.30688, 1.101)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.584, 1.3, 1.1010001)
 script = ExtResource("2_whx47")
 follow_mode = 6
-follow_target = NodePath("../PlayerCharacterBody3D/PlayerVisual")
+follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = SubResource("Resource_e7t18")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_jogxh")
-follow_offset = Vector3(0, 0.8, -0.399)
+follow_offset = Vector3(0.584, 0.8, -0.399)
 follow_distance = 1.5
 spring_length = 1.5
+align_transform_with_view = Callable()
+align_position_with_view = Callable()
+align_rotation_with_view = Callable()
 
 [node name="MainCamera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 physics_interpolation_mode = 1
-transform = Transform3D(0.999903, 0.0120916, 0.0069811, -0.0139622, 0.865941, 0.499951, 6.98492e-10, -0.5, 0.866025, 0.0244338, 2.25671, 3.03109)
+transform = Transform3D(1, 0, 0, 0, 0.8660252, 0.5000003, 0, -0.5000003, 0.8660252, 0, 2.250001, 3.0310884)
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -187,5 +164,3 @@ modulate = Color(0.294118, 1, 0.631373, 1)
 text = "[Space] to toggle PCam"
 font = ExtResource("7_kg7u1")
 font_size = 48
-
-[editable path="PlayerCharacterBody3D"]

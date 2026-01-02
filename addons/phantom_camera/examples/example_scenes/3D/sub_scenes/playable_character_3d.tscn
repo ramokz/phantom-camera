@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bulsh7s0ibmao"]
+[gd_scene load_steps=5 format=3 uid="uid://cb83in8f0tbb1"]
 
-[ext_resource type="Script" uid="uid://dut3e76k2c71n" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="1_6hh6c"]
+[ext_resource type="Script" uid="uid://tgv6xpi88sd0" path="res://addons/phantom_camera/examples/scripts/3D/player_controller.gd" id="1_pl87s"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8efyg"]
 
@@ -9,8 +9,8 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ldp"]
 albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 
-[node name="PlayerCharacterBody3D2" type="CharacterBody3D"]
-script = ExtResource("1_6hh6c")
+[node name="PlayerCharacterBody3D" type="CharacterBody3D"]
+script = ExtResource("1_pl87s")
 metadata/_edit_group_ = true
 
 [node name="PlayerArea3D" type="Area3D" parent="."]
