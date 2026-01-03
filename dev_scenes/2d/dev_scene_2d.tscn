@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=4 uid="uid://dd4sd404yydqk"]
+[gd_scene load_steps=22 format=4 uid="uid://dd4sd404yydqk"]
 
 [ext_resource type="Script" uid="uid://bjq3tobxjrxhd" path="res://dev_scenes/2d/scripts/dev_scene_2d.gd" id="1_0ispe"]
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_11grc"]
@@ -10,7 +10,6 @@
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_qq8ep"]
 [ext_resource type="Texture2D" uid="uid://c7x3fsdth3mj7" path="res://addons/phantom_camera/examples/textures/2D/floor_S.png" id="4_v3ieq"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="6_cow2s"]
-[ext_resource type="Script" uid="uid://cnnaky2ns2pn4" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d_4.3.gd" id="7_01u44"]
 [ext_resource type="PackedScene" uid="uid://iq5xd1ob1res" path="res://addons/phantom_camera/examples/ui/ui_sign.tscn" id="7_ot6g8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qd8nl"]
@@ -557,7 +556,6 @@ draw_limits = true
 [node name="PlayerCharacterBody2D" parent="." instance=ExtResource("4_dfyri")]
 unique_name_in_owner = true
 position = Vector2(148, -26)
-script = ExtResource("7_01u44")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
