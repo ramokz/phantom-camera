@@ -6,15 +6,10 @@ extends CharacterBody3D
 
 @onready var _camera: Camera3D
 
-@onready var _player_visual: Node3D = %PlayerVisual
-
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = 9.8
 
 var movement_enabled: bool = true
-
-var _physics_body_trans_last: Transform3D
-var _physics_body_trans_current: Transform3D
 
 const KEY_STRINGNAME: StringName = "Key"
 const ACTION_STRINGNAME: StringName = "Action"
@@ -56,13 +51,8 @@ func _ready() -> void:
 		InputMap.add_action(action_val)
 		InputMap.action_add_event(action_val, movement_input)
 
-		_player_visual.top_level = true
-
 
 func _physics_process(delta: float) -> void:
-	_physics_body_trans_last = _physics_body_trans_current
-	_physics_body_trans_current = global_transform
-
 	# Add the gravity.
 	if enable_gravity and not is_on_floor():
 		velocity.y -= gravity * delta
@@ -78,8 +68,6 @@ func _physics_process(delta: float) -> void:
 		INPUT_MOVE_DOWM_STRINGNAME
 	)
 
-	var cam_dir: Vector3 = -_camera.global_transform.basis.z
-
 	var direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		var move_dir: Vector3 = Vector3.ZERO
@@ -94,10 +82,3 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
-
-
-func _process(_delta: float) -> void:
-	_player_visual.global_transform = _physics_body_trans_last.interpolate_with(
-		_physics_body_trans_current,
-		Engine.get_physics_interpolation_fraction()
-	)

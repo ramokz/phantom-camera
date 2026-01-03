@@ -410,22 +410,22 @@ var _should_rotate_with_target: bool = false
 	set = set_limit_bottom,
 	get = get_limit_bottom
 
-## Allows for setting either a [TileMap], [TileMapLayer] or [CollisionShape2D] node to
+## Allows for setting either a [TileMapLayer] or [CollisionShape2D] node to
 ## automatically apply a limit size instead of manually adjusting the Left,
 ## Top, Right and Left properties.[br][br]
-## [b]TileMap / TileMapLayer[/b][br]
-## The Limit will update after the [TileSet] of the [TileMap] / [TileMapLayer] has changed.[br]
+## [b]TileMapLayer[/b][br]
+## The Limit will update after the [TileSet] of the [TileMapLayer] has changed.[br]
 ## [b]Note:[/b] The limit size will only update after closing the TileMap editor
 ## bottom panel.
 ## [br][br]
 ## [b]CollisionShape2D[/b][br]
 ## The limit will update in realtime as the Shape2D changes its size.
 ## Note: For performance reasons, resizing the [Shape2D] during runtime will not change the Limits sides.
-@export_node_path("TileMap", "Node2D", "CollisionShape2D") var limit_target: NodePath = NodePath(""):
+@export_node_path("TileMapLayer", "CollisionShape2D") var limit_target: NodePath = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 
-## Applies an offset to the [TileMap]/[TileMapLayer] Limit or [Shape2D] Limit.
+## Applies an offset to the [TileMapLayer] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
 @export var limit_margin: Vector4i = Vector4.ZERO:
@@ -549,8 +549,7 @@ func _validate_property(property: Dictionary) -> void:
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH or \
-		follow_mode == FollowMode.GLUED:
+		if follow_mode == FollowMode.GLUED:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
@@ -1053,8 +1052,8 @@ func update_limit_all_sides() -> void:
 		_limit_sides.y = limit_top
 		_limit_sides.z = limit_right
 		_limit_sides.w = limit_bottom
-	elif _limit_node is TileMap or _limit_node.is_class("TileMapLayer"):
-		var tile_map := _limit_node
+	elif _limit_node is TileMapLayer:
+		var tile_map: TileMapLayer = _limit_node
 
 		if not tile_map.tile_set: return # TODO: This should be removed once https://github.com/godotengine/godot/issues/96898 is resolved
 
@@ -1604,17 +1603,17 @@ func set_limit_target(value: NodePath) -> void:
 	# Waits for PCam2d's _ready() before trying to validate limit_node_path
 	if not is_node_ready(): await ready
 
-	# Removes signal from existing TileMap node
+	# Removes signal from existing TileMapLayer node
 	if is_instance_valid(get_node_or_null(value)):
 		var prev_limit_node: Node2D = _limit_node
 		var new_limit_node: Node2D = get_node(value)
 
 		if prev_limit_node:
-			if prev_limit_node is TileMap or prev_limit_node.is_class("TileMapLayer"):
+			if prev_limit_node is TileMapLayer:
 				if prev_limit_node.changed.is_connected(_on_tile_map_changed):
 					prev_limit_node.changed.disconnect(_on_tile_map_changed)
 
-		if new_limit_node is TileMap or new_limit_node.is_class("TileMapLayer"):
+		if new_limit_node is TileMapLayer:
 			if not new_limit_node.changed.is_connected(_on_tile_map_changed):
 				new_limit_node.changed.connect(_on_tile_map_changed)
 		elif new_limit_node is CollisionShape2D:
@@ -1626,7 +1625,7 @@ func set_limit_target(value: NodePath) -> void:
 				limit_target = ""
 				return
 		else:
-			printerr("Limit Target is not a TileMap, TileMapLayer or CollisionShape2D node")
+			printerr("Limit Target is not a TileMapLayer or CollisionShape2D node")
 			return
 	elif value == NodePath(""):
 		reset_limit()

@@ -560,10 +560,10 @@ var horizontal_rotation_offset: float = 0:
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Transform with View", "CenterView")
 var align_transform_with_view: Callable = func():
-	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_transform"
 	undo_redo.create_action("Aligned " + name + "'s transform with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_transform)
+	undo_redo.add_do_property(self, property, Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d(viewport_index).get_camera_3d().global_transform)
 	undo_redo.add_undo_property(self, property, global_transform)
 	undo_redo.commit_action()
 
@@ -572,10 +572,10 @@ var align_transform_with_view: Callable = func():
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Position with View", "ToolMove")
 var align_position_with_view: Callable = func():
-	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_position"
 	undo_redo.create_action("Aligned " + name + "'s position with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_position)
+	undo_redo.add_do_property(self, property, Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d(viewport_index).get_camera_3d().global_position)
 	undo_redo.add_undo_property(self, property, global_position)
 	undo_redo.commit_action()
 
@@ -584,10 +584,10 @@ var align_position_with_view: Callable = func():
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Rotation with View", "ToolRotate")
 var align_rotation_with_view: Callable = func():
-	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_rotation"
 	undo_redo.create_action("Aligned " + name + "'s rotation with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_rotation)
+	undo_redo.add_do_property(self, property, Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d(viewport_index).get_camera_3d().global_rotation)
 	undo_redo.add_undo_property(self, property, global_rotation)
 	undo_redo.commit_action()
 
@@ -746,16 +746,11 @@ func _validate_property(property: Dictionary) -> void:
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH or \
-		follow_mode == FollowMode.GLUED:
+		if follow_mode == FollowMode.GLUED:
 			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_damping_value" and not follow_damping:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
-
-	if property.name == "follow_offset":
-		if follow_mode == FollowMode.PATH:
-			property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_distance":
 		if not follow_mode == FollowMode.FRAMED:
@@ -1061,9 +1056,9 @@ func _set_follow_position() -> void:
 			var path_position: Vector3 = follow_path.global_position
 			_follow_target_output_position = \
 				follow_path.curve.get_closest_point(
-					follow_target.global_position - path_position
+					_get_target_position_offset() - path_position
 				) + path_position
-			_set_follow_gizmo_line_position(follow_target.global_position)
+			_set_follow_gizmo_line_position(_get_target_position_offset())
 
 		FollowMode.FRAMED:
 			if not Engine.is_editor_hint():
