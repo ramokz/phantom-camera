@@ -44,7 +44,7 @@ enum InterpolationMode {
 	AUTO    = 0, ## Automatically sets the [param Camera]'s logic to run in either physics or idle (process) frames depending on its active [param PhantomCamera]'s [param Follow] / [param Look At] Target
 	IDLE    = 1, ## Always run the [param Camera] logic in idle (process) frames
 	PHYSICS = 2, ## Always run the [param Camera] logic in physics frames
-	MANUAL  = 3, ## Only update the camera when the [code]process(delta: float)[/code] is called from this [param PhantomCameraHost] node. [b]Note:[/b] Only use this if you need manual control over the tick rate.
+	MANUAL  = 3, ## Only update the camera when the [method process] is called from this [param PhantomCameraHost] node. [b]Note:[/b] Only use this if you need manual control over the tick rate.
 }
 
 #endregion
