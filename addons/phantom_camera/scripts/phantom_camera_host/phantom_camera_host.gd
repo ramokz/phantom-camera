@@ -44,6 +44,7 @@ enum InterpolationMode {
 	AUTO    = 0, ## Automatically sets the [param Camera]'s logic to run in either physics or idle (process) frames depending on its active [param PhantomCamera]'s [param Follow] / [param Look At] Target
 	IDLE    = 1, ## Always run the [param Camera] logic in idle (process) frames
 	PHYSICS = 2, ## Always run the [param Camera] logic in physics frames
+	MANUAL  = 3, ## Only update the camera when the [method process] is called from this [param PhantomCameraHost] node. [b]Note:[/b] Only use this if you need manual control over the tick rate.
 }
 
 #endregion
@@ -783,6 +784,8 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 
 
 func _check_pcam_physics() -> void:
+	if interpolation_mode == InterpolationMode.MANUAL: return
+
 	if _is_2d:
 		if _active_pcam_2d.get_follow_target_physics_based() and interpolation_mode != InterpolationMode.IDLE:
 			_follow_target_physics_based = true
@@ -1403,14 +1406,26 @@ func refresh_pcam_list_priorty() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
 
+## Manually updates the process for this [param PhantomCameraHost].[br]
+## [b][color=yellow]Note:[/color][/b] This function should only be needed if [member InterpolationMode] is set to [member InterpolationMode.MANUAL].
+func process(delta: float) -> void:
+	_tween_follow_checker(delta)
+
 #endregion
 
 #region Setters / Getters
 
 func set_interpolation_mode(value: int) -> void:
 	interpolation_mode = value
-	if is_inside_tree():
-		_check_pcam_physics()
+
+	if interpolation_mode == InterpolationMode.MANUAL:
+		process_mode = PROCESS_MODE_DISABLED
+		return
+	else:
+		process_mode = PROCESS_MODE_INHERIT
+		if is_inside_tree():
+			_check_pcam_physics()
+
 func get_interpolation_mode() -> int:
 	return interpolation_mode
 
