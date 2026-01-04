@@ -560,10 +560,10 @@ var horizontal_rotation_offset: float = 0:
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Transform with View", "CenterView")
 var align_transform_with_view: Callable = func():
-	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_transform"
 	undo_redo.create_action("Aligned " + name + "'s transform with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_transform)
+	undo_redo.add_do_property(self, property, Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d(viewport_index).get_camera_3d().global_transform)
 	undo_redo.add_undo_property(self, property, global_transform)
 	undo_redo.commit_action()
 
@@ -572,10 +572,10 @@ var align_transform_with_view: Callable = func():
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Position with View", "ToolMove")
 var align_position_with_view: Callable = func():
-	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_position"
 	undo_redo.create_action("Aligned " + name + "'s position with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_position)
+	undo_redo.add_do_property(self, property, Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d(viewport_index).get_camera_3d().global_position)
 	undo_redo.add_undo_property(self, property, global_position)
 	undo_redo.commit_action()
 
@@ -584,10 +584,10 @@ var align_position_with_view: Callable = func():
 ## [b]Note[/b]: This is only functional in the editor.
 @export_tool_button("Align Rotation with View", "ToolRotate")
 var align_rotation_with_view: Callable = func():
-	var undo_redo: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_rotation"
 	undo_redo.create_action("Aligned " + name + "'s rotation with view")
-	undo_redo.add_do_property(self, property, EditorInterface.get_editor_viewport_3d(viewport_index).get_camera_3d().global_rotation)
+	undo_redo.add_do_property(self, property, Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d(viewport_index).get_camera_3d().global_rotation)
 	undo_redo.add_undo_property(self, property, global_rotation)
 	undo_redo.commit_action()
 
