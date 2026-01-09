@@ -64,11 +64,9 @@ enum InterpolationMode {
 	get = get_interpolation_mode
 
 ## Override the [PhantomCameraTween] between specific [param PhantomCameras].
-@export var tween_director: Array[TweenDirectorResource]:
-	set(value):
-		tween_director = value
-	get:
-		return tween_director
+@export var tween_director: Array[TweenDirectorResource] = []:
+	set = set_tween_director,
+	get = get_tween_director
 
 #endregion
 
@@ -1450,5 +1448,14 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 ## Returns the [member host_layers] value.
 func get_host_layers() -> int:
 	return host_layers
+
+
+## Sets the [member tween_director] value.
+func set_tween_director(value: Array[TweenDirectorResource]) -> void:
+	tween_director = value
+
+## Returns the [member tween_director] value.
+func get_tween_director() -> Array[TweenDirectorResource]:
+	return tween_director
 
 #endregion
