@@ -1,5 +1,5 @@
 @tool
-@icon("res://addons/phantom_camera/icons/phantom_camera_tween.svg")
+@icon("res://addons/phantom_camera/icons/phantom_camera_tween_director_resource.svg")
 class_name TweenDirectorResource
 extends Resource
 
