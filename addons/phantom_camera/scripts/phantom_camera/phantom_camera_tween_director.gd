@@ -13,7 +13,7 @@ const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/p
 #region Public Variables
 
 ## Override the [PhantomCameraTween] between specific [param PhantomCameras].
-@export var tween_director: Array[TweenDirectorResource] = []:
+@export var tween_director: Array[PhantomCameraTweenDirectorResource] = []:
 	set = set_tween_director,
 	get = get_tween_director
 
@@ -44,11 +44,11 @@ func _exit_tree() -> void:
 #region Public Functions
 
 ## Sets the [member tween_director] value.
-func set_tween_director(value: Array[TweenDirectorResource]) -> void:
+func set_tween_director(value: Array[PhantomCameraTweenDirectorResource]) -> void:
 	tween_director = value
 
 ## Returns the [member tween_director] value.
-func get_tween_director() -> Array[TweenDirectorResource]:
+func get_tween_director() -> Array[PhantomCameraTweenDirectorResource]:
 	return tween_director
 
 #endregion

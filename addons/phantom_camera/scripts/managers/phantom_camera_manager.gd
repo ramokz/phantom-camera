@@ -165,5 +165,6 @@ func scene_changed() -> void:
 	_phantom_camera_2d_list.clear()
 	_phantom_camera_3d_list.clear()
 	_phantom_camera_host_list.clear()
+	_phantom_camera_tween_director_list.clear()
 
 #endregion

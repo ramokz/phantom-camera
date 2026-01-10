@@ -50,7 +50,8 @@ func _enable_plugin() -> void:
 
 
 func _disable_plugin() -> void:
-	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
+	if Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
+		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 
 
 func _enter_tree() -> void:
