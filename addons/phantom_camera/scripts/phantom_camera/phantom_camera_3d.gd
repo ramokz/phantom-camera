@@ -515,6 +515,10 @@ var horizontal_rotation_offset: float = 0:
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
 
+@export_group("Look Ahead")
+## Enables velocity-based look-ahead (jump/fall/run).
+@export var lookahead_enabled: bool = false
+
 @export_subgroup("Up Direction")
 ## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set. [br]
 ## This value will be overriden if [member up_target] is defined.
