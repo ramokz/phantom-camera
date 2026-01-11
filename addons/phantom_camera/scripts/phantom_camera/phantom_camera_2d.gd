@@ -415,16 +415,16 @@ var _should_rotate_with_target: bool = false
 
 ## Smooths the look-ahead offset when accelerating (seconds).
 ## 0 = no smoothing (snappy), ~0.08–0.18 feels good.
-@export_range(0.0, 1.0, 0.001) var lookahead_smoothing: float = 0.12:
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_acceleration: float = 0.12:
 	set(value):
-		lookahead_smoothing = maxf(value, 0.0)
+		lookahead_acceleration = maxf(value, 0.0)
 
 ## Smooths the look-ahead offset when decelerating/returning to center (seconds).
 ## Typically want this lower than [member lookahead_smoothing] for snappier feel.
 ## 0 = instant snap back, ~0.03–0.08 feels good.
-@export_range(0.0, 1.0, 0.001) var lookahead_smoothing_decel: float = 0.05:
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deacceleration: float = 0.05:
 	set(value):
-		lookahead_smoothing_decel = maxf(value, 0.0)
+		lookahead_deacceleration = maxf(value, 0.0)
 
 
 @export_group("Limit")
@@ -957,11 +957,11 @@ func _apply_lookahead(base_pos: Vector2, delta: float) -> Vector2:
 
 	# Optional smoothing for the look-ahead offset itself
 	# Use different smoothing based on whether we're accelerating or decelerating
-	if lookahead_smoothing > 0.0 or lookahead_smoothing_decel > 0.0:
+	if lookahead_acceleration > 0.0 or lookahead_deacceleration > 0.0:
 		for i in 2:
 			# Determine if we're moving toward desired (accelerating) or away from it (decelerating)
 			var is_accelerating := signf(desired[i] - _lookahead_offset[i]) == signf(desired[i])
-			var smooth_time := lookahead_smoothing if is_accelerating else lookahead_smoothing_decel
+			var smooth_time := lookahead_acceleration if is_accelerating else lookahead_deacceleration
 
 			if smooth_time > 0.0:
 				_lookahead_offset[i] = _smooth_damp(
