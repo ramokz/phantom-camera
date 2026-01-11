@@ -67,12 +67,12 @@ signal physics_target_changed
 ## The different modes have different functionalities and purposes, so choosing
 ## the correct one depends on what each [param PhantomCamera2D] is meant to do.
 enum FollowMode {
-	NONE = 0, ## Default - No follow logic is applied.
-	GLUED = 1, ## Sticks to its target.
-	SIMPLE = 2, ## Follows its target with an optional offset.
-	GROUP = 3, ## Follows multiple targets with option to dynamically reframe itself.
-	PATH = 4, ## Follows a target while being positionally confined to a [Path2D] node.
-	FRAMED = 5, ## Applies a dead zone on the frame and only follows its target when it tries to leave it.
+	NONE    = 0, ## Default - No follow logic is applied.
+	GLUED   = 1, ## Sticks to its target.
+	SIMPLE  = 2, ## Follows its target with an optional offset.
+	GROUP   = 3, ## Follows multiple targets with option to dynamically reframe itself.
+	PATH    = 4, ## Follows a target while being positionally confined to a [Path2D] node.
+	FRAMED  = 5, ## Applies a dead zone on the frame and only follows its target when it tries to leave it.
 }
 
 ## Determines how often an inactive [param PhantomCamera2D] should update
@@ -86,16 +86,16 @@ enum InactiveUpdateMode {
 }
 
 enum FollowLockAxis {
-	NONE = 0,
-	X = 1,
-	Y = 2,
-	XY = 3,
+	NONE    = 0,
+	X       = 1,
+	Y       = 2,
+	XY      = 3,
 }
 
 enum FollowTargetPhysicsClass {
-	CHARACTERBODY = 0,
-	RIGIDBODY = 1,
-	OTHER = 2,
+	CHARACTERBODY   = 0,
+	RIGIDBODY       = 1,
+	OTHER           = 2,
 }
 
 #endregion
@@ -152,21 +152,21 @@ enum FollowTargetPhysicsClass {
 			return
 
 		match follow_mode:
+			FollowMode.GLUED:
+				_lookahead_enabled_for_mode = true
+				_should_follow_checker()
+			FollowMode.SIMPLE:
+				_lookahead_enabled_for_mode = true
+				_should_follow_checker()
+			FollowMode.GROUP:
+				_lookahead_enabled_for_mode = false
+				_follow_targets_size_check()
 			FollowMode.PATH:
 				_lookahead_enabled_for_mode = true
 				if is_instance_valid(follow_path):
 					_should_follow_checker()
 				else:
 					_should_follow = false
-			FollowMode.GROUP:
-				_lookahead_enabled_for_mode = false
-				_follow_targets_size_check()
-			FollowMode.SIMPLE:
-				_lookahead_enabled_for_mode = true
-				_should_follow_checker()
-			FollowMode.GLUED:
-				_lookahead_enabled_for_mode = true
-				_should_follow_checker()
 			FollowMode.FRAMED:
 				_lookahead_enabled_for_mode = false
 				_should_follow_checker()
@@ -394,7 +394,6 @@ var _should_rotate_with_target: bool = false
 @export var show_viewfinder_in_play: bool = false
 
 @export_group("Look Ahead")
-
 ## Enables velocity-based look-ahead (jump/fall/run).
 @export var lookahead_enabled: bool = false:
 	set(value):
@@ -429,7 +428,6 @@ var _should_rotate_with_target: bool = false
 
 
 @export_group("Limit")
-
 ## Shows the [param Camera2D]'s built-in limit border.[br]
 ## The [param PhantomCamera2D] and [param Camera2D] can move around anywhere within it.
 @export var draw_limits: bool = false:
@@ -1722,19 +1720,19 @@ func get_auto_zoom_margin() -> Vector4:
 ## It's recommended to pass the [enum Side] enum as the sid parameter.
 func set_limit(side: int, value: int) -> void:
 	match side:
-		SIDE_LEFT: limit_left = value
-		SIDE_TOP: limit_top = value
-		SIDE_RIGHT: limit_right = value
-		SIDE_BOTTOM: limit_bottom = value
+		SIDE_LEFT:      limit_left = value
+		SIDE_TOP:       limit_top = value
+		SIDE_RIGHT:     limit_right = value
+		SIDE_BOTTOM:    limit_bottom = value
 		_: printerr("Not a valid Side.")
 
 ## Gets the limit side
 func get_limit(value: int) -> int:
 	match value:
-		SIDE_LEFT: return limit_left
-		SIDE_TOP: return limit_top
-		SIDE_RIGHT: return limit_right
-		SIDE_BOTTOM: return limit_bottom
+		SIDE_LEFT:      return limit_left
+		SIDE_TOP:       return limit_top
+		SIDE_RIGHT:     return limit_right
+		SIDE_BOTTOM:    return limit_bottom
 		_:
 						printerr("Not a valid Side.")
 						return -1
