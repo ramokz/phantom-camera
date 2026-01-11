@@ -1,6 +1,6 @@
 @tool
-@icon("res://addons/phantom_camera/icons/phantom_camera_tween.svg")
-class_name TweenDirectorResource
+@icon("res://addons/phantom_camera/icons/phantom_camera_tween_director_resource.svg")
+class_name PhantomCameraTweenDirectorResource
 extends Resource
 
 ## Resource to conditionally override tweens between specific [param PhantomCameras].
