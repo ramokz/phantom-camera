@@ -710,14 +710,14 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 		_tween_director_resource_checker(pcam_tween_director, current_pcam, new_pcam)
 
 func _tween_director_resource_checker(pcam_tween_director: PhantomCameraTweenDirector, current_pcam: Node, new_pcam: Node) -> void:
-	for tween_director_resource: PhantomCameraTweenDirectorResource in pcam_tween_director.tween_director:
+	for tween_director_resource: TweenDirectorResource in pcam_tween_director.tween_director:
 		## Checks if any of the required values are missing or isn't inherit
 		if tween_director_resource == null: continue
 		if tween_director_resource.tween_resource == null: continue
 
 		## From Target
 		match tween_director_resource.from_type:
-			PhantomCameraTweenDirectorResource.Type.PHANTOM_CAMERA:
+			TweenDirectorResource.Type.PHANTOM_CAMERA:
 				var has_valid_pcam: bool = false
 				for pcam_path: NodePath in tween_director_resource.from_phantom_cameras:
 					var from_pcam: Node = pcam_tween_director.get_node_or_null(pcam_path)
@@ -733,7 +733,7 @@ func _tween_director_resource_checker(pcam_tween_director: PhantomCameraTweenDir
 						_:
 							has_valid_pcam = false
 				if not has_valid_pcam: continue
-			PhantomCameraTweenDirectorResource.Type.TWEEN_RESOURCE:
+			TweenDirectorResource.Type.TWEEN_RESOURCE:
 				var has_valid_resource: bool = false
 				for tween_resource: PhantomCameraTween in tween_director_resource.from_tween_resources:
 					match tween_resource:
@@ -746,11 +746,11 @@ func _tween_director_resource_checker(pcam_tween_director: PhantomCameraTweenDir
 							has_valid_resource = false
 				if has_valid_resource: pass
 				else: continue
-			PhantomCameraTweenDirectorResource.Type.ANY: pass
+			TweenDirectorResource.Type.ANY: pass
 
 		## To Target
 		match tween_director_resource.to_type:
-			PhantomCameraTweenDirectorResource.Type.PHANTOM_CAMERA:
+			TweenDirectorResource.Type.PHANTOM_CAMERA:
 				var has_valid_pcam: bool = false
 				for pcam_path: NodePath in tween_director_resource.to_phantom_cameras:
 					var to_pcam: Node = pcam_tween_director.get_node_or_null(pcam_path)
@@ -766,7 +766,7 @@ func _tween_director_resource_checker(pcam_tween_director: PhantomCameraTweenDir
 						_:
 							has_valid_pcam = false
 				if not has_valid_pcam: continue
-			PhantomCameraTweenDirectorResource.Type.TWEEN_RESOURCE:
+			TweenDirectorResource.Type.TWEEN_RESOURCE:
 				var has_valid_resource: bool = false
 				for tween_resource: PhantomCameraTween in tween_director_resource.to_tween_resources:
 					match tween_resource:
@@ -779,7 +779,7 @@ func _tween_director_resource_checker(pcam_tween_director: PhantomCameraTweenDir
 							has_valid_resource = false
 				if has_valid_resource: pass
 				else: continue
-			PhantomCameraTweenDirectorResource.Type.ANY: pass
+			TweenDirectorResource.Type.ANY: pass
 
 		_tween_duration = tween_director_resource.tween_resource.duration
 		_tween_transition = tween_director_resource.tween_resource.transition
