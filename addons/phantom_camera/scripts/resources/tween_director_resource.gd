@@ -24,7 +24,9 @@ enum Type {
 #region Public Variables
 
 ## The [PhantomCameraTween] that should be used if a member of [member from_type] and [member to_type] list match when a tween should occur.
-@export var tween_resource: PhantomCameraTween = null
+@export var tween_resource: PhantomCameraTween = null:
+	set = set_tween_resource,
+	get = get_tween_resource
 
 
 @export_group("From")
@@ -85,6 +87,15 @@ func _validate_property(property: Dictionary) -> void:
 
 
 #region Public Functions
+
+## Sets the [member tween_resource] value.
+func set_tween_resource(value: PhantomCameraTween) -> void:
+	tween_resource = value
+
+## Returns the [member tween_resource] value.
+func get_tween_resource() -> PhantomCameraTween:
+	return tween_resource
+
 
 ## Sets the [member from_type] value.
 func set_from_type(value: Type) -> void:
