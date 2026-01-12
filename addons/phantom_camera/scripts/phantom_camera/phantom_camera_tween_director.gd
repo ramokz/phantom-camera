@@ -3,6 +3,12 @@
 class_name PhantomCameraTweenDirector
 extends Node
 
+## Conditionally overrides [PhantomCameraTween] of [param PhantomCameras].
+##
+## Using the [TweenDirectorResource], this node allows for custom tweens between specific [param PhantomCameras] in a scene.[br][br]
+## Whenever a tween between two [param PhantomCameras] occurs, this node can override the [PhantomCameraTween] applied to the newly active
+## [param PhantomCamera] if an instance on both the [b]From[/b] and [b]To[/b] lists match the previously and newly active [param PhantomCamera] respectively.
+
 #region Constants
 
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
