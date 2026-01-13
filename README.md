@@ -1,9 +1,12 @@
-<img width="850" alt="phantom-camera-readme-header" src="https://phantom-camera.dev/assets/github/readme-header.png">
+<img alt="phantom-camera-readme-header" width="1200px" src="https://phantom-camera.dev/assets/github/readme-header.svg">
+
+
 
 <p align="center">
   <a href="https://godotengine.org/download/windows/">
       <img alt="Static Badge" src="https://img.shields.io/badge/Godot-4.4%2B-blue">
   </a>
+  
   <a href="LICENSE">
     <img alt="GitHub License" src="https://img.shields.io/github/license/ramokz/phantom-camera">
   </a>
