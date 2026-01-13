@@ -546,6 +546,7 @@ tween_resource = SubResource("Resource_f4kig")
 tween_on_load = false
 follow_offset = Vector2(0, -40)
 follow_damping = true
+follow_damping_value = Vector2(0, 0.1)
 auto_zoom = true
 auto_zoom_margin = Vector4(50, 0, 50, 0)
 dead_zone_width = 0.197

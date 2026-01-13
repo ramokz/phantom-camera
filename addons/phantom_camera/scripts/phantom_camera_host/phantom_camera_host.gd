@@ -398,6 +398,10 @@ func _check_pcam_priority(pcam: Node) -> void:
 	if pcam.get_priority() >= _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		_active_pcam_missing = false
+		if _is_2d:
+			camera_2d.top_level = true
+		else:
+			camera_3d.top_level = true
 	pcam.set_tween_skip(self, false)
 
 
@@ -1274,12 +1278,14 @@ func _pcam_removed_from_scene(pcam: Node) -> void:
 		if pcam == _active_pcam_2d:
 			_active_pcam_2d = null
 			_active_pcam_missing = true
+			camera_2d.top_level = false
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 	else:
 		if pcam == _active_pcam_3d:
 			_active_pcam_3d = null
 			_active_pcam_missing = true
+			camera_3d.top_level = false
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 
@@ -1350,12 +1356,14 @@ func pcam_priority_updated(pcam: Node) -> void:
 		if pcam.priority >= _active_pcam_priority:
 			if _is_2d:
 				if pcam != _active_pcam_2d:
+					camera_2d.top_level = true
 					_assign_new_active_pcam(pcam)
 			else:
 				if pcam != _active_pcam_3d:
+					camera_3d.top_level = true
 					_assign_new_active_pcam(pcam)
-			pcam.set_tween_skip(self, false)
 			_active_pcam_missing = false
+			pcam.set_tween_skip(self, false)
 
 
 ## Updates the viewfinder when a [param PhantomCamera] has its
