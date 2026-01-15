@@ -1,6 +1,6 @@
 @tool
 extends Control
-
+class_name ViewFinderPanel
 #region Constants
 
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")

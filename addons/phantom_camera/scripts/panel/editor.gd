@@ -3,8 +3,9 @@ extends VBoxContainer
 
 #region Onready
 
-@onready var updater: Control = %UpdateButton
-@onready var viewfinder: Control = %ViewfinderPanel
+@onready var updater: UpdaterButton = %UpdateButton
+@onready var viewfinder: ViewFinderPanel = %ViewfinderPanel
+@onready var tree_view: PhantomCameraTreeView = %PhantomCameraTreeView
 
 #endregion
 
@@ -17,7 +18,7 @@ var editor_plugin: EditorPlugin
 
 #region Private Functions
 
-func _ready():
+func _ready() -> void:
 	updater.editor_plugin = editor_plugin
 
 #endregion

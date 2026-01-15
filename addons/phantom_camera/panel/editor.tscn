@@ -1,8 +1,46 @@
-[gd_scene load_steps=4 format=3 uid="uid://cfdoaceoosi1w"]
+[gd_scene load_steps=10 format=3 uid="uid://cfdoaceoosi1w"]
 
 [ext_resource type="Script" uid="uid://cgfwg3paxkj2x" path="res://addons/phantom_camera/scripts/panel/editor.gd" id="1_86hp7"]
 [ext_resource type="PackedScene" uid="uid://cuqkqsp3ikv5u" path="res://addons/phantom_camera/panel/updater/update_button.tscn" id="1_oowcd"]
 [ext_resource type="PackedScene" uid="uid://dbkr3d716wtx0" path="res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn" id="2_xecnk"]
+[ext_resource type="PackedScene" uid="uid://cuijcr8sf4s87" path="res://addons/phantom_camera/panel/treeview/phantom_camera_tree_view.tscn" id="3_aqwot"]
+[ext_resource type="Texture2D" uid="uid://rghrkoqrm2ig" path="res://addons/phantom_camera/icons/viewfinder/Select.svg" id="4_4u6ox"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_normal"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_pressed"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0784314, 0.109804, 0.129412, 1)
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.960784, 0.960784, 0.960784, 1)
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_toggle_hover"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.960784, 0.960784, 0.960784, 1)
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_right = 6
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_toggle_focus"]
 
 [node name="EditorPanel" type="VBoxContainer"]
 anchors_preset = 15
@@ -18,6 +56,45 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 1
 
-[node name="ViewfinderPanel" parent="." instance=ExtResource("2_xecnk")]
+[node name="EditorContent" type="Control" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TreeViewSplit" type="HSplitContainer" parent="EditorContent"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+split_offset = 48
+
+[node name="PhantomCameraTreeView" parent="EditorContent/TreeViewSplit" instance=ExtResource("3_aqwot")]
 unique_name_in_owner = true
 layout_mode = 2
+toggle_button_path = NodePath("../../TreeToggleButton")
+
+[node name="ViewfinderPanel" parent="EditorContent/TreeViewSplit" instance=ExtResource("2_xecnk")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 0)
+layout_mode = 2
+
+[node name="TreeToggleButton" type="Button" parent="EditorContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+offset_left = 6.0
+offset_top = 6.0
+focus_mode = 0
+theme_override_colors/icon_hover_color = Color(0.0784314, 0.109804, 0.129412, 1)
+theme_override_colors/icon_hover_pressed_color = Color(0.0784314, 0.109804, 0.129412, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_toggle_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_toggle_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_toggle_hover")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_toggle_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_toggle_focus")
+toggle_mode = true
+icon = ExtResource("4_4u6ox")
+expand_icon = true

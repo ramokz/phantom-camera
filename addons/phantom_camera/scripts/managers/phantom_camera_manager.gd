@@ -35,6 +35,7 @@ signal viewfinder_pcam_host_switch(pcam_host: PhantomCameraHost)
 signal pcam_priority_override(pcam: Node, shouldOverride: bool)
 signal pcam_dead_zone_changed(pcam: Node)
 signal pcam_host_layer_changed(pcam: Node)
+signal pcam_host_layers_changed(pcam_host: PhantomCameraHost)
 
 #endregion
 

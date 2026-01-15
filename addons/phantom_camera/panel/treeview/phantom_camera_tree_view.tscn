@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3 uid="uid://cuijcr8sf4s87"]
+
+[ext_resource type="Script" uid="uid://ngihysc0grnv" path="res://addons/phantom_camera/scripts/panel/treeview/phantom_camera_tree_view.gd" id="1_uyw0k"]
+
+[node name="PhantomCameraTreeView" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uyw0k")
+
+[node name="MainSplit" type="HSplitContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+split_offset = 160
+
+[node name="TreePanel" type="PanelContainer" parent="MainSplit"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="PhantomCameraTree" type="Tree" parent="MainSplit/TreePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+hide_root = true

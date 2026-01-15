@@ -5,6 +5,7 @@
 
 @tool
 extends Button
+class_name UpdaterButton
 
 #region Constants
 

@@ -1431,6 +1431,9 @@ func get_interpolation_mode() -> int:
 func set_host_layers(value: int) -> void:
 	host_layers = value
 
+	if is_instance_valid(_phantom_camera_manager):
+		_phantom_camera_manager.pcam_host_layers_changed.emit(self)
+
 	if not _is_child_of_camera: return
 
 	if not _active_pcam_missing:
@@ -1444,6 +1447,8 @@ func set_host_layers(value: int) -> void:
 ## Enables or disables a given layer of [member host_layers].
 func set_host_layers_value(layer: int, value: bool) -> void:
 	host_layers = _set_layer(host_layers, layer, value)
+	if is_instance_valid(_phantom_camera_manager):
+		_phantom_camera_manager.pcam_host_layers_changed.emit(self)
 
 ## Returns the [member host_layers] value.
 func get_host_layers() -> int:
