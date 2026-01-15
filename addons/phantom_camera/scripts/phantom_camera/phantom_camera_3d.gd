@@ -13,7 +13,6 @@ extends Node3D
 #region Constants
 
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-const _lookahead_epsilon: float = 0.0001
 
 #endregion
 
@@ -524,25 +523,34 @@ var horizontal_rotation_offset: float = 0:
 	set = set_lookahead_enabled,
 	get = get_lookahead_enabled
 
-## Predicts the target position this many seconds into the future.
-@export_range(0.0, 1.0, 0.01) var lookahead_time: float = 0.0:
+## Predicts the target position this many seconds into the future per axis.
+## Each axis (X, Y, Z) has its own prediction time in seconds.
+## Setting an axis to 0.0 effectively disables lookahead for that axis.
+@export var lookahead_time: Vector3 = Vector3.ZERO:
 	set = set_lookahead_time,
 	get = get_lookahead_time
 
-## Controls the smoothness when the target moves away from the center.
-@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_smoothing_from_center: float = 0.0:
-	set = set_lookahead_smoothing_from_center,
-	get = get_lookahead_smoothing_from_center
+## Controls the smoothness when the target accelerates (moves away from the center).
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_acceleration: float = 0.0:
+	set = set_lookahead_acceleration,
+	get = get_lookahead_acceleration
 
-## Controls the smoothness when the target moves back toward the center.
-@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_smoothing_to_center: float = 0.0:
-	set = set_lookahead_smoothing_to_center,
-	get = get_lookahead_smoothing_to_center
+## Controls the smoothness when the target decelerates (moves back toward the center).
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deacceleration: float = 0.0:
+	set = set_lookahead_deacceleration,
+	get = get_lookahead_deacceleration
 
-## If true, movement along the Y axis is ignored for lookahead.
-@export var lookahead_ignore_y: bool = false:
-	set = set_lookahead_ignore_y,
-	get = get_lookahead_ignore_y
+## Enables a maximum offset limit for the lookahead effect.
+## When enabled, the lookahead offset will be clamped to the [member max_lookahead_offset] value.
+@export var enable_max_lookahead_offset: bool = false:
+	set = set_enable_max_lookahead_offset,
+	get = get_enable_max_lookahead_offset
+
+## The maximum lookahead offset in meters (as a Vector3).
+## The lookahead offset will be clamped within these bounds on each axis.
+@export var max_lookahead_offset: Vector3 = Vector3(5.0, 5.0, 5.0):
+	set = set_max_lookahead_offset,
+	get = get_max_lookahead_offset
 
 @export_subgroup("Up Direction")
 ## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set. [br]
@@ -887,10 +895,14 @@ func _validate_property(property: Dictionary) -> void:
 	if not lookahead_enabled:
 		match property.name:
 			"lookahead_time", \
-			"lookahead_smoothing_from_center", \
-			"lookahead_smoothing_to_center", \
-			"lookahead_ignore_y":
+			"lookahead_acceleration", \
+			"lookahead_deacceleration", \
+			"enable_max_lookahead_offset", \
+			"max_lookahead_offset":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
+
+	if property.name == "max_lookahead_offset" and not enable_max_lookahead_offset:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	##########################
 	## Align With Viewport
@@ -1393,7 +1405,7 @@ func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velo
 		return output
 
 
-func _smooth_damp_vector(current: Vector3, target: Vector3, current_velocity: Vector3, smooth_time: float, delta: float) -> Dictionary:
+func _smooth_damp_vector(current: Vector3, target: Vector3, current_velocity: Vector3, smooth_time: float, delta: float) -> Array[Vector3]:
 	var output: Vector3 = Vector3.ZERO
 	var velocity: Vector3 = current_velocity
 	var damping_time: float = maxf(0.0001, smooth_time)
@@ -1414,14 +1426,12 @@ func _smooth_damp_vector(current: Vector3, target: Vector3, current_velocity: Ve
 		## To prevent overshooting
 		if (target_axis - current[i] > 0.0) == (out_axis > target_axis):
 			out_axis = target_axis
-			velocity[i] = 0.0 if delta <= _lookahead_epsilon else (out_axis - target_axis) / delta
+			velocity[i] = 0.0 if is_zero_approx(delta) else (out_axis - target_axis) / delta
 
 		output[i] = out_axis
 
-	return {
-		"value": output,
-		"velocity": velocity
-	}
+	# Return [output, velocity] - access by index [0] and [1]
+	return [output, velocity]
 
 
 func _reset_follow_lookahead() -> void:
@@ -1437,71 +1447,77 @@ func _reset_look_at_lookahead() -> void:
 
 
 func _add_follow_lookahead_position(position: Vector3, delta: float) -> void:
-	if delta < 0.0:
-		_reset_follow_lookahead()
-
-	if _lookahead_follow_has_position and delta > _lookahead_epsilon:
+	if _lookahead_follow_has_position and !is_zero_approx(delta):
 		var velocity: Vector3 = (position - _lookahead_follow_position) / delta
 		var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
-		var smooth_time: float = lookahead_smoothing_to_center if slowing else lookahead_smoothing_from_center
-		var result: Dictionary = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
-		_lookahead_follow_velocity = result["value"]
-		_lookahead_follow_smooth_velocity = result["velocity"]
+		var smooth_time: float = lookahead_deacceleration if slowing else lookahead_acceleration
+		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
+		_lookahead_follow_velocity = result[0]
+		_lookahead_follow_smooth_velocity = result[1]
 
 	_lookahead_follow_position = position
 	_lookahead_follow_has_position = true
 
 
 func _add_look_at_lookahead_position(position: Vector3, delta: float) -> void:
-	if delta < 0.0:
-		_reset_look_at_lookahead()
-
-	if _lookahead_look_at_has_position and delta > _lookahead_epsilon:
+	if _lookahead_look_at_has_position and not is_zero_approx(delta):
 		var velocity: Vector3 = (position - _lookahead_look_at_position) / delta
 		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
-		var smooth_time: float = lookahead_smoothing_to_center if slowing else lookahead_smoothing_from_center
-		var result: Dictionary = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
-		_lookahead_look_at_velocity = result["value"]
-		_lookahead_look_at_smooth_velocity = result["velocity"]
+		var smooth_time: float = lookahead_deacceleration if slowing else lookahead_acceleration
+		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
+		_lookahead_look_at_velocity = result[0]
+		_lookahead_look_at_smooth_velocity = result[1]
 
 	_lookahead_look_at_position = position
 	_lookahead_look_at_has_position = true
 
 
 func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
-	if not lookahead_enabled or lookahead_time <= _lookahead_epsilon:
+	if not lookahead_enabled:
 		_lookahead_follow_reset = true
 		return Vector3.ZERO
 
-	var delta_time: float = delta
 	if _lookahead_follow_reset:
-		delta_time = -1.0
+		_reset_follow_lookahead()
 		_lookahead_follow_reset = false
 
-	_add_follow_lookahead_position(position, delta_time)
+	_add_follow_lookahead_position(position, delta)
 
-	var lookahead_delta: Vector3 = _lookahead_follow_velocity * lookahead_time
-	if lookahead_ignore_y:
-		lookahead_delta = _project_onto_plane(lookahead_delta, Vector3.UP)
+	var lookahead_delta: Vector3 = Vector3(
+		_lookahead_follow_velocity.x * lookahead_time.x,
+		_lookahead_follow_velocity.y * lookahead_time.y,
+		_lookahead_follow_velocity.z * lookahead_time.z
+	)
+
+	if enable_max_lookahead_offset:
+		lookahead_delta.x = clampf(lookahead_delta.x, -max_lookahead_offset.x, max_lookahead_offset.x)
+		lookahead_delta.y = clampf(lookahead_delta.y, -max_lookahead_offset.y, max_lookahead_offset.y)
+		lookahead_delta.z = clampf(lookahead_delta.z, -max_lookahead_offset.z, max_lookahead_offset.z)
 
 	return lookahead_delta
 
 
 func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction: Vector3) -> Vector3:
-	if not lookahead_enabled or lookahead_time <= _lookahead_epsilon:
+	if not lookahead_enabled:
 		_lookahead_look_at_reset = true
 		return Vector3.ZERO
 
-	var delta_time: float = delta
 	if _lookahead_look_at_reset:
-		delta_time = -1.0
+		_reset_look_at_lookahead()
 		_lookahead_look_at_reset = false
 
-	_add_look_at_lookahead_position(position, delta_time)
+	_add_look_at_lookahead_position(position, delta)
 
-	var lookahead_delta: Vector3 = _lookahead_look_at_velocity * lookahead_time
-	if lookahead_ignore_y:
-		lookahead_delta = _project_onto_plane(lookahead_delta, up_direction)
+	var lookahead_delta: Vector3 = Vector3(
+		_lookahead_look_at_velocity.x * lookahead_time.x,
+		_lookahead_look_at_velocity.y * lookahead_time.y,
+		_lookahead_look_at_velocity.z * lookahead_time.z
+	)
+
+	if enable_max_lookahead_offset:
+		lookahead_delta.x = clampf(lookahead_delta.x, -max_lookahead_offset.x, max_lookahead_offset.x)
+		lookahead_delta.y = clampf(lookahead_delta.y, -max_lookahead_offset.y, max_lookahead_offset.y)
+		lookahead_delta.z = clampf(lookahead_delta.z, -max_lookahead_offset.z, max_lookahead_offset.z)
 
 	return lookahead_delta
 
@@ -1509,8 +1525,7 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 func _project_onto_plane(value: Vector3, up_direction: Vector3) -> Vector3:
 	if up_direction == Vector3.ZERO:
 		return value
-	var up: Vector3 = up_direction.normalized()
-	return value - up * value.dot(up)
+	return value - up_direction.normalized() * value.dot(up)
 
 
 func _get_raw_unprojected_position() -> Vector2:
@@ -2366,39 +2381,47 @@ func get_lookahead_enabled() -> bool:
 	return lookahead_enabled
 
 ## Assigns the [member lookahead_time] value.
-func set_lookahead_time(value: float) -> void:
-	lookahead_time = maxf(0.0, value)
-	if lookahead_time <= _lookahead_epsilon:
-		_lookahead_follow_reset = true
-		_lookahead_look_at_reset = true
+func set_lookahead_time(value: Vector3) -> void:
+	lookahead_time.x = maxf(0.0, value.x)
+	lookahead_time.y = maxf(0.0, value.y)
+	lookahead_time.z = maxf(0.0, value.z)
 
 ## Gets the [member lookahead_time] value.
-func get_lookahead_time() -> float:
+func get_lookahead_time() -> Vector3:
 	return lookahead_time
 
-## Assigns the [member lookahead_smoothing_from_center] value.
-func set_lookahead_smoothing_from_center(value: float) -> void:
-	lookahead_smoothing_from_center = maxf(0.0, value)
+## Assigns the [member lookahead_acceleration] value.
+func set_lookahead_acceleration(value: float) -> void:
+	lookahead_acceleration = maxf(0.0, value)
 
-## Gets the [member lookahead_smoothing_from_center] value.
-func get_lookahead_smoothing_from_center() -> float:
-	return lookahead_smoothing_from_center
+## Gets the [member lookahead_acceleration] value.
+func get_lookahead_acceleration() -> float:
+	return lookahead_acceleration
 
-## Assigns the [member lookahead_smoothing_to_center] value.
-func set_lookahead_smoothing_to_center(value: float) -> void:
-	lookahead_smoothing_to_center = maxf(0.0, value)
+## Assigns the [member lookahead_deacceleration] value.
+func set_lookahead_deacceleration(value: float) -> void:
+	lookahead_deacceleration = maxf(0.0, value)
 
-## Gets the [member lookahead_smoothing_to_center] value.
-func get_lookahead_smoothing_to_center() -> float:
-	return lookahead_smoothing_to_center
+## Gets the [member lookahead_deacceleration] value.
+func get_lookahead_deacceleration() -> float:
+	return lookahead_deacceleration
 
-## Enables or disables [member lookahead_ignore_y].
-func set_lookahead_ignore_y(value: bool) -> void:
-	lookahead_ignore_y = value
+## Enables or disables [member enable_max_lookahead_offset].
+func set_enable_max_lookahead_offset(value: bool) -> void:
+	enable_max_lookahead_offset = value
+	notify_property_list_changed()
 
-## Gets the [member lookahead_ignore_y] value.
-func get_lookahead_ignore_y() -> bool:
-	return lookahead_ignore_y
+## Gets the [member enable_max_lookahead_offset] value.
+func get_enable_max_lookahead_offset() -> bool:
+	return enable_max_lookahead_offset
+
+## Assigns the [member max_lookahead_offset] value.
+func set_max_lookahead_offset(value: Vector3) -> void:
+	max_lookahead_offset = value
+
+## Gets the [member max_lookahead_offset] value.
+func get_max_lookahead_offset() -> Vector3:
+	return max_lookahead_offset
 
 ## Assigns the Follow Axis.
 func set_follow_axis_lock(value: FollowLockAxis) -> void:
