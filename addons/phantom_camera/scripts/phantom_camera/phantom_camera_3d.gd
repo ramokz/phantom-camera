@@ -116,7 +116,11 @@ enum FollowLockAxis {
 	YZ		= 6,
 	XYZ		= 7,
 }
-
+enum FollowTargetPhysicsClass {
+	OTHER,
+	CHARACTERBODY,
+	RIGIDBODY,
+}
 #endregion
 
 
@@ -696,6 +700,10 @@ var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
 
+var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
+var _character_body_3d: CharacterBody3D = null
+var _rigid_body_3d: RigidBody3D = null
+
 var _has_multiple_follow_targets: bool = false
 var _follow_targets_single_target_index: int = 0
 var _follow_targets: Array[Node3D] = []
@@ -726,12 +734,16 @@ var _lookahead_follow_smooth_velocity: Vector3 = Vector3.ZERO
 var _lookahead_follow_position: Vector3 = Vector3.ZERO
 var _lookahead_follow_has_position: bool = false
 var _lookahead_follow_reset: bool = true
+var _lookahead_follow_sample_pos_prev: Vector3 = Vector3.ZERO
+var _lookahead_follow_has_prev_sample: bool = false
 
 var _lookahead_look_at_velocity: Vector3 = Vector3.ZERO
 var _lookahead_look_at_smooth_velocity: Vector3 = Vector3.ZERO
 var _lookahead_look_at_position: Vector3 = Vector3.ZERO
 var _lookahead_look_at_has_position: bool = false
 var _lookahead_look_at_reset: bool = true
+var _lookahead_look_at_sample_pos_prev: Vector3 = Vector3.ZERO
+var _lookahead_look_at_has_prev_sample: bool = false
 
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
@@ -1494,9 +1506,87 @@ func _reset_look_at_lookahead() -> void:
 	_lookahead_look_at_smooth_velocity = Vector3.ZERO
 
 
+func _get_follow_target_velocity(delta: float) -> Vector3:
+	# Use cached type check for performance
+	match _follow_target_physics_class:
+		FollowTargetPhysicsClass.CHARACTERBODY:
+			return _character_body_3d.velocity
+		FollowTargetPhysicsClass.RIGIDBODY:
+			return _rigid_body_3d.linear_velocity
+		FollowTargetPhysicsClass.OTHER:
+			# Optional extension points for custom controllers
+			if follow_target.has_method("get_velocity"):
+				var v = follow_target.call("get_velocity")
+				if v is Vector3:
+					return v
+
+			var prop_v = follow_target.get("velocity")
+			if prop_v is Vector3:
+				return prop_v
+
+	# Fallback: estimate from position delta using raw target position
+	var dt := maxf(delta, 0.0001)
+	var current_pos := follow_target.global_position
+
+	if not _lookahead_follow_has_prev_sample:
+		_lookahead_follow_has_prev_sample = true
+		_lookahead_follow_sample_pos_prev = current_pos
+		return Vector3.ZERO
+
+	var vel := (current_pos - _lookahead_follow_sample_pos_prev) / dt
+	_lookahead_follow_sample_pos_prev = current_pos
+	return vel
+
+
+func _get_look_at_target_velocity(delta: float) -> Vector3:
+	# For look_at, we don't have cached physics bodies, so try alternative approaches
+	var target: Node3D = null
+
+	# Get the appropriate look_at target
+	if _has_multiple_look_at_targets and not look_at_targets.is_empty():
+		# For multiple targets, we could average velocities or use first target
+		# For now, use the first target
+		target = look_at_targets[0]
+	elif look_at_target:
+		target = look_at_target
+
+	if not target:
+		return Vector3.ZERO
+
+	# Try to get velocity from physics bodies
+	if target is CharacterBody3D:
+		return (target as CharacterBody3D).velocity
+	elif target is RigidBody3D:
+		return (target as RigidBody3D).linear_velocity
+
+	# Optional extension points for custom controllers
+	if target.has_method("get_velocity"):
+		var v = target.call("get_velocity")
+		if v is Vector3:
+			return v
+
+	var prop_v = target.get("velocity")
+	if prop_v is Vector3:
+		return prop_v
+
+	# Fallback: estimate from position delta
+	var dt := maxf(delta, 0.0001)
+	var current_pos := target.global_position
+
+	if not _lookahead_look_at_has_prev_sample:
+		_lookahead_look_at_has_prev_sample = true
+		_lookahead_look_at_sample_pos_prev = current_pos
+		return Vector3.ZERO
+
+	var vel := (current_pos - _lookahead_look_at_sample_pos_prev) / dt
+	_lookahead_look_at_sample_pos_prev = current_pos
+	return vel
+
+
 func _add_follow_lookahead_position(position: Vector3, delta: float) -> void:
-	if _lookahead_follow_has_position and !is_zero_approx(delta):
-		var velocity: Vector3 = (position - _lookahead_follow_position) / delta
+	if !is_zero_approx(delta):
+		# Get velocity directly from physics body if available, otherwise estimate from position
+		var velocity: Vector3 = _get_follow_target_velocity(delta)
 		var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
 		var smooth_time: float = follow_lookahead_deacceleration if slowing else follow_lookahead_acceleration
 		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
@@ -1508,8 +1598,9 @@ func _add_follow_lookahead_position(position: Vector3, delta: float) -> void:
 
 
 func _add_look_at_lookahead_position(position: Vector3, delta: float) -> void:
-	if _lookahead_look_at_has_position and not is_zero_approx(delta):
-		var velocity: Vector3 = (position - _lookahead_look_at_position) / delta
+	if not is_zero_approx(delta):
+		# Get velocity directly from physics body if available, otherwise estimate from position
+		var velocity: Vector3 = _get_look_at_target_velocity(delta)
 		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
 		var smooth_time: float = look_at_lookahead_deacceleration if slowing else look_at_lookahead_acceleration
 		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
@@ -1724,7 +1815,20 @@ func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> vo
 
 
 func _check_physics_body(target: Node3D) -> void:
+	# Reset cached physics references
+	_character_body_3d = null
+	_rigid_body_3d = null
+	_follow_target_physics_class = FollowTargetPhysicsClass.OTHER
+
 	if target is PhysicsBody3D:
+		# Cache the type and reference for performance
+		if target is CharacterBody3D:
+			_character_body_3d = target as CharacterBody3D
+			_follow_target_physics_class = FollowTargetPhysicsClass.CHARACTERBODY
+		elif target is RigidBody3D:
+			_rigid_body_3d = target as RigidBody3D
+			_follow_target_physics_class = FollowTargetPhysicsClass.RIGIDBODY
+
 		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
 		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
 
@@ -1961,6 +2065,7 @@ func set_follow_target(value: Node3D) -> void:
 	if follow_target == value: return
 	follow_target = value
 	_lookahead_follow_reset = true
+	_lookahead_follow_has_prev_sample = false
 	_reset_follow_lookahead()
 	_follow_target_physics_based = false
 	if is_instance_valid(value):
@@ -2307,6 +2412,7 @@ func set_look_at_target(value: Node3D) -> void:
 	if look_at_target == value: return
 	look_at_target = value
 	_lookahead_look_at_reset = true
+	_lookahead_look_at_has_prev_sample = false
 	_reset_look_at_lookahead()
 	if not look_at_mode == LookAtMode.GROUP:
 		if is_instance_valid(look_at_target):
