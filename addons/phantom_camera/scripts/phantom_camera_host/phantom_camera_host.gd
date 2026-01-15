@@ -63,11 +63,6 @@ enum InterpolationMode {
 	set = set_interpolation_mode,
 	get = get_interpolation_mode
 
-## Override the [PhantomCameraTween] between specific [param PhantomCameras].
-@export var tween_director: Array[TweenDirectorResource] = []:
-	set = set_tween_director,
-	get = get_tween_director
-
 #endregion
 
 
@@ -403,6 +398,10 @@ func _check_pcam_priority(pcam: Node) -> void:
 	if pcam.get_priority() >= _active_pcam_priority:
 		_assign_new_active_pcam(pcam)
 		_active_pcam_missing = false
+		if _is_2d:
+			camera_2d.top_level = true
+		else:
+			camera_3d.top_level = true
 	pcam.set_tween_skip(self, false)
 
 
@@ -707,8 +706,15 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 
 	# Check for conditional Tween Director properties
 	if current_pcam == null: return
-	for tween_director_resource: TweenDirectorResource in tween_director:
+	if _phantom_camera_manager.phantom_camera_tween_directors.size() == 0: return
 
+	## PCam Tween Director(s) in current scene
+	var pcam_tween_directors: Array[PhantomCameraTweenDirector] = _phantom_camera_manager.phantom_camera_tween_directors
+	for pcam_tween_director in pcam_tween_directors:
+		_tween_director_resource_checker(pcam_tween_director, current_pcam, new_pcam)
+
+func _tween_director_resource_checker(pcam_tween_director: PhantomCameraTweenDirector, current_pcam: Node, new_pcam: Node) -> void:
+	for tween_director_resource: TweenDirectorResource in pcam_tween_director.tween_director:
 		## Checks if any of the required values are missing or isn't inherit
 		if tween_director_resource == null: continue
 		if tween_director_resource.tween_resource == null: continue
@@ -718,7 +724,10 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 			TweenDirectorResource.Type.PHANTOM_CAMERA:
 				var has_valid_pcam: bool = false
 				for pcam_path: NodePath in tween_director_resource.from_phantom_cameras:
-					var from_pcam: Node = get_node_or_null(pcam_path)
+					var from_pcam: Node = pcam_tween_director.get_node_or_null(pcam_path)
+					if current_pcam != from_pcam:
+						has_valid_pcam = false
+						continue
 					match from_pcam:
 						null:
 							has_valid_pcam = false
@@ -727,8 +736,7 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 							break
 						_:
 							has_valid_pcam = false
-				if has_valid_pcam: pass
-				else: continue
+				if not has_valid_pcam: continue
 			TweenDirectorResource.Type.TWEEN_RESOURCE:
 				var has_valid_resource: bool = false
 				for tween_resource: PhantomCameraTween in tween_director_resource.from_tween_resources:
@@ -749,8 +757,10 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 			TweenDirectorResource.Type.PHANTOM_CAMERA:
 				var has_valid_pcam: bool = false
 				for pcam_path: NodePath in tween_director_resource.to_phantom_cameras:
-					var to_pcam: Node = get_node_or_null(pcam_path)
-					if current_pcam == to_pcam: has_valid_pcam = false
+					var to_pcam: Node = pcam_tween_director.get_node_or_null(pcam_path)
+					if current_pcam == to_pcam:
+						has_valid_pcam = false
+						continue
 					match to_pcam:
 						null:
 							has_valid_pcam = false
@@ -759,8 +769,7 @@ func _tween_value_checker(current_pcam: Node, new_pcam: Node) -> void:
 							break
 						_:
 							has_valid_pcam = false
-				if has_valid_pcam: pass
-				else: continue
+				if not has_valid_pcam: continue
 			TweenDirectorResource.Type.TWEEN_RESOURCE:
 				var has_valid_resource: bool = false
 				for tween_resource: PhantomCameraTween in tween_director_resource.to_tween_resources:
@@ -1269,12 +1278,14 @@ func _pcam_removed_from_scene(pcam: Node) -> void:
 		if pcam == _active_pcam_2d:
 			_active_pcam_2d = null
 			_active_pcam_missing = true
+			camera_2d.top_level = false
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 	else:
 		if pcam == _active_pcam_3d:
 			_active_pcam_3d = null
 			_active_pcam_missing = true
+			camera_3d.top_level = false
 			_active_pcam_priority = -1
 			_find_pcam_with_highest_priority()
 
@@ -1345,12 +1356,14 @@ func pcam_priority_updated(pcam: Node) -> void:
 		if pcam.priority >= _active_pcam_priority:
 			if _is_2d:
 				if pcam != _active_pcam_2d:
+					camera_2d.top_level = true
 					_assign_new_active_pcam(pcam)
 			else:
 				if pcam != _active_pcam_3d:
+					camera_3d.top_level = true
 					_assign_new_active_pcam(pcam)
-			pcam.set_tween_skip(self, false)
 			_active_pcam_missing = false
+			pcam.set_tween_skip(self, false)
 
 
 ## Updates the viewfinder when a [param PhantomCamera] has its
@@ -1453,14 +1466,5 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 ## Returns the [member host_layers] value.
 func get_host_layers() -> int:
 	return host_layers
-
-
-## Sets the [member tween_director] value.
-func set_tween_director(value: Array[TweenDirectorResource]) -> void:
-	tween_director = value
-
-## Returns the [member tween_director] value.
-func get_tween_director() -> Array[TweenDirectorResource]:
-	return tween_director
 
 #endregion

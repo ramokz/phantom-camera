@@ -9,7 +9,7 @@ public enum InterpolationMode
     Auto,
     Idle,
     Physics,
-    MANUAL
+    Manual,
 }
 
 public static class PhantomCameraHostExtensions
@@ -44,13 +44,6 @@ public class PhantomCameraHost()
 
     private readonly Callable _callablePCamBecameActive;
     private readonly Callable _callablePCamBecameInactive;
-
-    // For when Godot becomes the minimum version
-    // public InterpolationMode InterpolationMode
-    // {
-    //      get => (InterpolationMode)(int)Node.Call(MethodName.GetInterpolationMode);
-    //      set => Node.Call(MethodName.SetInterpolationMode, (int)value);
-    // }
 
     public int HostLayers
     {
