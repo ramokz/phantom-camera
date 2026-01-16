@@ -1545,7 +1545,6 @@ func _get_follow_target_velocity(delta: float) -> Vector3:
 				return prop_v
 
 	# Fallback: estimate from position delta using raw target position
-	var dt: float = maxf(delta, 0.0001)
 	var current_pos: Vector3 = follow_target.global_position
 
 	if not _lookahead_follow_has_prev_sample:
@@ -1553,7 +1552,7 @@ func _get_follow_target_velocity(delta: float) -> Vector3:
 		_lookahead_follow_sample_pos_prev = current_pos
 		return Vector3.ZERO
 
-	var vel:Vector3 = (current_pos - _lookahead_follow_sample_pos_prev) / dt
+	var vel:Vector3 = (current_pos - _lookahead_follow_sample_pos_prev) / maxf(delta, 0.0001)
 	_lookahead_follow_sample_pos_prev = current_pos
 	return vel
 
@@ -1590,7 +1589,6 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 		return prop_v
 
 	# Fallback: estimate from position delta
-	var dt: float = maxf(delta, 0.0001)
 	var current_pos: Vector3 = target.global_position
 
 	if not _lookahead_look_at_has_prev_sample:
@@ -1598,37 +1596,9 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 		_lookahead_look_at_sample_pos_prev = current_pos
 		return Vector3.ZERO
 
-	var vel: Vector3 = (current_pos - _lookahead_look_at_sample_pos_prev) / dt
+	var vel: Vector3 = (current_pos - _lookahead_look_at_sample_pos_prev) / maxf(delta, 0.0001)
 	_lookahead_look_at_sample_pos_prev = current_pos
 	return vel
-
-
-func _add_follow_lookahead_position(position: Vector3, delta: float) -> void:
-	if not is_zero_approx(delta):
-		# Get velocity directly from physics body if available, otherwise estimate from position
-		var velocity: Vector3 = _get_follow_target_velocity(delta)
-		var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
-		var smooth_time: float = follow_lookahead_deacceleration if slowing else follow_lookahead_acceleration
-		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
-		_lookahead_follow_velocity = result[0]
-		_lookahead_follow_smooth_velocity = result[1]
-
-	_lookahead_follow_position = position
-	_lookahead_follow_has_position = true
-
-
-func _add_look_at_lookahead_position(position: Vector3, delta: float) -> void:
-	if not is_zero_approx(delta):
-		# Get velocity directly from physics body if available, otherwise estimate from position
-		var velocity: Vector3 = _get_look_at_target_velocity(delta)
-		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
-		var smooth_time: float = look_at_lookahead_deacceleration if slowing else look_at_lookahead_acceleration
-		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
-		_lookahead_look_at_velocity = result[0]
-		_lookahead_look_at_smooth_velocity = result[1]
-
-	_lookahead_look_at_position = position
-	_lookahead_look_at_has_position = true
 
 
 func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
@@ -1640,7 +1610,17 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 		_reset_follow_lookahead()
 		_lookahead_follow_reset = false
 
-	_add_follow_lookahead_position(position, delta)
+	if not is_zero_approx(delta):
+			# Get velocity directly from physics body if available, otherwise estimate from position
+			var velocity: Vector3 = _get_follow_target_velocity(delta)
+			var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
+			var smooth_time: float = follow_lookahead_deacceleration if slowing else follow_lookahead_acceleration
+			var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
+			_lookahead_follow_velocity = result[0]
+			_lookahead_follow_smooth_velocity = result[1]
+
+	_lookahead_follow_position = position
+	_lookahead_follow_has_position = true
 
 	var lookahead_delta: Vector3 = Vector3(
 		_lookahead_follow_velocity.x * follow_lookahead_time.x,
@@ -1665,7 +1645,17 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 		_reset_look_at_lookahead()
 		_lookahead_look_at_reset = false
 
-	_add_look_at_lookahead_position(position, delta)
+	if not is_zero_approx(delta):
+		# Get velocity directly from physics body if available, otherwise estimate from position
+		var velocity: Vector3 = _get_look_at_target_velocity(delta)
+		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
+		var smooth_time: float = look_at_lookahead_deacceleration if slowing else look_at_lookahead_acceleration
+		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
+		_lookahead_look_at_velocity = result[0]
+		_lookahead_look_at_smooth_velocity = result[1]
+
+	_lookahead_look_at_position = position
+	_lookahead_look_at_has_position = true
 
 	var lookahead_delta: Vector3 = _lookahead_look_at_velocity * look_at_lookahead_time
 
