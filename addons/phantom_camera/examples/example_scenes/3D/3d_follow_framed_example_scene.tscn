@@ -22,6 +22,7 @@ uv1_world_triplanar = true
 unique_name_in_owner = true
 physics_interpolation_mode = 1
 transform = Transform3D(0.99995, 0, 0, 0, 0.79324, 0.608671, 0, -0.608675, 0.793235, 0, 2.934684, 3.17294)
+top_level = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
 process_priority = 300
@@ -44,7 +45,7 @@ follow_target = NodePath("../PlayerCharacterBody3D")
 tween_resource = ExtResource("3_422w7")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_wg1pr")
-follow_damping = true
+follow_axis_lock = 2
 follow_distance = 4.0
 dead_zone_width = 0.139
 dead_zone_height = 0.14
