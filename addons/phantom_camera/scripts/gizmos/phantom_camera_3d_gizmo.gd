@@ -73,7 +73,7 @@ func _redraw() -> void:
 	add_lines(frustum_lines, frustum_material, false)
 
 
-func _draw_target(target: Vector3, type: StringName) -> void:
+func _draw_target(target: Vector3, type: String) -> void:
 	var target_lines: PackedVector3Array = PackedVector3Array()
 	var direction: Vector3 = pcam_3d.global_position - target
 	var end_position: Vector3 = -direction * pcam_3d.quaternion

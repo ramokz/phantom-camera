@@ -13,13 +13,13 @@ extends Resource
 
 ## Defines the size of the noise pattern.[br]
 ## Higher values will increase the range the noise can reach.
-@export_range(0, 1000, 0.001, "or_greater") var amplitude: float = 10:
+@export_range(0.0, 1000.0, 0.001, "or_greater") var amplitude: float = 10.0:
 	set = set_amplitude,
 	get = get_amplitude
 
 ## Sets the density of the noise pattern.[br]
 ## Higher values will result in more erratic noise.
-@export_range(0, 10, 0.001, "or_greater") var frequency: float = 0.5:
+@export_range(0.0, 10.0, 0.001, "or_greater") var frequency: float = 0.5:
 	set = set_frequency,
 	get = get_frequency
 
@@ -48,19 +48,19 @@ extends Resource
 @export_group("Positional Multiplier")
 ## Multiplies positional noise amount in the X-axis.[br]
 ## Set the value to [param 0] to disable noise in the axis.
-@export_range(0, 1, 0.001, "or_greater") var positional_multiplier_x: float = 1:
+@export_range(0.0, 1.0, 0.001, "or_greater") var positional_multiplier_x: float = 1.0:
 	set = set_positional_multiplier_x,
 	get = get_positional_multiplier_x
 
 ## Multiplies positional noise amount in the Y-axis.[br]
 ## Set the value to [param 0] to disable noise in the axis.
-@export_range(0, 1, 0.001, "or_greater") var positional_multiplier_y: float = 1:
+@export_range(0.0, 1.0, 0.001, "or_greater") var positional_multiplier_y: float = 1.0:
 	set = set_positional_multiplier_y,
 	get = get_positional_multiplier_y
 
 @export_group("Rotational Multiplier")
 ## Multiplies rotational noise amount.
-@export_range(0, 1, 0.001, "or_greater") var rotational_multiplier: float = 1:
+@export_range(0.0, 1.0, 0.001, "or_greater") var rotational_multiplier: float = 1.0:
 	set = set_rotational_multiplier,
 	get = get_rotational_multiplier
 
@@ -124,15 +124,15 @@ func get_noise_transform(delta: float) -> Transform2D:
 
 	if positional_noise:
 		for i in 2:
-			output_position[i] = _noise_positional_multiplier[i] * pow(_trauma, 2) * _get_noise_from_seed(i + noise_seed)
+			output_position[i] = _noise_positional_multiplier[i] * pow(_trauma, 2.0) * _get_noise_from_seed(i + noise_seed)
 	if rotational_noise:
-		output_rotation = rotational_multiplier / 100 * pow(_trauma, 2) * _get_noise_from_seed(noise_seed)
+		output_rotation = rotational_multiplier / 100 * pow(_trauma, 2.0) * _get_noise_from_seed(noise_seed)
 
 	return Transform2D(output_rotation, output_position)
 
 
 func reset_noise_time() -> void:
-	_noise_time = 0
+	_noise_time = 0.0
 
 #endregion
 
@@ -158,13 +158,13 @@ func get_frequency() -> float:
 
 
 ## Sets the [member randomize_seed] value.
-func set_randomize_noise_seed(value: int) -> void:
+func set_randomize_noise_seed(value: bool) -> void:
 	randomize_noise_seed = value
 	if value: _noise_algorithm.seed = randi()
 	notify_property_list_changed()
 
 ## Returns the [member randomize_seed] value.
-func get_randomize_noise_seed() -> int:
+func get_randomize_noise_seed() -> bool:
 	return randomize_noise_seed
 
 
