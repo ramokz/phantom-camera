@@ -1535,12 +1535,12 @@ func _get_follow_target_velocity(delta: float) -> Vector3:
 			return _rigid_body_3d.linear_velocity
 		FollowTargetPhysicsClass.OTHER:
 			# Optional extension points for custom controllers
-			if follow_target.has_method("get_velocity"):
-				var v = follow_target.call("get_velocity")
+			if follow_target.has_method(&"get_velocity"):
+				var v = follow_target.call(&"get_velocity")
 				if v is Vector3:
 					return v
 
-			var prop_v = follow_target.get("velocity")
+			var prop_v = follow_target.get(&"velocity")
 			if prop_v is Vector3:
 				return prop_v
 
@@ -1579,12 +1579,12 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 		return (target as RigidBody3D).linear_velocity
 
 	# Optional extension points for custom controllers
-	if target.has_method("get_velocity"):
-		var v = target.call("get_velocity")
+	if target.has_method(&"get_velocity"):
+		var v = target.call(&"get_velocity")
 		if v is Vector3:
 			return v
 
-	var prop_v = target.get("velocity")
+	var prop_v = target.get(&"velocity")
 	if prop_v is Vector3:
 		return prop_v
 
