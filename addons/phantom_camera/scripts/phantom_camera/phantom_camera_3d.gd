@@ -434,6 +434,49 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_auto_follow_distance_divisor
 
 
+## Enables velocity-based look-ahead for the [param follow target].
+@export var follow_lookahead: bool = false:
+	set = set_follow_lookahead,
+	get = get_follow_lookahead
+
+@export_subgroup("Lookahead")
+## The amount of seconds to look ahead of the the [param follow target]'s position per axis based on
+## the [param follow target]'s velocity.[br]
+## Each axis (X, Y, Z) has its own prediction time in [param seconds].
+## Setting an axis to [param 0.0] disables lookahead for that specific axis.
+@export_custom(PROPERTY_HINT_LINK, "0, 1, 0.001, suffix:s") var follow_lookahead_time: Vector3 = Vector3(0.1, 0.1, 0.1):
+	set = set_follow_lookahead_time,
+	get = get_follow_lookahead_time
+
+## Determines the damping speed of how fast the camera should reach the [member follow_lookahead_time]
+## target once the [param follow target] has a movement velocity.[br]
+## [b]Lower value[/b] = faster.[br]
+## [b]Higher value[/b] = slower.
+@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_acceleration: float = 0.1:
+	set = set_follow_lookahead_acceleration,
+	get = get_follow_lookahead_acceleration
+
+## Determines the damping speed of how fast the camera should deaccerlate back to the
+## [param follow target]'s position once it has no movement velocity.[br]
+## [b]Lower value[/b] = faster.[br]
+## [b]Higher value[/b] = slower.
+@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deacceleration: float = 0.1:
+	set = set_follow_lookahead_deacceleration,
+	get = get_follow_lookahead_deacceleration
+
+## Enables a maximum offset limit for the follow lookahead effect.
+## When enabled, the follow lookahead offset will be clamped to the [member follow_lookahead_max_value] value.
+@export var follow_lookahead_max: bool = false:
+	set = set_follow_lookahead_max,
+	get = get_follow_lookahead_max
+
+## The maximum follow lookahead offset in meters (as a [Vector3]).
+## The follow lookahead offset will be clamped within these bounds on each axis.
+@export_custom(PROPERTY_HINT_LINK, "suffix:m") var follow_lookahead_max_value: Vector3 = Vector3(5.0, 5.0, 5.0):
+	set = set_follow_lookahead_max_value,
+	get = get_follow_lookahead_max_value
+
+
 @export_subgroup("Dead Zones")
 ## Defines the horizontal dead zone area. While the target is within it, the
 ## [param PhantomCamera3D] will not move in the horizontal axis.
@@ -499,40 +542,6 @@ var horizontal_rotation_offset: float = 0:
 	set = set_margin,
 	get = get_margin
 
-@export_subgroup("Follow Look Ahead")
-## Enables velocity-based look-ahead for the follow target (jump/fall/run).
-@export var follow_lookahead_enabled: bool = false:
-	set = set_follow_lookahead_enabled,
-	get = get_follow_lookahead_enabled
-
-## Predicts the follow target position this many seconds into the future per axis.
-## Each axis (X, Y, Z) has its own prediction time in seconds.
-## Setting an axis to 0.0 effectively disables lookahead for that axis.
-@export var follow_lookahead_time: Vector3 = Vector3.ZERO:
-	set = set_follow_lookahead_time,
-	get = get_follow_lookahead_time
-
-## Controls the smoothness when the follow target accelerates (moves away from the center).
-@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_acceleration: float = 0.0:
-	set = set_follow_lookahead_acceleration,
-	get = get_follow_lookahead_acceleration
-
-## Controls the smoothness when the follow target decelerates (moves back toward the center).
-@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deacceleration: float = 0.0:
-	set = set_follow_lookahead_deacceleration,
-	get = get_follow_lookahead_deacceleration
-
-## Enables a maximum offset limit for the follow lookahead effect.
-## When enabled, the follow lookahead offset will be clamped to the [member follow_max_lookahead_offset] value.
-@export var follow_enable_max_lookahead_offset: bool = false:
-	set = set_follow_enable_max_lookahead_offset,
-	get = get_follow_enable_max_lookahead_offset
-
-## The maximum follow lookahead offset in meters (as a Vector3).
-## The follow lookahead offset will be clamped within these bounds on each axis.
-@export var follow_max_lookahead_offset: Vector3 = Vector3(5.0, 5.0, 5.0):
-	set = set_follow_max_lookahead_offset,
-	get = get_follow_max_lookahead_offset
 
 @export_group("Look At Parameters")
 ## Offsets the target's [param Vector3] position that the
@@ -556,38 +565,47 @@ var horizontal_rotation_offset: float = 0:
 	set = set_look_at_damping_value,
 	get = get_look_at_damping_value
 
-@export_subgroup("Look At Look Ahead")
-## Enables velocity-based look-ahead for the look at target.
-@export var look_at_lookahead_enabled: bool = false:
-	set = set_look_at_lookahead_enabled,
-	get = get_look_at_lookahead_enabled
 
-## Predicts the look at target position this many seconds into the future.
-@export_range(0.0, 1.0, 0.01) var look_at_lookahead_time: float = 0.0:
+## Enables velocity-based lookahead for the [param look at target].
+@export var look_at_lookahead: bool = false:
+	set = set_look_at_lookahead,
+	get = get_look_at_lookahead
+
+@export_subgroup("Lookahead")
+## The amount of seconds to look ahead of the the [param follow target]'s position based on
+## the [param follow target]'s velocity.[br]
+@export_range(0.0, 1.0, 0.01, "suffix:s") var look_at_lookahead_time: float = 0.1:
 	set = set_look_at_lookahead_time,
 	get = get_look_at_lookahead_time
 
-## Controls the smoothness when the look at target accelerates (moves away from the center).
-@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_acceleration: float = 0.0:
+## Determines the damping speed of how fast the camera should reach the [member look_at_lookahead_time]
+## target once the [param look_at target] has a movement velocity.[br]
+## [b]Lower value[/b] = faster.[br]
+## [b]Higher value[/b] = slower.
+@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_acceleration: float = 0.1:
 	set = set_look_at_lookahead_acceleration,
 	get = get_look_at_lookahead_acceleration
 
-## Controls the smoothness when the look at target decelerates (moves back toward the center).
-@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deacceleration: float = 0.0:
+## Determines the damping speed of how fast the camera should deaccerlate back to the [param follow target]'s position
+## once it has no movement velocity.[br]
+## [b]Lower value[/b] = faster.[br]
+## [b]Higher value[/b] = slower.
+@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deacceleration: float = 0.1:
 	set = set_look_at_lookahead_deacceleration,
 	get = get_look_at_lookahead_deacceleration
 
 ## Enables a maximum offset limit for the look at lookahead effect.
 ## When enabled, the look at lookahead offset will be clamped to the [member look_at_max_lookahead_offset] value.
-@export var look_at_enable_max_lookahead_offset: bool = false:
-	set = set_look_at_enable_max_lookahead_offset,
-	get = get_look_at_enable_max_lookahead_offset
+@export var look_at_lookahead_max: bool = false:
+	set = set_look_at_lookahead_max,
+	get = get_look_at_lookahead_max
 
 ## The maximum look at lookahead offset in meters.
 ## The look at lookahead offset will be clamped within these bounds.
-@export var look_at_max_lookahead_offset: float = 5.0:
-	set = set_look_at_max_lookahead_offset,
-	get = get_look_at_max_lookahead_offset
+@export_custom(PROPERTY_HINT_NONE, "suffix:m") var look_at_lookahead_max_value: float = 5.0:
+	set = set_look_at_max_lookahead_value,
+	get = get_look_at_max_lookahead_value
+
 
 @export_subgroup("Up Direction")
 ## Defines the upward direction of the [param PhantomCamera3D] when [member look_at_mode] is set. [br]
@@ -831,7 +849,8 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_damping", \
 			"follow_damping_value", \
 			"follow_axis_lock", \
-			"draw_follow_line":
+			"draw_follow_line", \
+			"follow_lookahead":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if follow_mode == FollowMode.GROUP:
@@ -905,7 +924,8 @@ func _validate_property(property: Dictionary) -> void:
 				"look_at_damping_value", \
 				"up", \
 				"up_target", \
-				"draw_look_at_line":
+				"draw_look_at_line", \
+				"look_at_lookahead":
 					property.usage = PROPERTY_USAGE_NO_EDITOR
 		LookAtMode.MIMIC:
 			match property.name:
@@ -937,31 +957,31 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Look Ahead
 	####################
-	if not follow_lookahead_enabled:
+	if not follow_lookahead:
 		match property.name:
 			"follow_lookahead_time", \
 			"follow_lookahead_acceleration", \
 			"follow_lookahead_deacceleration", \
-			"follow_enable_max_lookahead_offset", \
-			"follow_max_lookahead_offset":
+			"follow_lookahead_max", \
+			"follow_lookahead_max_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "follow_max_lookahead_offset" and not follow_enable_max_lookahead_offset:
+	if property.name == "follow_lookahead_max_value" and not follow_lookahead_max:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	#######################
 	## Look At Look Ahead
 	#######################
-	if not look_at_lookahead_enabled:
+	if not look_at_lookahead:
 		match property.name:
 			"look_at_lookahead_time", \
 			"look_at_lookahead_acceleration", \
 			"look_at_lookahead_deacceleration", \
-			"look_at_enable_max_lookahead_offset", \
-			"look_at_max_lookahead_offset":
+			"look_at_lookahead_max", \
+			"look_at_lookahead_max_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
-	if property.name == "look_at_max_lookahead_offset" and not look_at_enable_max_lookahead_offset:
+	if property.name == "look_at_lookahead_max_value" and not look_at_lookahead_max:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	##########################
@@ -1525,15 +1545,15 @@ func _get_follow_target_velocity(delta: float) -> Vector3:
 				return prop_v
 
 	# Fallback: estimate from position delta using raw target position
-	var dt := maxf(delta, 0.0001)
-	var current_pos := follow_target.global_position
+	var dt: float = maxf(delta, 0.0001)
+	var current_pos: Vector3 = follow_target.global_position
 
 	if not _lookahead_follow_has_prev_sample:
 		_lookahead_follow_has_prev_sample = true
 		_lookahead_follow_sample_pos_prev = current_pos
 		return Vector3.ZERO
 
-	var vel := (current_pos - _lookahead_follow_sample_pos_prev) / dt
+	var vel:Vector3 = (current_pos - _lookahead_follow_sample_pos_prev) / dt
 	_lookahead_follow_sample_pos_prev = current_pos
 	return vel
 
@@ -1570,21 +1590,21 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 		return prop_v
 
 	# Fallback: estimate from position delta
-	var dt := maxf(delta, 0.0001)
-	var current_pos := target.global_position
+	var dt: float = maxf(delta, 0.0001)
+	var current_pos: Vector3 = target.global_position
 
 	if not _lookahead_look_at_has_prev_sample:
 		_lookahead_look_at_has_prev_sample = true
 		_lookahead_look_at_sample_pos_prev = current_pos
 		return Vector3.ZERO
 
-	var vel := (current_pos - _lookahead_look_at_sample_pos_prev) / dt
+	var vel: Vector3 = (current_pos - _lookahead_look_at_sample_pos_prev) / dt
 	_lookahead_look_at_sample_pos_prev = current_pos
 	return vel
 
 
 func _add_follow_lookahead_position(position: Vector3, delta: float) -> void:
-	if !is_zero_approx(delta):
+	if not is_zero_approx(delta):
 		# Get velocity directly from physics body if available, otherwise estimate from position
 		var velocity: Vector3 = _get_follow_target_velocity(delta)
 		var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
@@ -1612,7 +1632,7 @@ func _add_look_at_lookahead_position(position: Vector3, delta: float) -> void:
 
 
 func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
-	if not follow_lookahead_enabled:
+	if not follow_lookahead:
 		_lookahead_follow_reset = true
 		return Vector3.ZERO
 
@@ -1628,16 +1648,16 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 		_lookahead_follow_velocity.z * follow_lookahead_time.z
 	)
 
-	if follow_enable_max_lookahead_offset:
-		lookahead_delta.x = clampf(lookahead_delta.x, -follow_max_lookahead_offset.x, follow_max_lookahead_offset.x)
-		lookahead_delta.y = clampf(lookahead_delta.y, -follow_max_lookahead_offset.y, follow_max_lookahead_offset.y)
-		lookahead_delta.z = clampf(lookahead_delta.z, -follow_max_lookahead_offset.z, follow_max_lookahead_offset.z)
+	if follow_lookahead_max:
+		lookahead_delta.x = clampf(lookahead_delta.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x)
+		lookahead_delta.y = clampf(lookahead_delta.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y)
+		lookahead_delta.z = clampf(lookahead_delta.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
 
 	return lookahead_delta
 
 
 func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction: Vector3) -> Vector3:
-	if not look_at_lookahead_enabled:
+	if not look_at_lookahead:
 		_lookahead_look_at_reset = true
 		return Vector3.ZERO
 
@@ -1649,8 +1669,8 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 
 	var lookahead_delta: Vector3 = _lookahead_look_at_velocity * look_at_lookahead_time
 
-	if look_at_enable_max_lookahead_offset:
-		lookahead_delta = lookahead_delta.limit_length(look_at_max_lookahead_offset)
+	if look_at_lookahead_max:
+		lookahead_delta = lookahead_delta.limit_length(look_at_lookahead_max_value)
 
 	return lookahead_delta
 
@@ -2513,28 +2533,32 @@ func get_look_at_damping_value() -> float:
 	return look_at_damping_value
 
 
-## Enables or disables [member follow_lookahead_enabled].
-func set_follow_lookahead_enabled(value: bool) -> void:
-	if follow_lookahead_enabled == value: return
-	follow_lookahead_enabled = value
+## Enables or disables [member follow_lookahead].
+func set_follow_lookahead(value: bool) -> void:
+	if follow_lookahead == value: return
+	follow_lookahead = value
 	_lookahead_follow_reset = true
 	if not value:
 		_reset_follow_lookahead()
 	notify_property_list_changed()
 
-## Gets the [member follow_lookahead_enabled] value.
-func get_follow_lookahead_enabled() -> bool:
-	return follow_lookahead_enabled
+## Gets the [member follow_lookahead] value.
+func get_follow_lookahead() -> bool:
+	return follow_lookahead
+
 
 ## Assigns the [member follow_lookahead_time] value.
 func set_follow_lookahead_time(value: Vector3) -> void:
-	follow_lookahead_time.x = maxf(0.0, value.x)
-	follow_lookahead_time.y = maxf(0.0, value.y)
-	follow_lookahead_time.z = maxf(0.0, value.z)
+	follow_lookahead_time = Vector3(
+		maxf(0.0, value.x),
+		maxf(0.0, value.y),
+		maxf(0.0, value.z)
+	)
 
 ## Gets the [member follow_lookahead_time] value.
 func get_follow_lookahead_time() -> Vector3:
 	return follow_lookahead_time
+
 
 ## Assigns the [member follow_lookahead_acceleration] value.
 func set_follow_lookahead_acceleration(value: float) -> void:
@@ -2544,6 +2568,7 @@ func set_follow_lookahead_acceleration(value: float) -> void:
 func get_follow_lookahead_acceleration() -> float:
 	return follow_lookahead_acceleration
 
+
 ## Assigns the [member follow_lookahead_deacceleration] value.
 func set_follow_lookahead_deacceleration(value: float) -> void:
 	follow_lookahead_deacceleration = maxf(0.0, value)
@@ -2552,35 +2577,43 @@ func set_follow_lookahead_deacceleration(value: float) -> void:
 func get_follow_lookahead_deacceleration() -> float:
 	return follow_lookahead_deacceleration
 
+
 ## Enables or disables [member follow_enable_max_lookahead_offset].
-func set_follow_enable_max_lookahead_offset(value: bool) -> void:
-	follow_enable_max_lookahead_offset = value
+func set_follow_lookahead_max(value: bool) -> void:
+	follow_lookahead_max = value
 	notify_property_list_changed()
 
 ## Gets the [member follow_enable_max_lookahead_offset] value.
-func get_follow_enable_max_lookahead_offset() -> bool:
-	return follow_enable_max_lookahead_offset
+func get_follow_lookahead_max() -> bool:
+	return follow_lookahead_max
+
 
 ## Assigns the [member follow_max_lookahead_offset] value.
-func set_follow_max_lookahead_offset(value: Vector3) -> void:
-	follow_max_lookahead_offset = value
+func set_follow_lookahead_max_value(value: Vector3) -> void:
+	follow_lookahead_max_value = Vector3(
+		maxf(0.0,value.x),
+		maxf(0.0,value.y),
+		maxf(0.0,value.z)
+	)
 
 ## Gets the [member follow_max_lookahead_offset] value.
-func get_follow_max_lookahead_offset() -> Vector3:
-	return follow_max_lookahead_offset
+func get_follow_lookahead_max_value() -> Vector3:
+	return follow_lookahead_max_value
 
-## Enables or disables [member look_at_lookahead_enabled].
-func set_look_at_lookahead_enabled(value: bool) -> void:
-	if look_at_lookahead_enabled == value: return
-	look_at_lookahead_enabled = value
+
+## Enables or disables [member look_at_lookahead].
+func set_look_at_lookahead(value: bool) -> void:
+	if look_at_lookahead == value: return
+	look_at_lookahead = value
 	_lookahead_look_at_reset = true
 	if not value:
 		_reset_look_at_lookahead()
 	notify_property_list_changed()
 
-## Gets the [member look_at_lookahead_enabled] value.
-func get_look_at_lookahead_enabled() -> bool:
-	return look_at_lookahead_enabled
+## Gets the [member look_at_lookahead] value.
+func get_look_at_lookahead() -> bool:
+	return look_at_lookahead
+
 
 ## Assigns the [member look_at_lookahead_time] value.
 func set_look_at_lookahead_time(value: float) -> void:
@@ -2590,6 +2623,7 @@ func set_look_at_lookahead_time(value: float) -> void:
 func get_look_at_lookahead_time() -> float:
 	return look_at_lookahead_time
 
+
 ## Assigns the [member look_at_lookahead_acceleration] value.
 func set_look_at_lookahead_acceleration(value: float) -> void:
 	look_at_lookahead_acceleration = maxf(0.0, value)
@@ -2597,6 +2631,7 @@ func set_look_at_lookahead_acceleration(value: float) -> void:
 ## Gets the [member look_at_lookahead_acceleration] value.
 func get_look_at_lookahead_acceleration() -> float:
 	return look_at_lookahead_acceleration
+
 
 ## Assigns the [member look_at_lookahead_deacceleration] value.
 func set_look_at_lookahead_deacceleration(value: float) -> void:
@@ -2606,22 +2641,25 @@ func set_look_at_lookahead_deacceleration(value: float) -> void:
 func get_look_at_lookahead_deacceleration() -> float:
 	return look_at_lookahead_deacceleration
 
-## Enables or disables [member look_at_enable_max_lookahead_offset].
-func set_look_at_enable_max_lookahead_offset(value: bool) -> void:
-	look_at_enable_max_lookahead_offset = value
+
+## Enables or disables [member look_at_lookahead_max].
+func set_look_at_lookahead_max(value: bool) -> void:
+	look_at_lookahead_max = value
 	notify_property_list_changed()
 
-## Gets the [member look_at_enable_max_lookahead_offset] value.
-func get_look_at_enable_max_lookahead_offset() -> bool:
-	return look_at_enable_max_lookahead_offset
+## Gets the [member look_at_lookahead_max] value.
+func get_look_at_lookahead_max() -> bool:
+	return look_at_lookahead_max
 
-## Assigns the [member look_at_max_lookahead_offset] value.
-func set_look_at_max_lookahead_offset(value: float) -> void:
-	look_at_max_lookahead_offset = value
 
-## Gets the [member look_at_max_lookahead_offset] value.
-func get_look_at_max_lookahead_offset() -> float:
-	return look_at_max_lookahead_offset
+## Assigns the [member look_at_lookahead_max_value] value.
+func set_look_at_max_lookahead_value(value: float) -> void:
+	look_at_lookahead_max_value = value
+
+## Gets the [member look_at_lookahead_max_value] value.
+func get_look_at_max_lookahead_value() -> float:
+	return look_at_lookahead_max_value
+
 
 ## Assigns the Follow Axis.
 func set_follow_axis_lock(value: FollowLockAxis) -> void:
