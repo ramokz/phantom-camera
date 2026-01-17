@@ -126,19 +126,19 @@ var _cam_exposure_max_sensitivity_changed: bool = false
 var _prev_cam_dof_blur_amount: float = 0.1
 var _cam_dof_blur_amount_changed: bool = false
 
-var _cam_dof_blur_far_distance_default: float = 10
+var _cam_dof_blur_far_distance_default: float = 10.0
 var _prev_cam_dof_blur_far_distance: float = _cam_dof_blur_far_distance_default
 var _cam_dof_blur_far_distance_changed: bool = false
 
-var _cam_dof_blur_far_transition_default: float = 5
+var _cam_dof_blur_far_transition_default: float = 5.0
 var _prev_cam_dof_blur_far_transition: float = _cam_dof_blur_far_transition_default
 var _cam_dof_blur_far_transition_changed: bool = false
 
-var _cam_dof_blur_near_distance_default: float = 2
+var _cam_dof_blur_near_distance_default: float = 2.0
 var _prev_cam_dof_blur_near_distance: float = _cam_dof_blur_near_distance_default
 var _cam_dof_blur_near_distance_changed: bool = false
 
-var _cam_dof_blur_near_transition_default: float = 1
+var _cam_dof_blur_near_transition_default: float = 1.0
 var _prev_cam_dof_blur_near_transition: float = _cam_dof_blur_near_transition_default
 var _cam_dof_blur_near_transition_changed: bool = false
 
@@ -172,16 +172,16 @@ var _cam_frustum_focus_distance_changed: bool = false
 
 #endregion
 
-var _prev_cam_h_offset: float = 0
+var _prev_cam_h_offset: float = 0.0
 var _cam_h_offset_changed: bool = false
 
-var _prev_cam_v_offset: float = 0
+var _prev_cam_v_offset: float = 0.0
 var _cam_v_offset_changed: bool = false
 
-var _prev_cam_fov: float = 75
+var _prev_cam_fov: float = 75.0
 var _cam_fov_changed: bool = false
 
-var _prev_cam_size: float = 1
+var _prev_cam_size: float = 1.0
 var _cam_size_changed: bool = false
 
 var _prev_cam_frustum_offset: Vector2 = Vector2.ZERO
@@ -190,7 +190,7 @@ var _cam_frustum_offset_changed: bool = false
 var _prev_cam_near: float = 0.05
 var _cam_near_changed: bool = false
 
-var _prev_cam_far: float = 4000
+var _prev_cam_far: float = 4000.0
 var _cam_far_changed: bool = false
 
 #endregion
@@ -528,10 +528,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			if _active_pcam_3d.follow_mode == _active_pcam_3d.FollowMode.THIRD_PERSON:
 				if not _active_pcam_3d.shape:
 
-					var pyramid_shape_data = Engine.get_singleton("PhysicsServer3D").call("shape_get_data",
+					var pyramid_shape_data = Engine.get_singleton(&"PhysicsServer3D").call("shape_get_data",
 						camera_3d.get_pyramid_shape_rid()
 					)
-					var shape = ClassDB.instantiate("ConvexPolygonShape3D")
+					var shape = ClassDB.instantiate(&"ConvexPolygonShape3D")
 					shape.points = pyramid_shape_data
 					_active_pcam_3d.shape = shape
 
@@ -691,7 +691,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		Engine.get_version_info().minor >= 3:
 			_tween_is_instant = true
 	else:
-		_tween_elapsed_time = 0
+		_tween_elapsed_time = 0.0
 
 	_check_pcam_physics()
 
@@ -956,7 +956,7 @@ func _camera_3d_resource_changed() -> void:
 			if Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_camera_3d_edited):
 				Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.disconnect(_camera_3d_edited)
 
-func _camera_3d_edited(value: String) -> void:
+func _camera_3d_edited(value: StringName) -> void:
 	if not Engine.get_singleton(&"EditorInterface").get_inspector().get_edited_object() == camera_3d: return
 	camera_3d.set(value, _active_pcam_3d.camera_3d_resource.get(value))
 	push_warning("Camera3D properties are being overridden by ", _active_pcam_3d.name, "'s Camera3DResource")
@@ -1187,7 +1187,7 @@ func _pcam_tween(delta: float) -> void:
 	if _tween_elapsed_time < _tween_duration: return
 
 	_trigger_pcam_tween = false
-	_tween_elapsed_time = 0
+	_tween_elapsed_time = 0.0
 	viewfinder_update.emit(true)
 
 	if _is_2d:

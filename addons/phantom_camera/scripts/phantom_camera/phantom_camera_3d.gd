@@ -390,7 +390,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 ## Sets a distance offset from the centre of the target's position.
 ## The distance is applied to the [param PhantomCamera3D]'s local z axis.
-@export var follow_distance: float = 1:
+@export var follow_distance: float = 1.0:
 	set = set_follow_distance,
 	get = get_follow_distance
 
@@ -412,12 +412,12 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## happen, so adjust the value here accordingly.
 ## [br][br]
 ## If only one follow target is assigned to [member follow_targets], this value will be used as the `follow_distance`.
-@export var auto_follow_distance_min: float = 1:
+@export var auto_follow_distance_min: float = 1.0:
 	set = set_auto_follow_distance_min,
 	get = get_auto_follow_distance_min
 
 ## Sets the maximum distance between the Camera and centre of [AABB].
-@export var auto_follow_distance_max: float = 5:
+@export var auto_follow_distance_max: float = 5.0:
 	set = set_auto_follow_distance_max,
 	get = get_auto_follow_distance_max
 
@@ -429,7 +429,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## E.g. if the value between the [member auto_follow_distance_min] and
 ## [member auto_follow_distance_max] is small, consider keeping the number low
 ## and vice versa.
-@export var auto_follow_distance_divisor: float = 10:
+@export var auto_follow_distance_divisor: float = 10.0:
 	set = set_auto_follow_distance_divisor,
 	get = get_auto_follow_distance_divisor
 
@@ -483,7 +483,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## If the targeted node leaves the horizontal bounds, the
 ## [param PhantomCamera3D] will follow the target horizontally to keep
 ## it within bounds.
-@export_range(0, 1) var dead_zone_width: float = 0:
+@export_range(0.0, 1.0) var dead_zone_width: float = 0.0:
 	set(value):
 		dead_zone_width = value
 		dead_zone_changed.emit()
@@ -495,7 +495,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## If the targeted node leaves the vertical bounds, the
 ## [param PhantomCamera3D] will follow the target horizontally to keep
 ## it within bounds.
-@export_range(0, 1) var dead_zone_height: float = 0:
+@export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
 	set(value):
 		dead_zone_height = value
 		dead_zone_changed.emit()
@@ -511,19 +511,19 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export_subgroup("Spring Arm")
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]X[/code] axis.
-@export_range(-360, 360, 0.1,"or_greater", "or_less", "radians_as_degrees")
-var vertical_rotation_offset: float = 0:
+@export_range(-360.0, 360.0, 0.1,"or_greater", "or_less", "radians_as_degrees")
+var vertical_rotation_offset: float = 0.0:
 	set = set_vertical_rotation_offset,
 	get = get_vertical_rotation_offset
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]Y[/code] axis.
-@export_range(-360, 360, 0.1, "or_greater", "or_less", "radians_as_degrees")
-var horizontal_rotation_offset: float = 0:
+@export_range(-360.0, 360.0, 0.1, "or_greater", "or_less", "radians_as_degrees")
+var horizontal_rotation_offset: float = 0.0:
 	set = set_horizontal_rotation_offset,
 	get = get_horizontal_rotation_offset
 
 ## Defines the [member SpringArm3D.spring_length].
-@export var spring_length: float = 1:
+@export var spring_length: float = 1.0:
 	set = set_spring_length,
 	get = get_spring_length
 
@@ -1412,9 +1412,9 @@ func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vect
 
 	if target_basis.determinant() == 0:
 		if target_basis.z == Vector3.UP:
-			global_rotation_degrees.x = -90
+			global_rotation_degrees.x = -90.0
 		else:
-			global_rotation_degrees.x = 90
+			global_rotation_degrees.x = 90.0
 
 		_transform_output.basis = global_basis
 		return quaternion
@@ -2203,11 +2203,11 @@ func get_follow_damping() -> bool:
 
 ## Assigns new [member follow_damping_value] value.
 func set_follow_damping_value(value: Vector3) -> void:
-	## TODO - Should be using @export_range once minimum version support is Godot 4.3
-	if value.x < 0: value.x = 0
-	elif value.y < 0: value.y = 0
-	elif value.z < 0: value.z = 0
-	follow_damping_value = value
+	follow_damping_value = Vector3(
+		maxf(0.0, value.x),
+		maxf(0.0, value.y),
+		maxf(0.0, value.z),
+	)
 
 ## Gets the currents [member follow_damping_value] value.
 func get_follow_damping_value() -> Vector3:
@@ -2719,7 +2719,7 @@ func set_noise(value: PhantomCameraNoise3D) -> void:
 	noise = value
 	if value != null:
 		_has_noise_resource = true
-		noise.set_trauma(1)
+		noise.set_trauma(1.0)
 	else:
 		_has_noise_resource = false
 		_transform_noise = Transform3D()

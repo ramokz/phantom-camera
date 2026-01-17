@@ -312,7 +312,7 @@ var _follow_axis_lock_value: Vector2 = Vector2.ZERO
 var _should_rotate_with_target: bool = false
 
 ## Offsets the rotation when [member rotate_with_target] is enabled.
-@export_range(-360, 360, 0.001, "radians_as_degrees") var rotation_offset: float = 0:
+@export_range(-360.0, 360.0, 0.001, "radians_as_degrees") var rotation_offset: float = 0.0:
 	set = set_rotation_offset,
 	get = get_rotation_offset
 
@@ -322,7 +322,7 @@ var _should_rotate_with_target: bool = false
 	get = get_rotation_damping
 
 ## Defines the damping amount for the [member rotate_with_target].
-@export_range(0, 1) var rotation_damping_value: float = 0.1:
+@export_range(0.0, 1.0) var rotation_damping_value: float = 0.1:
 	set = set_rotation_damping_value,
 	get = get_rotation_damping_value
 
@@ -342,14 +342,14 @@ var _should_rotate_with_target: bool = false
 ## Sets the param minimum zoom amount, in other words how far away the
 ## [param Camera2D] can be from scene.[br][br]
 ## This only works when [member auto_zoom] is enabled.
-@export var auto_zoom_min: float = 1:
+@export var auto_zoom_min: float = 1.0:
 	set = set_auto_zoom_min,
 	get = get_auto_zoom_min
 
 ## Sets the maximum zoom amount, in other words how close the [param Camera2D]
 ## can move towards the scene.[br][br]
 ## This only works when [member auto_zoom] is enabled.
-@export var auto_zoom_max: float = 5:
+@export var auto_zoom_max: float = 5.0:
 	set = set_auto_zoom_max,
 	get = get_auto_zoom_max
 
@@ -369,7 +369,7 @@ var _should_rotate_with_target: bool = false
 ## If the targeted node leaves the horizontal bounds, the
 ## [param PhantomCamera2D] will follow the target horizontally to keep
 ## it within bounds.
-@export_range(0, 1) var dead_zone_width: float = 0:
+@export_range(0.0, 1.0) var dead_zone_width: float = 0.0:
 	set(value):
 		dead_zone_width = value
 		dead_zone_changed.emit()
@@ -381,7 +381,7 @@ var _should_rotate_with_target: bool = false
 ## If the targeted node leaves the vertical bounds, the
 ## [param PhantomCamera2D] will follow the target horizontally to keep
 ## it within bounds.
-@export_range(0, 1) var dead_zone_height: float = 0:
+@export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
 	set(value):
 		dead_zone_height = value
 		dead_zone_changed.emit()
@@ -477,7 +477,7 @@ var _should_rotate_with_target: bool = false
 ## Applies an offset to the [TileMapLayer] Limit or [Shape2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
-@export var limit_margin: Vector4i = Vector4.ZERO:
+@export var limit_margin: Vector4i = Vector4i.ZERO:
 	set = set_limit_margin,
 	get = get_limit_margin
 #@export var limit_smoothed: bool = false: # TODO - Needs proper support
@@ -525,7 +525,7 @@ var _follow_targets_single_target_index: int = 0
 var _follow_targets: Array[Node2D] = []
 
 var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the velocity of the follow movement
-var _rotation_velocity_ref: float = 0 # Stores and applies the velocity of the rotation movement
+var _rotation_velocity_ref: float = 0.0 # Stores and applies the velocity of the rotation movement
 
 var _has_follow_path: bool = false
 
@@ -920,12 +920,12 @@ func _get_follow_target_velocity(delta: float) -> Vector2:
 			return _rigid_body_2d.linear_velocity
 		FollowTargetPhysicsClass.OTHER:
 			# Optional extension points for custom controllers
-			if follow_target.has_method("get_velocity"):
-				var v = follow_target.call("get_velocity")
+			if follow_target.has_method(&"get_velocity"):
+				var v = follow_target.call(&"get_velocity")
 				if v is Vector2:
 					return v
 
-			var prop_v = follow_target.get("velocity")
+			var prop_v = follow_target.get(&"velocity")
 			if prop_v is Vector2:
 				return prop_v
 
@@ -947,7 +947,7 @@ func _apply_lookahead(base_pos: Vector2, delta: float) -> Vector2:
 	var vel := _get_follow_target_velocity(delta)
 
 	# Predict forward, then clamp to max offset
-	var desired := Vector2(
+	var desired: Vector2 = Vector2(
 		vel.x * lookahead_prediction_time.x,
 		vel.y * lookahead_prediction_time.y
 	)
@@ -1596,10 +1596,10 @@ func get_follow_damping() -> bool:
 
 ## Assigns new Damping value.
 func set_follow_damping_value(value: Vector2) -> void:
-	## TODO - Should be using @export_range once minimum version support is Godot 4.3
-	if value.x < 0: value.x = 0
-	elif value.y < 0: value.y = 0
-	follow_damping_value = value
+	follow_damping_value = Vector2(
+		maxf(0.0, value.x),
+		maxf(0.0, value.y),
+	)
 
 ## Gets the current Follow Damping value.
 func get_follow_damping_value() -> Vector2:
@@ -1813,7 +1813,7 @@ func set_limit_target(value: NodePath) -> void:
 			if col_shape.shape == null:
 				printerr("No Shape2D in: ", col_shape.name)
 				reset_limit()
-				limit_target = ""
+				limit_target = NodePath("")
 				return
 		else:
 			printerr("Limit Target is not a TileMapLayer or CollisionShape2D node")
@@ -1860,7 +1860,7 @@ func set_noise(value: PhantomCameraNoise2D) -> void:
 	noise = value
 	if value != null:
 		_has_noise_resource = true
-		noise.set_trauma(1)
+		noise.set_trauma(1.0)
 	else:
 		_has_noise_resource = false
 		_transform_noise = Transform2D()

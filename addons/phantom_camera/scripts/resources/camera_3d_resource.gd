@@ -36,7 +36,7 @@ enum ProjectionType {
 		return cull_mask
 
 ## Overrides [member Camera3D.h_offset].
-@export_range(0, 1, 0.001, "or_greater", "or_less", "hide_slider", "suffix:m") var h_offset: float = 0:
+@export_range(0.0, 1.0, 0.001, "or_greater", "or_less", "hide_slider", "suffix:m") var h_offset: float = 0.0:
 	set(value):
 		h_offset = value
 		emit_changed()
@@ -44,7 +44,7 @@ enum ProjectionType {
 		return h_offset
 
 ## Overrides [member Camera3D.v_offset].
-@export_range(0, 1, 0.001, "or_greater", "or_less", "hide_slider", "suffix:m") var v_offset: float = 0:
+@export_range(0.0, 1.0, 0.001, "or_greater", "or_less", "hide_slider", "suffix:m") var v_offset: float = 0.0:
 	set(value):
 		v_offset = value
 		emit_changed()
@@ -59,7 +59,7 @@ enum ProjectionType {
 		return projection
 
 ## Overrides [member Camera3D.fov].
-@export_range(1, 179, 0.1, "degrees") var fov: float = 75:
+@export_range(1.0, 179.0, 0.1, "degrees") var fov: float = 75.0:
 	set(value):
 		fov = value
 		emit_changed()
@@ -67,7 +67,7 @@ enum ProjectionType {
 		return fov
 
 ## Overrides [member Camera3D.size].
-@export_range(0.001, 100, 0.001, "suffix:m", "or_greater") var size: float = 1:
+@export_range(0.001, 100.0, 0.001, "suffix:m", "or_greater") var size: float = 1.0:
 	set(value):
 		size = value
 		emit_changed()
@@ -83,7 +83,7 @@ enum ProjectionType {
 		return frustum_offset
 
 ## Overrides [member Camera3D.near].
-@export_range(0.001, 10, 0.001, "suffix:m", "or_greater") var near: float = 0.05:
+@export_range(0.001, 10.0, 0.001, "suffix:m", "or_greater") var near: float = 0.05:
 	set(value):
 		near = value
 		emit_changed()
@@ -91,7 +91,7 @@ enum ProjectionType {
 		return near
 
 ## Overrides [member Camera3D.far].
-@export_range(0.01, 4000, 0.001, "suffix:m","or_greater") var far: float = 4000:
+@export_range(0.01, 4000.0, 0.001, "suffix:m","or_greater") var far: float = 4000.0:
 	set(value):
 		far = value
 		emit_changed()
