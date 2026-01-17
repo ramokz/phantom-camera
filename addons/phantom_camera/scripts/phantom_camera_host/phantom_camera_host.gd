@@ -203,6 +203,12 @@ var _reset_noise_offset_2d: bool = false
 var _noise_emitted_output_2d: Transform2D = Transform2D()
 var _noise_emitted_output_3d: Transform3D = Transform3D()
 
+# Track last applied attributes/environment to detect changes (for copy-write pattern)
+var _last_applied_attributes: CameraAttributes = null
+var _last_applied_environment: Environment = null
+var _last_applied_attributes_hash: int = 0
+var _last_applied_environment_hash: int = 0
+
 #endregion
 
 # NOTE - Temp solution until Godot has better plugin autoload recognition out-of-the-box.
@@ -522,6 +528,12 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_3d = pcam
 		_active_pcam_priority = _active_pcam_3d.priority
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
+
+		# Reset tracked resources for copy-write pattern
+		_last_applied_attributes = null
+		_last_applied_environment = null
+		_last_applied_attributes_hash = 0
+		_last_applied_environment_hash = 0
 
 		if not Engine.is_editor_hint():
 			# Assigns a default shape to SpringArm3D node is none is supplied
@@ -915,17 +927,81 @@ func _pcam_follow(_delta: float) -> void:
 		_show_viewfinder_in_play()
 		_viewfinder_needed_check = false
 
-	if Engine.is_editor_hint():
-		if not _is_2d:
-			# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99729
+	if not _is_2d:
+		# Copy-write pattern: Due to CameraAttributes and Environment resources not properly
+		# emitting changed signals for their properties (Godot limitation), we use a copy-write
+		# approach to ensure changes are detected during runtime and in editor animations.
+		# In editor: Direct assignment to avoid Git noise from duplicate() changing resource IDs
+		# At runtime: Use duplicate() to force change detection for animations
+		# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99729
+		var attributes_changed: bool = false
+		if _active_pcam_3d.attributes != _last_applied_attributes:
+			# Reference changed
+			attributes_changed = true
+		elif _active_pcam_3d.attributes != null and not Engine.is_editor_hint():
+			# Only check property changes at runtime (for animations)
+			# In editor, we rely on direct reference which updates automatically
+			var current_hash: int = _active_pcam_3d.attributes.get_property_list().hash()
+			# Also include actual property values in the hash
+			for prop in _active_pcam_3d.attributes.get_property_list():
+				if prop.usage & PROPERTY_USAGE_STORAGE:
+					current_hash = hash(str(current_hash) + str(_active_pcam_3d.attributes.get(prop.name)))
+			if current_hash != _last_applied_attributes_hash:
+				attributes_changed = true
+
+		if attributes_changed:
+			_last_applied_attributes = _active_pcam_3d.attributes
 			if _active_pcam_3d.attributes != null:
-				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
+				if Engine.is_editor_hint():
+					# In editor: Direct assignment to avoid Git noise
+					camera_3d.attributes = _active_pcam_3d.attributes
+				else:
+					# At runtime: Duplicate to force change detection for animations
+					camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
+					# Calculate and store hash AFTER applying to prevent re-triggering
+					var new_hash: int = _active_pcam_3d.attributes.get_property_list().hash()
+					for prop in _active_pcam_3d.attributes.get_property_list():
+						if prop.usage & PROPERTY_USAGE_STORAGE:
+							new_hash = hash(str(new_hash) + str(_active_pcam_3d.attributes.get(prop.name)))
+					_last_applied_attributes_hash = new_hash
+			else:
+				camera_3d.attributes = null
+				_last_applied_attributes_hash = 0
 
-			# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99873
+		# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99873
+		var environment_changed: bool = false
+		if _active_pcam_3d.environment != _last_applied_environment:
+			# Reference changed
+			environment_changed = true
+		elif _active_pcam_3d.environment != null and not Engine.is_editor_hint():
+			# Only check property changes at runtime (for animations)
+			# In editor, we rely on direct reference which updates automatically
+			var current_hash: int = _active_pcam_3d.environment.get_property_list().hash()
+			# Also include actual property values in the hash
+			for prop in _active_pcam_3d.environment.get_property_list():
+				if prop.usage & PROPERTY_USAGE_STORAGE:
+					current_hash = hash(str(current_hash) + str(_active_pcam_3d.environment.get(prop.name)))
+			if current_hash != _last_applied_environment_hash:
+				environment_changed = true
+
+		if environment_changed:
+			_last_applied_environment = _active_pcam_3d.environment
 			if _active_pcam_3d.environment != null:
-				camera_3d.environment = _active_pcam_3d.environment.duplicate()
-
-
+				if Engine.is_editor_hint():
+					# In editor: Direct assignment to avoid Git noise
+					camera_3d.environment = _active_pcam_3d.environment
+				else:
+					# At runtime: Duplicate to force change detection for animations
+					camera_3d.environment = _active_pcam_3d.environment.duplicate()
+					# Calculate and store hash AFTER applying to prevent re-triggering
+					var new_hash: int = _active_pcam_3d.environment.get_property_list().hash()
+					for prop in _active_pcam_3d.environment.get_property_list():
+						if prop.usage & PROPERTY_USAGE_STORAGE:
+							new_hash = hash(str(new_hash) + str(_active_pcam_3d.environment.get(prop.name)))
+					_last_applied_environment_hash = new_hash
+			else:
+				camera_3d.environment = null
+				_last_applied_environment_hash = 0
 func _noise_emitted_2d(noise_output: Transform2D) -> void:
 	_noise_emitted_output_2d = noise_output
 	_has_noise_emitted = true
