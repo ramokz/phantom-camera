@@ -464,15 +464,15 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_follow_lookahead_deacceleration,
 	get = get_follow_lookahead_deacceleration
 
-## Enables a maximum offset limit for the follow lookahead effect.
-## When enabled, the follow lookahead offset will be clamped to the [member follow_lookahead_max_value] value.
+## Enables a maximum velocity limit for the follow lookahead effect.
+## When enabled, the follow target's velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.
 @export var follow_lookahead_max: bool = false:
 	set = set_follow_lookahead_max,
 	get = get_follow_lookahead_max
 
-## The maximum follow lookahead offset in meters (as a [Vector3]).
-## The follow lookahead offset will be clamped within these bounds on each axis.
-@export_custom(PROPERTY_HINT_LINK, "suffix:m") var follow_lookahead_max_value: Vector3 = Vector3(5.0, 5.0, 5.0):
+## The maximum follow lookahead velocity in meters per second (as a [Vector3]).
+## The follow target's velocity will be clamped within these bounds on each axis before applying lookahead time.
+@export_custom(PROPERTY_HINT_LINK, "suffix:m/s") var follow_lookahead_max_value: Vector3 = Vector3(5.0, 5.0, 5.0):
 	set = set_follow_lookahead_max_value,
 	get = get_follow_lookahead_max_value
 
@@ -594,15 +594,15 @@ var horizontal_rotation_offset: float = 0:
 	set = set_look_at_lookahead_deacceleration,
 	get = get_look_at_lookahead_deacceleration
 
-## Enables a maximum offset limit for the look at lookahead effect.
-## When enabled, the look at lookahead offset will be clamped to the [member look_at_max_lookahead_offset] value.
+## Enables a maximum velocity limit for the look at lookahead effect.
+## When enabled, the look at target's velocity will be clamped to the [member look_at_lookahead_max_value] before calculating lookahead.
 @export var look_at_lookahead_max: bool = false:
 	set = set_look_at_lookahead_max,
 	get = get_look_at_lookahead_max
 
-## The maximum look at lookahead offset in meters.
-## The look at lookahead offset will be clamped within these bounds.
-@export_custom(PROPERTY_HINT_NONE, "suffix:m") var look_at_lookahead_max_value: float = 5.0:
+## The maximum look at lookahead velocity in meters per second.
+## The look at target's velocity will be clamped within this bound before applying lookahead time.
+@export_custom(PROPERTY_HINT_NONE, "suffix:m/s") var look_at_lookahead_max_value: float = 5.0:
 	set = set_look_at_max_lookahead_value,
 	get = get_look_at_max_lookahead_value
 
@@ -1596,7 +1596,8 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 
 
 func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
-	if not follow_lookahead:
+	# Lookahead should only run at runtime, not in the editor
+	if not follow_lookahead or Engine.is_editor_hint():
 		_lookahead_follow_reset = true
 		return Vector3.ZERO
 
@@ -1613,23 +1614,25 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 			_lookahead_follow_velocity = result[0]
 			_lookahead_follow_smooth_velocity = result[1]
 
+	# Clamp velocity (not offset) to maintain smooth damping behavior when hitting max
+	var clamped_velocity: Vector3 = _lookahead_follow_velocity
+	if follow_lookahead_max:
+		clamped_velocity.x = clampf(clamped_velocity.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x)
+		clamped_velocity.y = clampf(clamped_velocity.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y)
+		clamped_velocity.z = clampf(clamped_velocity.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
 
 	var lookahead_delta: Vector3 = Vector3(
-		_lookahead_follow_velocity.x * follow_lookahead_time.x,
-		_lookahead_follow_velocity.y * follow_lookahead_time.y,
-		_lookahead_follow_velocity.z * follow_lookahead_time.z
+		clamped_velocity.x * follow_lookahead_time.x,
+		clamped_velocity.y * follow_lookahead_time.y,
+		clamped_velocity.z * follow_lookahead_time.z
 	)
-
-	if follow_lookahead_max:
-		lookahead_delta.x = clampf(lookahead_delta.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x)
-		lookahead_delta.y = clampf(lookahead_delta.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y)
-		lookahead_delta.z = clampf(lookahead_delta.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
 
 	return lookahead_delta
 
 
 func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction: Vector3) -> Vector3:
-	if not look_at_lookahead:
+	# Lookahead should only run at runtime, not in the editor
+	if not look_at_lookahead or Engine.is_editor_hint():
 		_lookahead_look_at_reset = true
 		return Vector3.ZERO
 
@@ -1646,11 +1649,11 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 		_lookahead_look_at_velocity = result[0]
 		_lookahead_look_at_smooth_velocity = result[1]
 
-
-	var lookahead_delta: Vector3 = _lookahead_look_at_velocity * look_at_lookahead_time
-
+	var clamped_velocity: Vector3 = _lookahead_look_at_velocity
 	if look_at_lookahead_max:
-		lookahead_delta = lookahead_delta.limit_length(look_at_lookahead_max_value)
+		clamped_velocity = clamped_velocity.limit_length(look_at_lookahead_max_value)
+
+	var lookahead_delta: Vector3 = clamped_velocity * look_at_lookahead_time
 
 	return lookahead_delta
 
