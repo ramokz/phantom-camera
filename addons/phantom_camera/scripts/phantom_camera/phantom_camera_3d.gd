@@ -749,16 +749,12 @@ var _follow_velocity_ref: Vector3 = Vector3.ZERO # Stores and applies the veloci
 
 var _lookahead_follow_velocity: Vector3 = Vector3.ZERO
 var _lookahead_follow_smooth_velocity: Vector3 = Vector3.ZERO
-var _lookahead_follow_position: Vector3 = Vector3.ZERO
-var _lookahead_follow_has_position: bool = false
 var _lookahead_follow_reset: bool = true
 var _lookahead_follow_sample_pos_prev: Vector3 = Vector3.ZERO
 var _lookahead_follow_has_prev_sample: bool = false
 
 var _lookahead_look_at_velocity: Vector3 = Vector3.ZERO
 var _lookahead_look_at_smooth_velocity: Vector3 = Vector3.ZERO
-var _lookahead_look_at_position: Vector3 = Vector3.ZERO
-var _lookahead_look_at_has_position: bool = false
 var _lookahead_look_at_reset: bool = true
 var _lookahead_look_at_sample_pos_prev: Vector3 = Vector3.ZERO
 var _lookahead_look_at_has_prev_sample: bool = false
@@ -1515,13 +1511,11 @@ func _smooth_damp_vector(current: Vector3, target: Vector3, current_velocity: Ve
 
 
 func _reset_follow_lookahead() -> void:
-	_lookahead_follow_has_position = false
 	_lookahead_follow_velocity = Vector3.ZERO
 	_lookahead_follow_smooth_velocity = Vector3.ZERO
 
 
 func _reset_look_at_lookahead() -> void:
-	_lookahead_look_at_has_position = false
 	_lookahead_look_at_velocity = Vector3.ZERO
 	_lookahead_look_at_smooth_velocity = Vector3.ZERO
 
@@ -1619,8 +1613,6 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 			_lookahead_follow_velocity = result[0]
 			_lookahead_follow_smooth_velocity = result[1]
 
-	_lookahead_follow_position = position
-	_lookahead_follow_has_position = true
 
 	var lookahead_delta: Vector3 = Vector3(
 		_lookahead_follow_velocity.x * follow_lookahead_time.x,
@@ -1654,8 +1646,6 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 		_lookahead_look_at_velocity = result[0]
 		_lookahead_look_at_smooth_velocity = result[1]
 
-	_lookahead_look_at_position = position
-	_lookahead_look_at_has_position = true
 
 	var lookahead_delta: Vector3 = _lookahead_look_at_velocity * look_at_lookahead_time
 
