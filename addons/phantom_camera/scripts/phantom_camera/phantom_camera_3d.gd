@@ -464,13 +464,14 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_follow_lookahead_deacceleration,
 	get = get_follow_lookahead_deacceleration
 
-## Enables a maximum velocity limit for the follow lookahead effect.
-## When enabled, the follow target's velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.
+## Enables a maximum velocity limit in [param meters per second] for the [member follow_lookahead] effect.[br]
+## If [code]true[/code], the [param follow target's] velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.[br]
+## In other words, no matter how fast the target's actual velocity is, the lookahead will only follow up to the speed defined here.
 @export var follow_lookahead_max: bool = false:
 	set = set_follow_lookahead_max,
 	get = get_follow_lookahead_max
 
-## The maximum follow lookahead velocity in meters per second (as a [Vector3]).
+## The maximum [member follow_lookahead] velocity in [param meters per second].
 ## The follow target's velocity will be clamped within these bounds on each axis before applying lookahead time.
 @export_custom(PROPERTY_HINT_LINK, "suffix:m/s") var follow_lookahead_max_value: Vector3 = Vector3(5.0, 5.0, 5.0):
 	set = set_follow_lookahead_max_value,
@@ -594,13 +595,14 @@ var horizontal_rotation_offset: float = 0.0:
 	set = set_look_at_lookahead_deacceleration,
 	get = get_look_at_lookahead_deacceleration
 
-## Enables a maximum velocity limit for the look at lookahead effect.
-## When enabled, the look at target's velocity will be clamped to the [member look_at_lookahead_max_value] before calculating lookahead.
+## Enables a maximum velocity limit in [param meters per second] for [member look_at_lookahead].[br]
+## If [code]true[/code], the [param look at target's] velocity will be clamped to the [member look_at_lookahead_max_value].[br]
+## In other words, no matter how fast the target's actual velocity is, the lookahead will only follow up to the speed defined here.
 @export var look_at_lookahead_max: bool = false:
 	set = set_look_at_lookahead_max,
 	get = get_look_at_lookahead_max
 
-## The maximum look at lookahead velocity in meters per second.
+## The maximum [member look_at_lookahead] velocity in [param meters per second].
 ## The look at target's velocity will be clamped within this bound before applying lookahead time.
 @export_custom(PROPERTY_HINT_NONE, "suffix:m/s") var look_at_lookahead_max_value: float = 5.0:
 	set = set_look_at_max_lookahead_value,
@@ -953,7 +955,7 @@ func _validate_property(property: Dictionary) -> void:
 	####################
 	## Follow Look Ahead
 	####################
-	if not follow_lookahead:
+	if not follow_lookahead or follow_mode == FollowMode.NONE:
 		match property.name:
 			"follow_lookahead_time", \
 			"follow_lookahead_acceleration", \
@@ -968,7 +970,7 @@ func _validate_property(property: Dictionary) -> void:
 	#######################
 	## Look At Look Ahead
 	#######################
-	if not look_at_lookahead:
+	if not look_at_lookahead or look_at_mode == LookAtMode.NONE:
 		match property.name:
 			"look_at_lookahead_time", \
 			"look_at_lookahead_acceleration", \
@@ -1606,10 +1608,7 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 		_lookahead_follow_reset = false
 
 	if not is_zero_approx(delta):
-			# Get velocity directly from physics body if available, otherwise estimate from position
 			var velocity: Vector3 = _get_follow_target_velocity(delta)
-
-			# Clamp velocity BEFORE smoothing to ensure the limit is respected
 			if follow_lookahead_max:
 				velocity = Vector3(
 					clampf(velocity.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x),
@@ -1623,13 +1622,7 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 			_lookahead_follow_velocity = result[0]
 			_lookahead_follow_smooth_velocity = result[1]
 
-	var lookahead_delta: Vector3 = Vector3(
-		_lookahead_follow_velocity.x * follow_lookahead_time.x,
-		_lookahead_follow_velocity.y * follow_lookahead_time.y,
-		_lookahead_follow_velocity.z * follow_lookahead_time.z
-	)
-
-	return lookahead_delta
+	return _lookahead_follow_velocity * follow_lookahead_time
 
 
 func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction: Vector3) -> Vector3:
