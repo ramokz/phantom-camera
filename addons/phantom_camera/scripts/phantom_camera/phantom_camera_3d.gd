@@ -1608,23 +1608,25 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 	if not is_zero_approx(delta):
 			# Get velocity directly from physics body if available, otherwise estimate from position
 			var velocity: Vector3 = _get_follow_target_velocity(delta)
+
+			# Clamp velocity BEFORE smoothing to ensure the limit is respected
+			if follow_lookahead_max:
+				velocity = Vector3(
+					clampf(velocity.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x),
+					clampf(velocity.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y),
+					clampf(velocity.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
+				)
+
 			var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
 			var smooth_time: float = follow_lookahead_deacceleration if slowing else follow_lookahead_acceleration
 			var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
 			_lookahead_follow_velocity = result[0]
 			_lookahead_follow_smooth_velocity = result[1]
 
-	# Clamp velocity (not offset) to maintain smooth damping behavior when hitting max
-	var clamped_velocity: Vector3 = _lookahead_follow_velocity
-	if follow_lookahead_max:
-		clamped_velocity.x = clampf(clamped_velocity.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x)
-		clamped_velocity.y = clampf(clamped_velocity.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y)
-		clamped_velocity.z = clampf(clamped_velocity.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
-
 	var lookahead_delta: Vector3 = Vector3(
-		clamped_velocity.x * follow_lookahead_time.x,
-		clamped_velocity.y * follow_lookahead_time.y,
-		clamped_velocity.z * follow_lookahead_time.z
+		_lookahead_follow_velocity.x * follow_lookahead_time.x,
+		_lookahead_follow_velocity.y * follow_lookahead_time.y,
+		_lookahead_follow_velocity.z * follow_lookahead_time.z
 	)
 
 	return lookahead_delta
@@ -1643,17 +1645,18 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 	if not is_zero_approx(delta):
 		# Get velocity directly from physics body if available, otherwise estimate from position
 		var velocity: Vector3 = _get_look_at_target_velocity(delta)
+
+		# Clamp velocity before smoothing to ensure the limit is respected
+		if look_at_lookahead_max:
+			velocity = velocity.limit_length(look_at_lookahead_max_value)
+
 		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
 		var smooth_time: float = look_at_lookahead_deacceleration if slowing else look_at_lookahead_acceleration
 		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
 		_lookahead_look_at_velocity = result[0]
 		_lookahead_look_at_smooth_velocity = result[1]
 
-	var clamped_velocity: Vector3 = _lookahead_look_at_velocity
-	if look_at_lookahead_max:
-		clamped_velocity = clamped_velocity.limit_length(look_at_lookahead_max_value)
-
-	var lookahead_delta: Vector3 = clamped_velocity * look_at_lookahead_time
+	var lookahead_delta: Vector3 = _lookahead_look_at_velocity * look_at_lookahead_time
 
 	return lookahead_delta
 
