@@ -820,7 +820,6 @@ func _check_pcam_physics() -> void:
 			if is_instance_valid(_active_pcam_3d):
 				force_idle_for_framed = interp_enabled \
 					and _active_pcam_3d.follow_mode == _active_pcam_3d.FollowMode.FRAMED \
-					and not _active_pcam_3d.follow_damping \
 					and interpolation_mode == InterpolationMode.AUTO
 
 			if force_idle_for_framed:
