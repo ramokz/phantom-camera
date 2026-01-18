@@ -1236,12 +1236,7 @@ func _set_follow_position(delta: float) -> void:
 					_follow_target_output_position = target_position + transform.basis.z * follow_distance
 					_framed_initialized = false
 				else:
-					viewport_position = get_viewport().get_camera_3d().unproject_position(target_position)
-					var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
-					viewport_position = viewport_position / visible_rect_size
-					_current_rotation = global_rotation
-
-					if _current_rotation != global_rotation:
+					# === Cinemachine-style screen-space framing ===
 					var camera: Camera3D = get_viewport().get_camera_3d()
 					if not is_instance_valid(camera):
 						_follow_target_output_position = target_position + transform.basis.z * follow_distance
@@ -1315,24 +1310,7 @@ func _set_follow_position(delta: float) -> void:
 					var world_at_clamped: Vector3 = camera.project_position(clamped_px, depth)
 					var delta_world: Vector3 = world_at_screen - world_at_clamped
 
-								# Update stored offset for non-breached axes
-								if framed_offset.x == 0:
-										_follow_framed_offset.x = current_offset.x
-								if framed_offset.y == 0:
-										_follow_framed_offset.z = current_offset.z
-
-								# Lock camera position on non-breached axes
-								if framed_offset.x == 0:
-										framed_target_position.x = current_global_position.x
-								if framed_offset.y == 0:
-										framed_target_position.z = current_global_position.z
-
-								_follow_target_output_position = framed_target_position
-					else:
-						_follow_framed_offset = global_position - target_position
-						_follow_target_position = global_position
-						_current_rotation = global_rotation
-						return
+					# Compute target position - damping will be applied in _interpolate_position
 					_follow_target_output_position = _transform_output.origin + delta_world
 					_set_follow_gizmo_line_position(follow_target.global_position)
 			else:
