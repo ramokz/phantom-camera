@@ -719,6 +719,7 @@ var _camera_target: Node3D = self # Calculates the position of the camera in the
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
+var _follow_target_has_interpolation: bool = false # Cached check for get_global_transform_interpolated support
 
 var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
 var _character_body_3d: CharacterBody3D = null
@@ -763,6 +764,14 @@ var _lookahead_look_at_has_prev_sample: bool = false
 
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
+
+# Cinemachine-style framed follow state
+var _framed_depth_ref: float = 0.0 # Stable depth reference to prevent bobbing
+var _framed_output_position: Vector3 = Vector3.ZERO # Smoothed output position
+var _framed_initialized: bool = false # Whether framed state has been initialized
+var _framed_correction_velocity: Vector3 = Vector3.ZERO # Velocity for smooth damping of corrections
+var _framed_smoothed_target: Vector3 = Vector3.ZERO # Smoothed target position to filter physics jitter
+var _previous_basis: Basis = Basis.IDENTITY # For rotation change detection
 
 var _follow_spring_arm: SpringArm3D = null
 var _has_follow_spring_arm: bool = false
@@ -1054,6 +1063,8 @@ func _exit_tree() -> void:
 
 
 func _ready():
+	_physics_interpolation_enabled = ProjectSettings.get_setting("physics/common/physics_interpolation")
+
 	match follow_mode:
 		FollowMode.THIRD_PERSON:
 			_is_third_person_follow = true
@@ -1221,7 +1232,9 @@ func _set_follow_position(delta: float) -> void:
 			var target_position: Vector3 = raw_target_position + lookahead_delta
 			if not Engine.is_editor_hint():
 				if not _is_active:
+					# When inactive, just compute target position + distance
 					_follow_target_output_position = target_position + transform.basis.z * follow_distance
+					_framed_initialized = false
 				else:
 					viewport_position = get_viewport().get_camera_3d().unproject_position(target_position)
 					var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
@@ -1229,39 +1242,78 @@ func _set_follow_position(delta: float) -> void:
 					_current_rotation = global_rotation
 
 					if _current_rotation != global_rotation:
+					var camera: Camera3D = get_viewport().get_camera_3d()
+					if not is_instance_valid(camera):
 						_follow_target_output_position = target_position + transform.basis.z * follow_distance
+						return
+					_framed_smoothed_target = target_position
+					var target_world_pos: Vector3 = _framed_smoothed_target
 
-					if _get_framed_side_offset() != Vector2.ZERO:
-						var framed_offset: Vector2 = _get_framed_side_offset()
-						var framed_target_position: Vector3 = target_position + _follow_framed_offset
-						var glo_pos: Vector3
+					# Check for significant rotation change and refresh depth reference without snapping
+					if _framed_initialized:
+						var basis_diff: float = (_previous_basis.z - global_basis.z).length()
+						if basis_diff > 0.01:
+							var cam_forward: Vector3 = - camera.global_basis.z
+							_framed_depth_ref = (target_world_pos - camera.global_position).dot(cam_forward)
+							_framed_depth_ref = maxf(_framed_depth_ref, 0.1)
 
-						if dead_zone_width == 0 || dead_zone_height == 0:
-							if dead_zone_width == 0 && dead_zone_height != 0:
-								glo_pos = target_position + transform.basis.z * follow_distance
-								glo_pos.z = framed_target_position.z
-								_follow_target_output_position = glo_pos
-							elif dead_zone_width != 0 && dead_zone_height == 0:
-								glo_pos = target_position + transform.basis.z * follow_distance
-								glo_pos.x = framed_target_position.x
-								_follow_target_output_position = glo_pos
-							else:
-								_follow_target_output_position = target_position + transform.basis.z * follow_distance
-						else:
-							if _current_rotation != global_rotation:
-								var opposite: float = sin(-global_rotation.x) * follow_distance + target_position.y
-								glo_pos.y = target_position.y + opposite
-								glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + target_position.z
-								glo_pos.x = global_position.x
+					# Initialize framed state if needed
+					if not _framed_initialized:
+						_initialize_framed_state(camera, target_world_pos)
+						_follow_target_output_position = _framed_output_position
+						_set_follow_gizmo_line_position(follow_target.global_position)
+						return
 
-								_follow_target_output_position = glo_pos
-								_current_rotation = global_rotation
-							else:
-								dead_zone_reached.emit()
+					_previous_basis = global_basis
 
-								# FIX: Only move camera in the axis where dead zone is breached
-								var current_global_position: Vector3 = global_position
-								var current_offset: Vector3 = global_position - target_position
+					# Get visible rect (letterbox/pillarbox aware)
+					var vr: Rect2 = get_viewport().get_visible_rect()
+
+					# Screen position in viewport pixels
+					var screen_px: Vector2 = camera.unproject_position(target_world_pos)
+
+					# Convert to visible-rect local pixels
+					var screen_vr: Vector2 = screen_px - vr.position
+
+					# Update viewport_position for UI/viewfinder (normalized 0-1)
+					viewport_position = screen_vr / vr.size
+
+					# Deadzone bounds in visible-rect local pixels
+					var left_px: float = (0.5 - dead_zone_width * 0.5) * vr.size.x
+					var right_px: float = (0.5 + dead_zone_width * 0.5) * vr.size.x
+					var top_px: float = (0.5 - dead_zone_height * 0.5) * vr.size.y
+					var bottom_px: float = (0.5 + dead_zone_height * 0.5) * vr.size.y
+
+					# Compute delta to nearest edge
+					var dx: float = 0.0
+					if screen_vr.x < left_px:
+						dx = screen_vr.x - left_px
+					elif screen_vr.x > right_px:
+						dx = screen_vr.x - right_px
+
+					var dy: float = 0.0
+					if screen_vr.y < top_px:
+						dy = screen_vr.y - top_px
+					elif screen_vr.y > bottom_px:
+						dy = screen_vr.y - bottom_px
+
+					if dx == 0.0 and dy == 0.0:
+						# No correction needed - target is inside deadzone
+						return
+
+					dead_zone_reached.emit()
+
+					# Build the "clamped" point in visible-rect local pixels
+					var clamped_vr: Vector2 = screen_vr - Vector2(dx, dy)
+
+					# Convert back to viewport pixel coords for project_position()
+					var clamped_px: Vector2 = clamped_vr + vr.position
+
+					# Convert screen correction to world correction at stable depth
+					var depth: float = _framed_depth_ref
+					var world_at_screen: Vector3 = camera.project_position(screen_px, depth)
+					var world_at_clamped: Vector3 = camera.project_position(clamped_px, depth)
+					var delta_world: Vector3 = world_at_screen - world_at_clamped
 
 								# Update stored offset for non-breached axes
 								if framed_offset.x == 0:
@@ -1281,6 +1333,8 @@ func _set_follow_position(delta: float) -> void:
 						_follow_target_position = global_position
 						_current_rotation = global_rotation
 						return
+					_follow_target_output_position = _transform_output.origin + delta_world
+					_set_follow_gizmo_line_position(follow_target.global_position)
 			else:
 				_follow_target_output_position = target_position + transform.basis.z * follow_distance
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
@@ -1300,6 +1354,9 @@ func _set_follow_position(delta: float) -> void:
 					var aspect_ratio_scale: float = viewport_height / viewport_width
 					unprojected_position.x = (unprojected_position.x + 1) / 2
 					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+				viewport_position = unprojected_position
+				_set_follow_gizmo_line_position(follow_target.global_position)
 
 				viewport_position = unprojected_position
 				_set_follow_gizmo_line_position(follow_target.global_position)
@@ -1347,6 +1404,10 @@ func _set_look_at_position(delta: float) -> void:
 	_look_at_target_output_position = target_position + lookahead_delta
 
 func _get_target_position_offset() -> Vector3:
+	# this is importnant for physics wobbel or jitter on the deadzone edges
+	if _follow_target_has_interpolation and _physics_interpolation_enabled:
+		return follow_target.get_global_transform_interpolated().origin + follow_offset
+
 	return follow_target.global_position + follow_offset
 
 
@@ -1365,6 +1426,9 @@ func _get_target_position_offset_distance_direction() -> Vector3:
 
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
+
+func _set_framed_correction_velocity(index: int, value: float) -> void:
+	_framed_correction_velocity[index] = value
 
 func _interpolate_position(delta: float) -> void:
 	if follow_damping and not Engine.is_editor_hint():
@@ -1393,6 +1457,7 @@ func _interpolate_position(delta: float) -> void:
 				)
 			_transform_output.origin = global_position
 	else:
+		# No damping: snap directly to target position
 		_camera_target.global_position = _follow_target_output_position
 		_transform_output.origin = global_position
 
@@ -1666,6 +1731,44 @@ func _get_raw_unprojected_position() -> Vector2:
 
 func _on_dead_zone_changed() -> void:
 	global_position = _get_target_position_offset_distance()
+	# Reset framed state when dead zone changes
+	_framed_initialized = false
+
+
+## Initializes the framed follow state (depth reference and output position)
+func _initialize_framed_state(camera: Camera3D, target_world_pos: Vector3) -> void:
+	# Store stable depth reference (distance from camera to target along view axis)
+	var cam_pos: Vector3 = camera.global_position
+	var cam_forward: Vector3 = - camera.global_basis.z
+	_framed_depth_ref = (target_world_pos - cam_pos).dot(cam_forward)
+	_framed_depth_ref = maxf(_framed_depth_ref, 0.1) # Prevent negative or zero depth
+
+	# Initialize output position: target + follow_distance along camera's back vector
+	_framed_output_position = target_world_pos + global_basis.z * follow_distance
+
+	# Store current basis for rotation change detection
+	_previous_basis = global_basis
+	_framed_initialized = true
+
+
+## Calculates world units per screen pixel at a given depth
+func _calculate_world_per_pixel(camera: Camera3D, depth: float, viewport_size: Vector2) -> float:
+	if camera.projection == Camera3D.PROJECTION_PERSPECTIVE:
+		# For perspective projection: world_height = 2 * depth * tan(fov/2)
+		var fov_rad: float = deg_to_rad(camera.fov)
+		var world_height: float = 2.0 * depth * tan(fov_rad / 2.0)
+		return world_height / viewport_size.y
+	else:
+		# For orthographic projection
+		return camera.size / viewport_size.y
+
+
+## Resets the framed follow state (call on teleport, becoming active, or target change)
+func reset_framed_state() -> void:
+	_framed_initialized = false
+	_follow_velocity_ref = Vector3.ZERO
+	_framed_correction_velocity = Vector3.ZERO
+	_framed_smoothed_target = Vector3.ZERO
 
 
 func _get_framed_side_offset() -> Vector2:
@@ -1721,13 +1824,16 @@ func _follow_target_tree_exiting(target: Node) -> void:
 func _should_follow_checker() -> void:
 	if follow_mode == FollowMode.NONE:
 		_should_follow = false
+		_follow_target_has_interpolation = false
 		return
 
 	if not follow_mode == FollowMode.GROUP:
 		if is_instance_valid(follow_target):
 			_should_follow = true
+			_follow_target_has_interpolation = follow_target.has_method("get_global_transform_interpolated")
 		else:
 			_should_follow = false
+			_follow_target_has_interpolation = false
 
 
 func _follow_targets_size_check() -> void:
@@ -1924,6 +2030,7 @@ func teleport_position() -> void:
 	_reset_follow_lookahead()
 	_lookahead_look_at_reset = true
 	_reset_look_at_lookahead()
+	reset_framed_state() # Reset framed state on teleport
 	_set_follow_position(0.0)
 	_transform_output.origin = _follow_target_output_position
 	_phantom_camera_manager.pcam_teleport.emit(self)
@@ -2018,7 +2125,11 @@ func get_tween_ease() -> int:
 ## from the [PhantomCameraHost] script.
 func set_is_active(node: Node, value: bool) -> void:
 	if node is PhantomCameraHost:
+		var was_active: bool = _is_active
 		_is_active = value
+		# Reset framed state when becoming active
+		if value and not was_active:
+			reset_framed_state()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
@@ -2067,6 +2178,7 @@ func set_follow_target(value: Node3D) -> void:
 	_lookahead_follow_has_prev_sample = false
 	_reset_follow_lookahead()
 	_follow_target_physics_based = false
+	reset_framed_state() # Reset framed state when follow target changes
 	if is_instance_valid(value):
 		if follow_mode == FollowMode.PATH:
 			if is_instance_valid(follow_path):
@@ -2158,6 +2270,10 @@ func get_follow_targets() -> Array[Node3D]:
 func set_follow_offset(value: Vector3) -> void:
 	var temp_offset: Vector3 = follow_offset
 	follow_offset = value
+
+	# Reset framed state when follow offset changes at runtime
+	if follow_mode == FollowMode.FRAMED:
+		_framed_initialized = false
 
 	if follow_axis_lock != FollowLockAxis.NONE:
 		temp_offset = temp_offset - value
