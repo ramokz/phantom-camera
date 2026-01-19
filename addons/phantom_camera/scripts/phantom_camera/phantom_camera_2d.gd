@@ -326,7 +326,8 @@ var _should_rotate_with_target: bool = false
 	set = set_rotation_damping_value,
 	get = get_rotation_damping_value
 
-## Enables velocity-based look-ahead.
+## Enables velocity-based look-ahead. As the [param follow target] moves the camera will move further ahead
+## based on its velocity. The faster the [param follow target] moves, the further ahead the camera will move.
 @export var lookahead: bool = false:
 	set = set_lookahead,
 	get = get_lookahead
