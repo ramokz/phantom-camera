@@ -440,16 +440,16 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_follow_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of seconds to look ahead of the the [param follow target]'s position per axis based on
+## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
 ## the [param follow target]'s velocity.[br]
-## Each axis (X, Y, Z) has its own prediction time in [param seconds].
-## Setting an axis to [param 0.0] disables lookahead for that specific axis.
+## Each axis (X, Y, Z) has its own prediction time in [param seconds].[br][br]
+## A value of [param 0] can be set to disable lookahead for a given axis.
 @export_custom(PROPERTY_HINT_LINK, "0, 1, 0.001, suffix:s") var follow_lookahead_time: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_lookahead_time,
 	get = get_follow_lookahead_time
 
 ## Determines the damping speed of how fast the camera should reach the [member follow_lookahead_time]
-## target once the [param follow target] has a movement velocity.[br]
+## target once the [param follow target] has a positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_acceleration: float = 0.1:
@@ -457,7 +457,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_follow_lookahead_acceleration
 
 ## Determines the damping speed of how fast the camera should deaccerlate back to the
-## [param follow target]'s position once it has no movement velocity.[br]
+## [param follow target]'s position once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deacceleration: float = 0.1:
@@ -573,14 +573,14 @@ var horizontal_rotation_offset: float = 0.0:
 	get = get_look_at_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of seconds to look ahead of the the [param follow target]'s position based on
-## the [param follow target]'s velocity.[br]
+## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
+## the [param follow target]'s velocity.
 @export_range(0.0, 1.0, 0.01, "suffix:s") var look_at_lookahead_time: float = 0.1:
 	set = set_look_at_lookahead_time,
 	get = get_look_at_lookahead_time
 
 ## Determines the damping speed of how fast the camera should reach the [member look_at_lookahead_time]
-## target once the [param look_at target] has a movement velocity.[br]
+## target once the [param look_at target] has positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_acceleration: float = 0.1:
@@ -588,7 +588,7 @@ var horizontal_rotation_offset: float = 0.0:
 	get = get_look_at_lookahead_acceleration
 
 ## Determines the damping speed of how fast the camera should deaccerlate back to the [param follow target]'s position
-## once it has no movement velocity.[br]
+## once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deacceleration: float = 0.1:
