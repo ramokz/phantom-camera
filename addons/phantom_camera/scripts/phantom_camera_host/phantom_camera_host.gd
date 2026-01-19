@@ -531,8 +531,19 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 					var pyramid_shape_data = Engine.get_singleton(&"PhysicsServer3D").call("shape_get_data",
 						camera_3d.get_pyramid_shape_rid()
 					)
+
+					# Scale up the pyramid shape to avoid clipping issues
+					var expanded_points := PackedVector3Array()
+					for point in pyramid_shape_data:
+						var expanded_point := Vector3(
+							point.x + (0.02 if point.x >= 0 else -0.02),
+							point.y + (0.02 if point.y >= 0 else -0.02),
+							point.z + (0.02 if point.z >= 0 else -0.02)
+						)
+						expanded_points.append(expanded_point)
+
 					var shape = ClassDB.instantiate(&"ConvexPolygonShape3D")
-					shape.points = pyramid_shape_data
+					shape.points = expanded_points
 					_active_pcam_3d.shape = shape
 
 		if not _active_pcam_3d.physics_target_changed.is_connected(_check_pcam_physics):
