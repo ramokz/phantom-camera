@@ -198,6 +198,8 @@ enum FollowTargetPhysicsClass {
 			_check_draw_gizmo()
 
 		if follow_mode == FollowMode.FRAMED:
+			if follow_axis_lock == FollowLockAxis.NONE:
+				follow_axis_lock = FollowLockAxis.Y
 			if _follow_framed_initial_set and follow_target:
 				_follow_framed_initial_set = false
 				dead_zone_changed.connect(_on_dead_zone_changed)
