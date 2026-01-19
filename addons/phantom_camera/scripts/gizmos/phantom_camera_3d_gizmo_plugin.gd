@@ -26,7 +26,7 @@ func _has_gizmo(spatial: Node3D) -> bool:
 func _init() -> void:
 	create_icon_material(gizmo_name, _icon_texture, false, Color.WHITE)
 	create_material("frustum", Color8(252, 127, 127, 255))
-	create_material("follow_target", Color8(185, 58, 89))
+	create_material("follow_target", Color8(248, 67, 47))
 	create_material("look_at_target", Color8(61, 207, 225))
 
 

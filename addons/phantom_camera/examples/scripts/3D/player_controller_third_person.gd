@@ -14,7 +14,6 @@ extends "player_controller.gd"
 @export var max_yaw: float = 360
 
 
-
 func _ready() -> void:
 	super()
 

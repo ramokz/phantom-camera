@@ -21,97 +21,96 @@ public class Camera3DResource(Resource resource)
 
     public KeepAspect KeepAspect
     {
-        get => (KeepAspect)(int)Resource.Call(MethodName.GetKeepAspect);
-        set => Resource.Call(MethodName.SetKeepAspect, (int)value);
+        get => (KeepAspect)(int)Resource.Get(PropertyName.KeepAspect);
+        set => Resource.Set(PropertyName.KeepAspect, (int)value);
     }
 
     public int CullMask
     {
-        get => (int)Resource.Call(MethodName.GetCullMask);
-        set => Resource.Call(MethodName.SetCullMask, value);
+        get => (int)Resource.Get(PropertyName.CullMask);
+        set => Resource.Set(PropertyName.CullMask, value);
     }
 
-    public void SetCullMaskValue(int layer, bool value) => Resource.Call(MethodName.SetCullMaskValue, layer, value);
 
     public float HOffset
     {
-        get => (float)Resource.Call(MethodName.GetHOffset);
-        set => Resource.Call(MethodName.SetHOffset, value);
+        get => (float)Resource.Get(PropertyName.HOffset);
+        set => Resource.Set(PropertyName.HOffset, value);
     }
 
     public float VOffset
     {
-        get => (float)Resource.Call(MethodName.GetVOffset);
-        set => Resource.Call(MethodName.SetVOffset, value);
+        get => (float)Resource.Get(PropertyName.VOffset);
+        set => Resource.Set(PropertyName.VOffset, value);
     }
 
     public ProjectionType Projection
     {
-        get => (ProjectionType)(int)Resource.Call(MethodName.GetProjection);
-        set => Resource.Call(MethodName.SetProjection, (int)value);
+        get => (ProjectionType)(int)Resource.Get(PropertyName.Projection);
+        set => Resource.Set(PropertyName.Projection, (int)value);
     }
 
     public float Fov
     {
-        get => (float)Resource.Call(MethodName.GetFov);
-        set => Resource.Call(MethodName.SetFov, Mathf.Clamp(value, 1, 179));
+        get => (float)Resource.Get(PropertyName.Fov);
+        set => Resource.Set(PropertyName.Fov, Mathf.Clamp(value, 1, 179));
     }
 
     public float Size
     {
-        get => (float)Resource.Call(MethodName.GetSize);
-        set => Resource.Call(MethodName.SetSize, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
+        get => (float)Resource.Get(PropertyName.Size);
+        set => Resource.Set(PropertyName.Size, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
     }
 
     public Vector2 FrustumOffset
     {
-        get => (Vector2)Resource.Call(MethodName.GetFrustumOffset);
-        set => Resource.Call(MethodName.SetFrustumOffset, value);
+        get => (Vector2)Resource.Get(PropertyName.FrustumOffset);
+        set => Resource.Set(PropertyName.FrustumOffset, value);
     }
 
     public float Near
     {
-        get => (float)Resource.Call(MethodName.GetNear);
-        set => Resource.Call(MethodName.SetNear, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
+        get => (float)Resource.Get(PropertyName.Near);
+        set => Resource.Set(PropertyName.Near, Mathf.Clamp(value, 0.001f, float.PositiveInfinity));
     }
 
     public float Far
     {
-        get => (float)Resource.Call(MethodName.GetFar);
-        set => Resource.Call(MethodName.SetFar, Mathf.Clamp(value, 0.01f, float.PositiveInfinity));
+        get => (float)Resource.Get(PropertyName.Far);
+        set => Resource.Set(PropertyName.Far, Mathf.Clamp(value, 0.01f, float.PositiveInfinity));
+    }
+    
+    public static Camera3DResource New()
+    {
+        Resource resource = new();
+#if GODOT4_4_OR_GREATER
+        resource.SetScript(GD.Load<GDScript>("uid://b8hhnqsugykly"));
+#else
+        resource.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd"));
+#endif
+        return new Camera3DResource(resource);
     }
 
-    public static class MethodName
+    public static class PropertyName
     {
-        public const string GetKeepAspect = "get_keep_aspect";
-        public const string SetKeepAspect = "set_keep_aspect";
+        public static readonly StringName KeepAspect = new("keep_aspect");
 
-        public const string GetCullMask = "get_cull_mask";
-        public const string SetCullMask = "set_cull_mask";
-        public const string SetCullMaskValue = "set_cull_mask_value";
+        public static readonly StringName CullMask = new("cull_mask");
 
-        public const string GetHOffset = "get_h_offset";
-        public const string SetHOffset = "set_h_offset";
+        public static readonly StringName HOffset = new("h_offset");
 
-        public const string GetVOffset = "get_v_offset";
-        public const string SetVOffset = "set_v_offset";
+        public static readonly StringName VOffset = new("v_offset");
 
-        public const string GetProjection = "get_projection";
-        public const string SetProjection = "set_projection";
+        public static readonly StringName Projection = new("projection");
 
-        public const string GetFov = "get_fov";
-        public const string SetFov = "set_fov";
+        public static readonly StringName Fov = new("fov");
 
-        public const string GetSize = "get_size";
-        public const string SetSize = "set_size";
+        public static readonly StringName Size = new("size");
 
-        public const string GetFrustumOffset = "get_frustum_offset";
-        public const string SetFrustumOffset = "set_frustum_offset";
+        public static readonly StringName FrustumOffset = new("frustum_offset");
 
-        public const string GetNear = "get_near";
-        public const string SetNear = "set_near";
+        public static readonly StringName Near = new("near");
 
-        public const string GetFar = "get_far";
-        public const string SetFar = "set_far";
+        public static readonly StringName Far = new("far");
     }
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=4 uid="uid://chw6g32u86uve"]
+[gd_scene load_steps=15 format=4 uid="uid://chw6g32u86uve"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_2m0x8"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="2_4bfy0"]
@@ -8,7 +8,6 @@
 [ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="6_bdmii"]
 [ext_resource type="Resource" uid="uid://euybd2w0bax" path="res://addons/phantom_camera/examples/resources/tween/player_phantom_camera_2d_tween.tres" id="7_dpnkg"]
 [ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="8_u5o87"]
-[ext_resource type="Script" uid="uid://cnnaky2ns2pn4" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d_4.3.gd" id="9_suxld"]
 [ext_resource type="Script" uid="uid://bhd4nuiu23e7l" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_2d.gd" id="10_p43w0"]
 [ext_resource type="Script" uid="uid://dimvdouy8g0sv" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_2d.gd" id="11_d6abr"]
 
@@ -166,14 +165,7 @@ sources/0 = SubResource("TileSetAtlasSource_lvmak")
 [sub_resource type="Resource" id="Resource_87ddr"]
 script = ExtResource("11_d6abr")
 amplitude = 30.0
-frequency = 0.5
 randomize_noise_seed = 1
-noise_seed = 0
-positional_noise = true
-rotational_noise = false
-positional_multiplier_x = 1.0
-positional_multiplier_y = 1.0
-rotational_multiplier = 1.0
 
 [sub_resource type="Resource" id="Resource_rmnw1"]
 script = ExtResource("11_d6abr")
@@ -181,11 +173,7 @@ amplitude = 40.0
 frequency = 30.0
 randomize_noise_seed = 1
 noise_seed = 96
-positional_noise = true
 rotational_noise = true
-positional_multiplier_x = 1.0
-positional_multiplier_y = 1.0
-rotational_multiplier = 1.0
 
 [node name="Root" type="Node2D"]
 
@@ -245,7 +233,7 @@ text = "[WASD] to move
 [node name="Camera2D" type="Camera2D" parent="."]
 physics_interpolation_mode = 1
 position = Vector2(227, -28)
-offset = Vector2(2.3068, -7.8485)
+offset = Vector2(0.9638121, 13.818371)
 ignore_rotation = false
 zoom = Vector2(1.5, 1.5)
 process_callback = 0
@@ -286,4 +274,3 @@ decay_time = 0.1
 [node name="CharacterBody2D" parent="Player" instance=ExtResource("8_u5o87")]
 z_index = 2
 position = Vector2(227, -28)
-script = ExtResource("9_suxld")

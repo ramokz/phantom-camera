@@ -55,10 +55,6 @@ public class PhantomCamera2D : PhantomCamera
     public event DeadZoneReachedEventHandler? DeadZoneReached;
     public event NoiseEmittedEventHandler? NoiseEmitted;
 
-    private readonly Callable _callableTweenInterrupted;
-    private readonly Callable _callableDeadZoneReached;
-    private readonly Callable _callableNoiseEmitted;
-
     public Node2D FollowTarget
     {
         get => (Node2D)Node2D.Call(PhantomCamera.MethodName.GetFollowTarget);
@@ -211,30 +207,15 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetLimitTarget, value);
     }
 
-    public static PhantomCamera2D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
-    public static PhantomCamera2D FromScript(GDScript script) => new(script.New().AsGodotObject());
-
     public PhantomCamera2D(GodotObject phantomCameraNode) : base(phantomCameraNode)
     {
-        _callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
-        _callableDeadZoneReached = Callable.From((Vector2 side) => DeadZoneReached?.Invoke(side));
-        _callableNoiseEmitted = Callable.From((Transform2D output) => NoiseEmitted?.Invoke(output));
+        var callableTweenInterrupted = Callable.From<Node2D>(pCam => TweenInterrupted?.Invoke(pCam));
+        var callableDeadZoneReached = Callable.From((Vector2 side) => DeadZoneReached?.Invoke(side));
+        var callableNoiseEmitted = Callable.From((Transform2D output) => NoiseEmitted?.Invoke(output));
 
-        Node2D.Connect(SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node2D.Connect(SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node2D.Connect(SignalName.NoiseEmitted, _callableNoiseEmitted);
-    }
-
-    ~PhantomCamera2D()
-    {
-        Node2D.Disconnect(SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node2D.Disconnect(SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node2D.Disconnect(SignalName.NoiseEmitted, _callableNoiseEmitted);
-    }
-
-    public void SetLimitTarget(TileMap tileMap)
-    {
-        Node2D.Call(MethodName.SetLimitTarget, tileMap.GetPath());
+        Node2D.Connect(SignalName.TweenInterrupted, callableTweenInterrupted);
+        Node2D.Connect(SignalName.DeadZoneReached, callableDeadZoneReached);
+        Node2D.Connect(SignalName.NoiseEmitted, callableNoiseEmitted);
     }
 
     public void SetLimitTarget(TileMapLayer tileMapLayer)
@@ -265,79 +246,73 @@ public class PhantomCamera2D : PhantomCamera
 
     public new static class MethodName
     {
-        public const string GetZoom = "get_zoom";
-        public const string SetZoom = "set_zoom";
+        public static readonly StringName GetZoom = new("get_zoom");
+        public static readonly StringName SetZoom = new("set_zoom");
 
-        public const string GetSnapToPixel = "get_snap_to_pixel";
-        public const string SetSnapToPixel = "set_snap_to_pixel";
+        public static readonly StringName GetSnapToPixel = new("get_snap_to_pixel");
+        public static readonly StringName SetSnapToPixel = new("set_snap_to_pixel");
 
-        public const string GetRotateWithTarget = "get_rotate_with_target";
-        public const string SetRotateWithTarget = "set_rotate_with_target";
+        public static readonly StringName GetRotateWithTarget = new("get_rotate_with_target");
+        public static readonly StringName SetRotateWithTarget = new("set_rotate_with_target");
 
-        public const string GetRotationOffset = "get_rotation_offset";
-        public const string SetRotationOffset = "set_rotation_offset";
+        public static readonly StringName GetRotationOffset = new("get_rotation_offset");
+        public static readonly StringName SetRotationOffset = new("set_rotation_offset");
 
-        public const string GetRotationDamping = "get_rotation_damping";
-        public const string SetRotationDamping = "set_rotation_damping";
+        public static readonly StringName GetRotationDamping = new("get_rotation_damping");
+        public static readonly StringName SetRotationDamping = new("set_rotation_damping");
 
-        public const string GetRotationDampingValue = "get_rotation_damping_value";
-        public const string SetRotationDampingValue = "set_rotation_damping_value";
+        public static readonly StringName GetRotationDampingValue = new("get_rotation_damping_value");
+        public static readonly StringName SetRotationDampingValue = new("set_rotation_damping_value");
 
-        public const string GetLimit = "get_limit";
-        public const string SetLimit = "set_limit";
+        public static readonly StringName GetLimit = new("get_limit");
+        public static readonly StringName SetLimit = new("set_limit");
 
-        public const string GetLimitLeft = "get_limit_left";
-        public const string SetLimitLeft = "set_limit_left";
+        public static readonly StringName GetLimitLeft = new("get_limit_left");
+        public static readonly StringName SetLimitLeft = new("set_limit_left");
 
-        public const string GetLimitTop = "get_limit_top";
-        public const string SetLimitTop = "set_limit_top";
+        public static readonly StringName GetLimitTop = new("get_limit_top");
+        public static readonly StringName SetLimitTop = new("set_limit_top");
 
-        public const string GetLimitRight = "get_limit_right";
-        public const string SetLimitRight = "set_limit_right";
+        public static readonly StringName GetLimitRight = new("get_limit_right");
+        public static readonly StringName SetLimitRight = new("set_limit_right");
 
-        public const string GetLimitBottom = "get_limit_bottom";
-        public const string SetLimitBottom = "set_limit_bottom";
+        public static readonly StringName GetLimitBottom = new("get_limit_bottom");
+        public static readonly StringName SetLimitBottom = new("set_limit_bottom");
 
-        public const string GetLimitTarget = "get_limit_target";
-        public const string SetLimitTarget = "set_limit_target";
+        public static readonly StringName GetLimitTarget = new("get_limit_target");
+        public static readonly StringName SetLimitTarget = new("set_limit_target");
 
-        public const string GetLimitMargin = "get_limit_margin";
-        public const string SetLimitMargin = "set_limit_margin";
+        public static readonly StringName GetLimitMargin = new("get_limit_margin");
+        public static readonly StringName SetLimitMargin = new("set_limit_margin");
 
-        public const string GetAutoZoom = "get_auto_zoom";
-        public const string SetAutoZoom = "set_auto_zoom";
+        public static readonly StringName GetAutoZoom = new("get_auto_zoom");
+        public static readonly StringName SetAutoZoom = new("set_auto_zoom");
 
-        public const string GetAutoZoomMin = "get_auto_zoom_min";
-        public const string SetAutoZoomMin = "set_auto_zoom_min";
+        public static readonly StringName GetAutoZoomMin = new("get_auto_zoom_min");
+        public static readonly StringName SetAutoZoomMin = new("set_auto_zoom_min");
 
-        public const string GetAutoZoomMax = "get_auto_zoom_max";
-        public const string SetAutoZoomMax = "set_auto_zoom_max";
+        public static readonly StringName GetAutoZoomMax = new("get_auto_zoom_max");
+        public static readonly StringName SetAutoZoomMax = new("set_auto_zoom_max");
 
-        public const string GetAutoZoomMargin = "get_auto_zoom_margin";
-        public const string SetAutoZoomMargin = "set_auto_zoom_margin";
+        public static readonly StringName GetAutoZoomMargin = new("get_auto_zoom_margin");
+        public static readonly StringName SetAutoZoomMargin = new("set_auto_zoom_margin");
 
-        public const string GetNoise = "get_noise";
-        public const string SetNoise = "set_noise";
+        public static readonly StringName GetNoise = new("get_noise");
+        public static readonly StringName SetNoise = new("set_noise");
     }
 
     public new static class PropertyName
     {
-        public const string DrawLimits = "draw_limits";
+        public static readonly StringName DrawLimits = new("draw_limits");
     }
 }
 
 public class LimitTargetQueryResult(GodotObject godotObject)
 {
-    public bool IsTileMap => godotObject.IsClass("TileMap");
-
     public bool IsTileMapLayer => godotObject.IsClass("TileMapLayer");
 
     public bool IsCollisionShape2D => godotObject.IsClass("CollisionShape2D");
 
-    public TileMap? AsTileMap()
-    {
-        return IsTileMap ? (TileMap)godotObject : null;
-    }
 
     public TileMapLayer? AsTileMapLayer()
     {

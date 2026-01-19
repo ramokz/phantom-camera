@@ -3,7 +3,7 @@ extends EditorNode3DGizmoPlugin
 var _spatial_script: Script = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd")
 var _gizmo_icon: Texture2D = preload("res://addons/phantom_camera/icons/phantom_camera_noise_emitter_gizmo.svg")
 
-var _gizmo_name: StringName = "PhantomCameraNoiseEmitter"
+var _gizmo_name: String = "PhantomCameraNoiseEmitter"
 
 func _init() -> void:
 	create_material("main", Color8(252, 127, 127, 255))
