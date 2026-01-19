@@ -69,7 +69,7 @@ public static class PhantomCamera3DExtensions
     public static Vector3 GetThirdPersonRotationDegrees(this PhantomCamera3D pCam3D) =>
         (Vector3)pCam3D.Node3D.Call(PhantomCamera3D.MethodName.GetThirdPersonRotationDegrees);
 
-    public static void SetThirdPersonDegrees(this PhantomCamera3D pCam3D, Vector3 rotation) =>
+    public static void SetThirdPersonRotationDegrees(this PhantomCamera3D pCam3D, Vector3 rotation) =>
         pCam3D.Node3D.Call(PhantomCamera3D.MethodName.SetThirdPersonRotationDegrees, rotation);
 
     public static Quaternion GetThirdPersonQuaternion(this PhantomCamera3D pCam3D) =>
@@ -97,13 +97,6 @@ public class PhantomCamera3D : PhantomCamera
     public event Camera3DResourcePropertyChangedEventHandler? Camera3DResourcePropertyChanged;
     public event TweenInterruptedEventHandler? TweenInterrupted;
     public event NoiseEmittedEventHandler? NoiseEmitted;
-
-    private readonly Callable _callableLookAtTargetChanged;
-    private readonly Callable _callableDeadZoneReached;
-    private readonly Callable _callableCamera3DResourceChanged;
-    private readonly Callable _callableCamera3DResourcePropertyChanged;
-    private readonly Callable _callableTweenInterrupted;
-    private readonly Callable _callableNoiseEmitted;
 
     public Node3D FollowTarget
     {
@@ -256,18 +249,24 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetLookAtDampingValue, value);
     }
 
-    public Node3D Up
+    public Vector3 Up
     {
-        get => (Node3D)Node3D.Call(MethodName.GetUp);
+        get => (Vector3)Node3D.Call(MethodName.GetUp);
         set => Node3D.Call(MethodName.SetUp, value);
     }
 
-    public Vector3 UpTarget
+    public Node3D UpTarget
     {
-        get => (Vector3)Node3D.Call(MethodName.GetUpTarget);
+        get => (Node3D)Node3D.Call(MethodName.GetUpTarget);
         set => Node3D.Call(MethodName.SetUpTarget, value);
     }
 
+    public int KeepAspect
+    {
+        get => (int)Node3D.Call(MethodName.GetKeepAspect);
+        set => Node3D.Call(MethodName.SetKeepAspect, value);
+    }
+    
     public int CullMask
     {
         get => (int)Node3D.Call(MethodName.GetCullMask);
@@ -342,152 +341,142 @@ public class PhantomCamera3D : PhantomCamera
 
     public void EmitNoise(Transform3D transform) => Node3D.Call(PhantomCamera.MethodName.EmitNoise, transform);
 
-    public static PhantomCamera3D FromScript(string path) => new(GD.Load<GDScript>(path).New().AsGodotObject());
-    public static PhantomCamera3D FromScript(GDScript script) => new(script.New().AsGodotObject());
-
     public PhantomCamera3D(GodotObject phantomCamera3DNode) : base(phantomCamera3DNode)
     {
-        _callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
-        _callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
-        _callableCamera3DResourceChanged = Callable.From(() => Camera3DResourceChanged?.Invoke());
-        _callableCamera3DResourcePropertyChanged = Callable.From((StringName property, Variant value) =>
-        Camera3DResourcePropertyChanged?.Invoke(property, value));
-        _callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
-        _callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
+        var callableLookAtTargetChanged = Callable.From(() => LookAtTargetChanged?.Invoke());
+        var callableDeadZoneReached = Callable.From(() => DeadZoneReached?.Invoke());
+        var callableCamera3DResourceChanged = Callable.From(() => Camera3DResourceChanged?.Invoke());
+        var callableCamera3DResourcePropertyChanged = Callable.From((StringName property, Variant value) =>
+            Camera3DResourcePropertyChanged?.Invoke(property, value));
+        var callableTweenInterrupted = Callable.From<Node3D>(pCam => TweenInterrupted?.Invoke(pCam));
+        var callableNoiseEmitted = Callable.From((Transform3D output) => NoiseEmitted?.Invoke(output));
 
-        Node3D.Connect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
-        Node3D.Connect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node3D.Connect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
-        Node3D.Connect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
-        Node3D.Connect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node3D.Connect(PhantomCamera.SignalName.NoiseEmitted, _callableNoiseEmitted);
-    }
-
-    ~PhantomCamera3D()
-    {
-        Node3D.Disconnect(SignalName.LookAtTargetChanged, _callableLookAtTargetChanged);
-        Node3D.Disconnect(PhantomCamera.SignalName.DeadZoneReached, _callableDeadZoneReached);
-        Node3D.Disconnect(SignalName.Camera3DResourceChanged, _callableCamera3DResourceChanged);
-        Node3D.Disconnect(SignalName.Camera3DResourcePropertyChanged, _callableCamera3DResourcePropertyChanged);
-        Node3D.Disconnect(PhantomCamera.SignalName.TweenInterrupted, _callableTweenInterrupted);
-        Node3D.Disconnect(PhantomCamera.SignalName.NoiseEmitted, _callableNoiseEmitted);
+        Node3D.Connect(SignalName.LookAtTargetChanged, callableLookAtTargetChanged);
+        Node3D.Connect(PhantomCamera.SignalName.DeadZoneReached, callableDeadZoneReached);
+        Node3D.Connect(SignalName.Camera3DResourceChanged, callableCamera3DResourceChanged);
+        Node3D.Connect(SignalName.Camera3DResourcePropertyChanged, callableCamera3DResourcePropertyChanged);
+        Node3D.Connect(PhantomCamera.SignalName.TweenInterrupted, callableTweenInterrupted);
+        Node3D.Connect(PhantomCamera.SignalName.NoiseEmitted, callableNoiseEmitted);
     }
 
     public new static class MethodName
     {
-        public const string GetLookAtMode = "get_look_at_mode";
+        public static readonly StringName GetLookAtMode = new("get_look_at_mode");
 
-        public const string GetCamera3DResource = "get_camera_3d_resource";
-        public const string SetCamera3DResource = "set_camera_3d_resource";
+        public static readonly StringName GetCamera3DResource = new("get_camera_3d_resource");
+        public static readonly StringName SetCamera3DResource = new("set_camera_3d_resource");
 
-        public const string GetThirdPersonRotation = "get_third_person_rotation";
-        public const string SetThirdPersonRotation = "set_third_person_rotation";
+        public static readonly StringName GetThirdPersonRotation = new("get_third_person_rotation");
+        public static readonly StringName SetThirdPersonRotation = new("set_third_person_rotation");
 
-        public const string GetThirdPersonRotationDegrees = "get_third_person_rotation_degrees";
-        public const string SetThirdPersonRotationDegrees = "set_third_person_rotation_degrees";
+        public static readonly StringName GetThirdPersonRotationDegrees = new("get_third_person_rotation_degrees");
+        public static readonly StringName SetThirdPersonRotationDegrees = new("set_third_person_rotation_degrees");
 
-        public const string GetThirdPersonQuaternion = "get_third_person_quaternion";
-        public const string SetThirdPersonQuaternion = "set_third_person_quaternion";
+        public static readonly StringName GetThirdPersonQuaternion = new("get_third_person_quaternion");
+        public static readonly StringName SetThirdPersonQuaternion = new("set_third_person_quaternion");
 
-        public const string GetVerticalRotationOffset = "get_vertical_rotation_offset";
-        public const string SetVerticalRotationOffset = "set_vertical_rotation_offset";
+        public static readonly StringName GetVerticalRotationOffset = new("get_vertical_rotation_offset");
+        public static readonly StringName SetVerticalRotationOffset = new("set_vertical_rotation_offset");
 
-        public const string GetHorizontalRotationOffset = "get_horizontal_rotation_offset";
-        public const string SetHorizontalRotationOffset = "set_horizontal_rotation_offset";
+        public static readonly StringName GetHorizontalRotationOffset = new("get_horizontal_rotation_offset");
+        public static readonly StringName SetHorizontalRotationOffset = new("set_horizontal_rotation_offset");
 
-        public const string GetSpringLength = "get_spring_length";
-        public const string SetSpringLength = "set_spring_length";
+        public static readonly StringName GetSpringLength = new("get_spring_length");
+        public static readonly StringName SetSpringLength = new("set_spring_length");
 
-        public const string GetFollowDistance = "get_follow_distance";
-        public const string SetFollowDistance = "set_follow_distance";
+        public static readonly StringName GetFollowDistance = new("get_follow_distance");
+        public static readonly StringName SetFollowDistance = new("set_follow_distance");
 
-        public const string GetAutoFollowDistance = "get_auto_follow_distance";
-        public const string SetAutoFollowDistance = "set_auto_follow_distance";
+        public static readonly StringName GetAutoFollowDistance = new("get_auto_follow_distance");
+        public static readonly StringName SetAutoFollowDistance = new("set_auto_follow_distance");
 
-        public const string GetAutoFollowDistanceMin = "get_auto_follow_distance_min";
-        public const string SetAutoFollowDistanceMin = "set_auto_follow_distance_min";
+        public static readonly StringName GetAutoFollowDistanceMin = new("get_auto_follow_distance_min");
+        public static readonly StringName SetAutoFollowDistanceMin = new("set_auto_follow_distance_min");
 
-        public const string GetAutoFollowDistanceMax = "get_auto_follow_distance_max";
-        public const string SetAutoFollowDistanceMax = "set_auto_follow_distance_max";
+        public static readonly StringName GetAutoFollowDistanceMax = new("get_auto_follow_distance_max");
+        public static readonly StringName SetAutoFollowDistanceMax = new("set_auto_follow_distance_max");
 
-        public const string GetAutoFollowDistanceDivisor = "get_auto_follow_distance_divisor";
-        public const string SetAutoFollowDistanceDivisor = "set_auto_follow_distance_divisor";
+        public static readonly StringName GetAutoFollowDistanceDivisor = new("get_auto_follow_distance_divisor");
+        public static readonly StringName SetAutoFollowDistanceDivisor = new("set_auto_follow_distance_divisor");
 
-        public const string GetLookAtTarget = "get_look_at_target";
-        public const string SetLookAtTarget = "set_look_at_target";
+        public static readonly StringName GetLookAtTarget = new("get_look_at_target");
+        public static readonly StringName SetLookAtTarget = new("set_look_at_target");
 
-        public const string GetLookAtTargets = "get_look_at_targets";
-        public const string SetLookAtTargets = "set_look_at_targets";
+        public static readonly StringName GetLookAtTargets = new("get_look_at_targets");
+        public static readonly StringName SetLookAtTargets = new("set_look_at_targets");
 
-        public const string IsLooking = "is_looking";
+        public static readonly StringName IsLooking = new("is_looking");
 
-        public const string GetUp = "get_up";
-        public const string SetUp = "set_up";
+        public static readonly StringName GetUp = new("get_up");
+        public static readonly StringName SetUp = new("set_up");
 
-        public const string GetUpTarget = "get_up_target";
-        public const string SetUpTarget = "set_up_target";
+        public static readonly StringName GetUpTarget = new("get_up_target");
+        public static readonly StringName SetUpTarget = new("set_up_target");
 
-        public const string GetCollisionMask = "get_collision_mask";
-        public const string SetCollisionMask = "set_collision_mask";
+        public static readonly StringName GetCollisionMask = new("get_collision_mask");
+        public static readonly StringName SetCollisionMask = new("set_collision_mask");
 
-        public const string SetCollisionMaskValue = "set_collision_mask_value";
+        public static readonly StringName SetCollisionMaskValue = new("set_collision_mask_value");
 
-        public const string GetShape = "get_shape";
-        public const string SetShape = "set_shape";
+        public static readonly StringName GetShape = new("get_shape");
+        public static readonly StringName SetShape = new("set_shape");
 
-        public const string GetMargin = "get_margin";
-        public const string SetMargin = "set_margin";
+        public static readonly StringName GetMargin = new("get_margin");
+        public static readonly StringName SetMargin = new("set_margin");
 
-        public const string GetLookAtOffset = "get_look_at_offset";
-        public const string SetLookAtOffset = "set_look_at_offset";
+        public static readonly StringName GetLookAtOffset = new("get_look_at_offset");
+        public static readonly StringName SetLookAtOffset = new("set_look_at_offset");
 
-        public const string GetLookAtDamping = "get_look_at_damping";
-        public const string SetLookAtDamping = "set_look_at_damping";
+        public static readonly StringName GetLookAtDamping = new("get_look_at_damping");
+        public static readonly StringName SetLookAtDamping = new("set_look_at_damping");
 
-        public const string GetLookAtDampingValue = "get_look_at_damping_value";
-        public const string SetLookAtDampingValue = "set_look_at_damping_value";
+        public static readonly StringName GetLookAtDampingValue = new("get_look_at_damping_value");
+        public static readonly StringName SetLookAtDampingValue = new("set_look_at_damping_value");
 
-        public const string GetCullMask = "get_cull_mask";
-        public const string SetCullMask = "set_cull_mask";
+        public static readonly StringName GetKeepAspect = new("get_keep_aspect");
+        public static readonly StringName SetKeepAspect = new("set_keep_aspect");
 
-        public const string GetHOffset = "get_h_offset";
-        public const string SetHOffset = "set_h_offset";
+        public static readonly StringName GetCullMask = new("get_cull_mask");
+        public static readonly StringName SetCullMask = new("set_cull_mask");
 
-        public const string GetVOffset = "get_v_offset";
-        public const string SetVOffset = "set_v_offset";
+        public static readonly StringName GetHOffset = new("get_h_offset");
+        public static readonly StringName SetHOffset = new("set_h_offset");
 
-        public const string GetProjection = "get_projection";
-        public const string SetProjection = "set_projection";
+        public static readonly StringName GetVOffset = new("get_v_offset");
+        public static readonly StringName SetVOffset = new("set_v_offset");
 
-        public const string GetFov = "get_fov";
-        public const string SetFov = "set_fov";
+        public static readonly StringName GetProjection = new("get_projection");
+        public static readonly StringName SetProjection = new("set_projection");
 
-        public const string GetSize = "get_size";
-        public const string SetSize = "set_size";
+        public static readonly StringName GetFov = new("get_fov");
+        public static readonly StringName SetFov = new("set_fov");
 
-        public const string GetFrustumOffset = "get_frustum_offset";
-        public const string SetFrustumOffset = "set_frustum_offset";
+        public static readonly StringName GetSize = new("get_size");
+        public static readonly StringName SetSize = new("set_size");
 
-        public const string GetFar = "get_far";
-        public const string SetFar = "set_far";
+        public static readonly StringName GetFrustumOffset = new("get_frustum_offset");
+        public static readonly StringName SetFrustumOffset = new("set_frustum_offset");
 
-        public const string GetNear = "get_near";
-        public const string SetNear = "set_near";
+        public static readonly StringName GetFar = new("get_far");
+        public static readonly StringName SetFar = new("set_far");
 
-        public const string GetEnvironment = "get_environment";
-        public const string SetEnvironment = "set_environment";
+        public static readonly StringName GetNear = new("get_near");
+        public static readonly StringName SetNear = new("set_near");
 
-        public const string GetAttributes = "get_attributes";
-        public const string SetAttributes = "set_attributes";
+        public static readonly StringName GetEnvironment = new("get_environment");
+        public static readonly StringName SetEnvironment = new("set_environment");
 
-        public const string GetNoise = "get_noise";
-        public const string SetNoise = "set_noise";
+        public static readonly StringName GetAttributes = new("get_attributes");
+        public static readonly StringName SetAttributes = new("set_attributes");
+
+        public static readonly StringName GetNoise = new("get_noise");
+        public static readonly StringName SetNoise = new("set_noise");
     }
 
     public new static class SignalName
     {
-        public const string LookAtTargetChanged = "look_at_target_changed";
-        public const string Camera3DResourceChanged = "camera_3d_resource_changed";
-        public const string Camera3DResourcePropertyChanged = "camera_3d_resource_property_changed";
+        public static readonly StringName LookAtTargetChanged = new("look_at_target_changed");
+        public static readonly StringName Camera3DResourceChanged = new("camera_3d_resource_changed");
+        public static readonly StringName Camera3DResourcePropertyChanged = new("camera_3d_resource_property_changed");
     }
 }

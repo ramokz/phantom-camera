@@ -8,6 +8,7 @@ const PCAM_2D: String = "PhantomCamera2D"
 const PCAM_3D: String = "PhantomCamera3D"
 const PCAM_NOISE_EMITTER_2D: String = "PhantomCameraNoiseEmitter2D"
 const PCAM_NOISE_EMITTER_3D: String = "PhantomCameraNoiseEmitter3D"
+const PCAM_TWEEN_DIRECTOR: String = "PhantomCameraTweenDirector"
 
 const PCam3DPlugin: Script = preload("res://addons/phantom_camera/scripts/gizmos/phantom_camera_3d_gizmo_plugin.gd")
 const PCam3DNoiseEmitterPlugin: Script = preload("res://addons/phantom_camera/scripts/gizmos/phantom_camera_noise_emitter_gizmo_plugin_3d.gd")
@@ -49,7 +50,8 @@ func _enable_plugin() -> void:
 
 
 func _disable_plugin() -> void:
-	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
+	if Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
+		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 
 
 func _enter_tree() -> void:
@@ -61,6 +63,7 @@ func _enter_tree() -> void:
 	add_custom_type(PCAM_HOST, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd"), preload("res://addons/phantom_camera/icons/phantom_camera_2d.svg"))
 	add_custom_type(PCAM_NOISE_EMITTER_2D, "Node2D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_2d.gd"),  preload("res://addons/phantom_camera/icons/phantom_camera_noise_emitter_2d.svg"))
 	add_custom_type(PCAM_NOISE_EMITTER_3D, "Node3D", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_3d.gd"),  preload("res://addons/phantom_camera/icons/phantom_camera_noise_emitter_3d.svg"))
+	add_custom_type(PCAM_TWEEN_DIRECTOR, "Node", preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_tween_director.gd"),  preload("res://addons/phantom_camera/icons/phantom_camera_tween_director.svg"))
 
 	# Phantom Camera 3D Gizmo
 	add_node_3d_gizmo_plugin(pcam_3d_gizmo_plugin)
@@ -139,6 +142,7 @@ func _exit_tree() -> void:
 	remove_custom_type(PCAM_HOST)
 	remove_custom_type(PCAM_NOISE_EMITTER_2D)
 	remove_custom_type(PCAM_NOISE_EMITTER_3D)
+	remove_custom_type(PCAM_TWEEN_DIRECTOR)
 
 	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
 #	if get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):

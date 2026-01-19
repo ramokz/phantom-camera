@@ -77,43 +77,54 @@ public class PhantomCameraNoise3D(Resource resource)
         get => (float)Resource.Call(MethodName.GetPositionalMultiplierZ);
         set => Resource.Call(MethodName.SetPositionalMultiplierZ, value);
     }
+    
+    public static PhantomCameraNoise3D New()
+    {
+        Resource resource = new();
+#if GODOT4_4_OR_GREATER
+        resource.SetScript(GD.Load<GDScript>("uid://cuffvge5ad4aa"));
+#else
+        resource.SetScript(GD.Load<GDScript>("res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd"));
+#endif
+        return new PhantomCameraNoise3D(resource);
+    }
 
     public static class MethodName
     {
-        public const string GetAmplitude = "get_amplitude";
-        public const string SetAmplitude = "set_amplitude";
+        public static readonly StringName GetAmplitude = new("get_amplitude");
+        public static readonly StringName SetAmplitude = new("set_amplitude");
 
-        public const string GetFrequency = "get_frequency";
-        public const string SetFrequency = "set_frequency";
+        public static readonly StringName GetFrequency = new("get_frequency");
+        public static readonly StringName SetFrequency = new("set_frequency");
 
-        public const string GetRandomizeNoiseSeed = "get_randomize_noise_seed";
-        public const string SetRandomizeNoiseSeed = "set_randomize_noise_seed";
+        public static readonly StringName GetRandomizeNoiseSeed = new("get_randomize_noise_seed");
+        public static readonly StringName SetRandomizeNoiseSeed = new("set_randomize_noise_seed");
 
-        public const string GetNoiseSeed = "get_noise_seed";
-        public const string SetNoiseSeed = "set_noise_seed";
+        public static readonly StringName GetNoiseSeed = new("get_noise_seed");
+        public static readonly StringName SetNoiseSeed = new("set_noise_seed");
 
-        public const string GetRotationalNoise = "get_rotational_noise";
-        public const string SetRotationalNoise = "set_rotational_noise";
+        public static readonly StringName GetRotationalNoise = new("get_rotational_noise");
+        public static readonly StringName SetRotationalNoise = new("set_rotational_noise");
 
-        public const string GetPositionalNoise = "get_positional_noise";
-        public const string SetPositionalNoise = "set_positional_noise";
+        public static readonly StringName GetPositionalNoise = new("get_positional_noise");
+        public static readonly StringName SetPositionalNoise = new("set_positional_noise");
 
-        public const string GetRotationalMultiplierX = "get_rotational_multiplier_x";
-        public const string SetRotationalMultiplierX = "set_rotational_multiplier_x";
+        public static readonly StringName GetRotationalMultiplierX = new("get_rotational_multiplier_x");
+        public static readonly StringName SetRotationalMultiplierX = new("set_rotational_multiplier_x");
 
-        public const string GetRotationalMultiplierY = "get_rotational_multiplier_y";
-        public const string SetRotationalMultiplierY = "set_rotational_multiplier_y";
+        public static readonly StringName GetRotationalMultiplierY = new("get_rotational_multiplier_y");
+        public static readonly StringName SetRotationalMultiplierY = new("set_rotational_multiplier_y");
 
-        public const string GetRotationalMultiplierZ = "get_rotational_multiplier_z";
-        public const string SetRotationalMultiplierZ = "set_rotational_multiplier_z";
+        public static readonly StringName GetRotationalMultiplierZ = new("get_rotational_multiplier_z");
+        public static readonly StringName SetRotationalMultiplierZ = new("set_rotational_multiplier_z");
 
-        public const string GetPositionalMultiplierX = "get_positional_multiplier_x";
-        public const string SetPositionalMultiplierX = "set_positional_multiplier_x";
+        public static readonly StringName GetPositionalMultiplierX = new("get_positional_multiplier_x");
+        public static readonly StringName SetPositionalMultiplierX = new("set_positional_multiplier_x");
 
-        public const string GetPositionalMultiplierY = "get_positional_multiplier_y";
-        public const string SetPositionalMultiplierY = "set_positional_multiplier_y";
+        public static readonly StringName GetPositionalMultiplierY = new("get_positional_multiplier_y");
+        public static readonly StringName SetPositionalMultiplierY = new("set_positional_multiplier_y");
 
-        public const string GetPositionalMultiplierZ = "get_positional_multiplier_z";
-        public const string SetPositionalMultiplierZ = "set_positional_multiplier_z";
+        public static readonly StringName GetPositionalMultiplierZ = new("get_positional_multiplier_z");
+        public static readonly StringName SetPositionalMultiplierZ = new("set_positional_multiplier_z");
     }
 }

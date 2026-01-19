@@ -43,6 +43,7 @@ signal pcam_host_layer_changed(pcam: Node)
 var _phantom_camera_host_list: Array[PhantomCameraHost]
 var _phantom_camera_2d_list: Array[PhantomCamera2D]
 var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
+var _phantom_camera_tween_director_list: Array[PhantomCameraTweenDirector]
 
 #endregion
 
@@ -59,6 +60,10 @@ var phantom_camera_2ds: Array[PhantomCamera2D]:
 var phantom_camera_3ds: Array[Node]: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 	get:
 		return _phantom_camera_3d_list
+
+var phantom_camera_tween_directors: Array[PhantomCameraTweenDirector]:
+	get:
+		return _phantom_camera_tween_director_list
 
 var screen_size: Vector2i
 
@@ -119,6 +124,8 @@ func pcam_added(caller) -> void:
 	elif caller.is_class("PhantomCamera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 		_phantom_camera_3d_list.append(caller)
 		pcam_added_to_scene.emit(caller)
+	else:
+		printerr("This method can only be called from a PhantomCamera node")
 
 func pcam_removed(caller) -> void:
 	if is_instance_of(caller, PhantomCamera2D):
@@ -129,6 +136,19 @@ func pcam_removed(caller) -> void:
 		pcam_removed_from_scene.emit(caller)
 	else:
 		printerr("This method can only be called from a PhantomCamera node")
+
+
+func pcam_tween_director_added(caller: Node) -> void:
+	if is_instance_of(caller, PhantomCameraTweenDirector):
+		_phantom_camera_tween_director_list.append(caller)
+	else:
+		printerr("This function can only be called from a PhantomCameraTweenDirector node")
+
+func pcam_tween_director_removed(caller: Node) -> void:
+	if is_instance_of(caller, PhantomCameraTweenDirector):
+		_phantom_camera_tween_director_list.erase(caller)
+	else:
+		printerr("This function can only be called from a PhantomCameraTweenDirector node")
 
 
 func get_phantom_camera_hosts() -> Array[PhantomCameraHost]:
@@ -145,5 +165,6 @@ func scene_changed() -> void:
 	_phantom_camera_2d_list.clear()
 	_phantom_camera_3d_list.clear()
 	_phantom_camera_host_list.clear()
+	_phantom_camera_tween_director_list.clear()
 
 #endregion
