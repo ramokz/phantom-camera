@@ -326,6 +326,46 @@ var _should_rotate_with_target: bool = false
 	set = set_rotation_damping_value,
 	get = get_rotation_damping_value
 
+## Enables velocity-based look-ahead.
+@export var lookahead: bool = false:
+	set = set_lookahead,
+	get = get_lookahead
+
+@export_subgroup("Lookahead")
+## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
+## the [param follow target]'s velocity.[br]
+## Each axis (X, Y) has its own prediction time in [param seconds].[br][br]
+## A value of [param 0] can be set to disable lookahead for a given axis.
+@export_custom(PROPERTY_HINT_LINK, "suffix:s, ") var lookahead_time: Vector2 = Vector2(0.5, 0.5):
+	set = set_lookahead_time,
+	get = get_lookahead_time
+
+## Smooths the look-ahead offset when accelerating (seconds).
+## 0 = no smoothing (snappy), ~0.08–0.18 feels good.
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_acceleration: float = 0.2:
+	set = set_lookahead_acceleration,
+	get = get_lookahead_acceleration
+
+## Smooths the look-ahead offset when decelerating/returning to center (seconds).
+## Typically want this lower than [member lookahead_smoothing] for snappier feel.
+## 0 = instant snap back, ~0.03–0.08 feels good.
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deacceleration: float = 0.15:
+	set = set_lookahead_deacceleration,
+	get = get_lookahead_deacceleration
+
+## Enables a maximum velocity limit in [param pixels per second] for the [member follow_lookahead] effect.[br]
+## If [code]true[/code], the [param follow target's] velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.[br]
+## In other words, no matter how fast the target's actual velocity is, the lookahead will only follow up to the speed defined here.
+@export var lookahead_max: bool = false:
+	set = set_lookahead_max,
+	get = get_lookahead_max
+
+## The maximum [member lookahead] velocity in [param pixels per second].
+## The follow target's velocity will be clamped within these bounds on each axis before applying lookahead time.
+@export_custom(PROPERTY_HINT_LINK, "suffix:px/s") var lookahead_max_value: Vector2 = Vector2(200.0, 200.0):
+	set = set_lookahead_max_value,
+	get = get_lookahead_max_value
+
 
 @export_subgroup("Follow Group")
 ## Enables the [param PhantomCamera2D] to dynamically zoom in and out based on
@@ -392,39 +432,6 @@ var _should_rotate_with_target: bool = false
 ## [br]
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool = false
-
-@export_group("Look Ahead")
-## Enables velocity-based look-ahead (jump/fall/run).
-@export var lookahead_enabled: bool = false:
-	set(value):
-		lookahead_enabled = value
-		_reset_lookahead()
-		notify_property_list_changed()
-
-## How far ahead (in seconds) to “predict” on each axis.
-## Typical platformer defaults: X ~0.12–0.20, Y ~0.18–0.30
-@export var lookahead_prediction_time: Vector2 = Vector2(0.15, 0.25):
-	set(value):
-		lookahead_prediction_time = Vector2(maxf(value.x, 0.0), maxf(value.y, 0.0))
-
-## Hard clamp for how far the camera can be offset (pixels) on each axis.
-## Set X to 0 if you only want vertical look-ahead for jumping/falling.
-@export var lookahead_max_offset: Vector2 = Vector2(160.0, 260.0):
-	set(value):
-		lookahead_max_offset = Vector2(maxf(value.x, 0.0), maxf(value.y, 0.0))
-
-## Smooths the look-ahead offset when accelerating (seconds).
-## 0 = no smoothing (snappy), ~0.08–0.18 feels good.
-@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_acceleration: float = 0.12:
-	set(value):
-		lookahead_acceleration = maxf(value, 0.0)
-
-## Smooths the look-ahead offset when decelerating/returning to center (seconds).
-## Typically want this lower than [member lookahead_smoothing] for snappier feel.
-## 0 = instant snap back, ~0.03–0.08 feels good.
-@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deacceleration: float = 0.05:
-	set(value):
-		lookahead_deacceleration = maxf(value, 0.0)
 
 
 @export_group("Limit")
@@ -608,7 +615,8 @@ func _validate_property(property: Dictionary) -> void:
 			"follow_damping", \
 			"follow_damping_value", \
 			"follow_axis_lock", \
-			"rotate_with_target":
+			"rotate_with_target", \
+			"lookahead":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "follow_offset":
@@ -651,20 +659,24 @@ func _validate_property(property: Dictionary) -> void:
 	# Look-ahead only available for single-target follow modes
 	if not _lookahead_enabled_for_mode:
 		match property.name:
-			"lookahead_enabled", \
-			"lookahead_prediction_time", \
-			"lookahead_max_offset", \
-			"lookahead_smoothing", \
-			"lookahead_smoothing_decel":
+			"lookahead", \
+			"lookahead_time", \
+			"lookahead_max", \
+			"lookahead_max_value", \
+			"lookahead_acceleration", \
+			"lookahead_deacceleration":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
-	elif not lookahead_enabled:
+	elif not lookahead:
 		match property.name:
-			"lookahead_prediction_time", \
-			"lookahead_max_offset", \
-			"lookahead_smoothing", \
-			"lookahead_smoothing_decel":
+			"lookahead_time", \
+			"lookahead_max", \
+			"lookahead_max_value", \
+			"lookahead_acceleration", \
+			"lookahead_deacceleration":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
+	if property.name == "lookahead_max_value" and not lookahead_max:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	#####################
 	## Rotate With Target
@@ -805,7 +817,7 @@ func _follow(delta: float) -> void:
 	var final_target_pos := _follow_target_position
 
 	# Look-ahead only applies to single-target follow modes (SIMPLE, GLUED, PATH)
-	if lookahead_enabled and _lookahead_enabled_for_mode and not Engine.is_editor_hint():
+	if lookahead and _lookahead_enabled_for_mode and not Engine.is_editor_hint():
 		final_target_pos = _apply_lookahead(final_target_pos, delta)
 
 	_interpolate_position(final_target_pos, delta)
@@ -944,24 +956,21 @@ func _get_follow_target_velocity(delta: float) -> Vector2:
 
 
 func _apply_lookahead(base_pos: Vector2, delta: float) -> Vector2:
-	var vel := _get_follow_target_velocity(delta)
+	var velocity: Vector2 = _get_follow_target_velocity(delta)
 
-	# Predict forward, then clamp to max offset
-	var desired: Vector2 = Vector2(
-		vel.x * lookahead_prediction_time.x,
-		vel.y * lookahead_prediction_time.y
-	)
+	if lookahead_max:
+		velocity = Vector2(
+			clampf(velocity.x, -lookahead_max_value.x, lookahead_max_value.x),
+			clampf(velocity.y, -lookahead_max_value.y, lookahead_max_value.y),
+		)
 
-	desired.x = clampf(desired.x, -lookahead_max_offset.x, lookahead_max_offset.x)
-	desired.y = clampf(desired.y, -lookahead_max_offset.y, lookahead_max_offset.y)
+	var desired: Vector2 = velocity * lookahead_time
 
-	# Optional smoothing for the look-ahead offset itself
-	# Use different smoothing based on whether we're accelerating or decelerating
 	if lookahead_acceleration > 0.0 or lookahead_deacceleration > 0.0:
 		for i in 2:
 			# Determine if we're moving toward desired (accelerating) or away from it (decelerating)
-			var is_accelerating := signf(desired[i] - _lookahead_offset[i]) == signf(desired[i])
-			var smooth_time := lookahead_acceleration if is_accelerating else lookahead_deacceleration
+			var is_accelerating: bool = signf(desired[i] - _lookahead_offset[i]) == signf(desired[i])
+			var smooth_time: float = lookahead_acceleration if is_accelerating else lookahead_deacceleration
 
 			if smooth_time > 0.0:
 				_lookahead_offset[i] = _smooth_damp(
@@ -1714,6 +1723,57 @@ func set_auto_zoom_margin(value: Vector4) -> void:
 ## Gets Zoom Auto Margin value.
 func get_auto_zoom_margin() -> Vector4:
 	return auto_zoom_margin
+
+
+func set_lookahead(value: bool) -> void:
+	lookahead = value
+	_reset_lookahead()
+	notify_property_list_changed()
+
+func get_lookahead() -> bool:
+	return lookahead
+
+
+func set_lookahead_time(value: Vector2) -> void:
+	lookahead_time = Vector2(
+		maxf(0.0, value.x),
+		maxf(0.0, value.y)
+	)
+
+func get_lookahead_time() -> Vector2:
+	return lookahead_time
+
+
+func set_lookahead_max(value: bool) -> void:
+	lookahead_max = value
+	notify_property_list_changed()
+
+func get_lookahead_max() -> bool:
+	return lookahead_max
+
+
+func set_lookahead_max_value(value: Vector2) -> void:
+	lookahead_max_value = Vector2(
+		maxf(0.0, value.x),
+		maxf(0.0, value.y)
+	)
+
+func get_lookahead_max_value() -> Vector2:
+	return lookahead_max_value
+
+
+func set_lookahead_acceleration(value: float) ->  void:
+	lookahead_acceleration = maxf(0.0, value)
+
+func get_lookahead_acceleration() -> float:
+	return lookahead_acceleration
+
+
+func set_lookahead_deacceleration(value: float) ->  void:
+	lookahead_deacceleration = maxf(0.0, value)
+
+func get_lookahead_deacceleration() -> float:
+	return lookahead_deacceleration
 
 
 ## Sets a limit side based on the side parameter.[br]
