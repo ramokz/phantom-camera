@@ -434,7 +434,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_auto_follow_distance_divisor
 
 
-## Enables velocity-based look-ahead for the [param follow target].
+## Enables velocity-based look-ahead. As the [param follow target] moves the camera will move further ahead
+## based on its velocity. The faster the [param follow target] moves, the further ahead the camera will look.
 @export var follow_lookahead: bool = false:
 	set = set_follow_lookahead,
 	get = get_follow_lookahead
@@ -567,7 +568,8 @@ var horizontal_rotation_offset: float = 0.0:
 	get = get_look_at_damping_value
 
 
-## Enables velocity-based lookahead for the [param look at target].
+## Enables velocity-based look-ahead. As the [param look at target] moves the camera will move further ahead
+## based on its velocity. The faster the [param look at target] moves, the further ahead the camera will look.
 @export var look_at_lookahead: bool = false:
 	set = set_look_at_lookahead,
 	get = get_look_at_lookahead
