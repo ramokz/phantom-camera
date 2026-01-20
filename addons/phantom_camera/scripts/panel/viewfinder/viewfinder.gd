@@ -531,7 +531,7 @@ func _on_update_editor_viewfinder(check_framed_view: bool = false) -> void:
 	if not _active_pcam.follow_mode_changed.is_connected(_check_follow_mode):
 		_active_pcam.follow_mode_changed.connect(_check_follow_mode)
 
-	if _active_pcam.priority_override:
+	if _active_pcam.priority_override and Engine.is_editor_hint():
 		_priority_override_button.visible = true
 		_priority_override_name_label.set_text(_active_pcam.name)
 		_priority_override_button.set_tooltip_text(_active_pcam.name)
