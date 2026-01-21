@@ -144,10 +144,6 @@ func _exit_tree() -> void:
 	remove_custom_type(PCAM_NOISE_EMITTER_3D)
 	remove_custom_type(PCAM_TWEEN_DIRECTOR)
 
-	remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
-#	if get_tree().root.get_node_or_null(String(PHANTOM_CAMERA_MANAGER)):
-#		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
-
 
 func _btn_toggled(toggled_on: bool):
 	editor_panel_instance.viewfinder.set_visibility(toggled_on)
