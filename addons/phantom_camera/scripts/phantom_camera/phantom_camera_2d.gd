@@ -341,18 +341,21 @@ var _should_rotate_with_target: bool = false
 	set = set_lookahead_time,
 	get = get_lookahead_time
 
-## Smooths the look-ahead offset when accelerating (seconds).
-## 0 = no smoothing (snappy), ~0.08–0.18 feels good.
+## Determines the damping speed of how fast the camera should reach the [member lookahead_time]
+## target once the [param follow target] has a positional velocity.[br]
+## [b]Lower value[/b] = faster.[br]
+## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_acceleration: float = 0.2:
 	set = set_lookahead_acceleration,
 	get = get_lookahead_acceleration
 
-## Smooths the look-ahead offset when decelerating/returning to center (seconds).
-## Typically want this lower than [member lookahead_smoothing] for snappier feel.
-## 0 = instant snap back, ~0.03–0.08 feels good.
-@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deacceleration: float = 0.15:
-	set = set_lookahead_deacceleration,
-	get = get_lookahead_deacceleration
+## Determines the damping speed of how fast the camera should decelerate back to the
+## [param follow target]'s position once it has no positional velocity.[br]
+## [b]Lower value[/b] = faster.[br]
+## [b]Higher value[/b] = slower.
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deceleration: float = 0.15:
+	set = set_lookahead_deceleration,
+	get = get_lookahead_deceleration
 
 ## Enables a maximum velocity limit in [param pixels per second] for the [member follow_lookahead] effect.[br]
 ## If [code]true[/code], the [param follow target's] velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.[br]
@@ -665,7 +668,7 @@ func _validate_property(property: Dictionary) -> void:
 			"lookahead_max", \
 			"lookahead_max_value", \
 			"lookahead_acceleration", \
-			"lookahead_deacceleration":
+			"lookahead_deceleration":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 	elif not lookahead:
 		match property.name:
@@ -673,7 +676,7 @@ func _validate_property(property: Dictionary) -> void:
 			"lookahead_max", \
 			"lookahead_max_value", \
 			"lookahead_acceleration", \
-			"lookahead_deacceleration":
+			"lookahead_deceleration":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == "lookahead_max_value" and not lookahead_max:
@@ -862,49 +865,46 @@ func _set_follow_position() -> void:
 			) + path_position
 
 		FollowMode.FRAMED:
-			if not Engine.is_editor_hint():
-				if not _is_active:
-					_follow_target_position = _get_target_position_offset()
-				else:
-					viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
-					var framed_side_offset: Vector2 = _get_framed_side_offset()
-
-					if framed_side_offset != Vector2.ZERO:
-						var glo_pos: Vector2
-						var target_position: Vector2 = _get_target_position_offset() + _follow_framed_offset
-
-						if dead_zone_width == 0 || dead_zone_height == 0:
-							if dead_zone_width == 0 && dead_zone_height != 0:
-								_follow_target_position = _get_target_position_offset()
-							elif dead_zone_width != 0 && dead_zone_height == 0:
-								glo_pos = _get_target_position_offset()
-								glo_pos.x += target_position.x - global_position.x
-								_follow_target_position = glo_pos
-							else:
-								_follow_target_position = _get_target_position_offset()
-
-						# If a horizontal dead zone is reached
-						if framed_side_offset.x != 0 and framed_side_offset.y == 0:
-							_follow_target_position.y = _transform_output.origin.y
-							_follow_target_position.x = target_position.x
-							_follow_framed_offset.y = global_position.y - _get_target_position_offset().y
-							dead_zone_reached.emit(Vector2(framed_side_offset.x, 0))
-							# If a vertical dead zone is reached
-						elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
-							_follow_target_position.x = _transform_output.origin.x
-							_follow_target_position.y = target_position.y
-							_follow_framed_offset.x = global_position.x - _get_target_position_offset().x
-							dead_zone_reached.emit(Vector2(0, framed_side_offset.y))
-						# If a deadzone corner is reached
-						else:
-							_follow_target_position = target_position
-							dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
-					else:
-						_follow_framed_offset = _transform_output.origin - _get_target_position_offset()
-						_follow_target_position = global_position
-						return
-			else:
+			if Engine.is_editor_hint() or not _is_active:
 				_follow_target_position = _get_target_position_offset()
+			else:
+				viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
+				var framed_side_offset: Vector2i = _get_framed_side_offset()
+
+				if framed_side_offset != Vector2i.ZERO:
+					var glo_pos: Vector2
+					var target_position: Vector2 = _get_target_position_offset() + _follow_framed_offset
+
+					if dead_zone_width == 0 || dead_zone_height == 0:
+						if dead_zone_width == 0 && dead_zone_height != 0:
+							_follow_target_position = _get_target_position_offset()
+						elif dead_zone_width != 0 && dead_zone_height == 0:
+							glo_pos = _get_target_position_offset()
+							glo_pos.x += target_position.x - global_position.x
+							_follow_target_position = glo_pos
+						else:
+							_follow_target_position = _get_target_position_offset()
+
+					# If a horizontal dead zone is reached
+					if framed_side_offset.x != 0 and framed_side_offset.y == 0:
+						_follow_target_position.y = _transform_output.origin.y
+						_follow_target_position.x = target_position.x
+						_follow_framed_offset.y = global_position.y - _get_target_position_offset().y
+						dead_zone_reached.emit(Vector2i(framed_side_offset.x, 0))
+						# If a vertical dead zone is reached
+					elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
+						_follow_target_position.x = _transform_output.origin.x
+						_follow_target_position.y = target_position.y
+						_follow_framed_offset.x = global_position.x - _get_target_position_offset().x
+						dead_zone_reached.emit(Vector2i(0, framed_side_offset.y))
+					# If a deadzone corner is reached
+					else:
+						_follow_target_position = target_position
+						dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
+				else:
+					_follow_framed_offset = _transform_output.origin - _get_target_position_offset()
+					_follow_target_position = global_position
+					return
 
 
 func _set_follow_velocity(index: int, value: float):
@@ -943,15 +943,15 @@ func _get_follow_target_velocity(delta: float) -> Vector2:
 				return prop_v
 
 	# Fallback: estimate from position delta using raw target position
-	var dt := maxf(delta, 0.0001)
-	var current_pos := follow_target.global_position
+	var dt: float = maxf(delta, 0.0001)
+	var current_pos: Vector2 = follow_target.global_position
 
 	if not _lookahead_has_prev_sample:
 		_lookahead_has_prev_sample = true
 		_lookahead_sample_pos_prev = current_pos
 		return Vector2.ZERO
 
-	var vel := (current_pos - _lookahead_sample_pos_prev) / dt
+	var vel: Vector2 = (current_pos - _lookahead_sample_pos_prev) / dt
 	_lookahead_sample_pos_prev = current_pos
 	return vel
 
@@ -967,11 +967,11 @@ func _apply_lookahead(base_pos: Vector2, delta: float) -> Vector2:
 
 	var desired: Vector2 = velocity * lookahead_time
 
-	if lookahead_acceleration > 0.0 or lookahead_deacceleration > 0.0:
+	if lookahead_acceleration > 0.0 or lookahead_deceleration > 0.0:
 		for i in 2:
 			# Determine if we're moving toward desired (accelerating) or away from it (decelerating)
 			var is_accelerating: bool = signf(desired[i] - _lookahead_offset[i]) == signf(desired[i])
-			var smooth_time: float = lookahead_acceleration if is_accelerating else lookahead_deacceleration
+			var smooth_time: float = lookahead_acceleration if is_accelerating else lookahead_deceleration
 
 			if smooth_time > 0.0:
 				_lookahead_offset[i] = _smooth_damp(
@@ -1085,8 +1085,8 @@ func _on_dead_zone_changed() -> void:
 	global_position = _get_target_position_offset()
 
 
-func _get_framed_side_offset() -> Vector2:
-	var frame_out_bounds: Vector2
+func _get_framed_side_offset() -> Vector2i:
+	var frame_out_bounds: Vector2i
 
 	if viewport_position.x < 0.5 - dead_zone_width / 2:
 		# Is outside left edge
@@ -1770,11 +1770,11 @@ func get_lookahead_acceleration() -> float:
 	return lookahead_acceleration
 
 
-func set_lookahead_deacceleration(value: float) ->  void:
-	lookahead_deacceleration = maxf(0.0, value)
+func set_lookahead_deceleration(value: float) ->  void:
+	lookahead_deceleration = maxf(0.0, value)
 
-func get_lookahead_deacceleration() -> float:
-	return lookahead_deacceleration
+func get_lookahead_deceleration() -> float:
+	return lookahead_deceleration
 
 
 ## Sets a limit side based on the side parameter.[br]
