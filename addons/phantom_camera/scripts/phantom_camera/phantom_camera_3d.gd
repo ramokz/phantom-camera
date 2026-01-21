@@ -654,7 +654,7 @@ var horizontal_rotation_offset: float = 0.0:
 ## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's transform.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is following [i]or[/i] looking at a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Transform with View", "CenterView")
+@export_custom(PROPERTY_HINT_TOOL_BUTTON, "Align Transform with View,CenterView", PROPERTY_USAGE_EDITOR)
 var align_transform_with_view: Callable = func():
 	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_transform"
@@ -666,7 +666,7 @@ var align_transform_with_view: Callable = func():
 ## Adds an editor button that positions the [param PhantomCamera3D] to match the 3D viewport's position.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is following a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Position with View", "ToolMove")
+@export_custom(PROPERTY_HINT_TOOL_BUTTON, "Align Position with View,ToolMove", PROPERTY_USAGE_EDITOR)
 var align_position_with_view: Callable = func():
 	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_position"
@@ -678,7 +678,7 @@ var align_position_with_view: Callable = func():
 ## Adds an editor button that rotates the [param PhantomCamera3D] to match the 3D viewport's rotation.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is looking at a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Rotation with View", "ToolRotate")
+@export_custom(PROPERTY_HINT_TOOL_BUTTON, "Align Rotation with View,ToolRotate", PROPERTY_USAGE_EDITOR)
 var align_rotation_with_view: Callable = func():
 	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_rotation"
