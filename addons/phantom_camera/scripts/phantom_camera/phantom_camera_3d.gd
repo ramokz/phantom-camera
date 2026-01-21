@@ -457,13 +457,13 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_follow_lookahead_acceleration,
 	get = get_follow_lookahead_acceleration
 
-## Determines the damping speed of how fast the camera should deaccerlate back to the
+## Determines the damping speed of how fast the camera should decelerate back to the
 ## [param follow target]'s position once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
-@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deacceleration: float = 0.1:
-	set = set_follow_lookahead_deacceleration,
-	get = get_follow_lookahead_deacceleration
+@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deceleration: float = 0.1:
+	set = set_follow_lookahead_deceleration,
+	get = get_follow_lookahead_deceleration
 
 ## Enables a maximum velocity limit in [param meters per second] for the [member follow_lookahead] effect.[br]
 ## If [code]true[/code], the [param follow target's] velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.[br]
@@ -589,13 +589,13 @@ var horizontal_rotation_offset: float = 0.0:
 	set = set_look_at_lookahead_acceleration,
 	get = get_look_at_lookahead_acceleration
 
-## Determines the damping speed of how fast the camera should deaccerlate back to the [param follow target]'s position
+## Determines the damping speed of how fast the camera should decelerate back to the [param follow target]'s position
 ## once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
-@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deacceleration: float = 0.1:
-	set = set_look_at_lookahead_deacceleration,
-	get = get_look_at_lookahead_deacceleration
+@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deceleration: float = 0.1:
+	set = set_look_at_lookahead_deceleration,
+	get = get_look_at_lookahead_deceleration
 
 ## Enables a maximum velocity limit in [param meters per second] for [member look_at_lookahead].[br]
 ## If [code]true[/code], the [param look at target's] velocity will be clamped to the [member look_at_lookahead_max_value].[br]
@@ -961,7 +961,7 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"follow_lookahead_time", \
 			"follow_lookahead_acceleration", \
-			"follow_lookahead_deacceleration", \
+			"follow_lookahead_deceleration", \
 			"follow_lookahead_max", \
 			"follow_lookahead_max_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -976,7 +976,7 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"look_at_lookahead_time", \
 			"look_at_lookahead_acceleration", \
-			"look_at_lookahead_deacceleration", \
+			"look_at_lookahead_deceleration", \
 			"look_at_lookahead_max", \
 			"look_at_lookahead_max_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -1619,7 +1619,7 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 				)
 
 			var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
-			var smooth_time: float = follow_lookahead_deacceleration if slowing else follow_lookahead_acceleration
+			var smooth_time: float = follow_lookahead_deceleration if slowing else follow_lookahead_acceleration
 			var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
 			_lookahead_follow_velocity = result[0]
 			_lookahead_follow_smooth_velocity = result[1]
@@ -1646,7 +1646,7 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 			velocity = velocity.limit_length(look_at_lookahead_max_value)
 
 		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
-		var smooth_time: float = look_at_lookahead_deacceleration if slowing else look_at_lookahead_acceleration
+		var smooth_time: float = look_at_lookahead_deceleration if slowing else look_at_lookahead_acceleration
 		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
 		_lookahead_look_at_velocity = result[0]
 		_lookahead_look_at_smooth_velocity = result[1]
@@ -2550,13 +2550,13 @@ func get_follow_lookahead_acceleration() -> float:
 	return follow_lookahead_acceleration
 
 
-## Assigns the [member follow_lookahead_deacceleration] value.
-func set_follow_lookahead_deacceleration(value: float) -> void:
-	follow_lookahead_deacceleration = maxf(0.0, value)
+## Assigns the [member follow_lookahead_deceleration] value.
+func set_follow_lookahead_deceleration(value: float) -> void:
+	follow_lookahead_deceleration = maxf(0.0, value)
 
-## Gets the [member follow_lookahead_deacceleration] value.
-func get_follow_lookahead_deacceleration() -> float:
-	return follow_lookahead_deacceleration
+## Gets the [member follow_lookahead_deceleration] value.
+func get_follow_lookahead_deceleration() -> float:
+	return follow_lookahead_deceleration
 
 
 ## Enables or disables [member follow_enable_max_lookahead_offset].
@@ -2614,13 +2614,13 @@ func get_look_at_lookahead_acceleration() -> float:
 	return look_at_lookahead_acceleration
 
 
-## Assigns the [member look_at_lookahead_deacceleration] value.
-func set_look_at_lookahead_deacceleration(value: float) -> void:
-	look_at_lookahead_deacceleration = maxf(0.0, value)
+## Assigns the [member look_at_lookahead_deceleration] value.
+func set_look_at_lookahead_deceleration(value: float) -> void:
+	look_at_lookahead_deceleration = maxf(0.0, value)
 
-## Gets the [member look_at_lookahead_deacceleration] value.
-func get_look_at_lookahead_deacceleration() -> float:
-	return look_at_lookahead_deacceleration
+## Gets the [member look_at_lookahead_deceleration] value.
+func get_look_at_lookahead_deceleration() -> float:
+	return look_at_lookahead_deceleration
 
 
 ## Enables or disables [member look_at_lookahead_max].
