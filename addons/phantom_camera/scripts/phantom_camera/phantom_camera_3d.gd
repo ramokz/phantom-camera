@@ -434,17 +434,17 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_auto_follow_distance_divisor
 
 
-## Enables velocity-based look-ahead. As the [param follow target] moves the camera will move further ahead
+## Enables velocity-based lookahead. As the [param follow target] moves the camera will move further ahead
 ## based on its velocity. The faster the [param follow target] moves, the further ahead the camera will look.
 @export var follow_lookahead: bool = false:
 	set = set_follow_lookahead,
 	get = get_follow_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
+## The amount of [param seconds] to look ahead of the [param follow target]'s position per axis based on
 ## the [param follow target]'s velocity.[br]
-## Each axis (X, Y, Z) has its own prediction time in [param seconds].[br][br]
-## A value of [param 0] can be set to disable lookahead for a given axis.
+## Each axis has its own prediction time in [param seconds].[br][br]
+## A value of [param 0] can be set either to disable lookahead for the corresponding axis.
 @export_custom(PROPERTY_HINT_LINK, "0, 1, 0.001, suffix:s") var follow_lookahead_time: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_lookahead_time,
 	get = get_follow_lookahead_time
@@ -473,7 +473,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_follow_lookahead_max
 
 ## The maximum [member follow_lookahead] velocity in [param meters per second].
-## The follow target's velocity will be clamped within these bounds on each axis before applying lookahead time.
+## The [follow target]'s velocity will be clamped within these bounds on each axis before applying lookahead time.
 @export_custom(PROPERTY_HINT_LINK, "suffix:m/s") var follow_lookahead_max_value: Vector3 = Vector3(5.0, 5.0, 5.0):
 	set = set_follow_lookahead_max_value,
 	get = get_follow_lookahead_max_value
