@@ -326,18 +326,18 @@ var _should_rotate_with_target: bool = false
 	set = set_rotation_damping_value,
 	get = get_rotation_damping_value
 
-## Enables velocity-based look-ahead. As the [param follow target] moves the camera will move further ahead
+## Enables velocity-based lookahead. As the [param follow target] moves the camera will move further ahead
 ## based on its velocity. The faster the [param follow target] moves, the further ahead the camera will move.
 @export var lookahead: bool = false:
 	set = set_lookahead,
 	get = get_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
+## The amount of [param seconds] to look ahead of the [param follow target]'s position per axis based on
 ## the [param follow target]'s velocity.[br]
-## Each axis (X, Y) has its own prediction time in [param seconds].[br][br]
-## A value of [param 0] can be set to disable lookahead for a given axis.
-@export_custom(PROPERTY_HINT_LINK, "suffix:s, ") var lookahead_time: Vector2 = Vector2(0.5, 0.5):
+## Each axis has its own prediction time in [param seconds].[br][br]
+## A value of [param 0] can be set either to disable lookahead for the corresponding axis.
+@export_custom(PROPERTY_HINT_LINK, "suffix:s") var lookahead_time: Vector2 = Vector2(0.5, 0.5):
 	set = set_lookahead_time,
 	get = get_lookahead_time
 
@@ -353,7 +353,7 @@ var _should_rotate_with_target: bool = false
 ## [param follow target]'s position once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
-@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deceleration: float = 0.15:
+@export_range(0.0, 1.0, 0.001, "or_greater") var lookahead_deceleration: float = 0.2:
 	set = set_lookahead_deceleration,
 	get = get_lookahead_deceleration
 
@@ -365,7 +365,7 @@ var _should_rotate_with_target: bool = false
 	get = get_lookahead_max
 
 ## The maximum [member lookahead] velocity in [param pixels per second].
-## The follow target's velocity will be clamped within these bounds on each axis before applying lookahead time.
+## The [param follow target]'s velocity will be clamped within these bounds on each axis before applying lookahead time.
 @export_custom(PROPERTY_HINT_LINK, "suffix:px/s") var lookahead_max_value: Vector2 = Vector2(200.0, 200.0):
 	set = set_lookahead_max_value,
 	get = get_lookahead_max_value
