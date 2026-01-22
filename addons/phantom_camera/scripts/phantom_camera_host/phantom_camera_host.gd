@@ -1346,9 +1346,11 @@ func pcam_priority_updated(pcam: Node) -> void:
 
 	if Engine.is_editor_hint():
 		if _is_2d:
+			if not _active_pcam_2d: return
 			if _active_pcam_2d.priority_override: return
 			if not is_instance_valid(_active_pcam_2d): return
 		else:
+			if not _active_pcam_3d: return
 			if _active_pcam_3d.priority_override: return
 			if not is_instance_valid(_active_pcam_3d): return
 
