@@ -31,13 +31,12 @@ var _settings_editor_shortcut: String = "phantom_camera/general/editor_shortcut"
 
 #region Public Variables
 
-var pcam_3d_gizmo_plugin = PCam3DPlugin.new()
-var pcam_3d_noise_emitter_gizmo_plugin = PCam3DNoiseEmitterPlugin.new()
+var pcam_3d_gizmo_plugin: EditorNode3DGizmoPlugin = PCam3DPlugin.new() as EditorNode3DGizmoPlugin
+var pcam_3d_noise_emitter_gizmo_plugin: EditorNode3DGizmoPlugin = PCam3DNoiseEmitterPlugin.new() as EditorNode3DGizmoPlugin
 
 var editor_panel_instance: Control
 var panel_button: Button
 #var viewfinder_panel_instance
-
 
 #endregion
 
@@ -45,9 +44,9 @@ var panel_button: Button
 
 func _enable_plugin() -> void:
 	print_rich("Phantom Camera documentation can be found at: [url=https://phantom-camera.dev]https://phantom-camera.dev[/url]")
-	if not Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
-		add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
+	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
 
+	EditorInterface.restart_editor()
 
 func _disable_plugin() -> void:
 	if Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
