@@ -145,30 +145,20 @@ enum FollowTargetPhysicsClass {
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
-			_lookahead_enabled_for_mode = false
 			top_level = false
 			_is_parents_physics()
 			notify_property_list_changed()
 			return
 
 		match follow_mode:
-			FollowMode.GLUED:
-				_lookahead_enabled_for_mode = true
-				_should_follow_checker()
-			FollowMode.SIMPLE:
-				_lookahead_enabled_for_mode = true
-				_should_follow_checker()
 			FollowMode.GROUP:
-				_lookahead_enabled_for_mode = false
 				_follow_targets_size_check()
 			FollowMode.PATH:
-				_lookahead_enabled_for_mode = true
 				if is_instance_valid(follow_path):
 					_should_follow_checker()
 				else:
 					_should_follow = false
-			FollowMode.FRAMED:
-				_lookahead_enabled_for_mode = false
+			_:
 				_should_follow_checker()
 
 		if follow_mode == FollowMode.FRAMED:
@@ -540,6 +530,9 @@ var _rotation_velocity_ref: float = 0.0 # Stores and applies the velocity of the
 
 var _has_follow_path: bool = false
 
+var _has_lookahead_acceleration: bool = true
+var _has_lookahead_deceleration: bool = true
+
 var _tween_skip: bool = false
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
@@ -551,9 +544,6 @@ var _lookahead_offset_velocity_ref: Vector2 = Vector2.ZERO
 
 var _lookahead_sample_pos_prev: Vector2 = Vector2.ZERO
 var _lookahead_has_prev_sample: bool = false
-
-## True if the current follow_mode supports look-ahead
-var _lookahead_enabled_for_mode: bool = false
 
 
 static var _draw_limits: bool = false
@@ -661,16 +651,7 @@ func _validate_property(property: Dictionary) -> void:
 	## Look Ahead
 	###############
 	# Look-ahead only available for single-target follow modes
-	if not _lookahead_enabled_for_mode:
-		match property.name:
-			"lookahead", \
-			"lookahead_time", \
-			"lookahead_max", \
-			"lookahead_max_value", \
-			"lookahead_acceleration", \
-			"lookahead_deceleration":
-				property.usage = PROPERTY_USAGE_NO_EDITOR
-	elif not lookahead:
+	if not lookahead:
 		match property.name:
 			"lookahead_time", \
 			"lookahead_max", \
@@ -816,24 +797,21 @@ func _limit_checker() -> void:
 
 
 func _follow(delta: float) -> void:
-	_set_follow_position()
-
-	var final_target_pos := _follow_target_position
-
-	# Look-ahead only applies to single-target follow modes (SIMPLE, GLUED, PATH)
-	if lookahead and _lookahead_enabled_for_mode and not Engine.is_editor_hint():
-		final_target_pos = _apply_lookahead(final_target_pos, delta)
-
-	_interpolate_position(final_target_pos, delta)
+	_set_follow_position(delta)
+	_interpolate_position(_follow_target_position, delta)
 
 
-func _set_follow_position() -> void:
+func _set_follow_position(delta: float) -> void:
 	match follow_mode:
 		FollowMode.GLUED:
 			_follow_target_position = follow_target.global_position
+			if lookahead and not Engine.is_editor_hint():
+				_follow_target_position = _apply_lookahead(_follow_target_position, delta)
 
 		FollowMode.SIMPLE:
 			_follow_target_position = _get_target_position_offset()
+			if lookahead and not Engine.is_editor_hint():
+				_follow_target_position = _apply_lookahead(_follow_target_position, delta)
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
@@ -852,16 +830,25 @@ func _set_follow_position() -> void:
 						zoom = clamp(_phantom_camera_manager.screen_size.x / rect.size.x, auto_zoom_min, auto_zoom_max) * Vector2.ONE
 					else:
 						zoom = clamp(_phantom_camera_manager.screen_size.y / rect.size.y, auto_zoom_min, auto_zoom_max) * Vector2.ONE
-				_follow_target_position = rect.get_center() + follow_offset
+
+				var target_position: Vector2 = rect.get_center() + follow_offset
+				if lookahead and not Engine.is_editor_hint():
+					target_position = _apply_lookahead(target_position, delta)
+
+				_follow_target_position = target_position
 			else:
 				_follow_target_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
 
 		FollowMode.PATH:
 			var path_position: Vector2 = follow_path.global_position
+			var follow_postion: Vector2 = _get_target_position_offset()
+
+			if lookahead and not Engine.is_editor_hint():
+				follow_postion = _apply_lookahead(follow_postion, delta)
 
 			_follow_target_position = \
 			follow_path.curve.get_closest_point(
-				_get_target_position_offset() - path_position
+				follow_postion - path_position
 			) + path_position
 
 		FollowMode.FRAMED:
@@ -904,7 +891,6 @@ func _set_follow_position() -> void:
 				else:
 					_follow_framed_offset = _transform_output.origin - _get_target_position_offset()
 					_follow_target_position = global_position
-					return
 
 
 func _set_follow_velocity(index: int, value: float):
@@ -924,40 +910,50 @@ func _set_lookahead_velocity(index: int, value: float) -> void:
 	_lookahead_offset_velocity_ref[index] = value
 
 
-func _get_follow_target_velocity(delta: float) -> Vector2:
-	# Use cached type check for performance
+func _get_follow_target_velocity(target_position: Vector2, delta: float) -> Vector2:
 	match _follow_target_physics_class:
 		FollowTargetPhysicsClass.CHARACTERBODY:
 			return _character_body_2d.velocity
 		FollowTargetPhysicsClass.RIGIDBODY:
 			return _rigid_body_2d.linear_velocity
 		FollowTargetPhysicsClass.OTHER:
-			# Optional extension points for custom controllers
-			if follow_target.has_method(&"get_velocity"):
-				var v = follow_target.call(&"get_velocity")
-				if v is Vector2:
-					return v
+			if follow_mode != FollowMode.GROUP:
+				if follow_target.has_method(&"get_velocity"):
+					var v = follow_target.call(&"get_velocity")
+					if v is Vector2:
+						return v
 
-			var prop_v = follow_target.get(&"velocity")
-			if prop_v is Vector2:
-				return prop_v
-
-	# Fallback: estimate from position delta using raw target position
-	var dt: float = maxf(delta, 0.0001)
-	var current_pos: Vector2 = follow_target.global_position
+				var prop_v = follow_target.get(&"velocity")
+				if prop_v is Vector2:
+					return prop_v
 
 	if not _lookahead_has_prev_sample:
 		_lookahead_has_prev_sample = true
-		_lookahead_sample_pos_prev = current_pos
+		_lookahead_sample_pos_prev = target_position
 		return Vector2.ZERO
 
-	var vel: Vector2 = (current_pos - _lookahead_sample_pos_prev) / dt
-	_lookahead_sample_pos_prev = current_pos
-	return vel
+	var current_position: Vector2
+	if follow_mode == FollowMode.GROUP:
+		if _has_multiple_follow_targets:
+			current_position = target_position
+		else:
+			current_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
+	else:
+		current_position = _get_target_position_offset()
+
+	if not _lookahead_has_prev_sample:
+		_lookahead_has_prev_sample = true
+		_lookahead_sample_pos_prev = current_position
+		return Vector2.ZERO
+
+	var velocity: Vector2 = (current_position - _lookahead_sample_pos_prev) / maxf(delta, 0.0001)
+	_lookahead_sample_pos_prev = current_position
+
+	return velocity
 
 
-func _apply_lookahead(base_pos: Vector2, delta: float) -> Vector2:
-	var velocity: Vector2 = _get_follow_target_velocity(delta)
+func _apply_lookahead(target_position: Vector2, delta: float) -> Vector2:
+	var velocity: Vector2 = _get_follow_target_velocity(target_position, delta)
 
 	if lookahead_max:
 		velocity = Vector2(
@@ -966,29 +962,33 @@ func _apply_lookahead(base_pos: Vector2, delta: float) -> Vector2:
 		)
 
 	var desired: Vector2 = velocity * lookahead_time
+	for i in 2:
+		# Determine if moving toward desired (accelerating) or away from it (decelerating)
+		var is_accelerating: bool = signf(desired[i] - _lookahead_offset[i]) == signf(desired[i])
+		var smooth_time: float
+		var lookahead_is_smooth: bool
 
-	if lookahead_acceleration > 0.0 or lookahead_deceleration > 0.0:
-		for i in 2:
-			# Determine if we're moving toward desired (accelerating) or away from it (decelerating)
-			var is_accelerating: bool = signf(desired[i] - _lookahead_offset[i]) == signf(desired[i])
-			var smooth_time: float = lookahead_acceleration if is_accelerating else lookahead_deceleration
+		if is_accelerating:
+			lookahead_is_smooth = _has_lookahead_acceleration
+			smooth_time = lookahead_acceleration
+		else:
+			lookahead_is_smooth = _has_lookahead_deceleration
+			smooth_time = lookahead_deceleration
 
-			if smooth_time > 0.0:
-				_lookahead_offset[i] = _smooth_damp(
-					desired[i],
-					_lookahead_offset[i],
-					i,
-					_lookahead_offset_velocity_ref[i],
-					_set_lookahead_velocity,
-					smooth_time,
-					delta
-				)
-			else:
-				_lookahead_offset[i] = desired[i]
-	else:
-		_lookahead_offset = desired
+		if lookahead_is_smooth:
+			_lookahead_offset[i] = _smooth_damp(
+				desired[i],
+				_lookahead_offset[i],
+				i,
+				_lookahead_offset_velocity_ref[i],
+				_set_lookahead_velocity,
+				smooth_time,
+				delta
+			)
+		else:
+			_lookahead_offset[i] = desired[i]
 
-	return base_pos + _lookahead_offset
+	return target_position + _lookahead_offset
 
 
 func _interpolate_position(target_position: Vector2, delta: float) -> void:
@@ -1007,50 +1007,51 @@ func _interpolate_position(target_position: Vector2, delta: float) -> void:
 		else:
 			output_rotation = follow_target.get_rotation() + rotation_offset
 
+	## Applies the raw target position to the PCam2D
+	global_position = target_position
+
+	## Applies Damping to the Transform2D output
+	if not Engine.is_editor_hint():
+		if follow_damping:
+			for i in 2:
+				target_position[i] = _smooth_damp(
+					global_position[i],
+					_transform_output.origin[i],
+					i,
+					_follow_velocity_ref[i],
+					_set_follow_velocity,
+					follow_damping_value[i],
+					delta
+				)
+
 	if _limit_inactive_pcam and not _tween_skip:
 		target_position = _set_limit_clamp_position(target_position)
 
-	global_position = target_position
-
-	if follow_damping and not Engine.is_editor_hint():
-		var output_position: Vector2
-		for i in 2:
-			output_position[i] = _smooth_damp(
-				global_position[i],
-				_transform_output.origin[i],
-				i,
-				_follow_velocity_ref[i],
-				_set_follow_velocity,
-				follow_damping_value[i],
-				delta
-			)
-		_transform_output = Transform2D(output_rotation, output_position)
-	else:
-		_transform_output = Transform2D(output_rotation, target_position)
+	_transform_output = Transform2D(output_rotation, target_position)
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
-		damping_time = maxf(0.0001, damping_time)
-		var omega: float = 2 / damping_time
-		var x: float = omega * delta
-		var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
-		var diff: float = self_axis - target_axis
-		var _target_axis: float = target_axis
+	damping_time = maxf(0.0001, damping_time)
+	var omega: float = 2 / damping_time
+	var x: float = omega * delta
+	var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var diff: float = self_axis - target_axis
+	var _target_axis: float = target_axis
 
-		var max_change: float = INF * damping_time
-		diff = clampf(diff, -max_change, max_change)
-		target_axis = self_axis - diff
+	var max_change: float = INF * damping_time
+	diff = clampf(diff, -max_change, max_change)
+	target_axis = self_axis - diff
 
-		var temp: float = (current_velocity + omega * diff) * delta
-		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
-		var output: float = target_axis + (diff + temp) * exponential
+	var temp: float = (current_velocity + omega * diff) * delta
+	set_velocity.call(index, (current_velocity - omega * temp) * exponential)
+	var output: float = target_axis + (diff + temp) * exponential
 
-		## To prevent overshooting
-		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
-			output = _target_axis
-			set_velocity.call(index, (output - _target_axis) / delta)
+	## To prevent overshooting
+	if (_target_axis - self_axis > 0.0) == (output > _target_axis):
+		output = _target_axis
+		set_velocity.call(index, (output - _target_axis) / delta)
 
-		return output
+	return output
 
 
 func _set_limit_clamp_position(value: Vector2) -> Vector2:
@@ -1348,7 +1349,7 @@ func emit_noise(value: Transform2D) -> void:
 func teleport_position() -> void:
 	_follow_velocity_ref = Vector2.ZERO
 	_reset_lookahead()
-	_set_follow_position()
+	_set_follow_position(0.0)
 	_transform_output.origin = _follow_target_position
 	_phantom_camera_manager.pcam_teleport.emit(self)
 
@@ -1765,6 +1766,10 @@ func get_lookahead_max_value() -> Vector2:
 
 func set_lookahead_acceleration(value: float) ->  void:
 	lookahead_acceleration = maxf(0.0, value)
+	if is_zero_approx(lookahead_acceleration):
+		_has_lookahead_acceleration = false
+	else:
+		_has_lookahead_acceleration = true
 
 func get_lookahead_acceleration() -> float:
 	return lookahead_acceleration
@@ -1772,6 +1777,10 @@ func get_lookahead_acceleration() -> float:
 
 func set_lookahead_deceleration(value: float) ->  void:
 	lookahead_deceleration = maxf(0.0, value)
+	if is_zero_approx(lookahead_deceleration):
+		_has_lookahead_deceleration = false
+	else:
+		_has_lookahead_deceleration = true
 
 func get_lookahead_deceleration() -> float:
 	return lookahead_deceleration
@@ -1881,7 +1890,7 @@ func set_limit_target(value: NodePath) -> void:
 			return
 	elif value == NodePath(""):
 		reset_limit()
-		limit_target = ""
+		limit_target = NodePath("")
 	else:
 		printerr("Limit Target cannot be found")
 		return
