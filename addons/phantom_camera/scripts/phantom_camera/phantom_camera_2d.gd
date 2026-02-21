@@ -901,6 +901,7 @@ func _set_follow_position(delta: float) -> void:
 				if show_viewfinder_in_play:
 					var target_screen_position: Vector2 = Transform2D(get_viewport().canvas_transform * Transform2D(0, target_position + viewport_target_offset)).origin
 					viewport_position = target_screen_position / viewport_rect
+		_: pass
 
 func _set_follow_velocity(index: int, value: float):
 	_follow_velocity_ref[index] = value
