@@ -513,7 +513,6 @@ var _should_rotate_with_target: bool = false
 var _is_active: bool = false
 
 var _should_follow: bool = false
-var _follow_framed_offset: Vector2 = Vector2.ZERO
 var _follow_target_physics_based: bool = false
 var _physics_interpolation_enabled: bool = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
@@ -855,43 +854,40 @@ func _set_follow_position(delta: float) -> void:
 			if Engine.is_editor_hint() or not _is_active:
 				_follow_target_position = _get_target_position_offset()
 			else:
-				viewport_position = (get_follow_target().get_global_transform_with_canvas().get_origin() + follow_offset) / get_viewport_rect().size
-				var framed_side_offset: Vector2i = _get_framed_side_offset()
+				var target_position: Vector2 = _get_target_position_offset()
+				var viewport_rect: Vector2 = get_viewport_rect().size
+				if lookahead and not Engine.is_editor_hint():
+					target_position = _apply_lookahead(target_position, delta)
 
-				if framed_side_offset != Vector2i.ZERO:
-					var glo_pos: Vector2
-					var target_position: Vector2 = _get_target_position_offset() + _follow_framed_offset
+				var viewport_dead_zone: Vector4 = Vector4(
+					viewport_rect.x / 2 / zoom.x * dead_zone_width,     # Left ## TODO - Replace with specific left dead zone value
+					viewport_rect.y / 2 / zoom.y * dead_zone_height,    # Top ## TODO - Replace with specific top dead zone value
+					viewport_rect.x / 2 / zoom.x * dead_zone_width,     # Right ## TODO - Replace with specific right dead zone value
+					viewport_rect.y / 2 / zoom.y * dead_zone_height,    # Bottom  ## TODO - Replace with specific bottom dead zone value
+				)
 
-					if dead_zone_width == 0 || dead_zone_height == 0:
-						if dead_zone_width == 0 && dead_zone_height != 0:
-							_follow_target_position = _get_target_position_offset()
-						elif dead_zone_width != 0 && dead_zone_height == 0:
-							glo_pos = _get_target_position_offset()
-							glo_pos.x += target_position.x - global_position.x
-							_follow_target_position = glo_pos
-						else:
-							_follow_target_position = _get_target_position_offset()
+				var viewport_target_offset: Vector2
+				## Left Dead Zone
+				if global_position.x - viewport_dead_zone.x > target_position.x:
+					viewport_target_offset.x = global_position.x - viewport_dead_zone.x - target_position.x
+					_follow_target_position.x -= viewport_target_offset.x
+				## Right Dead Zone
+				elif global_position.x + viewport_dead_zone.z < target_position.x:
+					viewport_target_offset.x = global_position.x + viewport_dead_zone.x - target_position.x
+					_follow_target_position.x -= viewport_target_offset.x
 
-					# If a horizontal dead zone is reached
-					if framed_side_offset.x != 0 and framed_side_offset.y == 0:
-						_follow_target_position.y = _transform_output.origin.y
-						_follow_target_position.x = target_position.x
-						_follow_framed_offset.y = global_position.y - _get_target_position_offset().y
-						dead_zone_reached.emit(Vector2i(framed_side_offset.x, 0))
-						# If a vertical dead zone is reached
-					elif framed_side_offset.x == 0 and framed_side_offset.y != 0:
-						_follow_target_position.x = _transform_output.origin.x
-						_follow_target_position.y = target_position.y
-						_follow_framed_offset.x = global_position.x - _get_target_position_offset().x
-						dead_zone_reached.emit(Vector2i(0, framed_side_offset.y))
-					# If a deadzone corner is reached
-					else:
-						_follow_target_position = target_position
-						dead_zone_reached.emit(Vector2(framed_side_offset.x, framed_side_offset.y))
-				else:
-					_follow_framed_offset = _transform_output.origin - _get_target_position_offset()
-					_follow_target_position = global_position
+				## Top Dead Zone
+				if global_position.y - viewport_dead_zone.y > target_position.y:
+					viewport_target_offset.y = global_position.y - viewport_dead_zone.y - target_position.y
+					_follow_target_position.y -= viewport_target_offset.y
+				## Bottom Dead Zone
+				elif global_position.y + viewport_dead_zone.w < target_position.y:
+					viewport_target_offset.y = global_position.y + viewport_dead_zone.y - target_position.y
+					_follow_target_position.y -= viewport_target_offset.y
 
+				if show_viewfinder_in_play:
+					var target_screen_position: Vector2 = Transform2D(get_viewport().canvas_transform * Transform2D(0, target_position + viewport_target_offset)).origin
+					viewport_position = target_screen_position / viewport_rect
 
 func _set_follow_velocity(index: int, value: float):
 	_follow_velocity_ref[index] = value
@@ -1084,28 +1080,6 @@ func _get_target_position_offset() -> Vector2:
 
 func _on_dead_zone_changed() -> void:
 	global_position = _get_target_position_offset()
-
-
-func _get_framed_side_offset() -> Vector2i:
-	var frame_out_bounds: Vector2i
-
-	if viewport_position.x < 0.5 - dead_zone_width / 2:
-		# Is outside left edge
-		frame_out_bounds.x = -1
-
-	if viewport_position.y < 0.5 - dead_zone_height / 2:
-		# Is outside top edge
-		frame_out_bounds.y = 1
-
-	if viewport_position.x > 0.5 + dead_zone_width / 2:
-		# Is outside right edge
-		frame_out_bounds.x = 1
-
-	if viewport_position.y > 0.5001 + dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
-		# Is outside bottom edge
-		frame_out_bounds.y = -1
-
-	return frame_out_bounds
 
 
 func _draw_camera_2d_limit() -> void:
