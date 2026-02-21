@@ -866,24 +866,37 @@ func _set_follow_position(delta: float) -> void:
 					viewport_rect.y / 2 / zoom.y * dead_zone_height,    # Bottom  ## TODO - Replace with specific bottom dead zone value
 				)
 
-				var viewport_target_offset: Vector2
-				## Left Dead Zone
-				if global_position.x - viewport_dead_zone.x > target_position.x:
-					viewport_target_offset.x = global_position.x - viewport_dead_zone.x - target_position.x
-					_follow_target_position.x -= viewport_target_offset.x
-				## Right Dead Zone
-				elif global_position.x + viewport_dead_zone.z < target_position.x:
-					viewport_target_offset.x = global_position.x + viewport_dead_zone.x - target_position.x
-					_follow_target_position.x -= viewport_target_offset.x
+				var viewport_target_offset: Vector2 = Vector2.ZERO
+				var dead_zone_side_reached: Vector2i = Vector2i.ZERO
 
+				var left_dead_zone: float = global_position.x - viewport_dead_zone.x
+				var right_dead_zone: float = global_position.x + viewport_dead_zone.z
+				## Left Dead Zone
+				if left_dead_zone > target_position.x:
+					viewport_target_offset.x = left_dead_zone - target_position.x
+					_follow_target_position.x -= viewport_target_offset.x
+					dead_zone_side_reached.x = 1
+				## Right Dead Zone
+				elif right_dead_zone < target_position.x:
+					viewport_target_offset.x = right_dead_zone - target_position.x
+					_follow_target_position.x -= viewport_target_offset.x
+					dead_zone_side_reached.x = -1
+
+				var top_dead_zone: float = global_position.y - viewport_dead_zone.y
+				var bottom_dead_zone: float = global_position.y + viewport_dead_zone.w
 				## Top Dead Zone
-				if global_position.y - viewport_dead_zone.y > target_position.y:
-					viewport_target_offset.y = global_position.y - viewport_dead_zone.y - target_position.y
+				if top_dead_zone > target_position.y:
+					viewport_target_offset.y = top_dead_zone - target_position.y
 					_follow_target_position.y -= viewport_target_offset.y
+					dead_zone_side_reached.y = 1
 				## Bottom Dead Zone
-				elif global_position.y + viewport_dead_zone.w < target_position.y:
-					viewport_target_offset.y = global_position.y + viewport_dead_zone.y - target_position.y
+				elif bottom_dead_zone < target_position.y:
+					viewport_target_offset.y = bottom_dead_zone - target_position.y
 					_follow_target_position.y -= viewport_target_offset.y
+					dead_zone_side_reached.y = -1
+
+				if dead_zone_side_reached != Vector2i.ZERO:
+					dead_zone_reached.emit(dead_zone_side_reached)
 
 				if show_viewfinder_in_play:
 					var target_screen_position: Vector2 = Transform2D(get_viewport().canvas_transform * Transform2D(0, target_position + viewport_target_offset)).origin
