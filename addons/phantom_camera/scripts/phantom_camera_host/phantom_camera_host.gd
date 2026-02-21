@@ -1258,7 +1258,7 @@ func _show_viewfinder_in_play() -> void:
 
 	# Instantiate the viewfinder scene if it isn't already
 	if not is_instance_valid(_viewfinder_node):
-		var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+		var _viewfinder_scene: PackedScene = preload("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 		_viewfinder_node = _viewfinder_scene.instantiate()
 		canvas_layer.add_child(_viewfinder_node)
 
@@ -1474,5 +1474,8 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 ## Returns the [member host_layers] value.
 func get_host_layers() -> int:
 	return host_layers
+
+func is_physics_based() -> bool:
+	return _follow_target_physics_based
 
 #endregion
