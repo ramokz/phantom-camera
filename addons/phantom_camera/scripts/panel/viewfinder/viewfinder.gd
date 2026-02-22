@@ -546,7 +546,9 @@ func _on_update_editor_viewfinder(check_framed_view: bool = false) -> void:
 
 	_framed_view_visible(false)
 	if not check_framed_view: return
-	if _is_framed_pcam(): _connect_dead_zone()
+	if _is_framed_pcam():
+		_connect_dead_zone()
+		_framed_view_visible(true)
 
 
 func _select_override_pcam() -> void:
@@ -570,12 +572,12 @@ func _assign_manager() -> void:
 func _pcam_host_removed_from_scene(pcam_host: PhantomCameraHost) -> void:
 	if _pcam_manager.phantom_camera_hosts.size() < 2:
 		_pcam_host_list.visible = false
-
 	_visibility_check()
 
 
 func _pcam_changed(pcam: Node) -> void:
 	_visibility_check()
+
 
 func _set_pcam_host(_pcam_host: PhantomCameraHost) -> void:
 	pcam_host = _pcam_host
