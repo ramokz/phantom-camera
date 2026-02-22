@@ -142,6 +142,7 @@ enum FollowTargetPhysicsClass {
 @export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
+		follow_mode_changed.emit()
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
@@ -171,7 +172,7 @@ enum FollowTargetPhysicsClass {
 
 		top_level = true
 		_reset_lookahead()
-		follow_mode_changed.emit()
+
 		notify_property_list_changed()
 	get:
 		return follow_mode
