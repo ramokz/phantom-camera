@@ -1395,7 +1395,10 @@ func set_tween_duration(value: float) -> void:
 ## [member tween_resource].[br]
 ## The duration value is in seconds.
 func get_tween_duration() -> float:
-	return tween_resource.duration
+	if tween_resource:
+		return tween_resource.duration
+	else:
+		return 0.0 # Makes tween instant
 
 
 ## Assigns a new [param Tween Transition] value inside the
@@ -1406,7 +1409,10 @@ func set_tween_transition(value: int) -> void:
 ## Gets the current [param Tween Transition] value  inside the
 ## [member tween_resource].
 func get_tween_transition() -> int:
-	return tween_resource.transition
+	if tween_resource:
+		return tween_resource.transition
+	else:
+		return 0 # Equals TransitionType.LINEAR
 
 
 ## Assigns a new [param Tween Ease] value inside the [member tween_resource].
@@ -1415,7 +1421,10 @@ func set_tween_ease(value: int) -> void:
 
 ## Gets the current [param Tween Ease] value inside the [member tween_resource].
 func get_tween_ease() -> int:
-	return tween_resource.ease
+	if tween_resource:
+		return tween_resource.ease
+	else:
+		return 2 # Equals EaseType.EASE_IN_OUT
 
 
 ## Sets the [param PhantomCamera2D] active state.[br]

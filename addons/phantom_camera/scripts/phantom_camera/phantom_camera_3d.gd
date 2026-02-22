@@ -163,6 +163,7 @@ enum FollowLockAxis {
 @export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
+		follow_mode_changed.emit()
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
@@ -207,7 +208,6 @@ enum FollowLockAxis {
 			top_level = true
 			_is_third_person_follow = false
 
-		follow_mode_changed.emit()
 		notify_property_list_changed()
 
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
@@ -1622,23 +1622,36 @@ func set_tween_duration(value: float) -> void:
 ## Gets the current [param Tween] Duration value. The duration value is in
 ## [param seconds].
 func get_tween_duration() -> float:
-	return tween_resource.duration
+	if tween_resource:
+		return tween_resource.duration
+	else:
+		return 0.0 # Makes tween instant
+
 
 ## Assigns a new [param Tween Transition] to the [member tween_resource] value.[br]
 ## The duration value is in seconds.
 func set_tween_transition(value: int) -> void:
 	tween_resource.transition = value
+
 ## Gets the current [param Tween Transition] value.
 func get_tween_transition() -> int:
-	return tween_resource.transition
+	if tween_resource:
+		return tween_resource.transition
+	else:
+		return 0 # Equals TransitionType.LINEAR
+
 
 ## Assigns a new [param Tween Ease] to the [member tween_resource] value.[br]
 ## The duration value is in seconds.
 func set_tween_ease(value: int) -> void:
 	tween_resource.ease = value
+
 ## Gets the current [param Tween Ease] value.
 func get_tween_ease() -> int:
-	return tween_resource.ease
+	if tween_resource:
+		return tween_resource.ease
+	else:
+		return 2 # Equals EaseType.EASE_IN_OUT
 
 ## Sets the [param PhantomCamera3D] active state[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
