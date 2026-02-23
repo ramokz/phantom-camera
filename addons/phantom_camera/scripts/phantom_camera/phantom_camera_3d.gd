@@ -1225,11 +1225,14 @@ func _interpolate_position(delta: float) -> void:
 		_camera_target.global_position = _follow_target_output_position
 		_transform_output.origin = global_position
 
-	if _is_third_person_follow:
+	if _is_third_person_follow and Engine.is_editor_hint():
 		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset(), follow_target.global_basis.y)
 		var target_basis: Basis = Basis(target_quat)
 		_transform_output.basis = target_basis
 		global_basis = target_basis
+	elif _has_follow_spring_arm:
+		_transform_output.basis = _follow_spring_arm.global_basis
+		global_basis = _follow_spring_arm.global_basis
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
