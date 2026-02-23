@@ -1243,8 +1243,8 @@ func _show_viewfinder_in_play() -> void:
 	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
 
 	# Default the viewfinder node to be hidden
-	if is_instance_valid(_viewfinder_node):
-		_viewfinder_node.visible = false
+	if is_instance_valid(_phantom_camera_manager.get_viewfinder()):
+		_phantom_camera_manager.get_viewfinder().visible = false
 
 	if _is_2d:
 		if not _active_pcam_2d.show_viewfinder_in_play: return
@@ -1257,13 +1257,14 @@ func _show_viewfinder_in_play() -> void:
 	get_tree().get_root().add_child(canvas_layer)
 
 	# Instantiate the viewfinder scene if it isn't already
-	if not is_instance_valid(_viewfinder_node):
+	if not is_instance_valid(_phantom_camera_manager.get_viewfinder()):
 		var _viewfinder_scene: PackedScene = preload("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
-		_viewfinder_node = _viewfinder_scene.instantiate()
-		canvas_layer.add_child(_viewfinder_node)
+		_phantom_camera_manager.set_viewfinder(self, _viewfinder_scene.instantiate())
+		canvas_layer.add_child(_phantom_camera_manager.get_viewfinder())
+#		_phantom_camera_manager.viewfinder = _viewfinder_node
 
-	_viewfinder_node.visible = true
-	_viewfinder_node.update_dead_zone()
+	_phantom_camera_manager.get_viewfinder().visible = true
+	_phantom_camera_manager.get_viewfinder().update_dead_zone()
 
 
 func _update_limit_2d(side: int, limit: int) -> void:
