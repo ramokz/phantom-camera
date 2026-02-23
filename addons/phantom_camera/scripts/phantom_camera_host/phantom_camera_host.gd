@@ -1243,8 +1243,8 @@ func _show_viewfinder_in_play() -> void:
 	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
 
 	# Default the viewfinder node to be hidden
-	if is_instance_valid(_viewfinder_node):
-		_viewfinder_node.visible = false
+	if is_instance_valid(_phantom_camera_manager.get_viewfinder()):
+		_phantom_camera_manager.get_viewfinder().visible = false
 
 	if _is_2d:
 		if not _active_pcam_2d.show_viewfinder_in_play: return
@@ -1257,13 +1257,14 @@ func _show_viewfinder_in_play() -> void:
 	get_tree().get_root().add_child(canvas_layer)
 
 	# Instantiate the viewfinder scene if it isn't already
-	if not is_instance_valid(_viewfinder_node):
-		var _viewfinder_scene := load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
-		_viewfinder_node = _viewfinder_scene.instantiate()
-		canvas_layer.add_child(_viewfinder_node)
+	if not is_instance_valid(_phantom_camera_manager.get_viewfinder()):
+		var _viewfinder_scene: PackedScene = preload("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+		_phantom_camera_manager.set_viewfinder(self, _viewfinder_scene.instantiate())
+		canvas_layer.add_child(_phantom_camera_manager.get_viewfinder())
+#		_phantom_camera_manager.viewfinder = _viewfinder_node
 
-	_viewfinder_node.visible = true
-	_viewfinder_node.update_dead_zone()
+	_phantom_camera_manager.get_viewfinder().visible = true
+	_phantom_camera_manager.get_viewfinder().update_dead_zone()
 
 
 func _update_limit_2d(side: int, limit: int) -> void:
@@ -1346,9 +1347,11 @@ func pcam_priority_updated(pcam: Node) -> void:
 
 	if Engine.is_editor_hint():
 		if _is_2d:
+			if not _active_pcam_2d: return
 			if _active_pcam_2d.priority_override: return
 			if not is_instance_valid(_active_pcam_2d): return
 		else:
+			if not _active_pcam_3d: return
 			if _active_pcam_3d.priority_override: return
 			if not is_instance_valid(_active_pcam_3d): return
 
@@ -1472,5 +1475,8 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 ## Returns the [member host_layers] value.
 func get_host_layers() -> int:
 	return host_layers
+
+func is_physics_based() -> bool:
+	return _follow_target_physics_based
 
 #endregion

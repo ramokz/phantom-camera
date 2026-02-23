@@ -45,6 +45,8 @@ var _phantom_camera_2d_list: Array[PhantomCamera2D]
 var _phantom_camera_3d_list: Array[Node] ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 var _phantom_camera_tween_director_list: Array[PhantomCameraTweenDirector]
 
+var _viewfinder: Control = null
+
 #endregion
 
 #region Public Variables
@@ -65,7 +67,7 @@ var phantom_camera_tween_directors: Array[PhantomCameraTweenDirector]:
 	get:
 		return _phantom_camera_tween_director_list
 
-var screen_size: Vector2i
+var screen_size: Vector2i = Vector2i.ONE
 
 #endregion
 
@@ -76,6 +78,8 @@ func _enter_tree() -> void:
 		Engine.register_singleton(_CONSTANTS.PCAM_MANAGER_NODE_NAME, self)
 	Engine.physics_jitter_fix = 0
 
+	## TODO - When Godot 4.5 becomes min verison
+#	get_tree().scene_changed.connect(_scene_changed)
 
 func _ready() -> void:
 	# Setting default screensize
@@ -97,6 +101,10 @@ func _ready() -> void:
 		get_tree().get_root().size_changed.connect(func():
 			screen_size = get_viewport().get_visible_rect().size
 		)
+
+## TODO - When Godot 4.5 becomes min verison
+#func _scene_changed() -> void:
+#	pass
 
 #endregion
 
@@ -160,6 +168,14 @@ func get_phantom_camera_2ds() -> Array[PhantomCamera2D]:
 func get_phantom_camera_3ds() -> Array: ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 	return _phantom_camera_3d_list
 
+func set_viewfinder(caller: Node, value: Control) -> void:
+	if caller is PhantomCameraHost:
+		_viewfinder = value
+	else:
+		printerr("Viewfinder can only be set internally by the addon")
+
+func get_viewfinder() -> Control:
+	return _viewfinder
 
 func scene_changed() -> void:
 	_phantom_camera_2d_list.clear()

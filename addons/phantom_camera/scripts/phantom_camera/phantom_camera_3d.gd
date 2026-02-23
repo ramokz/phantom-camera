@@ -167,7 +167,7 @@ enum FollowTargetPhysicsClass {
 @export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
-		_lookahead_follow_reset = true
+		follow_mode_changed.emit()
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
@@ -212,7 +212,6 @@ enum FollowTargetPhysicsClass {
 			top_level = true
 			_is_third_person_follow = false
 
-		follow_mode_changed.emit()
 		notify_property_list_changed()
 
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
@@ -434,35 +433,36 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_auto_follow_distance_divisor
 
 
-## Enables velocity-based look-ahead for the [param follow target].
+## Enables velocity-based lookahead. As the [param follow target] moves the camera will move further ahead
+## based on its velocity. The faster the [param follow target] moves, the further ahead the camera will look.
 @export var follow_lookahead: bool = false:
 	set = set_follow_lookahead,
 	get = get_follow_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of seconds to look ahead of the the [param follow target]'s position per axis based on
+## The amount of [param seconds] to look ahead of the [param follow target]'s position per axis based on
 ## the [param follow target]'s velocity.[br]
-## Each axis (X, Y, Z) has its own prediction time in [param seconds].
-## Setting an axis to [param 0.0] disables lookahead for that specific axis.
+## Each axis has its own prediction time in [param seconds].[br][br]
+## A value of [param 0] can be set either to disable lookahead for the corresponding axis.
 @export_custom(PROPERTY_HINT_LINK, "0, 1, 0.001, suffix:s") var follow_lookahead_time: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_lookahead_time,
 	get = get_follow_lookahead_time
 
 ## Determines the damping speed of how fast the camera should reach the [member follow_lookahead_time]
-## target once the [param follow target] has a movement velocity.[br]
+## target once the [param follow target] has a positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_acceleration: float = 0.1:
 	set = set_follow_lookahead_acceleration,
 	get = get_follow_lookahead_acceleration
 
-## Determines the damping speed of how fast the camera should deaccerlate back to the
-## [param follow target]'s position once it has no movement velocity.[br]
+## Determines the damping speed of how fast the camera should decelerate back to the
+## [param follow target]'s position once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
-@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deacceleration: float = 0.1:
-	set = set_follow_lookahead_deacceleration,
-	get = get_follow_lookahead_deacceleration
+@export_range(0.0, 1.0, 0.001, "or_greater") var follow_lookahead_deceleration: float = 0.1:
+	set = set_follow_lookahead_deceleration,
+	get = get_follow_lookahead_deceleration
 
 ## Enables a maximum velocity limit in [param meters per second] for the [member follow_lookahead] effect.[br]
 ## If [code]true[/code], the [param follow target's] velocity will be clamped to the [member follow_lookahead_max_value] before calculating lookahead.[br]
@@ -472,7 +472,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_follow_lookahead_max
 
 ## The maximum [member follow_lookahead] velocity in [param meters per second].
-## The follow target's velocity will be clamped within these bounds on each axis before applying lookahead time.
+## The [follow target]'s velocity will be clamped within these bounds on each axis before applying lookahead time.
 @export_custom(PROPERTY_HINT_LINK, "suffix:m/s") var follow_lookahead_max_value: Vector3 = Vector3(5.0, 5.0, 5.0):
 	set = set_follow_lookahead_max_value,
 	get = get_follow_lookahead_max_value
@@ -567,33 +567,34 @@ var horizontal_rotation_offset: float = 0.0:
 	get = get_look_at_damping_value
 
 
-## Enables velocity-based lookahead for the [param look at target].
+## Enables velocity-based look-ahead. As the [param look at target] moves the camera will move further ahead
+## based on its velocity. The faster the [param look at target] moves, the further ahead the camera will look.
 @export var look_at_lookahead: bool = false:
 	set = set_look_at_lookahead,
 	get = get_look_at_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of seconds to look ahead of the the [param follow target]'s position based on
-## the [param follow target]'s velocity.[br]
+## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
+## the [param follow target]'s velocity.
 @export_range(0.0, 1.0, 0.01, "suffix:s") var look_at_lookahead_time: float = 0.1:
 	set = set_look_at_lookahead_time,
 	get = get_look_at_lookahead_time
 
 ## Determines the damping speed of how fast the camera should reach the [member look_at_lookahead_time]
-## target once the [param look_at target] has a movement velocity.[br]
+## target once the [param look_at target] has positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
 @export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_acceleration: float = 0.1:
 	set = set_look_at_lookahead_acceleration,
 	get = get_look_at_lookahead_acceleration
 
-## Determines the damping speed of how fast the camera should deaccerlate back to the [param follow target]'s position
-## once it has no movement velocity.[br]
+## Determines the damping speed of how fast the camera should decelerate back to the [param follow target]'s position
+## once it has no positional velocity.[br]
 ## [b]Lower value[/b] = faster.[br]
 ## [b]Higher value[/b] = slower.
-@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deacceleration: float = 0.1:
-	set = set_look_at_lookahead_deacceleration,
-	get = get_look_at_lookahead_deacceleration
+@export_range(0.0, 1.0, 0.001, "or_greater") var look_at_lookahead_deceleration: float = 0.1:
+	set = set_look_at_lookahead_deceleration,
+	get = get_look_at_lookahead_deceleration
 
 ## Enables a maximum velocity limit in [param meters per second] for [member look_at_lookahead].[br]
 ## If [code]true[/code], the [param look at target's] velocity will be clamped to the [member look_at_lookahead_max_value].[br]
@@ -652,7 +653,7 @@ var horizontal_rotation_offset: float = 0.0:
 ## Adds an editor button that positions and rotates the [param PhantomCamera3D] to match the 3D viewport's transform.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is following [i]or[/i] looking at a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Transform with View", "CenterView")
+@export_custom(PROPERTY_HINT_TOOL_BUTTON, "Align Transform with View,CenterView", PROPERTY_USAGE_EDITOR)
 var align_transform_with_view: Callable = func():
 	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_transform"
@@ -664,7 +665,7 @@ var align_transform_with_view: Callable = func():
 ## Adds an editor button that positions the [param PhantomCamera3D] to match the 3D viewport's position.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is following a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Position with View", "ToolMove")
+@export_custom(PROPERTY_HINT_TOOL_BUTTON, "Align Position with View,ToolMove", PROPERTY_USAGE_EDITOR)
 var align_position_with_view: Callable = func():
 	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_position"
@@ -676,7 +677,7 @@ var align_position_with_view: Callable = func():
 ## Adds an editor button that rotates the [param PhantomCamera3D] to match the 3D viewport's rotation.[br][br]
 ## This editor button is not visible if the [param PhantomCamera3D] is looking at a target.[br][br]
 ## [b]Note[/b]: This is only functional in the editor.
-@export_tool_button("Align Rotation with View", "ToolRotate")
+@export_custom(PROPERTY_HINT_TOOL_BUTTON, "Align Rotation with View,ToolRotate", PROPERTY_USAGE_EDITOR)
 var align_rotation_with_view: Callable = func():
 	var undo_redo = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
 	var property: StringName = &"global_rotation"
@@ -959,7 +960,7 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"follow_lookahead_time", \
 			"follow_lookahead_acceleration", \
-			"follow_lookahead_deacceleration", \
+			"follow_lookahead_deceleration", \
 			"follow_lookahead_max", \
 			"follow_lookahead_max_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -974,7 +975,7 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"look_at_lookahead_time", \
 			"look_at_lookahead_acceleration", \
-			"look_at_lookahead_deacceleration", \
+			"look_at_lookahead_deceleration", \
 			"look_at_lookahead_max", \
 			"look_at_lookahead_max_value":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
@@ -1622,7 +1623,7 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 				)
 
 			var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
-			var smooth_time: float = follow_lookahead_deacceleration if slowing else follow_lookahead_acceleration
+			var smooth_time: float = follow_lookahead_deceleration if slowing else follow_lookahead_acceleration
 			var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
 			_lookahead_follow_velocity = result[0]
 			_lookahead_follow_smooth_velocity = result[1]
@@ -1649,7 +1650,7 @@ func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction:
 			velocity = velocity.limit_length(look_at_lookahead_max_value)
 
 		var slowing: bool = velocity.length_squared() < _lookahead_look_at_velocity.length_squared()
-		var smooth_time: float = look_at_lookahead_deacceleration if slowing else look_at_lookahead_acceleration
+		var smooth_time: float = look_at_lookahead_deceleration if slowing else look_at_lookahead_acceleration
 		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_look_at_velocity, velocity, _lookahead_look_at_smooth_velocity, smooth_time, delta)
 		_lookahead_look_at_velocity = result[0]
 		_lookahead_look_at_smooth_velocity = result[1]
@@ -1997,26 +1998,40 @@ func get_tween_resource() -> PhantomCameraTween:
 ## The duration value is in seconds.
 func set_tween_duration(value: float) -> void:
 	tween_resource.duration = value
+
 ## Gets the current [param Tween] Duration value. The duration value is in
 ## [param seconds].
 func get_tween_duration() -> float:
-	return tween_resource.duration
+	if tween_resource:
+		return tween_resource.duration
+	else:
+		return 0.0 # Makes tween instant
+
 
 ## Assigns a new [param Tween Transition] to the [member tween_resource] value.[br]
 ## The duration value is in seconds.
 func set_tween_transition(value: int) -> void:
 	tween_resource.transition = value
+
 ## Gets the current [param Tween Transition] value.
 func get_tween_transition() -> int:
-	return tween_resource.transition
+	if tween_resource:
+		return tween_resource.transition
+	else:
+		return 0 # Equals TransitionType.LINEAR
+
 
 ## Assigns a new [param Tween Ease] to the [member tween_resource] value.[br]
 ## The duration value is in seconds.
 func set_tween_ease(value: int) -> void:
 	tween_resource.ease = value
+
 ## Gets the current [param Tween Ease] value.
 func get_tween_ease() -> int:
-	return tween_resource.ease
+	if tween_resource:
+		return tween_resource.ease
+	else:
+		return 2 # Equals EaseType.EASE_IN_OUT
 
 ## Sets the [param PhantomCamera3D] active state[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
@@ -2553,13 +2568,13 @@ func get_follow_lookahead_acceleration() -> float:
 	return follow_lookahead_acceleration
 
 
-## Assigns the [member follow_lookahead_deacceleration] value.
-func set_follow_lookahead_deacceleration(value: float) -> void:
-	follow_lookahead_deacceleration = maxf(0.0, value)
+## Assigns the [member follow_lookahead_deceleration] value.
+func set_follow_lookahead_deceleration(value: float) -> void:
+	follow_lookahead_deceleration = maxf(0.0, value)
 
-## Gets the [member follow_lookahead_deacceleration] value.
-func get_follow_lookahead_deacceleration() -> float:
-	return follow_lookahead_deacceleration
+## Gets the [member follow_lookahead_deceleration] value.
+func get_follow_lookahead_deceleration() -> float:
+	return follow_lookahead_deceleration
 
 
 ## Enables or disables [member follow_enable_max_lookahead_offset].
@@ -2617,13 +2632,13 @@ func get_look_at_lookahead_acceleration() -> float:
 	return look_at_lookahead_acceleration
 
 
-## Assigns the [member look_at_lookahead_deacceleration] value.
-func set_look_at_lookahead_deacceleration(value: float) -> void:
-	look_at_lookahead_deacceleration = maxf(0.0, value)
+## Assigns the [member look_at_lookahead_deceleration] value.
+func set_look_at_lookahead_deceleration(value: float) -> void:
+	look_at_lookahead_deceleration = maxf(0.0, value)
 
-## Gets the [member look_at_lookahead_deacceleration] value.
-func get_look_at_lookahead_deacceleration() -> float:
-	return look_at_lookahead_deacceleration
+## Gets the [member look_at_lookahead_deceleration] value.
+func get_look_at_lookahead_deceleration() -> float:
+	return look_at_lookahead_deceleration
 
 
 ## Enables or disables [member look_at_lookahead_max].

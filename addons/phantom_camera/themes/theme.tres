@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=12 format=3 uid="uid://bhppejri5dbsf"]
+[gd_resource type="Theme" format=3 uid="uid://bhppejri5dbsf"]
 
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="1_5rtjh"]
 [ext_resource type="StyleBox" uid="uid://5weqvkjsfso3" path="res://addons/phantom_camera/themes/button_hover.tres" id="2_du6h5"]
