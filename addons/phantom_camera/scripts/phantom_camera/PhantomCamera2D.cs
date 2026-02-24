@@ -22,7 +22,7 @@ public enum FollowLockAxis2D
     None,
     X,
     Y,
-    XY
+    Xy
 }
 
 public static class PhantomCamera2DExtensions
@@ -187,6 +187,42 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetAutoZoomMargin, value);
     }
 
+    public bool Lookahead
+    {
+        get => (bool)Node2D.Call(MethodName.GetLookahead);
+        set => Node2D.Call(MethodName.SetLookahead, value);
+    }
+
+    public Vector2 LookaheadTime
+    {
+        get => (Vector2)Node2D.Call(MethodName.GetLookaheadTime);
+        set => Node2D.Call(MethodName.SetLookaheadTime, value);
+    }
+
+    public float LookaheadAcceleration
+    {
+        get => (float)Node2D.Call(MethodName.GetLookaheadAcceleration);
+        set => Node2D.Call(MethodName.SetLookaheadAcceleration, value);
+    }
+
+    public float LookaheadDeceleration
+    {
+        get => (float)Node2D.Call(MethodName.GetLookaheadDeceleration);
+        set => Node2D.Call(MethodName.SetLookaheadDeceleration, value);
+    }
+
+    public bool LookaheadMax
+    {
+        get => (bool)Node2D.Call(MethodName.GetLookaheadMax);
+        set => Node2D.Call(MethodName.SetLookaheadMax, value);
+    }
+
+    public Vector2 LookaheadMaxValue
+    {
+        get => (Vector2)Node2D.Call(MethodName.GetLookaheadMaxValue);
+        set => Node2D.Call(MethodName.SetLookaheadMaxValue, value);
+    }
+
     public bool DrawLimits
     {
         get => (bool)Node2D.Get(PropertyName.DrawLimits);
@@ -263,6 +299,24 @@ public class PhantomCamera2D : PhantomCamera
 
         public static readonly StringName GetRotationDampingValue = new("get_rotation_damping_value");
         public static readonly StringName SetRotationDampingValue = new("set_rotation_damping_value");
+
+        public static readonly StringName GetLookahead = new("get_lookahead");
+        public static readonly StringName SetLookahead = new("set_lookahead");
+
+        public static readonly StringName GetLookaheadTime = new("get_lookahead_time");
+        public static readonly StringName SetLookaheadTime = new("set_lookahead_time");
+
+        public static readonly StringName GetLookaheadAcceleration = new("get_lookahead_acceleration");
+        public static readonly StringName SetLookaheadAcceleration = new("set_lookahead_acceleration");
+
+        public static readonly StringName GetLookaheadDeceleration = new("get_lookahead_deceleration");
+        public static readonly StringName SetLookaheadDeceleration = new("set_lookahead_deceleration");
+
+        public static readonly StringName GetLookaheadMax = new("get_lookahead_max");
+        public static readonly StringName SetLookaheadMax = new("set_lookahead_max");
+
+        public static readonly StringName GetLookaheadMaxValue = new("get_lookahead_max_value");
+        public static readonly StringName SetLookaheadMaxValue = new("set_lookahead_max_value");
 
         public static readonly StringName GetLimit = new("get_limit");
         public static readonly StringName SetLimit = new("set_limit");
