@@ -496,9 +496,14 @@ func _framed_view_visible(should_show: bool) -> void:
 	if should_show:
 		target_point.visible = true
 		_dead_zone_h_box_container.visible = true
+		_on_dead_zone_changed()
+		if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+			_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
 	else:
 		target_point.visible = false
 		_dead_zone_h_box_container.visible = false
+		if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+			_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
 
 
 func _on_dead_zone_changed() -> void:
