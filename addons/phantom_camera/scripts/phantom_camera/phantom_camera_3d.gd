@@ -1835,17 +1835,7 @@ func _check_physics_body(target: Node3D) -> void:
 		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
 		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
 
-		## NOTE - Feature Toggle
-		if Engine.get_version_info().major == 4 and \
-		Engine.get_version_info().minor < 4:
-			if show_jitter_tips == null: # Default value is null when referencing custom Project Setting
-				print_rich("Following or Looking at a [b]PhysicsBody3D[/b] node will likely result in jitter - on lower physics ticks in particular.")
-				print_rich("If possible, will recommend upgrading to Godot 4.4, as it has built-in support for 3D Physics Interpolation, which will mitigate this issue.")
-				print_rich("Until then, try following the guide on the [url=https://phantom-camera.dev/support/faq#i-m-seeing-jitter-what-can-i-do]documentation site[/url] for better results.")
-				print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-			return
-		## NOTE - Only supported in Godot 4.4 or above
-		elif not physics_interpolation_enabled and show_jitter_tips == null: # Default value is null when referencing custom Project Setting
+		if not physics_interpolation_enabled and _follow_target_physics_based and show_jitter_tips == null:
 			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
 		_follow_target_physics_based = true
