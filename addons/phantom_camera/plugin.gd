@@ -36,6 +36,7 @@ var pcam_3d_noise_emitter_gizmo_plugin: EditorNode3DGizmoPlugin = PCam3DNoiseEmi
 
 var editor_panel_instance: Control
 var panel_button: Button
+var dock: EditorDock
 #var viewfinder_panel_instance
 
 #endregion
@@ -115,20 +116,24 @@ func _enter_tree() -> void:
 	# Viewfinder
 	editor_panel_instance = EditorPanel.instantiate()
 	editor_panel_instance.editor_plugin = self
-	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
-	panel_button.toggled.connect(_btn_toggled)
-	if panel_button.toggle_mode: _btn_toggled(true)
+	dock = EditorDock.new()
+	dock.name = "Phantom Camera"
+	dock.default_slot = EditorDock.DOCK_SLOT_BOTTOM
+	dock.add_child(editor_panel_instance)
+	add_dock(dock)
+	dock.visibility_changed.connect(_on_dock_visibility_changed)
 
 	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
 	scene_changed.connect(_scene_changed)
 
 
 func _exit_tree() -> void:
-	panel_button.toggled.disconnect(_btn_toggled)
+	dock.visibility_changed.disconnect(_on_dock_visibility_changed)
 	scene_changed.disconnect(editor_panel_instance.viewfinder.scene_changed)
 	scene_changed.disconnect(_scene_changed)
 
-	remove_control_from_bottom_panel(editor_panel_instance)
+	remove_dock(dock)
+	dock.queue_free()
 	editor_panel_instance.queue_free()
 
 	remove_node_3d_gizmo_plugin(pcam_3d_gizmo_plugin)
@@ -142,8 +147,8 @@ func _exit_tree() -> void:
 	remove_custom_type(PCAM_TWEEN_DIRECTOR)
 
 
-func _btn_toggled(toggled_on: bool):
-	editor_panel_instance.viewfinder.set_visibility(toggled_on)
+func _on_dock_visibility_changed():
+	editor_panel_instance.viewfinder.set_visibility(dock.is_visible())
 #	if toggled_on:
 #		editor_panel_instance.viewfinder.viewfinder_visible = true
 #		editor_panel_instance.viewfinder.visibility_check()
