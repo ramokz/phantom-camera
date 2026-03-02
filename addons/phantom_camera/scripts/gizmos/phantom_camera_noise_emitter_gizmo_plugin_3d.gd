@@ -6,7 +6,7 @@ var _gizmo_icon: Texture2D = preload("res://addons/phantom_camera/icons/phantom_
 var _gizmo_name: String = "PhantomCameraNoiseEmitter"
 
 func _init() -> void:
-	create_material("main", Color8(252, 127, 127, 255))
+	create_material("main", Color(252, 127, 127, 255))
 	create_handle_material("handles")
 	create_icon_material(_gizmo_name, _gizmo_icon, false, Color.WHITE)
 
