@@ -91,7 +91,6 @@ var _is_child_of_camera: bool = false
 var _is_2d: bool = false
 
 var _viewfinder_node: Control = null
-var _viewfinder_needed_check: bool = true
 
 var _camera_zoom: Vector2 = Vector2.ONE
 
@@ -671,17 +670,11 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		viewfinder_update.emit(false)
 
 	if _is_2d:
-		if _active_pcam_2d.show_viewfinder_in_play:
-			_viewfinder_needed_check = true
-
 		_active_pcam_2d.set_is_active(self, true)
 		_active_pcam_2d.became_active.emit()
 		pcam_became_active.emit(_active_pcam_2d)
 		_camera_zoom = camera_2d.zoom
 	else:
-		if _active_pcam_3d.show_viewfinder_in_play:
-			_viewfinder_needed_check = true
-
 		_active_pcam_3d.set_is_active(self, true)
 		_active_pcam_3d.became_active.emit()
 		pcam_became_active.emit(_active_pcam_3d)
@@ -689,6 +682,8 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 			camera_3d.keep_aspect = _active_pcam_3d.keep_aspect
 			camera_3d.cull_mask = _active_pcam_3d.cull_mask
 			camera_3d.projection = _active_pcam_3d.projection
+
+	_check_viewfinder_in_play()
 
 	if no_previous_pcam:
 		if _is_2d:
@@ -921,10 +916,6 @@ func _pcam_follow(_delta: float) -> void:
 		camera_2d.zoom = _active_pcam_2d.zoom
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
-
-	if _viewfinder_needed_check:
-		_show_viewfinder_in_play()
-		_viewfinder_needed_check = false
 
 	if Engine.is_editor_hint():
 		if not _is_2d:
@@ -1238,9 +1229,9 @@ func _tween_interpolate_value(from: Variant, to: Variant) -> Variant:
 	)
 
 
-func _show_viewfinder_in_play() -> void:
+func _check_viewfinder_in_play() -> void:
 	# Don't show the viewfinder in the actual editor or project builds
-	if Engine.is_editor_hint() or !OS.has_feature("editor"): return
+	if Engine.is_editor_hint() or not OS.has_feature("editor"): return
 
 	# Default the viewfinder node to be hidden
 	if is_instance_valid(_phantom_camera_manager.get_viewfinder()):
