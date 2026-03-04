@@ -1258,7 +1258,7 @@ func _show_viewfinder_in_play() -> void:
 
 	# Instantiate the viewfinder scene if it isn't already
 	if not is_instance_valid(_phantom_camera_manager.get_viewfinder()):
-		var _viewfinder_scene: PackedScene = preload("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
+		var _viewfinder_scene: PackedScene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 		_phantom_camera_manager.set_viewfinder(self, _viewfinder_scene.instantiate())
 		canvas_layer.add_child(_phantom_camera_manager.get_viewfinder())
 #		_phantom_camera_manager.viewfinder = _viewfinder_node
