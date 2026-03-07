@@ -1211,8 +1211,8 @@ func _set_follow_position(delta: float) -> void:
 			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
 			var tracked_position: Vector3 = target_position + lookahead_delta
 			_follow_target_output_position = \
-				follow_path.curve.get_closest_point(
-					tracked_position - path_position
+				follow_path.global_basis * follow_path.curve.get_closest_point(
+					follow_path.global_basis.inverse() * (tracked_position - path_position)
 				) + path_position
 			_set_follow_gizmo_line_position(target_position)
 
