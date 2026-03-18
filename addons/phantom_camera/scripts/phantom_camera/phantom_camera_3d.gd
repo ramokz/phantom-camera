@@ -2021,6 +2021,19 @@ func get_tween_ease() -> int:
 	else:
 		return 2 # Equals EaseType.EASE_IN_OUT
 
+
+## Assigns a new [param Tween Ignore Time Scale] to the [member tween_resource] value.[br]
+func set_tween_ignore_time_scale(value: bool) -> void:
+	tween_resource.ignore_time_scale = value
+
+## Gets the current [param Tween Ignore Time Scale] value.
+func get_tween_ignore_time_scale() -> bool:
+	if tween_resource:
+		return tween_resource.ignore_time_scale
+	else:
+		return false # Make tween follow time scale
+
+
 ## Sets the [param PhantomCamera3D] active state[br]
 ## [b][color=yellow]Important:[/color][/b] This value can only be changed
 ## from the [PhantomCameraHost] script.
