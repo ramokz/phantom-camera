@@ -791,6 +791,9 @@ var tween_transition: PhantomCameraTween.TransitionType:
 var tween_ease: PhantomCameraTween.EaseType:
 	set = set_tween_ease,
 	get = get_tween_ease
+var tween_ignore_time_scale: bool:
+	set = set_tween_ignore_time_scale,
+	get = get_tween_ignore_time_scale
 
 var keep_aspect: int:
 	set = set_keep_aspect,
