@@ -41,4 +41,4 @@ enum EaseType {
 @export var ease: EaseType = EaseType.EASE_IN_OUT
 
 ## Whether the tween should ignore [member Engine.time_scale].
-@export var ignore_time_scale: bool = false;
+@export var ignore_time_scale: bool = false
