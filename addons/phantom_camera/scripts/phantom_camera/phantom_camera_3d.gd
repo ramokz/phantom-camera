@@ -1055,8 +1055,8 @@ func _set_follow_position() -> void:
 		FollowMode.PATH:
 			var path_position: Vector3 = follow_path.global_position
 			_follow_target_output_position = \
-				follow_path.curve.get_closest_point(
-					_get_target_position_offset() - path_position
+				follow_path.global_basis * follow_path.curve.get_closest_point(
+					follow_path.global_basis.inverse() * path_position
 				) + path_position
 			_set_follow_gizmo_line_position(_get_target_position_offset())
 
