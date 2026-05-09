@@ -24,6 +24,8 @@ var _settings_show_jitter_tips: String = "phantom_camera/tips/show_jitter_tips"
 var _settings_enable_editor_shortcut: String = "phantom_camera/general/enable_editor_shortcut"
 var _settings_editor_shortcut: String = "phantom_camera/general/editor_shortcut"
 
+var _supports_editor_dock: bool = false
+
 # 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after the release that is featured in
 #var _editor_shortcut: Shortcut = Shortcut.new()
 #var _editor_shortcut_input: InputEventKey
@@ -36,6 +38,7 @@ var pcam_3d_noise_emitter_gizmo_plugin: EditorNode3DGizmoPlugin = PCam3DNoiseEmi
 
 var editor_panel_instance: Control
 var panel_button: Button
+var editor_dock: Control ## TODO - Replace with type EditorDock once min version is 4.6
 #var viewfinder_panel_instance
 
 #endregion
@@ -111,25 +114,50 @@ func _enter_tree() -> void:
 #	ProjectSettings.set_initial_value(_settings_editor_shortcut, _editor_shortcut)
 
 
-	# TODO - Should be disabled unless in editor
-	# Viewfinder
+	# TODO - Should be disabled from here unless in editor
+
+	_supports_editor_dock = true if Engine.get_version_info().minor >= 6 else false
+
 	editor_panel_instance = EditorPanel.instantiate()
 	editor_panel_instance.editor_plugin = self
-	panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
-	panel_button.toggled.connect(_btn_toggled)
-	if panel_button.toggle_mode: _btn_toggled(true)
+
+	# Viewfinder
+	if _supports_editor_dock:
+		editor_dock = ClassDB.instantiate("EditorDock")
+		editor_dock.set(&"name", "Phantom Camera")
+		editor_dock.set(&"dock_icon", preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg"))
+		editor_dock.set(&"default_slot", 8)
+		## TODO - Replace above once min verison is 4.6
+#		editor_dock = EditorDock.new()
+#		editor_dock.name = "Phantom Camera"
+#		editor_dock.dock_icon = preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg")
+#		editor_dock.default_slot = EditorDock.DOCK_SLOT_BOTTOM
+		editor_dock.add_child(editor_panel_instance)
+#		add_dock(editor_dock) ## TODO - Also use this once min version is 4.6
+		call(&"add_dock", editor_dock)
+		editor_dock.visibility_changed.connect(_on_editor_dock_visibility_changed)
+	else:
+		panel_button = add_control_to_bottom_panel(editor_panel_instance, "Phantom Camera")
+		panel_button.toggled.connect(_btn_toggled)
+		if panel_button.toggle_mode: _btn_toggled(true)
 
 	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
 	scene_changed.connect(_scene_changed)
 
 
 func _exit_tree() -> void:
-	panel_button.toggled.disconnect(_btn_toggled)
 	scene_changed.disconnect(editor_panel_instance.viewfinder.scene_changed)
 	scene_changed.disconnect(_scene_changed)
 
-	remove_control_from_bottom_panel(editor_panel_instance)
 	editor_panel_instance.queue_free()
+
+	if _supports_editor_dock:
+		call(&"remove_dock", editor_dock)
+#		remove_dock(editor_dock) - TODO - Replace above once min version is 4.6
+		editor_dock.queue_free()
+	else:
+		panel_button.toggled.disconnect(_on_editor_dock_visibility_changed)
+		remove_control_from_bottom_panel(editor_panel_instance)
 
 	remove_node_3d_gizmo_plugin(pcam_3d_gizmo_plugin)
 	remove_node_3d_gizmo_plugin(pcam_3d_noise_emitter_gizmo_plugin)
@@ -141,6 +169,9 @@ func _exit_tree() -> void:
 	remove_custom_type(PCAM_NOISE_EMITTER_3D)
 	remove_custom_type(PCAM_TWEEN_DIRECTOR)
 
+
+func _on_editor_dock_visibility_changed():
+	editor_panel_instance.viewfinder.set_visibility(editor_dock.is_visible())
 
 func _btn_toggled(toggled_on: bool):
 	editor_panel_instance.viewfinder.set_visibility(toggled_on)
