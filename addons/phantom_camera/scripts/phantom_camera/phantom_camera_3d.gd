@@ -494,7 +494,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Defines the vertical dead zone area. While the target is within it, the
 ## [param PhantomCamera3D] will not move in the vertical axis.
 ## If the targeted node leaves the vertical bounds, the
-## [param PhantomCamera3D] will follow the target horizontally to keep
+## [param PhantomCamera3D] will follow the target vertically to keep
 ## it within bounds.
 @export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
 	set(value):
