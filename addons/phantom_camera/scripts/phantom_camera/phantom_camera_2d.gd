@@ -184,7 +184,7 @@ enum FollowTargetPhysicsClass {
 	set = set_follow_target,
 	get = get_follow_target
 
-### Defines the targets that the [param PhantomCamera2D] should be following.
+## Defines the targets that the [param PhantomCamera2D] should be following.
 @export var follow_targets: Array[Node2D] = []:
 	set = set_follow_targets,
 	get = get_follow_targets
