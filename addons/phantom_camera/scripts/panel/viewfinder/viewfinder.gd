@@ -28,6 +28,7 @@ const _overlay_color_alpha: float = 0.3
 @onready var camera_viewport_panel: Panel = aspect_ratio_container.get_child(0)
 @onready var _viewfinder: Control = %Viewfinder
 @onready var _dead_zone_h_box_container: Control = %DeadZoneHBoxContainer
+@onready var sub_viewport_container: SubViewportContainer = %SubViewportContainer
 @onready var sub_viewport: SubViewport = %SubViewport
 
 @onready var _empty_state_control: Control = %EmptyStateControl
@@ -91,7 +92,7 @@ func _ready() -> void:
 	_root_node = get_tree().current_scene
 
 	if _root_node is Node2D || _root_node is Node3D:
-		%SubViewportContainer.visible = false
+		sub_viewport_container.visible = false
 		if _root_node is Node2D:
 			_is_2d = true
 		else:
@@ -132,8 +133,15 @@ func _exit_tree() -> void:
 		_priority_override_button.pressed.disconnect(_select_override_pcam)
 
 func _update_processing() -> void:
-	set_process(_has_pcam_host and not _physics_based)
-	set_physics_process(_has_pcam_host and _physics_based)
+	if viewfinder_visible and _has_pcam_host:
+		set_process(not _physics_based)
+		set_physics_process(_physics_based)
+		sub_viewport_container.process_mode = ProcessMode.PROCESS_MODE_INHERIT
+	else:
+		set_process(false)
+		set_physics_process(false)
+		sub_viewport_container.process_mode = ProcessMode.PROCESS_MODE_DISABLED
+
 
 func _process(_delta: float) -> void:
 	_process_viewfinder()
