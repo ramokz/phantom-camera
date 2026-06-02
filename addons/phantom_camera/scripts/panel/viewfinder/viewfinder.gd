@@ -109,8 +109,8 @@ func _ready() -> void:
 
 	# PCam Host List
 	_pcam_host_list.visible = false
-	_assign_manager()
 	_visibility_check()
+	_update_processing()
 
 
 func _pcam_host_switch(new_pcam_host: PhantomCameraHost) -> void:
@@ -131,12 +131,14 @@ func _exit_tree() -> void:
 	if _priority_override_button.pressed.is_connected(_select_override_pcam):
 		_priority_override_button.pressed.disconnect(_select_override_pcam)
 
+func _update_processing() -> void:
+	set_process(_has_pcam_host and not _physics_based)
+	set_physics_process(_has_pcam_host and _physics_based)
+
 func _process(_delta: float) -> void:
-	if not _has_pcam_host or _physics_based: return
 	_process_viewfinder()
 
 func _physics_process(_delta: float) -> void:
-	if not _has_pcam_host or not _physics_based: return
 	_process_viewfinder()
 
 func _process_viewfinder() -> void:
@@ -598,6 +600,7 @@ func _set_pcam_host(_pcam_host: PhantomCameraHost) -> void:
 		_has_pcam_host = false
 		_physics_based = false
 		target_point.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
+	_update_processing()
 
 #endregion
 
@@ -610,6 +613,7 @@ func set_visibility(visible: bool) -> void:
 		_visibility_check()
 	else:
 		viewfinder_visible = false
+	_update_processing()
 
 
 func update_dead_zone() -> void:
