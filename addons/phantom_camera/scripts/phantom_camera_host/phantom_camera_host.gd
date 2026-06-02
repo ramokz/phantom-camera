@@ -71,9 +71,15 @@ enum InterpolationMode {
 var _active_pcam_2d: PhantomCamera2D = null
 var _active_pcam_3d: Node = null ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
 var _active_pcam_priority: int = -1
-var _active_pcam_missing: bool = true
+var _active_pcam_missing: bool = true:
+	set(value):
+		_active_pcam_missing = value
+		_update_processing()
 var _active_pcam_has_damping: bool = false
-var _follow_target_physics_based: bool = false
+var _follow_target_physics_based: bool = false:
+	set(value):
+		_follow_target_physics_based = value
+		_update_processing()
 
 var _prev_active_pcam_2d_transform: Transform2D = Transform2D()
 var _prev_active_pcam_3d_transform: Transform3D = Transform3D()
@@ -846,15 +852,20 @@ func _check_pcam_physics() -> void:
 	#else:
 		#_active_pcam_missing = true
 
+func _update_processing() -> void:
+	if _active_pcam_missing:
+		set_process(false)
+		set_physics_process(false)
+	else:
+		set_process(not _follow_target_physics_based)
+		set_physics_process(_follow_target_physics_based)
+
 
 func _process(delta: float) -> void:
-	if _active_pcam_missing: return
-
-	if not _follow_target_physics_based: _tween_follow_checker(delta)
+	_tween_follow_checker(delta)
 
 
 func _physics_process(delta: float) -> void:
-	if _active_pcam_missing or not _follow_target_physics_based: return
 	_tween_follow_checker(delta)
 
 
