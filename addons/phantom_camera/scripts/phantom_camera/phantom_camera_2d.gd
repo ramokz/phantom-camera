@@ -1357,6 +1357,7 @@ func get_zoom() -> Vector2:
 
 ## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
+	if priority == value: return
 	priority = maxi(0, value)
 	if not is_node_ready(): return
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
