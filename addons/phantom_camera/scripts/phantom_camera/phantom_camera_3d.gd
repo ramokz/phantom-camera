@@ -1969,7 +1969,7 @@ func set_priority(value: int) -> void:
 	priority = maxi(0, value)
 	if not is_node_ready(): return
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
-	Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).emit(self)
+	Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_changed.emit(self)
 ## Gets current [param Priority] value.
 func get_priority() -> int:
 	return priority
