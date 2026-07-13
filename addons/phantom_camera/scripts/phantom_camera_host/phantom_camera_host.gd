@@ -192,6 +192,8 @@ var _cam_near_changed: bool = false
 var _prev_cam_far: float = 4000.0
 var _cam_far_changed: bool = false
 
+var _canvas_layer: CanvasLayer = null
+
 #endregion
 
 var _active_pcam_2d_glob_transform: Transform2D = Transform2D()
@@ -1244,14 +1246,16 @@ func _check_viewfinder_in_play() -> void:
 		if not _active_pcam_3d.show_viewfinder_in_play: return
 		if _active_pcam_3d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
 
-	var canvas_layer: CanvasLayer = CanvasLayer.new()
-	get_tree().get_root().add_child(canvas_layer)
+	if not _canvas_layer:
+		_canvas_layer = CanvasLayer.new()
+		_canvas_layer.name = "PhantomCameraViewfinder"
+		get_tree().get_root().add_child(_canvas_layer)
 
 	# Instantiate the viewfinder scene if it isn't already
 	if not is_instance_valid(_phantom_camera_manager.get_viewfinder()):
 		var _viewfinder_scene: PackedScene = load("res://addons/phantom_camera/panel/viewfinder/viewfinder_panel.tscn")
 		_phantom_camera_manager.set_viewfinder(self, _viewfinder_scene.instantiate())
-		canvas_layer.add_child(_phantom_camera_manager.get_viewfinder())
+		_canvas_layer.add_child(_phantom_camera_manager.get_viewfinder())
 #		_phantom_camera_manager.viewfinder = _viewfinder_node
 
 	_phantom_camera_manager.get_viewfinder().visible = true
