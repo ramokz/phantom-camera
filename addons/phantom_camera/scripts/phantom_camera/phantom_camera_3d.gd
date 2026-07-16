@@ -1965,7 +1965,11 @@ func get_tween_skip() -> bool:
 
 ## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
-	priority = maxi(0, value)
+	var new_priority: int = maxi(0, value)
+	if priority == new_priority: 
+		push_warning("Newly assigned priority value of " + name + " is identical to current.")
+		return
+	priority = new_priority
 	if not is_node_ready(): return
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
 	Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_changed.emit(self)
