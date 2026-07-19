@@ -81,6 +81,10 @@ func _enter_tree() -> void:
 	## TODO - When Godot 4.5 becomes min verison
 #	get_tree().scene_changed.connect(_scene_changed)
 
+func _exit_tree() -> void:
+	Engine.unregister_singleton(_CONSTANTS.PCAM_MANAGER_NODE_NAME)
+
+
 func _ready() -> void:
 	# Setting default screensize
 	screen_size = Vector2i(
