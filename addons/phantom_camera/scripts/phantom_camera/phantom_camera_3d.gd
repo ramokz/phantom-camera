@@ -1464,27 +1464,27 @@ func _interpolate_rotation(delta: float) -> void:
 
 
 func _smooth_damp(target_axis: float, self_axis: float, index: int, current_velocity: float, set_velocity: Callable, damping_time: float, delta: float) -> float:
-		damping_time = maxf(0.0001, damping_time)
-		var omega: float = 2 / damping_time
-		var x: float = omega * delta
-		var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
-		var diff: float = self_axis - target_axis
-		var _target_axis: float = target_axis
+	damping_time = maxf(0.0001, damping_time)
+	var omega: float = 2 / damping_time
+	var x: float = omega * delta
+	var exponential: float = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var diff: float = self_axis - target_axis
+	var _target_axis: float = target_axis
 
-		var max_change: float = INF * damping_time
-		diff = clampf(diff, -max_change, max_change)
-		target_axis = self_axis - diff
+	var max_change: float = INF * damping_time
+	diff = clampf(diff, -max_change, max_change)
+	target_axis = self_axis - diff
 
-		var temp: float = (current_velocity + omega * diff) * delta
-		set_velocity.call(index, (current_velocity - omega * temp) * exponential)
-		var output: float = target_axis + (diff + temp) * exponential
+	var temp: float = (current_velocity + omega * diff) * delta
+	set_velocity.call(index, (current_velocity - omega * temp) * exponential)
+	var output: float = target_axis + (diff + temp) * exponential
 
-		## To prevent overshooting
-		if (_target_axis - self_axis > 0.0) == (output > _target_axis):
-			output = _target_axis
-			set_velocity.call(index, (output - _target_axis) / delta)
+	## To prevent overshooting
+	if (_target_axis - self_axis > 0.0) == (output > _target_axis):
+		output = _target_axis
+		set_velocity.call(index, (output - _target_axis) / delta)
 
-		return output
+	return output
 
 
 func _smooth_damp_vector(current: Vector3, target: Vector3, current_velocity: Vector3, smooth_time: float, delta: float) -> Array[Vector3]:

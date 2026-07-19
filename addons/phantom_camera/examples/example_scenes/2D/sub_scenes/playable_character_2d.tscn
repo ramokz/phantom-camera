@@ -106,6 +106,7 @@ script = ExtResource("4_rloon")
 zoom = Vector2(2, 2)
 frame_preview = false
 tween_resource = ExtResource("5_4iyk1")
+inactive_update_mode = 1
 follow_damping_value = Vector2(0, 0)
 draw_limits = true
 
@@ -116,5 +117,6 @@ script = ExtResource("4_rloon")
 zoom = Vector2(2.5, 2.5)
 frame_preview = false
 tween_resource = ExtResource("6_2h6fv")
+inactive_update_mode = 1
 follow_damping_value = Vector2(0, 0)
 draw_limits = true

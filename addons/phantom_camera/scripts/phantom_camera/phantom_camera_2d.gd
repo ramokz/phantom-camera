@@ -514,7 +514,8 @@ var _should_rotate_with_target: bool = false
 var _is_active: bool = false
 
 var _should_follow: bool = false
-var _follow_target_physics_based: bool = false
+var _follow_target_physics_based: bool = false:
+	set = _set_follow_target_physics_based
 var _physics_interpolation_enabled: bool = false # NOTE - Enable for Godot 4.3 and when PhysicsInterpolationMode bug is resolved
 
 var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
@@ -746,14 +747,28 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		_preview_noise = true
 
+	_update_processing()
+
+
+func _set_follow_target_physics_based(value: bool) -> void:
+	_follow_target_physics_based = value
+	_update_processing()
+
+
+func _update_processing() -> void:
+	if _is_active or inactive_update_mode == InactiveUpdateMode.NEVER:
+		set_process(false)
+		set_physics_process(false)
+	else:
+		set_process(not _follow_target_physics_based)
+		set_physics_process(_follow_target_physics_based)
+
 
 func _process(delta: float) -> void:
-	if _follow_target_physics_based or _is_active: return
 	process_logic(delta)
 
 
 func _physics_process(delta: float) -> void:
-	if not _follow_target_physics_based or _is_active: return
 	process_logic(delta)
 
 
@@ -1427,6 +1442,7 @@ func get_tween_ease() -> int:
 func set_is_active(node, value) -> void:
 	if node is PhantomCameraHost:
 		_is_active = value
+		_update_processing()
 		queue_redraw()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
