@@ -12,8 +12,8 @@ const ACTION_STRINGNAME: StringName = "Action"
 const INPUT_MOVE_LEFT_STRINGNAME: StringName = "move_left"
 const INPUT_MOVE_RIGHT_STRINGNAME: StringName = "move_right"
 
-const SPEED = 350.0
-const JUMP_VELOCITY = -750.0
+@export var speed: float = 350.0
+const JUMP_VELOCITY: float = -750.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: int = 2400
@@ -124,13 +124,13 @@ func _physics_process(delta: float) -> void:
 	)
 
 	if input_dir:
-		velocity.x = input_dir * SPEED
+		velocity.x = input_dir * speed
 		if input_dir > 0:
 			_player_sprite.set_flip_h(false)
 		elif input_dir < 0:
 			_player_sprite.set_flip_h(true)
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, speed)
 
 	move_and_slide()
 

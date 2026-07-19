@@ -857,7 +857,7 @@ func _set_follow_position(delta: float) -> void:
 			else:
 				var target_position: Vector2 = _get_target_position_offset()
 				var viewport_rect: Vector2 = get_viewport_rect().size
-				if lookahead and not Engine.is_editor_hint():
+				if lookahead:
 					target_position = _apply_lookahead(target_position, delta)
 
 				var viewport_dead_zone: Vector4 = Vector4(
@@ -869,9 +869,9 @@ func _set_follow_position(delta: float) -> void:
 
 				var viewport_target_offset: Vector2 = Vector2.ZERO
 				var dead_zone_side_reached: Vector2i = Vector2i.ZERO
-
 				var left_dead_zone: float = global_position.x - viewport_dead_zone.x
 				var right_dead_zone: float = global_position.x + viewport_dead_zone.z
+
 				## Left Dead Zone
 				if left_dead_zone > target_position.x:
 					viewport_target_offset.x = left_dead_zone - target_position.x
@@ -1358,7 +1358,7 @@ func get_zoom() -> Vector2:
 ## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
 	var new_priority: int = maxi(0, value)
-	if priority == new_priority: 
+	if priority == new_priority:
 		push_warning("Newly assigned priority value of " + name + " is identical to current.")
 		return
 	priority = new_priority
