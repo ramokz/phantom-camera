@@ -142,12 +142,10 @@ func _enter_tree() -> void:
 		if panel_button.toggle_mode: _btn_toggled(true)
 
 	scene_changed.connect(editor_panel_instance.viewfinder.scene_changed)
-	scene_changed.connect(_scene_changed)
 
 
 func _exit_tree() -> void:
 	scene_changed.disconnect(editor_panel_instance.viewfinder.scene_changed)
-	scene_changed.disconnect(_scene_changed)
 
 	editor_panel_instance.queue_free()
 
@@ -184,10 +182,6 @@ func _btn_toggled(toggled_on: bool):
 func _make_visible(visible):
 	if editor_panel_instance:
 		editor_panel_instance.set_visible(visible)
-
-## TODO - Signal can be added directly to the editor_panel with the changes in Godot 4.5 (https://github.com/godotengine/godot/pull/102986)
-func _scene_changed(scene_root: Node) -> void:
-	editor_panel_instance.viewfinder.scene_changed(scene_root)
 
 #	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after this release
 #func _set_editor_shortcut() -> InputEventKey:
