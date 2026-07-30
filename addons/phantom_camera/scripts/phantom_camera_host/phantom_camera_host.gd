@@ -276,6 +276,8 @@ func _enter_tree() -> void:
 		else:
 			_is_2d = false
 			camera_3d = parent
+			## Forcefully disable Physics Interpolation
+			camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 
 		if not is_node_ready():	return
 
@@ -302,7 +304,7 @@ func _exit_tree() -> void:
 
 func _ready() -> void:
 	# Waits for the first process tick to finish before initializing any logic
-	# This should help with avoiding ocassional erratic camera movement upon running a scene
+	# This should help with avoiding occasional erratic camera movement upon running a scene
 	await get_tree().process_frame
 
 	process_priority = 300
@@ -380,6 +382,7 @@ func _find_pcam_with_highest_priority() -> void:
 
 	for pcam in pcam_list:
 		#_check_pcam_priority(pcam)
+		_assign_default_third_person_shape(pcam)
 		if not _pcam_is_in_host_layer(pcam): continue
 		if not pcam.visible: continue # Prevents hidden PCams from becoming active
 		if pcam.priority >= pcam_priority:
@@ -524,29 +527,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		_active_pcam_priority = _active_pcam_3d.priority
 		_active_pcam_has_damping = _active_pcam_3d.follow_damping
 
-		if not Engine.is_editor_hint():
-			# Assigns a default shape to SpringArm3D node is none is supplied
-			if _active_pcam_3d.follow_mode == _active_pcam_3d.FollowMode.THIRD_PERSON:
-				if not _active_pcam_3d.shape:
-
-					var pyramid_shape_data = Engine.get_singleton(&"PhysicsServer3D").call("shape_get_data",
-						camera_3d.get_pyramid_shape_rid()
-					)
-
-					# Scale up the pyramid shape to avoid clipping issues
-					var expanded_points := PackedVector3Array()
-					for point in pyramid_shape_data:
-						var expanded_point := Vector3(
-							point.x + (0.02 if point.x >= 0 else -0.02),
-							point.y + (0.02 if point.y >= 0 else -0.02),
-							point.z + (0.02 if point.z >= 0 else -0.02)
-						)
-						expanded_points.append(expanded_point)
-
-					var shape = ClassDB.instantiate(&"ConvexPolygonShape3D")
-					shape.points = expanded_points
-					_active_pcam_3d.shape = shape
-
 		if not _active_pcam_3d.physics_target_changed.is_connected(_check_pcam_physics):
 			_active_pcam_3d.physics_target_changed.connect(_check_pcam_physics)
 
@@ -562,7 +542,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 		# Checks if the Camera3DResource has changed from the previous active PCam3D
 		if _active_pcam_3d.camera_3d_resource:
 			# Signal to detect if the Camera3D properties are being changed in the inspector
-			# This is to prevent accidential misalignment between the Camera3D and Camera3DResource
+			# This is to prevent accidental misalignment between the Camera3D and Camera3DResource
 			if Engine.is_editor_hint():
 				if not Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_camera_3d_edited):
 					Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.connect(_camera_3d_edited)
@@ -817,18 +797,6 @@ func _check_pcam_physics() -> void:
 				camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS # Prevents a warning
 			else:
 				camera_2d.process_callback = Camera2D.CAMERA2D_PROCESS_IDLE
-	else:
-		## NOTE - Only supported in Godot 4.4 or later
-		if Engine.get_version_info().major == 4 and \
-		Engine.get_version_info().minor >= 4:
-			if (get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based()) and interpolation_mode != InterpolationMode.IDLE:
-				#if get_tree().physics_interpolation or _active_pcam_3d.get_follow_target_physics_based():
-				_follow_target_physics_based = true
-				camera_3d.reset_physics_interpolation()
-				camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_ON
-			else:
-				_follow_target_physics_based = false
-				camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
 
 
 ## TODO - For 0.8 release
@@ -850,13 +818,11 @@ func _check_pcam_physics() -> void:
 
 
 func _process(delta: float) -> void:
-	if _active_pcam_missing: return
-
-	if not _follow_target_physics_based: _tween_follow_checker(delta)
-
+	if _is_2d or _active_pcam_missing: return
+	_tween_follow_checker(delta)
 
 func _physics_process(delta: float) -> void:
-	if _active_pcam_missing or not _follow_target_physics_based: return
+	if not _is_2d or _active_pcam_missing: return
 	_tween_follow_checker(delta)
 
 
@@ -1273,6 +1239,8 @@ func _draw_limit_2d(enabled: bool) -> void:
 ## Called when a [param PhantomCamera] is added to the scene.[br]
 ## [b]Note:[/b] This can only be called internally from a [param PhantomCamera] node.
 func _pcam_added_to_scene(pcam: Node) -> void:
+	_assign_default_third_person_shape(pcam)
+
 	if not pcam.is_node_ready(): await pcam.ready
 	_check_pcam_priority(pcam)
 
@@ -1332,6 +1300,31 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 
 	return mask
 
+
+func _assign_default_third_person_shape(pcam: Node) -> void:
+	if _is_2d or Engine.is_editor_hint(): return
+	if pcam.follow_mode != pcam.FollowMode.THIRD_PERSON: return
+	if pcam.shape: return
+
+	# Assigns a default shape to ShapeCast3D node if none is supplied
+	var pyramid_shape_data = Engine.get_singleton(&"PhysicsServer3D").call("shape_get_data",
+			camera_3d.get_pyramid_shape_rid()
+	)
+
+	# Scale up the pyramid shape to avoid clipping issues
+	var expanded_points := PackedVector3Array()
+	for point in pyramid_shape_data:
+		var expanded_point := Vector3(
+				point.x + (0.02 if point.x >= 0 else -0.02),
+				point.y + (0.02 if point.y >= 0 else -0.02),
+				point.z + (0.02 if point.z >= 0 else -0.02)
+		)
+		expanded_points.append(expanded_point)
+
+	var shape = ClassDB.instantiate(&"ConvexPolygonShape3D")
+	shape.points = expanded_points
+	pcam.shape = shape
+
 #endregion
 
 #region Public Functions
@@ -1354,7 +1347,7 @@ func pcam_priority_updated(pcam: Node) -> void:
 	if pcam == _active_pcam_2d or pcam == _active_pcam_3d:
 		## If PCam Node has become invisible / disabled
 		if not pcam.visible:
-			refresh_pcam_list_priorty()
+			refresh_pcam_list_priority()
 		## If currently active PCam has a reduced Priority
 		elif pcam.priority < _active_pcam_priority:
 			_active_pcam_priority = pcam.priority
@@ -1375,8 +1368,7 @@ func pcam_priority_updated(pcam: Node) -> void:
 			pcam.set_tween_skip(self, false)
 
 
-## Updates the viewfinder when a [param PhantomCamera] has its
-## [param priority_ovrride] enabled.[br]
+## Updates the viewfinder when a [param PhantomCamera] has its [param priority_override] enabled.[br]
 ## [b]Note:[/b] This only affects the editor.
 func _pcam_priority_override(pcam: Node, should_override: bool) -> void:
 	if not Engine.is_editor_hint(): return
@@ -1398,7 +1390,7 @@ func _pcam_priority_override(pcam: Node, should_override: bool) -> void:
 
 
 ## Updates the viewfinder when a [param PhantomCamera] has its
-## [param priority_ovrride] disabled.[br]
+## [param priority_override] disabled.[br]
 ## [b]Note:[/b] This only affects the editor.
 func pcam_priority_override_disabled() -> void:
 	viewfinder_update.emit(false)
@@ -1422,7 +1414,7 @@ func get_trigger_pcam_tween() -> bool:
 
 ## Refreshes the [param PhantomCamera] list and checks for the highest priority. [br]
 ## [b]Note:[/b] This should [b]not[/b] be necessary to call manually.
-func refresh_pcam_list_priorty() -> void:
+func refresh_pcam_list_priority() -> void:
 	_active_pcam_priority = -1
 	_find_pcam_with_highest_priority()
 

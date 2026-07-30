@@ -82,7 +82,7 @@ enum FollowMode {
 	GROUP 			= 3, ## Follows multiple targets with option to dynamically reframe itself.
 	PATH 			= 4, ## Follows a target while being positionally confined to a [Path3D] node.
 	FRAMED 			= 5, ## Applies a dead zone on the frame and only follows its target when it tries to leave it.
-	THIRD_PERSON 	= 6, ## Applies a [SpringArm3D] node to the target's position and allows for rotating around it.
+	THIRD_PERSON 	= 6, ## Applies a [ShapeCast3D] node to the target's position and allows for rotating around it with collision.
 }
 
 ## Determines the rotational logic for a given [param PhantomCamera3D].[br][br]
@@ -205,12 +205,7 @@ enum FollowTargetPhysicsClass {
 			if  dead_zone_changed.is_connected(_on_dead_zone_changed):
 				dead_zone_changed.disconnect(_on_dead_zone_changed)
 
-		if follow_mode == FollowMode.THIRD_PERSON:
-			top_level = false
-			_is_third_person_follow = true
-		else:
-			top_level = true
-			_is_third_person_follow = false
+		_is_third_person_follow = true if follow_mode == FollowMode.THIRD_PERSON else false
 
 		notify_property_list_changed()
 
@@ -337,7 +332,7 @@ enum FollowTargetPhysicsClass {
 	get = get_camera_3d_resource
 
 
-## Overrides the [member Camera3D.attribuets] resource property.
+## Overrides the [member Camera3D.attributes] resource property.
 @export var attributes: CameraAttributes = null:
 	set = set_attributes,
 	get = get_attributes
@@ -509,7 +504,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed].
-@export_subgroup("Spring Arm")
+@export_subgroup("Third Person")
 
 ## Applies a rotational offset to the Third Person [member follow_mode] in the [code]X[/code] axis.
 @export_range(-360.0, 360.0, 0.1,"or_greater", "or_less", "radians_as_degrees")
@@ -523,22 +518,24 @@ var horizontal_rotation_offset: float = 0.0:
 	set = set_horizontal_rotation_offset,
 	get = get_horizontal_rotation_offset
 
-## Defines the [member SpringArm3D.spring_length].
+## Defines the [param distance] in [param meters] the camera should have from the follow target used in [enum FollowMode.THIRD_PERSON].
 @export var spring_length: float = 1.0:
 	set = set_spring_length,
 	get = get_spring_length
 
-## Defines the [member SpringArm3D.collision_mask] node's Collision Mask.
+## Defines the [param collision_mask] of what layers should collide with the camera, based on [member ShapeCast3D.collision_mask].
 @export_flags_3d_physics var collision_mask: int = 1:
 	set = set_collision_mask,
 	get = get_collision_mask
 
-## Defines the [member SpringArm3D.shape] node's Shape3D.
+## Defines the [param shape] used as the collider of the Third Person Controller, based on [member ShapeCast3D.shape].[br]
+## If no shape is applied, a pyramid shape will automatically be set based on the camera's view frustum from [method Camera3D.get_pyramid_shape_rid].
 @export var shape: Shape3D = null:
 	set = set_shape,
 	get = get_shape
 
-## Defines the [member SpringArm3D.margin] node's Margin.
+## Defines the [param margin] of the collider, based on [member ShapeCast3D.margin].[br]
+## Larger margin improves the consistency of collision detection, but worsens precision.
 @export var margin: float = 0.01:
 	set = set_margin,
 	get = get_margin
@@ -632,7 +629,7 @@ var horizontal_rotation_offset: float = 0.0:
 	get = get_noise
 
 ## If true, will trigger the noise while in the editor.[br]
-## Useful in cases where you want to temporarily disalbe the noise in the editor without removing
+## Useful in cases where you want to temporarily disable the noise in the editor without removing
 ## the resource.[br][br]
 ## [b]Note:[/b] This property has no effect on runtime behaviour.
 @export var _preview_noise: bool = true:
@@ -715,11 +712,10 @@ var align_rotation_with_view: Callable = func():
 var _is_active: bool = false
 
 var _is_third_person_follow: bool = false
-var _camera_target: Node3D = self # Calculates the position of the camera in the editor, uses instantiated SpringArm3D node when running the scene
+var _camera_target: Node3D = self # Calculates the position of the camera in the editor, uses instantiated ShapeCast3D node when running the scene
 
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
-var _physics_interpolation_enabled: bool = false ## TOOD - Should be enbled once toggling physics_interpolation_mode ON, when previously OFF, works in 3D
 
 var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
 var _character_body_3d: CharacterBody3D = null
@@ -765,8 +761,9 @@ var _lookahead_look_at_has_prev_sample: bool = false
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
 
-var _follow_spring_arm: SpringArm3D = null
-var _has_follow_spring_arm: bool = false
+var _follow_third_person_shape_cast: ShapeCast3D
+var _has_third_person_raycaster: bool = false
+var _third_person_excluded_objets: Array[RID]
 
 var _has_noise_resource: bool = false
 
@@ -782,43 +779,73 @@ var _phantom_camera_manager: Node = null
 
 #region Public Variable
 
+## The duration of the tween going [b]to[/b] this [PhantomCamera3D].[br]
+## [b][color=yellow]Important:[/color][/b] Changing this value overrides the resource applied.
+## If the resource is shared by other [PhantomCamera3D]s, then changing this will affect those as well.
 var tween_duration: float:
 	set = set_tween_duration,
 	get = get_tween_duration
+
+## The transition type of the tween going [b]to[/b] this [PhantomCamera3D].[br]
+## [b][color=yellow]Important:[/color][/b] Changing this value overrides the resource applied.
+## If the resource is shared by other [PhantomCamera3D]s, then changing this will affect those as well.
 var tween_transition: PhantomCameraTween.TransitionType:
 	set = set_tween_transition,
 	get = get_tween_transition
+
+## The ease type of the tween going [b]to[/b] this [PhantomCamera3D].[br]
+## [b][color=yellow]Important:[/color][/b] Changing this value overrides the resource applied.
+## If the resource is shared by other [PhantomCamera3D]s, then changing this will affect those as well.
 var tween_ease: PhantomCameraTween.EaseType:
 	set = set_tween_ease,
 	get = get_tween_ease
 
+## Defines the [member Camera3D.keep_aspect] value through the [Camera3DResource].
 var keep_aspect: int:
 	set = set_keep_aspect,
 	get = get_keep_aspect
+
+## Defines the [member Camera3D.cull_mask] value through the [Camera3DResource].
 var cull_mask: int:
 	set = set_cull_mask,
 	get = get_cull_mask
+
+## Defines the [member Camera3D.h_offset] value through the [Camera3DResource].
 var h_offset: float:
 	set = set_h_offset,
 	get = get_h_offset
+
+## Defines the [member Camera3D.v_offset] value through the [Camera3DResource].
 var v_offset: float:
 	set = set_v_offset,
 	get = get_v_offset
+
+## Defines the [member Camera3D.ProjectionType] value through the [Camera3DResource].
 var projection: Camera3DResource.ProjectionType:
 	set = set_projection,
 	get = get_projection
+
+## Defines the [member Camera3D.fov] value through the [Camera3DResource].
 var fov: float:
 	set = set_fov,
 	get = get_fov
+
+## Defines the [member Camera3D.size] value through the [Camera3DResource].
 var size: float:
 	set = set_size,
 	get = get_size
+
+## Defines the [member Camera3D.frustum_offset] value through the [Camera3DResource].
 var frustum_offset: Vector2:
 	set = set_frustum_offset,
 	get = get_frustum_offset
+
+## Defines the [member Camera3D.far] value through the [Camera3DResource].
 var far: float:
 	set = set_far,
 	get = get_far
+
+## Defines the [member Camera3D.near] value through the [Camera3DResource].
 var near: float:
 	set = set_near,
 	get = get_near
@@ -1034,17 +1061,6 @@ func _enter_tree() -> void:
 	if look_at_mode == LookAtMode.GROUP:
 		_look_at_targets_size_check()
 
-	#if not get_parent() is SpringArm3D:
-		#if look_at_target:
-			#_look_at_target_node = look_at_target
-		#elif look_at_targets:
-			#_look_at_group_nodes.clear()
-			#for path in look_at_targets:
-				#if not path.is_empty() and path:
-					#_should_look_at = true
-					#_has_look_at_targets = true
-					#_look_at_group_nodes.append(path)
-
 
 func _exit_tree() -> void:
 	if not follow_mode == FollowMode.GROUP:
@@ -1060,28 +1076,33 @@ func _ready():
 			_is_third_person_follow = true
 			if _should_follow: _transform_output.origin = _get_target_position_offset_distance()
 			if not Engine.is_editor_hint():
-				if not is_instance_valid(_follow_spring_arm):
-					_follow_spring_arm = SpringArm3D.new()
-					_follow_spring_arm.top_level = true
-					_follow_spring_arm.spring_length = spring_length
-					_follow_spring_arm.collision_mask = collision_mask
-					_follow_spring_arm.shape = shape
-					_follow_spring_arm.margin = margin
+				if not is_instance_valid(_follow_third_person_shape_cast):
+					_follow_third_person_shape_cast = ShapeCast3D.new()
+					_follow_third_person_shape_cast.name = name + "ThirdPersonShapeCast3D"
+					_follow_third_person_shape_cast.top_level = true
+					_follow_third_person_shape_cast.collision_mask = collision_mask
+					_follow_third_person_shape_cast.target_position = Vector3(0, 0, spring_length)
+					if shape: _follow_third_person_shape_cast.shape = shape
+					_follow_third_person_shape_cast.margin = margin
 					# Stores the rotation value as the rotation gets skewed after
-					# the SpringArm3D is instantiated for some reason...
+					# the ShapeCast3D is instantiated for some reason...
 					var initial_rotation: Vector3 = global_rotation
-					if _should_follow: _follow_spring_arm.add_excluded_object(follow_target)
-					get_parent().add_child.call_deferred(_follow_spring_arm)
+					if _should_follow:
+						_third_person_excluded_objets.append(follow_target)
+						for excluded_object in _third_person_excluded_objets:
+							_follow_third_person_shape_cast.add_exception_rid(excluded_object)
+					get_parent().add_child.call_deferred(_follow_third_person_shape_cast)
 
-					# Waits for the SpringArm3D to be ready and then apply rotation
-					# Resolves an issue most prominent in Godot 4.4
-					await _follow_spring_arm.ready
-					reparent.call_deferred(_follow_spring_arm)
-					_camera_target = _follow_spring_arm
-					_follow_spring_arm.global_position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
-					_follow_spring_arm.global_rotation = initial_rotation
-					_has_follow_spring_arm = true
-					top_level = false
+					# Waits for the ShapeCast3D to have entered the tree and then apply rotation.
+					# Resolves an issue most prominent in Godot 4.4 and later.
+					await _follow_third_person_shape_cast.tree_entered
+					top_level = true
+					reparent.call_deferred(_follow_third_person_shape_cast)
+
+					_camera_target = _follow_third_person_shape_cast
+					_follow_third_person_shape_cast.global_position = _get_target_position_offset() if is_instance_valid(follow_target) else global_position
+					_follow_third_person_shape_cast.global_rotation = initial_rotation
+					_has_third_person_raycaster = true
 		_:
 			_transform_output.origin = global_position
 
@@ -1099,13 +1120,9 @@ func _process(delta: float) -> void:
 	if Engine.is_editor_hint() and _draw_gizmo:
 		update_gizmos()
 
-	if _follow_target_physics_based or _is_active: return
+	if _is_active: return
 	process_logic(delta)
 
-
-func _physics_process(delta: float) -> void:
-	if not _follow_target_physics_based or _is_active: return
-	process_logic(delta)
 
 
 func process_logic(delta: float) -> void:
@@ -1163,7 +1180,7 @@ func _look_at(delta: float) -> void:
 func _set_follow_position(delta: float) -> void:
 	match follow_mode:
 		FollowMode.GLUED:
-			var target_position: Vector3 = follow_target.global_position
+			var target_position: Vector3 = follow_target.get_global_transform_interpolated().origin
 			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
 			_follow_target_output_position = target_position + lookahead_delta
 
@@ -1175,9 +1192,9 @@ func _set_follow_position(delta: float) -> void:
 
 		FollowMode.GROUP:
 			if _has_multiple_follow_targets:
-				var bounds: AABB = AABB(_follow_targets[0].global_position, Vector3.ZERO)
+				var bounds: AABB = AABB(_follow_targets[0].get_global_transform_interpolated().origin, Vector3.ZERO)
 				for target in _follow_targets:
-					bounds = bounds.expand(target.global_position)
+					bounds = bounds.expand(target.get_global_transform_interpolated().origin)
 				var distance: float
 				if auto_follow_distance:
 					distance = lerpf(auto_follow_distance_min, auto_follow_distance_max, bounds.get_longest_axis_size() / auto_follow_distance_divisor)
@@ -1196,7 +1213,7 @@ func _set_follow_position(delta: float) -> void:
 				_set_follow_gizmo_line_position(bounds.get_center())
 			else:
 				var target_position: Vector3 = \
-					follow_targets[_follow_targets_single_target_index].global_position + \
+					follow_targets[_follow_targets_single_target_index].get_global_transform_interpolated().origin + \
 					follow_offset
 				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
 				_follow_target_output_position = \
@@ -1206,7 +1223,7 @@ func _set_follow_position(delta: float) -> void:
 					auto_follow_distance_min
 
 		FollowMode.PATH:
-			var path_position: Vector3 = follow_path.global_position
+			var path_position: Vector3 = follow_path.get_global_transform_interpolated().origin
 			var target_position: Vector3 = _get_target_position_offset()
 			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
 			var tracked_position: Vector3 = target_position + lookahead_delta
@@ -1217,16 +1234,41 @@ func _set_follow_position(delta: float) -> void:
 			_set_follow_gizmo_line_position(target_position)
 
 		FollowMode.FRAMED:
-			var raw_target_position: Vector3 = _get_target_position_offset()
-			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(raw_target_position, delta)
-			var target_position: Vector3 = raw_target_position + lookahead_delta
-			if not Engine.is_editor_hint():
+			var target_position: Vector3 = _get_target_position_offset()
+
+			if Engine.is_editor_hint() or not _is_active:
+				_follow_target_output_position = target_position + transform.basis.z * follow_distance
+				var unprojected_position: Vector2 = _get_raw_unprojected_position()
+				var viewport_width: float = get_viewport().size.x
+				var viewport_height: float = get_viewport().size.y
+				var camera_aspect: int = get_viewport().get_camera_3d().keep_aspect
+				var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
+
+				unprojected_position = unprojected_position - visible_rect_size / 2
+				if camera_aspect == Camera3D.KEEP_HEIGHT:
+					# Landscape View
+					var aspect_ratio_scale: float = viewport_width / viewport_height
+					unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+					unprojected_position.y = (unprojected_position.y + 1) / 2
+				else:
+					# Portrait View
+					var aspect_ratio_scale: float = viewport_height / viewport_width
+					unprojected_position.x = (unprojected_position.x + 1) / 2
+					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+
+					viewport_position = unprojected_position
+				_set_follow_gizmo_line_position(follow_target.global_position)
+			else:
+				if follow_lookahead:
+					target_position = _get_follow_lookahead_delta(target_position, delta)
+
 				if not _is_active:
 					_follow_target_output_position = target_position + transform.basis.z * follow_distance
 				else:
-					viewport_position = get_viewport().get_camera_3d().unproject_position(target_position)
-					var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
-					viewport_position = viewport_position / visible_rect_size
+					var viewport_camera: Camera3D = get_viewport().get_camera_3d()
+					viewport_position = viewport_camera.unproject_position(target_position)
+					var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+					viewport_position = viewport_position / viewport_size
 					_current_rotation = global_rotation
 
 					if _current_rotation != global_rotation:
@@ -1266,15 +1308,15 @@ func _set_follow_position(delta: float) -> void:
 
 								# Update stored offset for non-breached axes
 								if framed_offset.x == 0:
-										_follow_framed_offset.x = current_offset.x
+									_follow_framed_offset.x = current_offset.x
 								if framed_offset.y == 0:
-										_follow_framed_offset.z = current_offset.z
+									_follow_framed_offset.z = current_offset.z
 
 								# Lock camera position on non-breached axes
 								if framed_offset.x == 0:
-										framed_target_position.x = current_global_position.x
+									framed_target_position.x = current_global_position.x
 								if framed_offset.y == 0:
-										framed_target_position.z = current_global_position.z
+									framed_target_position.z = current_global_position.z
 
 								_follow_target_output_position = framed_target_position
 					else:
@@ -1307,10 +1349,8 @@ func _set_follow_position(delta: float) -> void:
 
 		FollowMode.THIRD_PERSON:
 			if not Engine.is_editor_hint():
-				if not _has_follow_spring_arm: return
-				var target_position: Vector3 = _get_target_position_offset()
-				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-				_follow_target_output_position = target_position + lookahead_delta
+				if not _has_third_person_raycaster: return
+				_follow_target_output_position = _get_target_position_offset() # + lookahead_delta
 			else:
 				var raw_target_position: Vector3 = _get_target_position_offset()
 				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(raw_target_position, delta)
@@ -1324,18 +1364,18 @@ func _set_look_at_position(delta: float) -> void:
 
 	match look_at_mode:
 		LookAtMode.MIMIC:
-			target_position = global_position - look_at_target.global_basis.z
+			target_position = get_global_transform_interpolated().origin - look_at_target.global_basis.z
 
 		LookAtMode.SIMPLE:
-			target_position = look_at_target.global_position
+			target_position = look_at_target.get_global_transform_interpolated().origin
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
-				target_position = look_at_targets[_look_at_targets_single_target_index].global_position
+				target_position = look_at_targets[_look_at_targets_single_target_index].get_global_transform_interpolated().origin
 			else:
-				var bounds: AABB = AABB(look_at_targets[0].global_position, Vector3.ZERO)
+				var bounds: AABB = AABB(look_at_targets[0].get_global_transform_interpolated().origin, Vector3.ZERO)
 				for node in look_at_targets:
-					bounds = bounds.expand(node.global_position)
+					bounds = bounds.expand(node.get_global_transform_interpolated().origin)
 				target_position = bounds.get_center()
 
 	target_position += look_at_offset
@@ -1348,7 +1388,7 @@ func _set_look_at_position(delta: float) -> void:
 	_look_at_target_output_position = target_position + lookahead_delta
 
 func _get_target_position_offset() -> Vector3:
-	return follow_target.global_position + follow_offset
+	return follow_target.get_global_transform_interpolated().origin + follow_offset
 
 
 func _get_target_position_offset_distance() -> Vector3:
@@ -1359,7 +1399,7 @@ func _get_target_position_offset_distance() -> Vector3:
 func _get_target_position_offset_distance_direction() -> Vector3:
 	return _get_target_position_offset() + \
 	follow_target.global_basis.z * \
-	follow_distance * \
+	spring_length * \
 	Quaternion(follow_target.global_basis.x, vertical_rotation_offset) * \
 	Quaternion(follow_target.global_basis.y, horizontal_rotation_offset)
 
@@ -1392,19 +1432,56 @@ func _interpolate_position(delta: float) -> void:
 					follow_damping_value[i],
 					delta
 				)
-			_transform_output.origin = global_position
+			_set_third_person_camera()
 	else:
 		_camera_target.global_position = _follow_target_output_position
-		_transform_output.origin = global_position
+		if not _has_third_person_raycaster:
+			_transform_output.origin = global_position
+		else:
+			_set_third_person_camera()
 
-	if _is_third_person_follow and Engine.is_editor_hint():
+
+func _set_third_person_camera() -> void:
+	if _has_third_person_raycaster:
+		## Forces the raycast to update in-between physics ticks during the _process to avoid jitter when used
+		## alongside get_global_transform_interpolated
+		_follow_third_person_shape_cast.force_shapecast_update()
+
+		var camera_transform: Transform3D
+		var motion: Vector3 = Vector3(_follow_third_person_shape_cast.global_basis.z * spring_length)
+
+		## Check if the raycast is intersecting with a collider
+		if _follow_third_person_shape_cast.is_colliding():
+			var shape_params: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+			shape_params.shape = _follow_third_person_shape_cast.shape
+			shape_params.transform = _follow_third_person_shape_cast.global_transform
+			shape_params.exclude = _third_person_excluded_objets
+			shape_params.motion = motion
+			shape_params.collision_mask = collision_mask
+
+			var casted_motion: PackedFloat32Array = get_world_3d().direct_space_state.cast_motion(shape_params)
+
+			camera_transform = Transform3D(
+					_follow_third_person_shape_cast.global_basis,
+					_follow_third_person_shape_cast.global_transform.origin + \
+					_follow_third_person_shape_cast.global_basis.z \
+					* (spring_length * casted_motion[1])
+			)
+			global_transform = camera_transform
+			_transform_output = camera_transform
+
+		else: ## If not, copy the PCam3D's global transform
+			camera_transform = Transform3D(
+					_follow_third_person_shape_cast.global_transform.basis,
+					_follow_third_person_shape_cast.global_position + motion
+			)
+			global_transform = camera_transform
+			_transform_output = camera_transform
+	elif _is_third_person_follow and Engine.is_editor_hint():
 		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset(), follow_target.global_basis.y)
 		var target_basis: Basis = Basis(target_quat)
 		_transform_output.basis = target_basis
 		global_basis = target_basis
-	elif _has_follow_spring_arm:
-		_transform_output.basis = _follow_spring_arm.global_basis
-		global_basis = _follow_spring_arm.global_basis
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
@@ -1545,7 +1622,7 @@ func _get_follow_target_velocity(delta: float) -> Vector3:
 				return prop_v
 
 	# Fallback: estimate from position delta using raw target position
-	var current_pos: Vector3 = follow_target.global_position
+	var current_pos: Vector3 = follow_target.get_global_transform_interpolated().origin
 
 	if not _lookahead_follow_has_prev_sample:
 		_lookahead_follow_has_prev_sample = true
@@ -1589,7 +1666,7 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 		return prop_v
 
 	# Fallback: estimate from position delta
-	var current_pos: Vector3 = target.global_position
+	var current_pos: Vector3 = target.get_global_transform_interpolated().origin
 
 	if not _lookahead_look_at_has_prev_sample:
 		_lookahead_look_at_has_prev_sample = true
@@ -1665,7 +1742,7 @@ func _project_onto_plane(value: Vector3, up_direction: Vector3) -> Vector3:
 
 
 func _get_raw_unprojected_position() -> Vector2:
-	return get_viewport().get_camera_3d().unproject_position(follow_target.global_position + follow_offset)
+	return get_viewport().get_camera_3d().unproject_position(follow_target.get_global_transform_interpolated().origin + follow_offset)
 
 
 func _on_dead_zone_changed() -> void:
@@ -1738,7 +1815,7 @@ func _follow_targets_size_check() -> void:
 	_lookahead_follow_reset = true
 	_reset_follow_lookahead()
 	var targets_size: int = 0
-	_follow_target_physics_based = false
+	# _follow_target_physics_based = false
 	_follow_targets = []
 	for i in follow_targets.size():
 		if follow_targets[i] == null: continue
@@ -1746,7 +1823,7 @@ func _follow_targets_size_check() -> void:
 			_follow_targets.append(follow_targets[i])
 			targets_size += 1
 			_follow_targets_single_target_index = i
-			_check_physics_body(follow_targets[i])
+			# _check_physics_body(follow_targets[i])
 			if not follow_targets[i].tree_exiting.is_connected(_follow_target_tree_exiting):
 				follow_targets[i].tree_exiting.connect(_follow_target_tree_exiting.bind(follow_targets[i]))
 
@@ -1796,7 +1873,7 @@ func _look_at_targets_size_check() -> void:
 		if is_instance_valid(look_at_targets[i]):
 			targets_size += 1
 			_look_at_targets_single_target_index = i
-			_check_physics_body(look_at_targets[i])
+			# _check_physics_body(look_at_targets[i])
 			if not look_at_targets[i].tree_exiting.is_connected(_look_at_target_tree_exiting):
 				look_at_targets[i].tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_targets[i]))
 
@@ -1817,31 +1894,31 @@ func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> vo
 		noise_emitted.emit(emitter_noise_output)
 
 
-func _check_physics_body(target: Node3D) -> void:
-	# Reset cached physics references
-	_character_body_3d = null
-	_rigid_body_3d = null
-	_follow_target_physics_class = FollowTargetPhysicsClass.OTHER
-
-	if target is PhysicsBody3D:
-		# Cache the type and reference for performance
-		if target is CharacterBody3D:
-			_character_body_3d = target as CharacterBody3D
-			_follow_target_physics_class = FollowTargetPhysicsClass.CHARACTERBODY
-		elif target is RigidBody3D:
-			_rigid_body_3d = target as RigidBody3D
-			_follow_target_physics_class = FollowTargetPhysicsClass.RIGIDBODY
-
-		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
-		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
-
-		if not physics_interpolation_enabled and _follow_target_physics_based and show_jitter_tips == null:
-			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement")
-			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-		_follow_target_physics_based = true
-	else:
-		_is_parents_physics(target)
-	physics_target_changed.emit()
+# func _check_physics_body(target: Node3D) -> void:
+# 	# Reset cached physics references
+# 	_character_body_3d = null
+# 	_rigid_body_3d = null
+# 	_follow_target_physics_class = FollowTargetPhysicsClass.OTHER
+#
+# 	if target is PhysicsBody3D:
+# 		# Cache the type and reference for performance
+# 		if target is CharacterBody3D:
+# 			_character_body_3d = target as CharacterBody3D
+# 			_follow_target_physics_class = FollowTargetPhysicsClass.CHARACTERBODY
+# 		elif target is RigidBody3D:
+# 			_rigid_body_3d = target as RigidBody3D
+# 			_follow_target_physics_class = FollowTargetPhysicsClass.RIGIDBODY
+#
+# 		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
+# 		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
+#
+# 		if not physics_interpolation_enabled and _follow_target_physics_based and show_jitter_tips == null:
+# 			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement.")
+# 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+# 		_follow_target_physics_based = true
+# 	else:
+# 		_is_parents_physics(target)
+# 	physics_target_changed.emit()
 
 
 func _is_parents_physics(target: Node = self) -> void:
@@ -1936,7 +2013,7 @@ func is_looking() -> bool:
 	return _should_look_at
 
 
-## Returns the world space coodinate of where the target the camera is following.
+## Returns the world space coordinate of where the target the camera is following.
 ## In most cases, this is the
 func get_follow_target_position() -> Vector3:
 	return _follow_target_position
@@ -1966,7 +2043,7 @@ func get_tween_skip() -> bool:
 ## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
 	var new_priority: int = maxi(0, value)
-	if priority == new_priority: 
+	if priority == new_priority:
 		push_warning("Newly assigned priority value of " + name + " is identical to current.")
 		return
 	priority = new_priority
@@ -2087,9 +2164,9 @@ func set_follow_target(value: Node3D) -> void:
 				_should_follow = false
 		else:
 			_should_follow = true
-		_check_physics_body(value)
-		if follow_mode == FollowMode.THIRD_PERSON and is_instance_valid(_follow_spring_arm):
-			_follow_spring_arm.add_excluded_object(follow_target)
+		# _check_physics_body(value)
+		if follow_mode == FollowMode.THIRD_PERSON and is_instance_valid(_follow_third_person_shape_cast):
+			_follow_third_person_shape_cast.add_exception_rid(follow_target)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
 			follow_target.tree_exiting.connect(_follow_target_tree_exiting.bind(follow_target))
 	else:
@@ -2267,55 +2344,49 @@ func get_auto_follow_distance_divisor() -> float:
 	return auto_follow_distance_divisor
 
 
-## Assigns new rotation (in radians) value to [SpringArm3D] for
-## [param ThirdPerson] [enum FollowMode].
+## Assigns new rotation (in radians) value used in [enum FollowMode.THIRD_PERSON].
 func set_third_person_rotation(value: Vector3) -> void:
 	if not _is_third_person_follow:
 		printerr("Follow Mode is not set to Third Person")
 		return
-	_follow_spring_arm.rotation = value
+	_follow_third_person_shape_cast.rotation = value
 
-## Gets the rotation value (in radians) from the [SpringArm3D] for
-## [param ThirdPerson] [enum FollowMode].
+## Gets the rotation value (in radians) used in [enum FollowMode.THIRD_PERSON].
 func get_third_person_rotation() -> Vector3:
 	if not _is_third_person_follow:
 		printerr("Follow Mode is not set to Third Person")
 		return Vector3.ZERO
-	return _follow_spring_arm.rotation
+	return _follow_third_person_shape_cast.rotation
 
 
-## Assigns new rotation (in degrees) value to [SpringArm3D] for
-## [param ThirdPerson] [enum FollowMode].
+## Assigns new rotation (in degrees) value used in [enum FollowMode.THIRD_PERSON].
 func set_third_person_rotation_degrees(value: Vector3) -> void:
 	if not _is_third_person_follow:
 		printerr("Follow Mode is not set to Third Person")
 		return
-	_follow_spring_arm.rotation_degrees = value
+	_follow_third_person_shape_cast.rotation_degrees = value
 
-## Gets the rotation value (in degrees) from the [SpringArm3D] for
-## [param ThirdPerson] [enum FollowMode].
+## Gets the rotation value (in degrees) used [enum FollowMode.THIRD_PERSON].
 func get_third_person_rotation_degrees() -> Vector3:
 	if not _is_third_person_follow:
 		printerr("Follow Mode is not set to Third Person")
 		return Vector3.ZERO
-	return _follow_spring_arm.rotation_degrees
+	return _follow_third_person_shape_cast.rotation_degrees
 
 
-## Assigns new [Quaternion] value to [SpringArm3D] for [param ThirdPerson]
-## [enum FollowMode].
+## Assigns new [Quaternion] value used in [enum FollowMode.THIRD_PERSON].
 func set_third_person_quaternion(value: Quaternion) -> void:
 	if not _is_third_person_follow:
 		printerr("Follow Mode is not set to Third Person")
 		return
-	_follow_spring_arm.quaternion = value
+	_follow_third_person_shape_cast.quaternion = value
 
-## Gets the [Quaternion] value of the [SpringArm3D] for [param ThirdPerson]
-## [enum Follow mode].
+## Gets the [Quaternion] value used in [enum Follow mode].
 func get_third_person_quaternion() -> Quaternion:
 	if not _is_third_person_follow:
 		printerr("Follow Mode is not set to Third Person")
 		return Quaternion.IDENTITY
-	return _follow_spring_arm.quaternion
+	return _follow_third_person_shape_cast.quaternion
 
 
 ## Assigns a new [member set_vertical_rotation_offset] value.
@@ -2335,59 +2406,53 @@ func get_horizontal_rotation_offset() -> float:
 	return horizontal_rotation_offset
 
 
-## Assigns a new ThirdPerson [member SpringArm3D.length] value.
+## Assigns a new [member spring_length] value used for [enum FollowMode.THIRD_PERSON] .
 func set_spring_length(value: float) -> void:
 	follow_distance = value
-	if not is_instance_valid(_follow_spring_arm): return
-	_follow_spring_arm.spring_length = value
+	if not is_instance_valid(_follow_third_person_shape_cast): return
+	_follow_third_person_shape_cast.spring_length = value
 
-## Gets the [member SpringArm3D.length]
+## Gets the [member spring_length] value used for [enum FollowMode.THIRD_PERSON].
 ## from a [param ThirdPerson] [enum follow_mode] instance.
 func get_spring_length() -> float:
 	return follow_distance
 
 
-## Assigns a new [member collision_mask] to the [SpringArm3D] when [enum FollowMode]
-## is set to [param ThirdPerson].
+## Assigns a new [member collision_mask] used for [enum FollowMode.THIRD_PERSON].
 func set_collision_mask(value: int) -> void:
 	collision_mask = value
-	if not is_instance_valid(_follow_spring_arm): return
-	_follow_spring_arm.collision_mask = collision_mask
+	if not is_instance_valid(_follow_third_person_shape_cast): return
+	_follow_third_person_shape_cast.collision_mask = collision_mask
 
-## Enables or disables a specific [member collision_mask] layer for the
-## [SpringArm3D] when [enum FollowMode] is set to [param ThirdPerson].
+## Enables or disables a specific [member collision_mask] layer used for [enum FollowMode.THIRD_PERSON].
 func set_collision_mask_value(value: int, enabled: bool) -> void:
 	collision_mask = _set_layer(collision_mask, value, enabled)
-	if not is_instance_valid(_follow_spring_arm): return
-	_follow_spring_arm.collision_mask = collision_mask
+	if not is_instance_valid(_follow_third_person_shape_cast): return
+	_follow_third_person_shape_cast.collision_mask = collision_mask
 
-## Gets [member collision_mask] from the [SpringArm3D] when [enum FollowMode]
-## is set to [param ThirdPerson].
+## Gets [member collision_mask] used for [enum FollowMode.THIRD_PERSON].
 func get_collision_mask() -> int:
 	return collision_mask
 
 
-## Assigns a new [SpringArm3D.shape] when [enum FollowMode]
-## is set to [param ThirdPerson].
+## Assigns a new [member shape] used for [enum FollowMode.THIRD_PERSON].
 func set_shape(value: Shape3D) -> void:
 	shape = value
-	if not is_instance_valid(_follow_spring_arm): return
-	_follow_spring_arm.shape = shape
+	if not is_instance_valid(_follow_third_person_shape_cast): return
+	_follow_third_person_shape_cast.shape = shape
 
-## Gets [param ThirdPerson] [member SpringArm3D.shape] value.
+## Gets [member shape] value used for [enum FollowMode.THIRD_PERSON].
 func get_shape() -> Shape3D:
 	return shape
 
 
-## Assigns a new [member SpringArm3D.margin] value when [enum FollowMode]
-## is set to [param ThirdPerson].
+## Assigns a new [member margin] value used for [enum FollowMode.THIRD_PERSON].
 func set_margin(value: float) -> void:
 	margin = value
-	if not is_instance_valid(_follow_spring_arm): return
-	_follow_spring_arm.margin = margin
+	if not is_instance_valid(_follow_third_person_shape_cast): return
+	_follow_third_person_shape_cast.margin = margin
 
-## Gets the [SpringArm3D.margin] when [enum FollowMode] is set to
-## [param ThirdPerson].
+## Gets the [member margin] used for [enum FollowMode.THIRD_PERSON].
 func get_margin() -> float:
 	return margin
 
@@ -2428,7 +2493,7 @@ func set_look_at_target(value: Node3D) -> void:
 	if not look_at_mode == LookAtMode.GROUP:
 		if is_instance_valid(look_at_target):
 			_should_look_at = true
-			_check_physics_body(value)
+			# _check_physics_body(value)
 			if not look_at_target.tree_exiting.is_connected(_look_at_target_tree_exiting):
 				look_at_target.tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_target))
 		else:
@@ -2970,8 +3035,8 @@ func get_far() -> Variant:
 	return camera_3d_resource.far
 
 
-func get_follow_target_physics_based() -> bool:
-	return _follow_target_physics_based
+# func get_follow_target_physics_based() -> bool:
+# 	return _follow_target_physics_based
 
 
 ## Used internally in phantom_camera_3d_gizmo.gd to check if the Follow line should be shown.
@@ -2983,10 +3048,11 @@ func draw_look_at_gizmo_line() -> bool:
 	return _draw_look_at_gizmo_line
 
 
+## Used internally for reference purposes.
 func get_class() -> String:
 	return "PhantomCamera3D"
 
-
+## Used internally for reference purposes.
 func is_class(value) -> bool:
 	return value == "PhantomCamera3D"
 

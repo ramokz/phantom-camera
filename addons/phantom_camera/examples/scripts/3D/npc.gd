@@ -59,7 +59,8 @@ func _input(event) -> void:
 			var tween: Tween = get_tree().create_tween() \
 				.set_parallel(true) \
 				.set_trans(Tween.TRANS_QUART) \
-				.set_ease(Tween.EASE_IN_OUT)
+				.set_ease(Tween.EASE_IN_OUT) \
+				.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 			if not is_interacting:
 				npc_pcam.priority = 20
 				tween.tween_property(player, "global_position", move_to_location, 0.6).set_trans(tween_transition)
