@@ -209,7 +209,7 @@ enum FollowTargetPhysicsClass {
 
 		notify_property_list_changed()
 
-		var show_mixed_mode_tips := ProjectSettings.get_setting("phantom_camera/tips/show_mixed_mode_tips")
+		var show_mixed_mode_tips := ProjectSettings.get_setting(_constants.SETTING_MIXED_MODE_TIPS)
 
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
 		if look_at_mode != LookAtMode.NONE and show_mixed_mode_tips:
@@ -270,7 +270,7 @@ enum FollowTargetPhysicsClass {
 
 		notify_property_list_changed()
 
-		var show_mixed_mode_tips := ProjectSettings.get_setting("phantom_camera/tips/show_mixed_mode_tips")
+		var show_mixed_mode_tips := ProjectSettings.get_setting(_constants.SETTING_MIXED_MODE_TIPS)
 
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
 		if follow_mode != FollowMode.NONE and show_mixed_mode_tips:

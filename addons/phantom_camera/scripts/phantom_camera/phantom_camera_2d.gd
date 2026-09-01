@@ -1193,7 +1193,7 @@ func _check_physics_body(target: Node2D) -> void:
 			_rigid_body_2d = target as RigidBody2D
 			_follow_target_physics_class = FollowTargetPhysicsClass.RIGIDBODY
 
-		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
+		var show_jitter_tips := ProjectSettings.get_setting(_constants.SETTING_JITTER_TIPS)
 		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
 
 		## NOTE - Feature Toggle
