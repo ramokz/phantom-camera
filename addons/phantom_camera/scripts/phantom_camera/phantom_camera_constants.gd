@@ -27,3 +27,10 @@ const PCAM_GROUP_NAME: StringName = "phantom_camera_group"
 const PCAM_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"
 
 #endregion
+
+#region Setting Names
+
+const SETTING_JITTER_TIPS: String = "phantom_camera/tips/show_jitter_tips"
+const SETTING_MIXED_MODE_TIPS: String = "phantom_camera/tips/show_mixed_mode_tips"
+
+#endregion

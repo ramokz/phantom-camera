@@ -209,9 +209,12 @@ enum FollowTargetPhysicsClass {
 
 		notify_property_list_changed()
 
+		var show_mixed_mode_tips := ProjectSettings.get_setting(_constants.SETTING_MIXED_MODE_TIPS)
+
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
-		if look_at_mode != LookAtMode.NONE:
+		if look_at_mode != LookAtMode.NONE and show_mixed_mode_tips:
 			print_rich("[color=#EAA15E]Warning: Using both Look At and Follow Mode on the same PCam3D has not been fully tested yet, proceed with caution![/color]")
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Mixed Mode Tips[/code]")
 	get:
 		return follow_mode
 
@@ -267,9 +270,12 @@ enum FollowTargetPhysicsClass {
 
 		notify_property_list_changed()
 
+		var show_mixed_mode_tips := ProjectSettings.get_setting(_constants.SETTING_MIXED_MODE_TIPS)
+
 		## NOTE - Warning that Look At + Follow Mode hasn't been fully tested together yet
-		if follow_mode != FollowMode.NONE:
+		if follow_mode != FollowMode.NONE and show_mixed_mode_tips:
 			print_rich("[color=#EAA15E]Warning: Using both Look At and Follow Mode on the same PCam3D has not been fully tested yet, proceed with caution![/color]")
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Mixed Mode Tips[/code]")
 	get:
 		return look_at_mode
 

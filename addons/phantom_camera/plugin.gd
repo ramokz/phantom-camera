@@ -21,6 +21,7 @@ const PHANTOM_CAMERA_MANAGER: StringName = "PhantomCameraManager"
 #region Private Variables
 
 var _settings_show_jitter_tips: String = "phantom_camera/tips/show_jitter_tips"
+var _settings_show_mixed_mode_tips: String = "phantom_camera/tips/show_mixed_mode_tips"
 var _settings_enable_editor_shortcut: String = "phantom_camera/general/enable_editor_shortcut"
 var _settings_editor_shortcut: String = "phantom_camera/general/editor_shortcut"
 
@@ -99,6 +100,17 @@ func _enter_tree() -> void:
 	})
 	ProjectSettings.set_initial_value(_settings_show_jitter_tips, true)
 	ProjectSettings.set_as_basic(_settings_show_jitter_tips, true)
+	
+	## Setting for enabling / disabling mixed Follow + LookAt mode tips in the output
+	if not ProjectSettings.has_setting(_settings_show_mixed_mode_tips):
+		ProjectSettings.set_setting(_settings_show_mixed_mode_tips, true)
+		ProjectSettings
+	ProjectSettings.add_property_info({
+		"name": _settings_show_mixed_mode_tips,
+		"type": TYPE_BOOL,
+	})
+	ProjectSettings.set_initial_value(_settings_show_mixed_mode_tips, true)
+	ProjectSettings.set_as_basic(_settings_show_mixed_mode_tips, true)
 
 
 # 	TODO - Pending merge of https://github.com/godotengine/godot/pull/102889 - Should only support Godot version after this release
