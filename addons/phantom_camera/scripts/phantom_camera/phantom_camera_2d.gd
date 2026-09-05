@@ -509,6 +509,8 @@ var _should_rotate_with_target: bool = false
 	set = set_noise_emitter_layer,
 	get = get_noise_emitter_layer
 
+#endregion
+
 #region Private Variables
 
 var _is_active: bool = false
