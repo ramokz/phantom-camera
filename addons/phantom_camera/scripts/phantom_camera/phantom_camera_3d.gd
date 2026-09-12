@@ -2234,7 +2234,7 @@ func set_follow_offset(value: Vector3) -> void:
 
 	if follow_axis_lock != FollowLockAxis.NONE:
 		temp_offset = temp_offset - value
-		match value:
+		match follow_axis_lock:
 			FollowLockAxis.X:
 				_follow_axis_lock_value.x = _transform_output.origin.x + temp_offset.x
 			FollowLockAxis.Y:
