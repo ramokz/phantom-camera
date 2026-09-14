@@ -176,6 +176,7 @@ func _settings_changed() -> void:
 
 
 func _visibility_check() -> void:
+	if not is_inside_tree(): return
 	if not viewfinder_visible: return
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
 	if not is_instance_valid(Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)): return
