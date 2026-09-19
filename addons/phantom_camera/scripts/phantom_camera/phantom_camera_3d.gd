@@ -736,8 +736,7 @@ var _look_at_target_physics_based: bool = false
 
 var _has_multiple_look_at_targets: bool = false
 var _look_at_targets_single_target_index: int = 0
-
-var _current_rotation: Vector3 = Vector3.ZERO
+var _look_at_targets: Array[Node3D]
 
 var _up: Vector3 = Vector3.UP
 var _has_up_target: bool = false
@@ -1218,7 +1217,7 @@ func _set_follow_position(delta: float) -> void:
 				_set_follow_gizmo_line_position(bounds.get_center())
 			else:
 				var target_position: Vector3 = \
-					follow_targets[_follow_targets_single_target_index].get_global_transform_interpolated().origin + \
+					_follow_targets[_follow_targets_single_target_index].get_global_transform_interpolated().origin + \
 					follow_offset
 				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
 				_follow_target_output_position = \
@@ -1354,10 +1353,10 @@ func _set_look_at_position(delta: float) -> void:
 
 		LookAtMode.GROUP:
 			if not _has_multiple_look_at_targets:
-				target_position = look_at_targets[_look_at_targets_single_target_index].get_global_transform_interpolated().origin
+				target_position = _look_at_targets[_look_at_targets_single_target_index].get_global_transform_interpolated().origin
 			else:
-				var bounds: AABB = AABB(look_at_targets[0].get_global_transform_interpolated().origin, Vector3.ZERO)
-				for node in look_at_targets:
+				var bounds: AABB = AABB(_look_at_targets[0].get_global_transform_interpolated().origin, Vector3.ZERO)
+				for node in _look_at_targets:
 					bounds = bounds.expand(node.get_global_transform_interpolated().origin)
 				target_position = bounds.get_center()
 
@@ -1622,10 +1621,10 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 	var target: Node3D = null
 
 	# Get the appropriate look_at target
-	if _has_multiple_look_at_targets and not look_at_targets.is_empty():
+	if _has_multiple_look_at_targets and not _look_at_targets.is_empty():
 		# For multiple targets, we could average velocities or use first target
 		# For now, use the first target
-		target = look_at_targets[0]
+		target = _look_at_targets[0]
 	elif look_at_target:
 		target = look_at_target
 
@@ -1798,17 +1797,14 @@ func _follow_targets_size_check() -> void:
 	_lookahead_follow_reset = true
 	_reset_follow_lookahead()
 	var targets_size: int = 0
-	# _follow_target_physics_based = false
 	_follow_targets = []
 	for i in follow_targets.size():
-		if follow_targets[i] == null: continue
-		if is_instance_valid(follow_targets[i]):
-			_follow_targets.append(follow_targets[i])
-			targets_size += 1
-			_follow_targets_single_target_index = i
-			# _check_physics_body(follow_targets[i])
-			if not follow_targets[i].tree_exiting.is_connected(_follow_target_tree_exiting):
-				follow_targets[i].tree_exiting.connect(_follow_target_tree_exiting.bind(follow_targets[i]))
+		if not is_instance_valid(follow_targets[i]): continue
+		_follow_targets.append(follow_targets[i])
+		targets_size += 1
+		_follow_targets_single_target_index = i
+		if not _follow_targets[i].tree_exiting.is_connected(_follow_target_tree_exiting):
+			_follow_targets[i].tree_exiting.connect(_follow_target_tree_exiting.bind(follow_targets[i]))
 
 	match targets_size:
 		0:
@@ -1827,8 +1823,8 @@ func _look_at_target_tree_exiting(target: Node) -> void:
 	_reset_look_at_lookahead()
 	if target == look_at_target:
 		_should_look_at = false
-	if look_at_targets.has(target):
-		erase_look_at_targets(target)
+	if _look_at_targets.has(target):
+		_look_at_targets.erase(target)
 
 
 func _up_target_tree_exiting() -> void:
@@ -1851,15 +1847,14 @@ func _look_at_targets_size_check() -> void:
 	_lookahead_look_at_reset = true
 	_reset_look_at_lookahead()
 	var targets_size: int = 0
-	_look_at_target_physics_based = false
-
+	_look_at_targets = []
 	for i in look_at_targets.size():
-		if is_instance_valid(look_at_targets[i]):
-			targets_size += 1
-			_look_at_targets_single_target_index = i
-			# _check_physics_body(look_at_targets[i])
-			if not look_at_targets[i].tree_exiting.is_connected(_look_at_target_tree_exiting):
-				look_at_targets[i].tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_targets[i]))
+		if not is_instance_valid(look_at_targets[i]): continue
+		_look_at_targets.append(look_at_targets[i])
+		targets_size += 1
+		_look_at_targets_single_target_index = i
+		if not look_at_targets[i].tree_exiting.is_connected(_look_at_target_tree_exiting):
+			look_at_targets[i].tree_exiting.connect(_look_at_target_tree_exiting.bind(look_at_targets[i]))
 
 	match targets_size:
 		0:
