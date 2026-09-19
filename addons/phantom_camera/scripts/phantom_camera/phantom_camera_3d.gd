@@ -738,6 +738,8 @@ var _has_multiple_look_at_targets: bool = false
 var _look_at_targets_single_target_index: int = 0
 var _look_at_targets: Array[Node3D]
 
+var _current_rotation: Vector3 = Vector3.ZERO
+
 var _up: Vector3 = Vector3.UP
 var _has_up_target: bool = false
 
