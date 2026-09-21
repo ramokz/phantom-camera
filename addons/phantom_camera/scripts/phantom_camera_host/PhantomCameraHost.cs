@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 #nullable enable
@@ -26,7 +27,7 @@ public class PhantomCameraHost()
 
     public PhantomCameraHost(GodotObject node) : this()
     {
-        Node = node as Node;
+        Node = node as Node ?? throw new ArgumentException("Expected a Godot Node.", nameof(node));
 
         var callablePCamBecameActive = Callable.From<Node>(pCam => PCamBecameActive?.Invoke(pCam));
         var callablePCamBecameInactive = Callable.From<Node>(pCam => PCamBecameInactive?.Invoke(pCam));
@@ -40,10 +41,6 @@ public class PhantomCameraHost()
 
     public event PCamBecameActiveEventHandler? PCamBecameActive;
     public event PCamBecameInactiveEventHandler? PCamBecameInactive;
-
-
-    private readonly Callable _callablePCamBecameActive;
-    private readonly Callable _callablePCamBecameInactive;
 
     public int HostLayers
     {
