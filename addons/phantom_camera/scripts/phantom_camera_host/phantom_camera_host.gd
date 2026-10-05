@@ -458,6 +458,7 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				var _attributes: CameraAttributes = camera_3d.attributes
 
 				_prev_cam_exposure_multiplier = _attributes.exposure_multiplier
+				_prev_cam_exposure_sensitivity = _attributes.exposure_sensitivity
 				_prev_cam_auto_exposure_scale = _attributes.auto_exposure_scale
 				_prev_cam_auto_exposure_speed = _attributes.auto_exposure_speed
 
@@ -581,6 +582,12 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				_cam_attribute_changed = true
 				var _attributes: CameraAttributes = _active_pcam_3d.attributes
 
+				if camera_3d.attributes == null:
+					camera_3d.attributes = _attributes.duplicate()
+					_cam_attribute_assigned = true
+
+				camera_3d.attributes.auto_exposure_enabled = _attributes.auto_exposure_enabled
+
 				if _prev_cam_auto_exposure_scale != _attributes.auto_exposure_scale:
 					_cam_auto_exposure_scale_changed = true
 				if _prev_cam_auto_exposure_speed != _attributes.auto_exposure_speed:
@@ -593,10 +600,10 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				if _attributes is CameraAttributesPractical:
 					_cam_attribute_type = 0
 
-					if camera_3d.attributes == null:
-						camera_3d.attributes = CameraAttributesPractical.new()
-						camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
-						_cam_attribute_assigned = true
+					if _attributes.dof_blur_far_enabled:
+						camera_3d.attributes.dof_blur_far_enabled = true
+					if _attributes.dof_blur_near_enabled:
+						camera_3d.attributes.dof_blur_near_enabled = true
 
 					if _prev_cam_exposure_min_sensitivity != _attributes.auto_exposure_min_sensitivity:
 						_cam_exposure_min_sensitivity_changed = true
@@ -621,10 +628,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 						camera_3d.attributes.dof_blur_near_enabled = true
 				elif _attributes is CameraAttributesPhysical:
 					_cam_attribute_type = 1
-
-					if camera_3d.attributes == null:
-						camera_3d.attributes = CameraAttributesPhysical.new()
-						camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
 
 					if _prev_cam_exposure_min_exposure_value != _attributes.auto_exposure_min_exposure_value:
 						_cam_exposure_min_exposure_value_changed = true
@@ -996,8 +999,21 @@ func _pcam_tween(delta: float) -> void:
 				if _cam_auto_exposure_speed_changed:
 					camera_3d.attributes.auto_exposure_speed = \
 						_tween_interpolate_value(
-						_prev_cam_auto_exposure_scale,
-						_active_pcam_3d.attributes.auto_exposure_scale,
+						_prev_cam_auto_exposure_speed,
+						_active_pcam_3d.attributes.auto_exposure_speed,
+					)
+
+			if _cam_exposure_multiplier_changed:
+				camera_3d.attributes.exposure_multiplier = \
+					_tween_interpolate_value(
+						_prev_cam_exposure_multiplier,
+						_active_pcam_3d.attributes.exposure_multiplier,
+					)
+			if _cam_exposure_sensitivity_changed:
+				camera_3d.attributes.exposure_sensitivity = \
+					_tween_interpolate_value(
+						_prev_cam_exposure_sensitivity,
+						_active_pcam_3d.attributes.exposure_sensitivity,
 					)
 
 			if _cam_attribute_type == 0: # CameraAttributePractical
@@ -1045,7 +1061,7 @@ func _pcam_tween(delta: float) -> void:
 							_active_pcam_3d.attributes.dof_blur_near_transition,
 						)
 			elif _cam_attribute_type == 1: # CameraAttributePhysical
-				if _cam_dof_blur_near_transition_changed:
+				if _cam_exposure_max_exposure_value_changed:
 					camera_3d.attributes.auto_exposure_max_exposure_value = \
 						_tween_interpolate_value(
 							_prev_cam_exposure_max_exposure_value,
@@ -1078,7 +1094,7 @@ func _pcam_tween(delta: float) -> void:
 				if _cam_frustum_near_changed:
 					camera_3d.attributes.frustum_near = \
 						_tween_interpolate_value(
-							_prev_cam_frustum_far,
+							_prev_cam_frustum_near,
 							_active_pcam_3d.attributes.frustum_near,
 						)
 				if _cam_frustum_focal_length_changed:
@@ -1167,7 +1183,7 @@ func _pcam_tween(delta: float) -> void:
 		if Engine.is_editor_hint():
 			_active_pcam_2d.queue_redraw()
 	else:
-		if _active_pcam_3d.camera_3d_resource and _active_pcam_3d.attributes != null:
+		if _active_pcam_3d.attributes != null:
 			if _cam_attribute_type == 0:
 				if not _active_pcam_3d.attributes.dof_blur_far_enabled:
 					camera_3d.attributes.dof_blur_far_enabled = false
@@ -1210,7 +1226,7 @@ func _check_viewfinder_in_play() -> void:
 		if _active_pcam_2d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
 	else:
 		if not _active_pcam_3d.show_viewfinder_in_play: return
-		if _active_pcam_3d.follow_mode != _active_pcam_2d.FollowMode.FRAMED: return
+		if _active_pcam_3d.follow_mode != _active_pcam_3d.FollowMode.FRAMED: return
 
 	if not _canvas_layer:
 		_canvas_layer = CanvasLayer.new()
