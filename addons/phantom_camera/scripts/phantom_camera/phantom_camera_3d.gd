@@ -2391,7 +2391,7 @@ func get_horizontal_rotation_offset() -> float:
 func set_spring_length(value: float) -> void:
 	follow_distance = value
 	if not is_instance_valid(_follow_third_person_shape_cast): return
-	_follow_third_person_shape_cast.spring_length = value
+	_follow_third_person_shape_cast.target_position = Vector3(0, 0, value)
 
 ## Gets the [member spring_length] value used for [enum FollowMode.THIRD_PERSON].
 ## from a [param ThirdPerson] [enum follow_mode] instance.
