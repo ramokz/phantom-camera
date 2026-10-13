@@ -15,7 +15,7 @@ extends Node2D
 const _constants := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
 const _rect_union := preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_rect_union_2d.gd")
 
-## A change in the limit's correction larger than this is treated as a jump around an inner corner.
+## Limit corrections that turn by more than this between frames count as a jump around an inner corner.
 const _LIMIT_CORNER_ANGLE: float = PI / 18 # 10 degrees
 
 #endregion
@@ -479,15 +479,14 @@ var _should_rotate_with_target: bool = false
 ## [br][br]
 ## [b]Area2D[/b][br]
 ## The limit is the union of the [Area2D]'s direct [CollisionShape2D] children
-## that use a [RectangleShape2D], so L-shapes, steps and rings are possible.
-## Rectangles that touch or overlap are merged.[br]
+## that use a [RectangleShape2D], so L-shapes, steps and rings are possible.[br]
 ## Note: Moving or resizing those shapes during runtime will not change the limit
 ## until [method update_limit_all_sides] is called.
 @export_node_path("TileMapLayer", "CollisionShape2D", "Area2D") var limit_target: NodePath = NodePath(""):
 	set = set_limit_target,
 	get = get_limit_target
 
-## Applies an offset to the [TileMapLayer] Limit or [Shape2D] Limit.
+## Applies an offset to the [TileMapLayer], [Shape2D] or [Area2D] Limit.
 ## The values goes from [param Left], [param Top], [param Right]
 ## and [param Bottom].
 @export var limit_margin: Vector4i = Vector4i.ZERO:
@@ -496,10 +495,9 @@ var _should_rotate_with_target: bool = false
 
 ## Only used when [member limit_target] is an [Area2D].[br]
 ## Near an inner corner of the limit, the camera can jump from one side of the
-## corner to the other. This eases that jump out over this many seconds.[br]
-## While easing, the camera slides along the limit's edges, so the view stays
-## inside it. Where there is no path along the edges, such as across a hole in
-## the limit, the camera still jumps.[br]
+## corner to the other. This eases that jump out over this many seconds by
+## sliding along the limit's edges. Jumps the edges don't lead straight to,
+## such as across a hole or gap in the limit, are not eased.[br]
 ## Set to [code]0[/code] to disable.
 @export_range(0, 2, 0.01, "or_greater", "suffix:s") var limit_corner_damping: float = 0.25:
 	set = set_limit_corner_damping,
@@ -580,7 +578,6 @@ var _tile_size_perspective_scaler: Vector2 = Vector2.ONE
 
 var _limit_inactive_pcam: bool = false
 
-## Global rectangles read from an [Area2D] limit target, and their baked maximal rectangles.
 var _limit_union_rects: Array[Rect2] = []
 var _limit_union_maximal: Array[Rect2] = []
 var _limit_union_warnings: PackedStringArray = []
@@ -589,7 +586,7 @@ var _limit_union_unreachable_key: Array = []
 var _limit_union_unreachable: bool = false
 
 var _limit_corner_prev_correction: Vector2 = Vector2.ZERO
-## Distance still to ease along the limit's edges after a jump around an inner corner.
+## Distance left to ease along the limit's edges.
 var _limit_corner_remaining: float = 0
 var _limit_corner_position: Vector2 = Vector2.ZERO
 
@@ -1139,8 +1136,6 @@ func _draw() -> void:
 		_draw_limit_union()
 
 
-## Draws the rectangles of an [Area2D] limit and, filled, where the camera's
-## centre can go at the current zoom.
 func _draw_limit_union() -> void:
 	draw_set_transform_matrix(get_global_transform().affine_inverse())
 	for rect in _limit_union_rects:
@@ -1153,10 +1148,8 @@ func _draw_limit_union() -> void:
 	draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
-## Eases out sudden changes in the limit's correction, which happen when the
-## nearest part of an [Area2D] limit switches sides around an inner corner.
-## The camera eases along the limit's edges rather than across the corner,
-## so the view stays inside.
+## Eases the jump when the nearest part of an [Area2D] limit switches sides
+## around an inner corner, moving along the limit's edges so the view stays inside.
 func _apply_limit_corner_damping(unconfined: Vector2, confined: Vector2, delta: float) -> Vector2:
 	if limit_corner_damping <= 0:
 		_reset_limit_corner_damping()
@@ -1203,7 +1196,6 @@ func _has_limit_union_target() -> bool:
 	return is_instance_valid(_limit_node) and _limit_node is Area2D
 
 
-## Reads the rectangles of an [Area2D] limit target, and bakes them when they changed.
 func _update_limit_union(area: Area2D) -> void:
 	var rects: Array[Rect2] = []
 	var warnings: PackedStringArray = []
@@ -1229,6 +1221,7 @@ func _update_limit_union(area: Area2D) -> void:
 	if rects != _limit_union_rects:
 		_limit_union_rects = rects
 		_limit_union_maximal = _rect_union.bake(rects)
+		_reset_limit_corner_damping()
 
 
 func _clear_limit_union() -> void:
@@ -1237,8 +1230,7 @@ func _clear_limit_union() -> void:
 	_limit_union_warnings.clear()
 
 
-## Whether part of the [Area2D] limit can never be shown at the current zoom.
-## Cached, because the editor asks every frame while [member draw_limits] is on.
+## Cached, as the editor asks every frame while [member draw_limits] is on.
 func _limit_union_has_unreachable() -> bool:
 	if not is_instance_valid(_phantom_camera_manager): return false
 
@@ -1250,7 +1242,6 @@ func _limit_union_has_unreachable() -> bool:
 	return _limit_union_unreachable
 
 
-## Refreshes the editor's configuration warnings when they changed.
 func _refresh_limit_union_warnings() -> void:
 	if not Engine.is_editor_hint(): return
 	var warnings: PackedStringArray = _get_configuration_warnings()
@@ -1403,7 +1394,6 @@ func _is_parents_physics(target: Node = self) -> void:
 func update_limit_all_sides() -> void:
 	var limit_rect: Rect2
 
-	_reset_limit_corner_damping()
 	if not _has_limit_union_target():
 		_clear_limit_union()
 
@@ -1466,8 +1456,7 @@ func update_limit_all_sides() -> void:
 		if _limit_union_maximal.is_empty():
 			_limit_sides = _limit_sides_default
 		else:
-			## The bounding box of the union, rounded outwards, so the Camera2D's
-			## built-in limit never clamps a position the union allows.
+			## Rounded outwards so the Camera2D's own limit never clamps inside the union
 			limit_rect = _limit_union_maximal[0]
 			for rect in _limit_union_maximal:
 				limit_rect = limit_rect.merge(rect)

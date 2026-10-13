@@ -21,7 +21,6 @@ static func bake(rects: Array[Rect2]) -> Array[Rect2]:
 	var columns: int = xs.size() - 1
 	var rows: int = ys.size() - 1
 
-	# Grid cell [column, row] is covered if its centre lies inside any rectangle.
 	var covered: PackedByteArray = PackedByteArray()
 	covered.resize(columns * rows)
 	for row in rows:
@@ -98,13 +97,11 @@ static func confine(point: Vector2, maximal: Array[Rect2], half_view: Vector2, m
 	)
 
 
-## Returns a path from [param from] to [param to] along which the view stays
-## inside the [param maximal] rectangles: straight where it can, and along an
-## edge where the edge blocks the way. When blocked, it moves along whichever
-## axis gets further, then aims at [param to] again.[br]
-## The path starts at the valid position nearest to [param from]. It ends
-## short of [param to] if it gets stuck, such as at a hole in the union, and
-## is empty if the view fits nowhere.
+## Returns a path from [param from] to [param to] that keeps the view inside the
+## [param maximal] rectangles, going straight where it can and along an edge
+## where blocked.[br]
+## The path starts at the valid position nearest to [param from], ends short of
+## [param to] if it gets stuck, and is empty if the view fits nowhere.
 static func slide_path(from: Vector2, to: Vector2, maximal: Array[Rect2], half_view: Vector2, margin: Vector4) -> PackedVector2Array:
 	const MAX_MOVES: int = 16
 	var path: PackedVector2Array = PackedVector2Array()
@@ -134,7 +131,6 @@ static func slide_path(from: Vector2, to: Vector2, maximal: Array[Rect2], half_v
 	return path
 
 
-## Returns the length of the polyline [param path].
 static func path_length(path: PackedVector2Array) -> float:
 	var length: float = 0
 	for i in range(1, path.size()):
@@ -142,8 +138,7 @@ static func path_length(path: PackedVector2Array) -> float:
 	return length
 
 
-## Returns the point [param distance] along the polyline [param path],
-## clamped to its ends. [param path] must not be empty.
+## [param distance] is clamped to the ends of [param path], which must not be empty.
 static func path_point(path: PackedVector2Array, distance: float) -> Vector2:
 	distance = maxf(distance, 0)
 	for i in range(1, path.size()):
@@ -191,8 +186,7 @@ static func has_unreachable(maximal: Array[Rect2], half_view: Vector2, margin: V
 	return false
 
 
-## Whether [param xform] keeps rectangles axis-aligned: rotated by a multiple
-## of 90 degrees and not skewed. Scale and flips are allowed.
+## Whether [param xform] only rotates by multiples of 90 degrees, scales or flips.
 static func is_axis_aligned(xform: Transform2D) -> bool:
 	const TOLERANCE: float = 0.001
 	var x: Vector2 = xform.x.normalized()
@@ -201,7 +195,6 @@ static func is_axis_aligned(xform: Transform2D) -> bool:
 		or (absf(x.x) < TOLERANCE and absf(y.y) < TOLERANCE)
 
 
-## The point inside [param regions] nearest to [param point].
 static func _nearest(regions: Array[Rect2], point: Vector2) -> Vector2:
 	var nearest: Vector2 = point
 	var nearest_distance: float = INF
@@ -232,10 +225,9 @@ static func _travel(regions: Array[Rect2], point: Vector2, motion: Vector2) -> f
 	return minf(reached, 1)
 
 
-## The part of the segment from [param point] to [param point] + [param motion]
-## inside [param rect], as fractions (start, end) clipped to 0..1.
-## Empty when start > end. On an axis the segment does not move along,
-## [param point] may be up to [constant EPSILON] outside.
+## The part of [param motion] from [param point] inside [param rect], as
+## fractions (start, end) clipped to 0..1, empty when start > end. On an axis
+## with no motion, [param point] may be up to [constant EPSILON] outside.
 static func _span(rect: Rect2, point: Vector2, motion: Vector2) -> Vector2:
 	var span: Vector2 = Vector2(0, 1)
 	for axis in 2:
@@ -250,7 +242,6 @@ static func _span(rect: Rect2, point: Vector2, motion: Vector2) -> Vector2:
 	return span
 
 
-## Whether [param point] lies inside any of [param rects], within [constant EPSILON].
 static func _contains(rects: Array[Rect2], point: Vector2) -> bool:
 	for rect in rects:
 		if rect.grow(EPSILON).has_point(point): return true
@@ -265,8 +256,7 @@ static func _shrink(rect: Rect2, half_view: Vector2, margin: Vector4) -> Rect2:
 	return Rect2(low, high - low)
 
 
-## Sorted rectangle edge coordinates along [param axis], with values closer
-## than [constant EPSILON] merged into the first one.
+## Sorted edge coordinates along [param axis], merging those within [constant EPSILON].
 static func _merged_edges(rects: Array[Rect2], axis: int) -> PackedFloat64Array:
 	var values: PackedFloat64Array = PackedFloat64Array()
 	for rect in rects:
@@ -281,8 +271,7 @@ static func _merged_edges(rects: Array[Rect2], axis: int) -> PackedFloat64Array:
 	return merged
 
 
-## Whether every cell of [param row] between columns [param left] and
-## [param right] is covered. Rows outside the grid are never covered.
+## Rows outside the grid are never covered.
 static func _row_covers(covered: PackedByteArray, columns: int, row: int, left: int, right: int) -> bool:
 	if row < 0 or row * columns >= covered.size(): return false
 	for column in range(left, right + 1):

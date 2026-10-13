@@ -163,6 +163,12 @@ public class PhantomCamera2D : PhantomCamera
         set => Node2D.Call(MethodName.SetLimitMargin, value);
     }
 
+    public float LimitCornerDamping
+    {
+        get => (float)Node2D.Call(MethodName.GetLimitCornerDamping);
+        set => Node2D.Call(MethodName.SetLimitCornerDamping, value);
+    }
+
     public bool AutoZoom
     {
         get => (bool)Node2D.Call(MethodName.GetAutoZoom);
@@ -264,6 +270,11 @@ public class PhantomCamera2D : PhantomCamera
         Node2D.Call(MethodName.SetLimitTarget, shape2D.GetPath());
     }
 
+    public void SetLimitTarget(Area2D area2D)
+    {
+        Node2D.Call(MethodName.SetLimitTarget, area2D.GetPath());
+    }
+
     public LimitTargetQueryResult? GetLimitTarget()
     {
         var result = (NodePath)Node2D.Call(MethodName.GetLimitTarget);
@@ -339,6 +350,9 @@ public class PhantomCamera2D : PhantomCamera
         public static readonly StringName GetLimitMargin = new("get_limit_margin");
         public static readonly StringName SetLimitMargin = new("set_limit_margin");
 
+        public static readonly StringName GetLimitCornerDamping = new("get_limit_corner_damping");
+        public static readonly StringName SetLimitCornerDamping = new("set_limit_corner_damping");
+
         public static readonly StringName GetAutoZoom = new("get_auto_zoom");
         public static readonly StringName SetAutoZoom = new("set_auto_zoom");
 
@@ -367,6 +381,8 @@ public class LimitTargetQueryResult(GodotObject godotObject)
 
     public bool IsCollisionShape2D => godotObject.IsClass("CollisionShape2D");
 
+    public bool IsArea2D => godotObject.IsClass("Area2D");
+
 
     public TileMapLayer? AsTileMapLayer()
     {
@@ -376,5 +392,10 @@ public class LimitTargetQueryResult(GodotObject godotObject)
     public CollisionShape2D? AsCollisionShape2D()
     {
         return IsCollisionShape2D ? (CollisionShape2D)godotObject : null;
+    }
+
+    public Area2D? AsArea2D()
+    {
+        return IsArea2D ? (Area2D)godotObject : null;
     }
 }
