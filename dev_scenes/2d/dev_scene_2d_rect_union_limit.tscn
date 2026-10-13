@@ -1,0 +1,95 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://dev_scenes/2d/scripts/dev_scene_2d_rect_union_limit.gd" id="1_script"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="2_host"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="3_pcam"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_room"]
+size = Vector2(2400, 1200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_corridor"]
+size = Vector2(1600, 800)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_shaft"]
+size = Vector2(1400, 3000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ring_band"]
+size = Vector2(3800, 1400)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ring_side"]
+size = Vector2(1400, 1000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_narrow_pipe"]
+size = Vector2(1500, 300)
+
+[node name="Root" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(1200, 600)
+editor_draw_limits = true
+
+[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("2_host")
+
+[node name="LimitArea" type="Area2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Room" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(1200, 600)
+shape = SubResource("RectangleShape2D_room")
+
+[node name="Corridor" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(3200, 600)
+shape = SubResource("RectangleShape2D_corridor")
+
+[node name="Shaft" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(3700, -500)
+shape = SubResource("RectangleShape2D_shaft")
+
+[node name="RingTop" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(6300, -2100)
+shape = SubResource("RectangleShape2D_ring_band")
+
+[node name="RingBottom" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(6300, 300)
+shape = SubResource("RectangleShape2D_ring_band")
+
+[node name="RingLeft" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(5100, -900)
+shape = SubResource("RectangleShape2D_ring_side")
+
+[node name="RingRight" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(7500, -900)
+shape = SubResource("RectangleShape2D_ring_side")
+
+[node name="NarrowPipe" type="CollisionShape2D" parent="LimitArea"]
+position = Vector2(-750, 600)
+shape = SubResource("RectangleShape2D_narrow_pipe")
+
+[node name="Target" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(1200, 600)
+
+[node name="PhantomCamera2D" type="Node2D" parent="." node_paths=PackedStringArray("follow_target")]
+unique_name_in_owner = true
+top_level = true
+position = Vector2(1200, 600)
+script = ExtResource("3_pcam")
+priority = 10
+follow_mode = 1
+follow_target = NodePath("../Target")
+tween_on_load = false
+draw_limits = true
+limit_target = NodePath("../LimitArea")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Help" type="Label" parent="UI"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 416.0
+offset_bottom = 136.0
