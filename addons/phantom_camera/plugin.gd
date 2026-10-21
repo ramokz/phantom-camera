@@ -50,8 +50,6 @@ func _enable_plugin() -> void:
 	print_rich("Phantom Camera documentation can be found at: [url=https://phantom-camera.dev]https://phantom-camera.dev[/url]")
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
 
-	EditorInterface.restart_editor()
-
 func _disable_plugin() -> void:
 	if Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
 		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
@@ -100,7 +98,7 @@ func _enter_tree() -> void:
 	})
 	ProjectSettings.set_initial_value(_settings_show_jitter_tips, true)
 	ProjectSettings.set_as_basic(_settings_show_jitter_tips, true)
-	
+
 	## Setting for enabling / disabling mixed Follow + LookAt mode tips in the output
 	if not ProjectSettings.has_setting(_settings_show_mixed_mode_tips):
 		ProjectSettings.set_setting(_settings_show_mixed_mode_tips, true)
@@ -139,13 +137,13 @@ func _enter_tree() -> void:
 		editor_dock.set(&"name", "Phantom Camera")
 		editor_dock.set(&"dock_icon", preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg"))
 		editor_dock.set(&"default_slot", 8)
-		## TODO - Replace above once min verison is 4.6
+		## TODO - Replace above once min version is 4.6
 #		editor_dock = EditorDock.new()
 #		editor_dock.name = "Phantom Camera"
 #		editor_dock.dock_icon = preload("res://addons/phantom_camera/icons/phantom_camera_gizmo.svg")
 #		editor_dock.default_slot = EditorDock.DOCK_SLOT_BOTTOM
 		editor_dock.add_child(editor_panel_instance)
-#		add_dock(editor_dock) ## TODO - Also use this once min version is 4.6
+#		add_dock(editor_dock) ## TODO - Also use this instead of below once min version is 4.6
 		call(&"add_dock", editor_dock)
 		editor_dock.visibility_changed.connect(_on_editor_dock_visibility_changed)
 	else:
