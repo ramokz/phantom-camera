@@ -46,8 +46,6 @@ func _enable_plugin() -> void:
 	print_rich("Phantom Camera documentation can be found at: [url=https://phantom-camera.dev]https://phantom-camera.dev[/url]")
 	add_autoload_singleton(PHANTOM_CAMERA_MANAGER, "res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd")
 
-	EditorInterface.restart_editor()
-
 func _disable_plugin() -> void:
 	if Engine.has_singleton(PHANTOM_CAMERA_MANAGER):
 		remove_autoload_singleton(PHANTOM_CAMERA_MANAGER)
