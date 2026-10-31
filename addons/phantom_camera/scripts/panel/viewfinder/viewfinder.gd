@@ -98,6 +98,14 @@ func _ready() -> void:
 			_is_2d = false
 
 		_set_viewfinder(_root_node, false)
+	elif not Engine.is_editor_hint():
+		# The scene root can also be e.g. a Node or Control with the 2D / 3D level as a child,
+		# so check which camera type the PhantomCameraHost is attached to instead.
+		var pcam_hosts: Array[PhantomCameraHost] = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME).get_phantom_camera_hosts()
+		if not pcam_hosts.is_empty():
+			%SubViewportContainer.visible = false
+			_is_2d = is_instance_valid(pcam_hosts[0].camera_2d)
+			_set_viewfinder(_root_node, false)
 
 	if not Engine.is_editor_hint():
 		_empty_state_control.visible = false
