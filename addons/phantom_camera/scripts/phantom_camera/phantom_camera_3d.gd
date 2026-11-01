@@ -485,9 +485,11 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## If the targeted node leaves the horizontal bounds, the
 ## [param PhantomCamera3D] will follow the target horizontally to keep
 ## it within bounds.
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_range(0.0, 1.0) var dead_zone_width: float = 0.0:
 	set(value):
 		dead_zone_width = value
+		_dead_zone_size.x = value
 		dead_zone_changed.emit()
 	get:
 		return dead_zone_width
@@ -497,12 +499,32 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## If the targeted node leaves the vertical bounds, the
 ## [param PhantomCamera3D] will follow the target vertically to keep
 ## it within bounds.
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
 	set(value):
 		dead_zone_height = value
+		_dead_zone_size.y = value
 		dead_zone_changed.emit()
 	get:
 		return dead_zone_height
+
+## Defines the depth dead zone area, or the local z-axis distance.[br]
+## By default the camera will keep a persistent distance between itself and its target in the forward axis.
+## Changing this value will add a dead zone where the camera will remain still if the target gets further or closer to it.
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
+@export_range(0.0, 10, 0.0001, "or_greater") var dead_zone_depth: float = 0:
+	set(value):
+		dead_zone_depth = value
+		dead_zone_changed.emit()
+	get:
+		return dead_zone_depth
+
+## Defines if the [param PhantomCamera] should center align the follow target within its viewport when it becomes active.
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
+@export var center_on_active: bool = true:
+	set = set_center_on_active,
+	get = get_center_on_active
+
 
 ## Enables the dead zones to be visible when running the game from the editor.
 ## Dead zones will never be visible in build exports.
@@ -723,6 +745,10 @@ var _camera_target: Node3D = self # Calculates the position of the camera in the
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
 
+var _prev_position: Vector3
+var _prev_rotation: Quaternion
+var _prev_follow_distance: float
+
 var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
 var _character_body_3d: CharacterBody3D = null
 var _rigid_body_3d: RigidBody3D = null
@@ -767,6 +793,12 @@ var _lookahead_look_at_has_prev_sample: bool = false
 
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
+var _dead_zone_size: Vector2 = Vector2.ZERO
+var _viewport_aspect_ratio: float = 1.77:
+	get:
+		var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+		return viewport_size.x / viewport_size.y
+var _is_previous_tick_valid: bool
 
 var _follow_third_person_shape_cast: ShapeCast3D
 var _has_third_person_raycaster: bool = false
@@ -929,6 +961,7 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"dead_zone_width", \
 			"dead_zone_height", \
+			"dead_zone_depth", \
 			"show_viewfinder_in_play":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
@@ -1240,10 +1273,10 @@ func _set_follow_position(delta: float) -> void:
 			_set_follow_gizmo_line_position(target_position)
 
 		FollowMode.FRAMED:
-			var target_position: Vector3 = _get_target_position_offset()
-
+			var target_position: Vector3
 			if Engine.is_editor_hint() or not _is_active:
-				_follow_target_output_position = target_position + transform.basis.z * follow_distance
+				target_position = _get_target_position_offset_editor()
+				_follow_target_output_position = target_position + (global_basis.z * follow_distance)
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
 				var viewport_width: float = get_viewport().size.x
 				var viewport_height: float = get_viewport().size.y
@@ -1263,80 +1296,97 @@ func _set_follow_position(delta: float) -> void:
 					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 					viewport_position = unprojected_position
-				_set_follow_gizmo_line_position(follow_target.global_position)
+				_set_follow_gizmo_line_position(target_position)
 			else:
+				target_position = follow_target.get_global_transform_interpolated().origin + (follow_target.quaternion * follow_offset)
 				if follow_lookahead:
 					target_position = _get_follow_lookahead_delta(target_position, delta)
 
 				if not _is_active:
-					_follow_target_output_position = target_position + transform.basis.z * follow_distance
+					_follow_target_output_position = target_position + global_basis.z * follow_distance
 				else:
-					var viewport_camera: Camera3D = get_viewport().get_camera_3d()
-					viewport_position = viewport_camera.unproject_position(target_position)
-					var viewport_size: Vector2 = get_viewport().get_visible_rect().size
-					viewport_position = viewport_position / viewport_size
-					_current_rotation = global_rotation
+					var prev_viewport_position: Vector2 = viewport_position
+					viewport_position = get_viewport().get_camera_3d().unproject_position(target_position) \
+					/ get_viewport().get_visible_rect().size
 
-					if _current_rotation != global_rotation:
-						_follow_target_output_position = target_position + transform.basis.z * follow_distance
+					var final_position: Vector3 = target_position
 
-					if _get_framed_side_offset() != Vector2.ZERO:
-						var framed_offset: Vector2 = _get_framed_side_offset()
-						var framed_target_position: Vector3 = target_position + _follow_framed_offset
-						var glo_pos: Vector3
+					if not _is_previous_tick_valid:
+						_prev_position = global_position
+						_prev_rotation = quaternion
+						_prev_follow_distance = follow_distance
 
-						if dead_zone_width == 0 || dead_zone_height == 0:
-							if dead_zone_width == 0 && dead_zone_height != 0:
-								glo_pos = target_position + transform.basis.z * follow_distance
-								glo_pos.z = framed_target_position.z
-								_follow_target_output_position = glo_pos
-							elif dead_zone_width != 0 && dead_zone_height == 0:
-								glo_pos = target_position + transform.basis.z * follow_distance
-								glo_pos.x = framed_target_position.x
-								_follow_target_output_position = glo_pos
-							else:
-								_follow_target_output_position = target_position + transform.basis.z * follow_distance
-						else:
-							if _current_rotation != global_rotation:
-								var opposite: float = sin(-global_rotation.x) * follow_distance + target_position.y
-								glo_pos.y = target_position.y + opposite
-								glo_pos.z = sqrt(pow(follow_distance, 2) - pow(opposite, 2)) + target_position.z
-								glo_pos.x = global_position.x
+						# if center_on_active:
+						# 	_prev_position = target_position + (quaternion.inverse() * Vector3.BACK) * follow_distance
 
-								_follow_target_output_position = glo_pos
-								_current_rotation = global_rotation
-							else:
-								dead_zone_reached.emit()
-
-								# FIX: Only move camera in the axis where dead zone is breached
-								var current_global_position: Vector3 = global_position
-								var current_offset: Vector3 = global_position - target_position
-
-								# Update stored offset for non-breached axes
-								if framed_offset.x == 0:
-									_follow_framed_offset.x = current_offset.x
-								if framed_offset.y == 0:
-									_follow_framed_offset.z = current_offset.z
-
-								# Lock camera position on non-breached axes
-								if framed_offset.x == 0:
-									framed_target_position.x = current_global_position.x
-								if framed_offset.y == 0:
-									framed_target_position.z = current_global_position.z
-
-								_follow_target_output_position = framed_target_position
+						_is_previous_tick_valid = true
 					else:
-						_follow_framed_offset = global_position - target_position
-						_follow_target_position = global_position
-						_current_rotation = global_rotation
-						return
+						var quaternion_product: Quaternion = quaternion * _prev_rotation.inverse()
+						var direction: Vector3 = quaternion_product * (_prev_position - final_position)
+						_prev_position = final_position + direction
+
+						var follow_distance_diff: float = follow_distance - _prev_follow_distance
+						if not is_zero_approx(absf(follow_distance_diff)):
+							_prev_position += direction.normalized() * follow_distance_diff
+
+					_prev_rotation = quaternion
+
+					## Setting up local position and rotation
+					var world_pos: Vector3 = _prev_position
+					var world_to_local_rotation: Quaternion = quaternion.inverse()
+					var camera_position: Vector3 = world_to_local_rotation * world_pos
+					var rel_target_position: Vector3 = (world_to_local_rotation * target_position - camera_position)
+					rel_target_position.z *= -1 ## Inverts the Z axis as forward is -z
+
+					## Forward (Z) axis positioning of the camera
+					var camera_offset: Vector3
+					var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth/2)
+					var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth/2)
+
+					## Checks the dead_zone_depth
+					var target_z: float = rel_target_position.z
+					if target_z < dead_zone_depth_min:
+						camera_offset.z = dead_zone_depth_min - target_z
+					elif target_z > dead_zone_depth_max:
+						camera_offset.z = dead_zone_depth_max - target_z
+
+					## Defines the screen size based on whether if the perspective or orthogonal projection setting.
+					var screen_size: float = camera_3d_resource.size if \
+						camera_3d_resource.projection == camera_3d_resource.ProjectionType.ORTHOGONAL else \
+						tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
+
+					## Defines the dead zone rect
+					## TODO - Vector2.ZERO is for potential future
+					var dead_zone_rect: Rect2 = Rect2(Vector2.ZERO - _dead_zone_size * 0.5 + Vector2(0.5, 0.5), _dead_zone_size)
+
+					## Screenspace Rect2 based on the dead zones
+					var screen_to_orthography: Rect2
+					screen_to_orthography.position.x = 2 * screen_size * _viewport_aspect_ratio * (dead_zone_rect.position.x - 0.5)
+					screen_to_orthography.end.x = 2 * screen_size * _viewport_aspect_ratio * (dead_zone_rect.end.x - 0.5)
+					screen_to_orthography.position.y = 2 * screen_size * ((1 - dead_zone_rect.position.y) - 0.5)
+					screen_to_orthography.end.y = 2 * screen_size * ((1 - dead_zone_rect.end.y) - 0.5)
+
+					## Checks if target exceeds Dead Zone Width
+					if rel_target_position.x < screen_to_orthography.position.x:
+						camera_offset.x += rel_target_position.x - screen_to_orthography.position.x
+					elif rel_target_position.x > screen_to_orthography.end.x:
+						camera_offset.x += rel_target_position.x - screen_to_orthography.end.x
+
+					## Checks if target exceeds Dead Zone Height
+					if rel_target_position.y > screen_to_orthography.position.y:
+						camera_offset.y += rel_target_position.y - screen_to_orthography.position.y
+					elif rel_target_position.y < screen_to_orthography.end.y:
+						camera_offset.y += rel_target_position.y - screen_to_orthography.end.y
+
+					_follow_target_output_position =  world_pos + quaternion * camera_offset
+					_prev_position = _follow_target_output_position
 
 		FollowMode.THIRD_PERSON:
 			if not Engine.is_editor_hint():
 				if not _has_third_person_raycaster: return
 				_follow_target_output_position = _get_target_position_offset() # + lookahead_delta
 			else:
-				var raw_target_position: Vector3 = _get_target_position_offset()
+				var raw_target_position: Vector3 = _get_target_position_offset_editor()
 				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(raw_target_position, delta)
 				var target_position: Vector3 = _get_target_position_offset_distance_direction()
 				_follow_target_output_position = target_position + lookahead_delta
@@ -1374,6 +1424,9 @@ func _set_look_at_position(delta: float) -> void:
 func _get_target_position_offset() -> Vector3:
 	return follow_target.get_global_transform_interpolated().origin + follow_offset
 
+# Cheaper variant of _get_target_position_offset() for editor use only
+func _get_target_position_offset_editor() -> Vector3:
+	return follow_target.global_position + follow_offset
 
 func _get_target_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
@@ -1419,7 +1472,7 @@ func _interpolate_position(delta: float) -> void:
 			_set_third_person_camera()
 	else:
 		_camera_target.global_position = _follow_target_output_position
-		if not _has_third_person_raycaster:
+		if not _is_third_person_follow:
 			_transform_output.origin = global_position
 		else:
 			_set_third_person_camera()
@@ -1446,26 +1499,28 @@ func _set_third_person_camera() -> void:
 			var casted_motion: PackedFloat32Array = get_world_3d().direct_space_state.cast_motion(shape_params)
 
 			camera_transform = Transform3D(
-					_follow_third_person_shape_cast.global_basis,
-					_follow_third_person_shape_cast.global_transform.origin + \
-					_follow_third_person_shape_cast.global_basis.z \
-					* (spring_length * casted_motion[1])
+				_follow_third_person_shape_cast.global_basis,
+				_follow_third_person_shape_cast.global_transform.origin + \
+				_follow_third_person_shape_cast.global_basis.z \
+				* (spring_length * casted_motion[1])
 			)
 			global_transform = camera_transform
 			_transform_output = camera_transform
 
-		else: ## If not, copy the PCam3D's global transform
+		## If not, copy the PCam's global transform
+		else:
 			camera_transform = Transform3D(
-					_follow_third_person_shape_cast.global_transform.basis,
+					_follow_third_person_shape_cast.global_basis,
 					_follow_third_person_shape_cast.global_position + motion
 			)
 			global_transform = camera_transform
 			_transform_output = camera_transform
-	elif _is_third_person_follow and Engine.is_editor_hint():
+	elif Engine.is_editor_hint():
 		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset(), follow_target.global_basis.y)
 		var target_basis: Basis = Basis(target_quat)
 		_transform_output.basis = target_basis
 		global_basis = target_basis
+		_transform_output.origin = global_position
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
@@ -1731,28 +1786,6 @@ func _get_raw_unprojected_position() -> Vector2:
 
 func _on_dead_zone_changed() -> void:
 	global_position = _get_target_position_offset_distance()
-
-
-func _get_framed_side_offset() -> Vector2:
-	var frame_out_bounds: Vector2
-
-	if viewport_position.x < 0.5 - dead_zone_width / 2:
-		# Is outside left edge
-		frame_out_bounds.x = -1
-
-	if viewport_position.y < 0.5 - dead_zone_height / 2:
-		# Is outside top edge
-		frame_out_bounds.y = 1
-
-	if viewport_position.x > 0.5 + dead_zone_width / 2:
-		# Is outside right edge
-		frame_out_bounds.x = 1
-
-	if viewport_position.y > 0.5001 + dead_zone_height / 2: # 0.501 to resolve an issue where the bottom vertical Dead Zone never becoming 0 when the Dead Zone Vertical parameter is set to 0
-		# Is outside bottom edge
-		frame_out_bounds.y = -1
-
-	return frame_out_bounds
 
 
 func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
@@ -2664,6 +2697,14 @@ func set_follow_lookahead_max_value(value: Vector3) -> void:
 func get_follow_lookahead_max_value() -> Vector3:
 	return follow_lookahead_max_value
 
+
+## Sets the [member center_on_active] value.
+func set_center_on_active(value: bool) -> void:
+	center_on_active = value
+
+## Sets the [member center_on_active] value.
+func get_center_on_active() -> bool:
+	return center_on_active
 
 ## Enables or disables [member look_at_lookahead].
 func set_look_at_lookahead(value: bool) -> void:

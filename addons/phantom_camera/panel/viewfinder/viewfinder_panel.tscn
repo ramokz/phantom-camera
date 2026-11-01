@@ -84,7 +84,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.5529412, 0.64705884, 0.9529412, 1)
+border_color = Color(0.9882353, 0.49803922, 0.49803922, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -171,8 +171,8 @@ corner_radius_top_right = 6
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w002y"]
 
 [node name="ViewfinderPanel" type="Control" unique_id=522693372]
-clip_contents = true
 custom_minimum_size = Vector2(0, 300)
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -309,7 +309,7 @@ size_flags_vertical = 3
 mouse_filter = 2
 theme_override_styles/panel = ExtResource("2_uabt4")
 
-[node name="AspectRatioContainer" type="AspectRatioContainer" parent="Viewfinder" unique_id=336933516]
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="Viewfinder" unique_id=1565265981]
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 1
