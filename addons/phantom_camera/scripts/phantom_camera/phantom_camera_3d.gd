@@ -501,23 +501,18 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## it within bounds.
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
-	set(value):
-		dead_zone_height = value
-		_dead_zone_size.y = value
-		dead_zone_changed.emit()
-	get:
-		return dead_zone_height
+	set = set_dead_zone_height,
+	get = get_dead_zone_height
 
-## Defines the depth dead zone area, or the local z-axis distance.[br]
-## By default the camera will keep a persistent distance between itself and its target in the forward axis.
-## Changing this value will add a dead zone where the camera will remain still if the target gets further or closer to it.
+## Defines the depth dead zone area, or the local z-axis distance.
+## By default the camera will keep a persistent distance between itself and its target in the forward axis.[br]
+## Changing this value will add a dead zone where the camera will remain still if the target gets further or closer to it.[br]
+## The [b]X-value[/b] represents the minimum z dead space, i.e. between the camera and the [member follow_target].[br]
+## The [b]Y-value[/b] represents the maximum z dead space, i.e. the space behind and the [member follow_target] itself.[br][br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
-@export_range(0.0, 10, 0.0001, "or_greater") var dead_zone_depth: float = 0:
-	set(value):
-		dead_zone_depth = value
-		dead_zone_changed.emit()
-	get:
-		return dead_zone_depth
+@export_custom(PROPERTY_HINT_LINK, "suffix:m") var dead_zone_depth: Vector2 = Vector2.ZERO:
+	set = set_dead_zone_depth,
+	get = get_dead_zone_depth
 
 ## If true, will center the target at the center of the viewport when this PCam becomes active and begins tweening towards it.[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.[br]
@@ -1328,6 +1323,7 @@ func _set_follow_position(delta: float) -> void:
 						_prev_position += direction.normalized() * follow_distance_diff
 
 				_prev_rotation = quaternion
+				_prev_follow_distance = follow_distance
 
 				## Setting up local position and rotation
 				var world_pos: Vector3 = _prev_position
@@ -1338,8 +1334,8 @@ func _set_follow_position(delta: float) -> void:
 
 				## Forward (Z) axis positioning of the camera
 				var camera_offset: Vector3
-				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth/2)
-				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth/2)
+				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth.x/2)
+				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth.y/2)
 
 				## Checks the dead_zone_depth
 				var target_z: float = rel_target_position.z
@@ -2697,6 +2693,21 @@ func set_follow_lookahead_max_value(value: Vector3) -> void:
 ## Gets the [member follow_max_lookahead_offset] value.
 func get_follow_lookahead_max_value() -> Vector3:
 	return follow_lookahead_max_value
+
+func set_dead_zone_height(value: float) -> void:
+	dead_zone_height = value
+	_dead_zone_size.y = value
+	dead_zone_changed.emit()
+
+func get_dead_zone_height() -> float:
+	return dead_zone_height
+
+func set_dead_zone_depth(value: Vector2) -> void:
+	dead_zone_depth = Vector2(maxf(0, value.x), maxf(0, value.y))
+	dead_zone_changed.emit()
+
+func get_dead_zone_depth() -> Vector2:
+	return dead_zone_depth
 
 
 ## Sets the [member center_on_active] value.
