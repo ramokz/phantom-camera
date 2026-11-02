@@ -519,8 +519,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get:
 		return dead_zone_depth
 
-## Defines if the [param PhantomCamera] should center align the follow target within its viewport when it becomes active.
-## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
+## If true, will center the target at the center of the viewport when this PCam becomes active and begins tweening towards it.[br]
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.[br]
 @export var center_on_active: bool = true:
 	set = set_center_on_active,
 	get = get_center_on_active
@@ -748,6 +748,7 @@ var _follow_target_physics_based: bool = false
 var _prev_position: Vector3
 var _prev_rotation: Quaternion
 var _prev_follow_distance: float
+var _center_on_active: bool
 
 var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
 var _character_body_3d: CharacterBody3D = null
@@ -1274,7 +1275,7 @@ func _set_follow_position(delta: float) -> void:
 
 		FollowMode.FRAMED:
 			var target_position: Vector3
-			if Engine.is_editor_hint() or not _is_active:
+			if Engine.is_editor_hint():
 				target_position = _get_target_position_offset_editor()
 				_follow_target_output_position = target_position + (global_basis.z * follow_distance)
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
@@ -1302,84 +1303,81 @@ func _set_follow_position(delta: float) -> void:
 				if follow_lookahead:
 					target_position = _get_follow_lookahead_delta(target_position, delta)
 
-				if not _is_active:
-					_follow_target_output_position = target_position + global_basis.z * follow_distance
-				else:
-					var prev_viewport_position: Vector2 = viewport_position
-					viewport_position = get_viewport().get_camera_3d().unproject_position(target_position) \
-					/ get_viewport().get_visible_rect().size
+				var prev_viewport_position: Vector2 = viewport_position
+				viewport_position = get_viewport().get_camera_3d().unproject_position(target_position) \
+				/ get_viewport().get_visible_rect().size
 
-					var final_position: Vector3 = target_position
+				var final_position: Vector3 = target_position
 
-					if not _is_previous_tick_valid:
-						_prev_position = global_position
-						_prev_rotation = quaternion
-						_prev_follow_distance = follow_distance
-
-						# if center_on_active:
-						# 	_prev_position = target_position + (quaternion.inverse() * Vector3.BACK) * follow_distance
-
-						_is_previous_tick_valid = true
-					else:
-						var quaternion_product: Quaternion = quaternion * _prev_rotation.inverse()
-						var direction: Vector3 = quaternion_product * (_prev_position - final_position)
-						_prev_position = final_position + direction
-
-						var follow_distance_diff: float = follow_distance - _prev_follow_distance
-						if not is_zero_approx(absf(follow_distance_diff)):
-							_prev_position += direction.normalized() * follow_distance_diff
-
+				if not _is_previous_tick_valid:
+					_prev_position = global_position
 					_prev_rotation = quaternion
+					_prev_follow_distance = follow_distance
 
-					## Setting up local position and rotation
-					var world_pos: Vector3 = _prev_position
-					var world_to_local_rotation: Quaternion = quaternion.inverse()
-					var camera_position: Vector3 = world_to_local_rotation * world_pos
-					var rel_target_position: Vector3 = (world_to_local_rotation * target_position - camera_position)
-					rel_target_position.z *= -1 ## Inverts the Z axis as forward is -z
+					if _center_on_active:
+						_prev_position = target_position + (quaternion * Vector3.BACK) * follow_distance
 
-					## Forward (Z) axis positioning of the camera
-					var camera_offset: Vector3
-					var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth/2)
-					var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth/2)
+					_is_previous_tick_valid = true
+				else:
+					var quaternion_product: Quaternion = quaternion * _prev_rotation.inverse()
+					var direction: Vector3 = quaternion_product * (_prev_position - final_position)
+					_prev_position = final_position + direction
 
-					## Checks the dead_zone_depth
-					var target_z: float = rel_target_position.z
-					if target_z < dead_zone_depth_min:
-						camera_offset.z = dead_zone_depth_min - target_z
-					elif target_z > dead_zone_depth_max:
-						camera_offset.z = dead_zone_depth_max - target_z
+					var follow_distance_diff: float = follow_distance - _prev_follow_distance
+					if not is_zero_approx(absf(follow_distance_diff)):
+						_prev_position += direction.normalized() * follow_distance_diff
 
-					## Defines the screen size based on whether if the perspective or orthogonal projection setting.
-					var screen_size: float = camera_3d_resource.size if \
-						camera_3d_resource.projection == camera_3d_resource.ProjectionType.ORTHOGONAL else \
-						tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
+				_prev_rotation = quaternion
 
-					## Defines the dead zone rect
-					## TODO - Vector2.ZERO is for potential future
-					var dead_zone_rect: Rect2 = Rect2(Vector2.ZERO - _dead_zone_size * 0.5 + Vector2(0.5, 0.5), _dead_zone_size)
+				## Setting up local position and rotation
+				var world_pos: Vector3 = _prev_position
+				var world_to_local_rotation: Quaternion = quaternion.inverse()
+				var camera_position: Vector3 = world_to_local_rotation * world_pos
+				var rel_target_position: Vector3 = (world_to_local_rotation * target_position - camera_position)
+				rel_target_position.z *= -1 ## Inverts the Z axis as forward is -z
 
-					## Screenspace Rect2 based on the dead zones
-					var screen_to_orthography: Rect2
-					screen_to_orthography.position.x = 2 * screen_size * _viewport_aspect_ratio * (dead_zone_rect.position.x - 0.5)
-					screen_to_orthography.end.x = 2 * screen_size * _viewport_aspect_ratio * (dead_zone_rect.end.x - 0.5)
-					screen_to_orthography.position.y = 2 * screen_size * ((1 - dead_zone_rect.position.y) - 0.5)
-					screen_to_orthography.end.y = 2 * screen_size * ((1 - dead_zone_rect.end.y) - 0.5)
+				## Forward (Z) axis positioning of the camera
+				var camera_offset: Vector3
+				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth/2)
+				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth/2)
 
-					## Checks if target exceeds Dead Zone Width
-					if rel_target_position.x < screen_to_orthography.position.x:
-						camera_offset.x += rel_target_position.x - screen_to_orthography.position.x
-					elif rel_target_position.x > screen_to_orthography.end.x:
-						camera_offset.x += rel_target_position.x - screen_to_orthography.end.x
+				## Checks the dead_zone_depth
+				var target_z: float = rel_target_position.z
+				if target_z < dead_zone_depth_min:
+					camera_offset.z = dead_zone_depth_min - target_z
+				elif target_z > dead_zone_depth_max:
+					camera_offset.z = dead_zone_depth_max - target_z
 
-					## Checks if target exceeds Dead Zone Height
-					if rel_target_position.y > screen_to_orthography.position.y:
-						camera_offset.y += rel_target_position.y - screen_to_orthography.position.y
-					elif rel_target_position.y < screen_to_orthography.end.y:
-						camera_offset.y += rel_target_position.y - screen_to_orthography.end.y
+				## Defines the screen size based on whether if the perspective or orthogonal projection setting.
+				var screen_size: float = camera_3d_resource.size if \
+					camera_3d_resource.projection == camera_3d_resource.ProjectionType.ORTHOGONAL else \
+					tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
 
-					_follow_target_output_position =  world_pos + quaternion * camera_offset
-					_prev_position = _follow_target_output_position
+				## Defines the dead zone rect
+				## TODO - Vector2.ZERO is for potential future
+				var dead_zone_rect: Rect2 = Rect2(Vector2.ZERO - _dead_zone_size * 0.5 + Vector2(0.5, 0.5), _dead_zone_size)
+
+				## Screenspace Rect2 based on the dead zones
+				var screen_to_orthography: Rect2
+				screen_to_orthography.position.x = 2 * screen_size * _viewport_aspect_ratio * (dead_zone_rect.position.x - 0.5)
+				screen_to_orthography.end.x = 2 * screen_size * _viewport_aspect_ratio * (dead_zone_rect.end.x - 0.5)
+				screen_to_orthography.position.y = 2 * screen_size * ((1 - dead_zone_rect.position.y) - 0.5)
+				screen_to_orthography.end.y = 2 * screen_size * ((1 - dead_zone_rect.end.y) - 0.5)
+
+				## Checks if target exceeds Dead Zone Width
+				if rel_target_position.x < screen_to_orthography.position.x:
+					camera_offset.x += rel_target_position.x - screen_to_orthography.position.x
+				elif rel_target_position.x > screen_to_orthography.end.x:
+					camera_offset.x += rel_target_position.x - screen_to_orthography.end.x
+
+				## Checks if target exceeds Dead Zone Height
+				if rel_target_position.y > screen_to_orthography.position.y:
+					camera_offset.y += rel_target_position.y - screen_to_orthography.position.y
+				elif rel_target_position.y < screen_to_orthography.end.y:
+					camera_offset.y += rel_target_position.y - screen_to_orthography.end.y
+
+				_follow_target_output_position =  world_pos + quaternion * camera_offset
+				_prev_position = _follow_target_output_position
 
 		FollowMode.THIRD_PERSON:
 			if not Engine.is_editor_hint():
@@ -2122,6 +2120,9 @@ func get_tween_ease() -> int:
 func set_is_active(node: Node, value: bool) -> void:
 	if node is PhantomCameraHost:
 		_is_active = value
+		if follow_mode == FollowMode.FRAMED:
+			_is_previous_tick_valid = false
+			_center_on_active = center_on_active
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
 ## Gets current active state of the [param PhantomCamera3D].
@@ -2701,6 +2702,7 @@ func get_follow_lookahead_max_value() -> Vector3:
 ## Sets the [member center_on_active] value.
 func set_center_on_active(value: bool) -> void:
 	center_on_active = value
+	_center_on_active = value
 
 ## Sets the [member center_on_active] value.
 func get_center_on_active() -> bool:
