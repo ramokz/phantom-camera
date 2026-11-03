@@ -1171,12 +1171,14 @@ func process_logic(delta: float) -> void:
 			# TODO - Trigger positional updates less frequently as more PCams gets added
 
 	if _should_follow:
-		_follow(delta)
+		_set_follow_position(delta)
+		# _interpolate_position(delta)
 	else:
 		_transform_output.origin = global_position
 
 	if _should_look_at:
-		_look_at(delta)
+		_set_look_at_position(delta)
+		_interpolate_rotation(delta)
 	elif not _is_third_person_follow:
 		_transform_output.basis = global_basis
 
@@ -1203,26 +1205,23 @@ func process_logic(delta: float) -> void:
 				_transform_output.origin.z = _follow_axis_lock_value.z
 
 
-func _follow(delta: float) -> void:
-	_set_follow_position(delta)
-	_interpolate_position(delta)
-
-func _look_at(delta: float) -> void:
-	_set_look_at_position(delta)
-	_interpolate_rotation(delta)
-
-
 func _set_follow_position(delta: float) -> void:
 	match follow_mode:
 		FollowMode.GLUED:
 			var target_position: Vector3 = follow_target.get_global_transform_interpolated().origin
 			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-			_follow_target_output_position = target_position + lookahead_delta
+			_set_camera_positions(
+					_interpolate_position(target_position + lookahead_delta, delta)
+			)
+			_set_follow_gizmo_line_position(follow_target.global_position)
 
 		FollowMode.SIMPLE:
 			var target_position: Vector3 = _get_target_position_offset()
 			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-			_follow_target_output_position = target_position + lookahead_delta
+
+			_set_camera_positions(
+					_interpolate_position(target_position + lookahead_delta, delta)
+			)
 			_set_follow_gizmo_line_position(follow_target.global_position)
 
 		FollowMode.GROUP:
@@ -1272,7 +1271,6 @@ func _set_follow_position(delta: float) -> void:
 			var target_position: Vector3
 			if Engine.is_editor_hint():
 				target_position = _get_target_position_offset_editor()
-				_follow_target_output_position = target_position + (global_basis.z * follow_distance)
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
 				var viewport_width: float = get_viewport().size.x
 				var viewport_height: float = get_viewport().size.y
@@ -1292,6 +1290,7 @@ func _set_follow_position(delta: float) -> void:
 					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 					viewport_position = unprojected_position
+				_set_camera_positions(target_position + (global_basis.z * follow_distance))
 				_set_follow_gizmo_line_position(target_position)
 			else:
 				target_position = follow_target.get_global_transform_interpolated().origin + (follow_target.quaternion * follow_offset)
@@ -1322,9 +1321,6 @@ func _set_follow_position(delta: float) -> void:
 					if not is_zero_approx(absf(follow_distance_diff)):
 						_prev_position += direction.normalized() * follow_distance_diff
 
-				_prev_rotation = quaternion
-				_prev_follow_distance = follow_distance
-
 				## Setting up local position and rotation
 				var world_pos: Vector3 = _prev_position
 				var world_to_local_rotation: Quaternion = quaternion.inverse()
@@ -1350,7 +1346,7 @@ func _set_follow_position(delta: float) -> void:
 					tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
 
 				## Defines the dead zone rect
-				## TODO - Vector2.ZERO is for potential future
+				## TODO - Vector2.ZERO is for potential future Dead Zone Limit
 				var dead_zone_rect: Rect2 = Rect2(Vector2.ZERO - _dead_zone_size * 0.5 + Vector2(0.5, 0.5), _dead_zone_size)
 
 				## Screenspace Rect2 based on the dead zones
@@ -1372,8 +1368,13 @@ func _set_follow_position(delta: float) -> void:
 				elif rel_target_position.y < screen_to_orthography.end.y:
 					camera_offset.y += rel_target_position.y - screen_to_orthography.end.y
 
-				_follow_target_output_position =  world_pos + quaternion * camera_offset
-				_prev_position = _follow_target_output_position
+				if follow_damping:
+					camera_offset = _framed_offset_dampening(camera_offset, follow_damping_value, delta)
+
+				_set_camera_positions(world_pos + quaternion * camera_offset)
+				_prev_position = global_position
+				_prev_rotation = quaternion
+				_prev_follow_distance = follow_distance
 
 		FollowMode.THIRD_PERSON:
 			if not Engine.is_editor_hint():
@@ -1385,6 +1386,33 @@ func _set_follow_position(delta: float) -> void:
 				var target_position: Vector3 = _get_target_position_offset_distance_direction()
 				_follow_target_output_position = target_position + lookahead_delta
 				_set_follow_gizmo_line_position(follow_target.global_position)
+
+			_set_third_person_camera()
+
+func _framed_offset_dampening(initial_position: Vector3, damping_value: Vector3, delta: float) -> Vector3:
+	var output: Vector3
+
+	for i in 3:
+		damping_value[i] = lerpf(max(1, damping_value[i]), damping_value[i], 1)
+	delta = lerpf(0, delta, 1)
+
+	for i in 3:
+		var value: float
+		if is_zero_approx(delta) or is_zero_approx(absf(initial_position[i])):
+			value = initial_position[i]
+		elif is_zero_approx(delta):
+			value = 0
+		else:
+			value = initial_position[i] * (1 - exp(-4.605170186 * delta / damping_value[i]))
+
+		output[i] = value
+
+	return output
+
+
+func _set_camera_positions(value: Vector3) -> void:
+	global_position =  value
+	_transform_output.origin = value
 
 
 func _set_look_at_position(delta: float) -> void:
@@ -1438,13 +1466,14 @@ func _get_target_position_offset_distance_direction() -> Vector3:
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
 
-func _interpolate_position(delta: float) -> void:
+func _interpolate_position(position: Vector3, delta: float) -> Vector3:
+	var output: Vector3 = position
+
 	if follow_damping and not Engine.is_editor_hint():
 		if not _is_third_person_follow:
-			global_position = _follow_target_output_position
 			for i in 3:
-				_transform_output.origin[i] = _smooth_damp(
-					global_position[i],
+				output[i] = _smooth_damp(
+					position[i],
 					_transform_output.origin[i],
 					i,
 					_follow_velocity_ref[i],
@@ -1455,7 +1484,7 @@ func _interpolate_position(delta: float) -> void:
 		else:
 			for i in 3:
 				_camera_target.global_position[i] = _smooth_damp(
-					_follow_target_output_position[i],
+					position[i],
 					_camera_target.global_position[i],
 					i,
 					_follow_velocity_ref[i],
@@ -1465,12 +1494,10 @@ func _interpolate_position(delta: float) -> void:
 				)
 			_set_third_person_camera()
 	else:
-		_camera_target.global_position = _follow_target_output_position
-		if not _is_third_person_follow:
-			_transform_output.origin = global_position
-		else:
+		if _is_third_person_follow:
 			_set_third_person_camera()
 
+	return output
 
 func _set_third_person_camera() -> void:
 	if _has_third_person_raycaster:
