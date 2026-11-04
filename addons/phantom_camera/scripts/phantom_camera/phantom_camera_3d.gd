@@ -480,27 +480,27 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 
 
 @export_subgroup("Dead Zones")
-## Defines the horizontal dead zone area. While the target is within it, the
+## Defines the left and right dead zone areas. While the target is within it, the
 ## [param PhantomCamera3D] will not move in the horizontal axis.
 ## If the targeted node leaves the horizontal bounds, the
 ## [param PhantomCamera3D] will follow the target horizontally to keep
-## it within bounds.
+## it within bounds.[br]
+## X = Left Dead Zone[br]
+## Y = Right Dead Zone[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
-@export_range(0.0, 1.0) var dead_zone_width: float = 0.0:
-	set(value):
-		dead_zone_width = value
-		_dead_zone_size.x = value
-		dead_zone_changed.emit()
-	get:
-		return dead_zone_width
+@export_custom(PROPERTY_HINT_LINK, "") var dead_zone_width: Vector2 = Vector2.ZERO:
+	set = set_dead_zone_width,
+	get = get_dead_zone_width
 
-## Defines the vertical dead zone area. While the target is within it, the
+## Defines the top and bottom dead zone areas. While the target is within it, the
 ## [param PhantomCamera3D] will not move in the vertical axis.
 ## If the targeted node leaves the vertical bounds, the
 ## [param PhantomCamera3D] will follow the target vertically to keep
-## it within bounds.
+## it within bounds.[br]
+## X = Top Dead Zone[br]
+## Y = Bottom Dead Zone[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
-@export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
+@export_custom(PROPERTY_HINT_LINK, "") var dead_zone_height: Vector2 = Vector2.ZERO:
 	set = set_dead_zone_height,
 	get = get_dead_zone_height
 
@@ -789,7 +789,6 @@ var _lookahead_look_at_has_prev_sample: bool = false
 
 var _follow_framed_initial_set: bool = false
 var _follow_framed_offset: Vector3 = Vector3.ZERO
-var _dead_zone_size: Vector2 = Vector2.ZERO
 var _viewport_aspect_ratio: float = 1.77:
 	get:
 		var viewport_size: Vector2 = get_viewport().get_visible_rect().size
@@ -1326,7 +1325,7 @@ func _set_follow_position(delta: float) -> void:
 				var world_to_local_rotation: Quaternion = quaternion.inverse()
 				var camera_position: Vector3 = world_to_local_rotation * world_pos
 				var rel_target_position: Vector3 = (world_to_local_rotation * target_position - camera_position)
-				rel_target_position.z *= -1 ## Inverts the Z axis as forward is -z
+				rel_target_position.z *= -1 ## Inverts the Z axis to match Godot forward direction
 
 				## Forward (Z) axis positioning of the camera
 				var camera_offset: Vector3
@@ -1346,8 +1345,17 @@ func _set_follow_position(delta: float) -> void:
 					tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
 
 				## Defines the dead zone rect
-				## TODO - Vector2.ZERO is for potential future Dead Zone Limit
-				var dead_zone_rect: Rect2 = Rect2(Vector2.ZERO - _dead_zone_size * 0.5 + Vector2(0.5, 0.5), _dead_zone_size)
+				## TODO - 0 is for potential future Dead Zone Limit
+				var dead_zone_rect: Rect2 = Rect2(
+					Vector2(
+						0 - dead_zone_width.x / 2 + 0.5,
+						0 - dead_zone_height.x / 2 + 0.5,
+					),
+					Vector2(
+						dead_zone_width.x / 2 + dead_zone_width.y / 2,
+						dead_zone_height.x / 2 + dead_zone_height.y / 2
+					)
+				)
 
 				## Screenspace Rect2 based on the dead zones
 				var screen_to_orthography: Rect2
@@ -2721,12 +2729,20 @@ func set_follow_lookahead_max_value(value: Vector3) -> void:
 func get_follow_lookahead_max_value() -> Vector3:
 	return follow_lookahead_max_value
 
-func set_dead_zone_height(value: float) -> void:
-	dead_zone_height = value
-	_dead_zone_size.y = value
+
+func set_dead_zone_width(value: Vector2) -> void:
+	dead_zone_width = Vector2(clampf(value.x, 0, 1), clampf(value.y, 0, 1))
 	dead_zone_changed.emit()
 
-func get_dead_zone_height() -> float:
+func get_dead_zone_width() -> Vector2:
+	return dead_zone_width
+
+
+func set_dead_zone_height(value: Vector2) -> void:
+	dead_zone_height = Vector2(clampf(value.x, 0, 1), clampf(value.y, 0, 1))
+	dead_zone_changed.emit()
+
+func get_dead_zone_height() -> Vector2:
 	return dead_zone_height
 
 func set_dead_zone_depth(value: Vector2) -> void:
