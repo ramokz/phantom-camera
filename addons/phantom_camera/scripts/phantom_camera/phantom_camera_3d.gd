@@ -485,8 +485,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## If the targeted node leaves the horizontal bounds, the
 ## [param PhantomCamera3D] will follow the target horizontally to keep
 ## it within bounds.[br]
-## X = Left Dead Zone[br]
-## Y = Right Dead Zone[br]
+## [b]X[/b] = Left Dead Zone[br]
+## [b]Y[/b] = Right Dead Zone[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_custom(PROPERTY_HINT_LINK, "") var dead_zone_width: Vector2 = Vector2.ZERO:
 	set = set_dead_zone_width,
@@ -497,8 +497,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## If the targeted node leaves the vertical bounds, the
 ## [param PhantomCamera3D] will follow the target vertically to keep
 ## it within bounds.[br]
-## X = Top Dead Zone[br]
-## Y = Bottom Dead Zone[br]
+## [b]X[/b] = Top Dead Zone[br]
+## [b]Y[/b] = Bottom Dead Zone[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_custom(PROPERTY_HINT_LINK, "") var dead_zone_height: Vector2 = Vector2.ZERO:
 	set = set_dead_zone_height,
@@ -507,8 +507,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Defines the depth dead zone area, or the local z-axis distance.
 ## By default the camera will keep a persistent distance between itself and its target in the forward axis.[br]
 ## Changing this value will add a dead zone where the camera will remain still if the target gets further or closer to it.[br]
-## The [b]X-value[/b] represents the minimum z dead space, i.e. between the camera and the [member follow_target].[br]
-## The [b]Y-value[/b] represents the maximum z dead space, i.e. the space behind and the [member follow_target] itself.[br][br]
+## [b]X-value[/b] represents the minimum z dead space, i.e. between the camera and the [member follow_target].[br]
+## [b]Y-value[/b] represents the maximum z dead space, i.e. the space behind the [member follow_target] and target itself.[br][br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_custom(PROPERTY_HINT_LINK, "suffix:m") var dead_zone_depth: Vector2 = Vector2.ZERO:
 	set = set_dead_zone_depth,
@@ -1325,12 +1325,12 @@ func _set_follow_position(delta: float) -> void:
 				var world_to_local_rotation: Quaternion = quaternion.inverse()
 				var camera_position: Vector3 = world_to_local_rotation * world_pos
 				var rel_target_position: Vector3 = (world_to_local_rotation * target_position - camera_position)
-				rel_target_position.z *= -1 ## Inverts the Z axis to match Godot forward direction
+				rel_target_position.z *= -1 ## Invert the Z axis to match Godot's forward direction
 
-				## Forward (Z) axis positioning of the camera
+				## Calculate Dead Zone Depth distances
 				var camera_offset: Vector3
-				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth.x/2)
-				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth.y/2)
+				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth.x)
+				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth.y)
 
 				## Checks the dead_zone_depth
 				var target_z: float = rel_target_position.z
