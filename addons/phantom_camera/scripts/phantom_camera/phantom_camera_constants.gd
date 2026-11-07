@@ -1,7 +1,13 @@
 @tool
 extends RefCounted
 
-#region Constants
+#region Names
+
+const PCAM: StringName = "Phantom Camera"
+
+#endregion
+
+#region Node Names
 
 #const PhantomCameraHost: Script = preload("res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd")
 
@@ -12,6 +18,13 @@ const PCAM_MANAGER_NODE_NAME: String = "PhantomCameraManager" # TODO - Convert t
 const PCAM_2D_NODE_NAME: StringName = "PhantomCamera2D"
 const PCAM_3D_NODE_NAME: StringName = "PhantomCamera3D"
 const PCAM_HOST: StringName = "phantom_camera_host"
+const PCAM_TWEEN_DIRECTOR: StringName = "PhantomCameraTweenDirector"
+const PCAM_2D_NOISE_EMITTER_NAME: StringName = "PhantomCameraNoiseEmitter2D"
+const PCAM_3D_NOISE_EMITTER_NAME: StringName = "PhantomCameraNoiseEmitter3D"
+
+#endregion
+
+#region Colors
 
 const COLOR_2D: Color = Color("8DA5F3")
 const COLOR_3D: Color = Color("FC7F7F")
@@ -30,7 +43,16 @@ const PCAM_HOST_GROUP_NAME: StringName = "phantom_camera_host_group"
 
 #region Setting Names
 
-const SETTING_JITTER_TIPS: String = "phantom_camera/tips/show_jitter_tips"
-const SETTING_MIXED_MODE_TIPS: String = "phantom_camera/tips/show_mixed_mode_tips"
+const SETTING_JITTER_TIPS: StringName = "phantom_camera/tips/show_jitter_tips"
+const SETTING_MIXED_MODE_TIPS: StringName = "phantom_camera/tips/show_mixed_mode_tips"
+
+#endregion
+
+#region Debugger
+
+const DEBUG_PCAM: StringName = "phantom_camera"
+const DEBUG_PCAM_PING: StringName = DEBUG_PCAM + ":ping"
+const DEBUG_PCAM_ECHO: StringName = DEBUG_PCAM + ":echo"
+const DEBUG_PCAM_DEAD_ZONE_UPDATE: StringName = DEBUG_PCAM + ":dead_zone_update"
 
 #endregion
