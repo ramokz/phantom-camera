@@ -507,8 +507,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Defines the depth dead zone area, or the local z-axis distance.
 ## By default the camera will keep a persistent distance between itself and its target in the forward axis.[br]
 ## Changing this value will add a dead zone where the camera will remain still if the target gets further or closer to it.[br]
-## [b]X-value[/b] represents the minimum z dead space, i.e. between the camera and the [member follow_target].[br]
-## [b]Y-value[/b] represents the maximum z dead space, i.e. the space behind the [member follow_target] and target itself.[br][br]
+## [b]X-value[/b] represents the maximum z dead space, i.e. the space behind the [member follow_target] and target itself.[br]
+## [b]Y-value[/b] represents the minimum z dead space, i.e. between the camera and the [member follow_target].[br][br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export_custom(PROPERTY_HINT_LINK, "suffix:m") var dead_zone_depth: Vector2 = Vector2.ZERO:
 	set = set_dead_zone_depth,
@@ -1329,8 +1329,8 @@ func _set_follow_position(delta: float) -> void:
 
 				## Calculate Dead Zone Depth distances
 				var camera_offset: Vector3
-				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth.x)
-				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth.y)
+				var dead_zone_depth_min: float = maxf(0.01, follow_distance - dead_zone_depth.y)
+				var dead_zone_depth_max: float = maxf(dead_zone_depth_min, follow_distance + dead_zone_depth.x)
 
 				## Checks the dead_zone_depth
 				var target_z: float = rel_target_position.z
