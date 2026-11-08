@@ -787,7 +787,8 @@ func process_logic(delta: float) -> void:
 	_limit_checker()
 
 	if _should_follow:
-		_follow(delta)
+		_set_follow_position(delta)
+		_interpolate_position(_follow_target_position, delta)
 	else:
 		_transform_output = global_transform
 
@@ -807,11 +808,6 @@ func _limit_checker() -> void:
 	if not Engine.is_editor_hint(): return
 	if draw_limits:
 		update_limit_all_sides()
-
-
-func _follow(delta: float) -> void:
-	_set_follow_position(delta)
-	_interpolate_position(_follow_target_position, delta)
 
 
 func _set_follow_position(delta: float) -> void:

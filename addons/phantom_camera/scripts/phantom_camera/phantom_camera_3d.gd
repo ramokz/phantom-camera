@@ -526,8 +526,8 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_dead_zone_depth,
 	get = get_dead_zone_depth
 
-## If true, will center the target at the center of the viewport when this PCam becomes active and begins tweening towards it.[br]
-## Note: This is only used for the [enum FollowMode.FramedFollow] mode.[br]
+## If true, will center the target at the center of the viewport when the [param PhantomCamera3D] becomes active and begins tweening towards it.[br]
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export var center_on_active: bool = true:
 	set = set_center_on_active,
 	get = get_center_on_active
