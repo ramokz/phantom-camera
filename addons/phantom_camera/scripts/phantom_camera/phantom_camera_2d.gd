@@ -58,6 +58,8 @@ signal noise_emitted(noise_output: Transform2D)
 
 signal physics_target_changed
 
+signal interactive_dead_zone_changed
+
 #endregion
 
 #region Enums
@@ -96,6 +98,13 @@ enum FollowTargetPhysicsClass {
 	CHARACTERBODY   = 0,
 	RIGIDBODY       = 1,
 	OTHER           = 2,
+}
+
+enum InteractiveDeadZone {
+	ALL =           0, ## Dead Zone dragging are editable in the editor and at runtime
+	VIEWFINDER =    1, ## Dead Zone dragging is editable only in the viewfinder
+	RUNTIME =       2, ## Dead Zone dragging is editable only at runtime
+	NONE =          3  ## Dead Zone dragging is disabled
 }
 
 #endregion
@@ -423,6 +432,13 @@ var _should_rotate_with_target: bool = false
 @export var show_viewfinder_in_play: bool = false
 
 
+## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
+## By default, it is editable from both the editor viewfinder and at runtime.
+@export var interactive_dead_zone: InteractiveDeadZone = InteractiveDeadZone.ALL:
+	set(value):
+		interactive_dead_zone = value
+		interactive_dead_zone_changed.emit()
+
 @export_group("Limit")
 ## Shows the [param Camera2D]'s built-in limit border.[br]
 ## The [param PhantomCamera2D] and [param Camera2D] can move around anywhere within it.
@@ -639,7 +655,8 @@ func _validate_property(property: Dictionary) -> void:
 		match property.name:
 			"dead_zone_width", \
 			"dead_zone_height", \
-			"show_viewfinder_in_play":
+			"show_viewfinder_in_play", \
+			"interactive_dead_zone":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
 

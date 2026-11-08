@@ -481,17 +481,11 @@ func _connect_dead_zone() -> void:
 	if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 		_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
 
-	if not dead_zone_left_dragger.dragging.is_connected(_on_dead_zone_dragging):
-		dead_zone_left_dragger.dragging.connect(_on_dead_zone_dragging)
-	if not dead_zone_right_dragger.dragging.is_connected(_on_dead_zone_dragging):
-		dead_zone_right_dragger.dragging.connect(_on_dead_zone_dragging)
-	if not dead_zone_top_dragger.dragging.is_connected(_on_dead_zone_dragging):
-		dead_zone_top_dragger.dragging.connect(_on_dead_zone_dragging)
-	if not dead_zone_bottom_dragger.dragging.is_connected(_on_dead_zone_dragging):
-		dead_zone_bottom_dragger.dragging.connect(_on_dead_zone_dragging)
+	_update_interactive_dead_zone()
 
 	viewfinder.visible = true
 	_on_dead_zone_changed()
+
 
 func _disconnect_dead_zone() -> void:
 	if not is_instance_valid(_active_pcam): return
@@ -502,6 +496,56 @@ func _disconnect_dead_zone() -> void:
 
 	if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 		_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+
+func _update_interactive_dead_zone() -> void:
+	match _active_pcam.interactive_dead_zone:
+		_active_pcam.InteractiveDeadZone.ALL:
+			_show_interactive_dead_zone()
+		_active_pcam.InteractiveDeadZone.VIEWFINDER:
+			if Engine.is_editor_hint():
+				_show_interactive_dead_zone()
+			else:
+				_hide_interactive_dead_zone()
+		_active_pcam.InteractiveDeadZone.RUNTIME:
+			if not Engine.is_editor_hint():
+				_show_interactive_dead_zone()
+			else:
+				_hide_interactive_dead_zone()
+		_active_pcam.InteractiveDeadZone.NONE:
+			_hide_interactive_dead_zone()
+
+
+func _show_interactive_dead_zone() -> void:
+	if not dead_zone_left_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_left_dragger.dragging.connect(_on_dead_zone_dragging)
+	if not dead_zone_right_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_right_dragger.dragging.connect(_on_dead_zone_dragging)
+	if not dead_zone_top_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_top_dragger.dragging.connect(_on_dead_zone_dragging)
+	if not dead_zone_bottom_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_bottom_dragger.dragging.connect(_on_dead_zone_dragging)
+
+	dead_zone_left_dragger.visible = true
+	dead_zone_top_dragger.visible = true
+	dead_zone_right_dragger.visible = true
+	dead_zone_bottom_dragger.visible = true
+
+
+func _hide_interactive_dead_zone() -> void:
+	if dead_zone_left_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_left_dragger.dragging.disconnect(_on_dead_zone_dragging)
+	if dead_zone_right_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_right_dragger.dragging.disconnect(_on_dead_zone_dragging)
+	if dead_zone_top_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_top_dragger.dragging.disconnect(_on_dead_zone_dragging)
+	if dead_zone_bottom_dragger.dragging.is_connected(_on_dead_zone_dragging):
+		dead_zone_bottom_dragger.dragging.disconnect(_on_dead_zone_dragging)
+
+	dead_zone_left_dragger.visible = false
+	dead_zone_top_dragger.visible = false
+	dead_zone_right_dragger.visible = false
+	dead_zone_bottom_dragger.visible = false
 
 
 func _resized() -> void:
@@ -532,6 +576,9 @@ func _framed_view_visible(should_show: bool) -> void:
 		if not is_instance_valid(_active_pcam): return
 		if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 			_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
+		if not _active_pcam.interactive_dead_zone_changed.is_connected(_update_interactive_dead_zone):
+			_active_pcam.interactive_dead_zone_changed.connect(_update_interactive_dead_zone)
+		_update_interactive_dead_zone()
 	else:
 		target_point.visible = false
 		dead_zone_container.visible = false
@@ -539,6 +586,8 @@ func _framed_view_visible(should_show: bool) -> void:
 		if not is_instance_valid(_active_pcam): return
 		if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 			_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+		_hide_interactive_dead_zone()
 
 
 func _on_dead_zone_changed() -> void:

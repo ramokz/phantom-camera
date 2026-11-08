@@ -66,6 +66,8 @@ signal physics_target_changed
 signal camera_3d_resource_property_changed(property: StringName, value: Variant)
 signal camera_3d_resource_changed
 
+signal interactive_dead_zone_changed
+
 #endregion
 
 
@@ -116,11 +118,20 @@ enum FollowLockAxis {
 	YZ		= 6,
 	XYZ		= 7,
 }
+
 enum FollowTargetPhysicsClass {
 	OTHER,
 	CHARACTERBODY,
 	RIGIDBODY,
 }
+
+enum InteractiveDeadZone {
+	ALL =           0, ## Dead Zone dragging are editable in the editor and at runtime
+	VIEWFINDER =    1, ## Dead Zone dragging is editable only in the viewfinder
+	RUNTIME =       2, ## Dead Zone dragging is editable only at runtime
+	NONE =          3  ## Dead Zone dragging is disabled
+}
+
 #endregion
 
 
@@ -167,7 +178,6 @@ enum FollowTargetPhysicsClass {
 @export var follow_mode: FollowMode = FollowMode.NONE:
 	set(value):
 		follow_mode = value
-		follow_mode_changed.emit()
 
 		if follow_mode == FollowMode.NONE:
 			_should_follow = false
@@ -215,6 +225,8 @@ enum FollowTargetPhysicsClass {
 		if look_at_mode != LookAtMode.NONE and show_mixed_mode_tips:
 			print_rich("[color=#EAA15E]Warning: Using both Look At and Follow Mode on the same PCam3D has not been fully tested yet, proceed with caution![/color]")
 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Mixed Mode Tips[/code]")
+
+		follow_mode_changed.emit()
 	get:
 		return follow_mode
 
@@ -524,6 +536,14 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## Enables the dead zones to be visible when running the game from the editor.
 ## Dead zones will never be visible in build exports.
 @export var show_viewfinder_in_play: bool = false
+
+## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
+## By default, it is editable from both the editor viewfinder and at runtime.
+@export var interactive_dead_zone: InteractiveDeadZone = InteractiveDeadZone.ALL:
+	set(value):
+		interactive_dead_zone = value
+		interactive_dead_zone_changed.emit()
+
 
 ## Defines the position of the [member follow_target] within the viewport.[br]
 ## This is only used for when [member follow_mode] is set to [param Framed].
@@ -957,8 +977,11 @@ func _validate_property(property: Dictionary) -> void:
 			"dead_zone_width", \
 			"dead_zone_height", \
 			"dead_zone_depth", \
-			"show_viewfinder_in_play":
+			"show_viewfinder_in_play", \
+			"center_on_active", \
+			"interactive_dead_zone":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
+
 
 	######################
 	## Third Person Follow
