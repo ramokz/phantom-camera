@@ -6,7 +6,6 @@ extends EditorDebuggerPlugin
 #region Private Variables
 
 const _constants = preload("res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_constants.gd")
-var _initial_drag: bool = true
 var _prev_drag_dead_zone: Vector2
 
 #endregion
@@ -38,26 +37,26 @@ func update_editor_dead_zone(data: Array) -> void:
 	var property: StringName = data[1]
 	var is_vector_y: int = data[2]
 	var value: float = data[3]
-	var commit_save: bool = data[4]
+	var initial_drag: bool = data[4]
+	var commit_change: bool = data[5]
 
 	var dead_zone_value: Vector2 = pcam.get(property)
 
-	if _initial_drag:
+	if initial_drag:
 		_prev_drag_dead_zone = dead_zone_value
-		_initial_drag = false
+		return
 
 	if not is_vector_y:
 		dead_zone_value.x = value
 	else:
 		dead_zone_value.y = value
 
-	if commit_save:
+	if commit_change:
 		var undo_redo: EditorUndoRedoManager = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
-		undo_redo.create_action("Changed" + pcam.name + "'s Dead Zone")
+		undo_redo.create_action("Changed " + pcam.name + "'s Dead Zone at runtime")
 		undo_redo.add_do_property(pcam, property, dead_zone_value)
 		undo_redo.add_undo_property(pcam, property, _prev_drag_dead_zone)
 		undo_redo.commit_action()
-		_initial_drag = true
 
 	pcam.set(property, dead_zone_value)
 

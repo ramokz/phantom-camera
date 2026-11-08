@@ -58,7 +58,6 @@ const _overlay_color_alpha: float = 0.3
 var _no_open_scene_icon: CompressedTexture2D = preload("res://addons/phantom_camera/icons/viewfinder/SceneTypesIcon.svg")
 var _no_open_scene_string: String = "[b]2D[/b] or [b]3D[/b] scene open"
 
-
 var _selected_camera: Node
 var _active_pcam: Node
 
@@ -69,6 +68,8 @@ var _pcam_manager: Node
 var _root_node: Node
 
 var _active_scene_root: Node
+
+var _prev_drag_dead_zone: Vector2
 
 var _has_pcam_host: bool = false
 var _physics_based: bool = false
@@ -589,43 +590,46 @@ func _on_dead_zone_changed() -> void:
 	dead_zone_bottom_dragger.position.y = viewfinder.size.y - dead_zone_height.y - button_size_offset
 
 
-func _on_dead_zone_dragging(placement: int, offset: Vector2, _align_key_held: bool, commit_save: bool) -> void:
+func _on_dead_zone_dragging(placement: int, offset: Vector2, _align_key_held: bool, initial_drag: bool, commit_save: bool) -> void:
+	## Individual Dead Zone change
 	if _align_key_held:
 		match placement:
 			0: ## Left
 				_active_pcam.dead_zone_width.x -= _dragging_offset(true, offset.x)
-				update_dead_zone_prop("dead_zone_width", false,  _active_pcam.dead_zone_width.x, commit_save)
+				_update_dead_zone_prop("dead_zone_width", false,  _active_pcam.dead_zone_width.x, initial_drag, commit_save)
 			1: ## Top
 				_active_pcam.dead_zone_height.x -= _dragging_offset(false, offset.y)
-				update_dead_zone_prop("dead_zone_height", false,  _active_pcam.dead_zone_height.x, commit_save)
+				_update_dead_zone_prop("dead_zone_height", false,  _active_pcam.dead_zone_height.x, initial_drag, commit_save)
 			2: ## Right
 				_active_pcam.dead_zone_width.y += _dragging_offset(true, offset.x)
-				update_dead_zone_prop("dead_zone_width", true,  _active_pcam.dead_zone_width.y, commit_save)
+				_update_dead_zone_prop("dead_zone_width", true,  _active_pcam.dead_zone_width.y, initial_drag, commit_save)
 			3: ## Bottom
 				_active_pcam.dead_zone_height.y += _dragging_offset(false, offset.y)
-				update_dead_zone_prop("dead_zone_height", true,  _active_pcam.dead_zone_height.y, commit_save)
+				_update_dead_zone_prop("dead_zone_height", true,  _active_pcam.dead_zone_height.y,initial_drag, commit_save)
+
+	## Mirror Dead Zones changes
 	else:
 		match placement:
 			0: ## Left
 				_active_pcam.dead_zone_width.x -= _dragging_offset(true, offset.x)
 				_active_pcam.dead_zone_width.y = _active_pcam.dead_zone_width.x
-				update_dead_zone_prop("dead_zone_width", false,  _active_pcam.dead_zone_width.x, commit_save)
-				update_dead_zone_prop("dead_zone_width", true,  _active_pcam.dead_zone_width.x)
+				_update_dead_zone_prop("dead_zone_width", false,  _active_pcam.dead_zone_width.x, initial_drag, commit_save)
+				_update_dead_zone_prop("dead_zone_width", true,  _active_pcam.dead_zone_width.x, initial_drag)
 			1: ## Top
 				_active_pcam.dead_zone_height.x -= _dragging_offset(false, offset.y)
 				_active_pcam.dead_zone_height.y = _active_pcam.dead_zone_height.x
-				update_dead_zone_prop("dead_zone_height", false,  _active_pcam.dead_zone_height.x, commit_save)
-				update_dead_zone_prop("dead_zone_height", true,  _active_pcam.dead_zone_height.x)
+				_update_dead_zone_prop("dead_zone_height", false,  _active_pcam.dead_zone_height.x, initial_drag, commit_save)
+				_update_dead_zone_prop("dead_zone_height", true,  _active_pcam.dead_zone_height.x, initial_drag)
 			2: ## Right
 				_active_pcam.dead_zone_width.y += _dragging_offset(true, offset.x)
 				_active_pcam.dead_zone_width.x = _active_pcam.dead_zone_width.y
-				update_dead_zone_prop("dead_zone_width", false,  _active_pcam.dead_zone_width.y, commit_save)
-				update_dead_zone_prop("dead_zone_width", true,  _active_pcam.dead_zone_width.y)
+				_update_dead_zone_prop("dead_zone_width", false,  _active_pcam.dead_zone_width.y, initial_drag, commit_save)
+				_update_dead_zone_prop("dead_zone_width", true,  _active_pcam.dead_zone_width.y, initial_drag)
 			3: ## Top
 				_active_pcam.dead_zone_height.y += _dragging_offset(false, offset.y)
 				_active_pcam.dead_zone_height.x = _active_pcam.dead_zone_height.y
-				update_dead_zone_prop("dead_zone_height", false,  _active_pcam.dead_zone_height.y, commit_save)
-				update_dead_zone_prop("dead_zone_height", true,  _active_pcam.dead_zone_height.y)
+				_update_dead_zone_prop("dead_zone_height", false,  _active_pcam.dead_zone_height.y, initial_drag, commit_save)
+				_update_dead_zone_prop("dead_zone_height", true,  _active_pcam.dead_zone_height.y, initial_drag)
 
 
 func _dragging_offset(horizontal: bool, offset: float) -> float:
@@ -633,20 +637,41 @@ func _dragging_offset(horizontal: bool, offset: float) -> float:
 	return (100 / (screen_direction / 2) * offset) / 100
 
 
-func update_dead_zone_prop(prop: String, is_vector_y: bool, value: float, commit_save: bool = false) -> void:
+func _update_dead_zone_prop(property: String, is_vector_y: bool, value: float, initial_drag: bool, commit_change: bool = false) -> void:
 	var root_scene: Node = get_tree().current_scene if not Engine.is_editor_hint() else _active_scene_root
 	var pcam: Node = root_scene.get_node_or_null(root_scene.get_path_to(_active_pcam))
+	## Runtime
+	if EngineDebugger.is_active():
+		EngineDebugger.send_message(_constants.DEBUG_PCAM_DEAD_ZONE_UPDATE,
+			[
+				str(get_tree().current_scene.get_path_to(_active_pcam)),
+				property,
+				is_vector_y,
+				value,
+				initial_drag,
+				commit_change
+			]
+		)
 
-	if not EngineDebugger.is_active(): return
-	EngineDebugger.send_message(_constants.DEBUG_PCAM_DEAD_ZONE_UPDATE,
-		[
-			str(get_tree().current_scene.get_path_to(_active_pcam)),
-			prop,
-			is_vector_y,
-			value,
-			commit_save
-		]
-	)
+	## Viewfinder
+	else:
+		var dead_zone_value: Vector2 = pcam.get(property)
+
+		if initial_drag:
+			_prev_drag_dead_zone = dead_zone_value
+			return
+
+		if not is_vector_y:
+			dead_zone_value.x = value
+		else:
+			dead_zone_value.y = value
+
+		if commit_change:
+			var undo_redo: EditorUndoRedoManager = Engine.get_singleton(&"EditorInterface").get_editor_undo_redo()
+			undo_redo.create_action("Changed " + pcam.name + "'s Dead Zone in Viewfinder")
+			undo_redo.add_do_property(pcam, property, dead_zone_value)
+			undo_redo.add_undo_property(pcam, property, _prev_drag_dead_zone)
+			undo_redo.commit_action()
 
 
 func _send_dead_zone_changed_debug_signal(message: String, data: Array) -> bool:

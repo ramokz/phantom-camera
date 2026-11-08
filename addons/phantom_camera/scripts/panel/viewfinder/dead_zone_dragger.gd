@@ -60,18 +60,19 @@ func _gui_input(event: InputEvent) -> void:
 		var viewport_size_halved: Vector2 = get_viewport().get_visible_rect().size / 2
 
 		_offset = event.relative * Vector2(1, 0) if horizontal_drag else event.relative * Vector2(0, 1)
-		dragging.emit(placement, _offset, _individual_dead_zone_change, false)
+		dragging.emit(placement, _offset, _individual_dead_zone_change, false, false)
 
 	if event is InputEventMouseButton and event.is_pressed():
 		_is_draggable = true
 		_is_released = false
+		dragging.emit(placement, _offset, _individual_dead_zone_change, true, false)
 
 	if event is InputEventMouseButton and event.is_released() and _is_draggable:
 		_is_draggable = false
 		_is_released = true
 		mouse_default_cursor_shape = CURSOR_ARROW
 		modulate.a = _inactive_alpha
-		dragging.emit(placement, _offset, _individual_dead_zone_change, true)
+		dragging.emit(placement, _offset, _individual_dead_zone_change, false, true)
 
 
 func _unhandled_input(event: InputEvent) -> void:
