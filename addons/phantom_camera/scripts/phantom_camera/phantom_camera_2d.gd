@@ -404,24 +404,18 @@ var _should_rotate_with_target: bool = false
 ## If the targeted node leaves the horizontal bounds, the
 ## [param PhantomCamera2D] will follow the target horizontally to keep
 ## it within bounds.
-@export_range(0.0, 1.0) var dead_zone_width: float = 0.0:
-	set(value):
-		dead_zone_width = value
-		dead_zone_changed.emit()
-	get:
-		return dead_zone_width
+@export_custom(PROPERTY_HINT_LINK, "") var dead_zone_width: Vector2 = Vector2.ZERO:
+	set = set_dead_zone_width,
+	get = get_dead_zone_width
 
 ## Defines the vertical dead zone area. While the target is within it, the
 ## [param PhantomCamera2D] will not move in the vertical axis.
 ## If the targeted node leaves the vertical bounds, the
 ## [param PhantomCamera2D] will follow the target horizontally to keep
 ## it within bounds.
-@export_range(0.0, 1.0) var dead_zone_height: float = 0.0:
-	set(value):
-		dead_zone_height = value
-		dead_zone_changed.emit()
-	get:
-		return dead_zone_height
+@export_custom(PROPERTY_HINT_LINK, "") var dead_zone_height: Vector2 = Vector2.ZERO:
+	set = set_dead_zone_height,
+	get = get_dead_zone_height
 
 ## Enables the [param dead zones] to be visible when running the game from the editor.
 ## [br]
@@ -792,7 +786,7 @@ func process_logic(delta: float) -> void:
 
 
 func _limit_checker() -> void:
-	## TODO - Needs to see if this can be triggerd only from CollisionShape2D Transform changes
+	## TODO - Needs to see if this can be triggered only from CollisionShape2D Transform changes
 	if not Engine.is_editor_hint(): return
 	if draw_limits:
 		update_limit_all_sides()
@@ -843,14 +837,14 @@ func _set_follow_position(delta: float) -> void:
 
 		FollowMode.PATH:
 			var path_position: Vector2 = follow_path.global_position
-			var follow_postion: Vector2 = _get_target_position_offset()
+			var follow_position: Vector2 = _get_target_position_offset()
 
 			if lookahead and not Engine.is_editor_hint():
-				follow_postion = _apply_lookahead(follow_postion, delta)
+				follow_position = _apply_lookahead(follow_position, delta)
 
 			_follow_target_position = \
 			follow_path.curve.get_closest_point(
-				follow_postion - path_position
+				follow_position - path_position
 			) + path_position
 
 		FollowMode.FRAMED:
@@ -863,10 +857,10 @@ func _set_follow_position(delta: float) -> void:
 					target_position = _apply_lookahead(target_position, delta)
 
 				var viewport_dead_zone: Vector4 = Vector4(
-					viewport_rect.x / 2 / zoom.x * dead_zone_width,     # Left ## TODO - Replace with specific left dead zone value
-					viewport_rect.y / 2 / zoom.y * dead_zone_height,    # Top ## TODO - Replace with specific top dead zone value
-					viewport_rect.x / 2 / zoom.x * dead_zone_width,     # Right ## TODO - Replace with specific right dead zone value
-					viewport_rect.y / 2 / zoom.y * dead_zone_height,    # Bottom  ## TODO - Replace with specific bottom dead zone value
+					viewport_rect.x / 2 / zoom.x * dead_zone_width.x,     # Left
+					viewport_rect.y / 2 / zoom.y * dead_zone_height.x,    # Top
+					viewport_rect.x / 2 / zoom.x * dead_zone_width.y,     # Right
+					viewport_rect.y / 2 / zoom.y * dead_zone_height.y,    # Bottom
 				)
 
 				var viewport_target_offset: Vector2 = Vector2.ZERO
@@ -904,7 +898,7 @@ func _set_follow_position(delta: float) -> void:
 				if show_viewfinder_in_play:
 					var target_screen_position: Vector2 = Transform2D(get_viewport().canvas_transform * Transform2D(0, target_position + viewport_target_offset)).origin
 					viewport_position = target_screen_position / viewport_rect
-		_: pass
+
 
 func _set_follow_velocity(index: int, value: float):
 	_follow_velocity_ref[index] = value
@@ -1221,7 +1215,7 @@ func _is_parents_physics(target: Node = self) -> void:
 #region Public Functions
 
 ## Updates the limit sides based what has been set to define it
-## This should be automatic, but can be called manully if need be.
+## This should be automatic, but can be called manually if need be.
 func update_limit_all_sides() -> void:
 	var limit_rect: Rect2
 
@@ -1721,6 +1715,22 @@ func get_auto_zoom_margin() -> Vector4:
 	return auto_zoom_margin
 
 
+func set_dead_zone_width(value: Vector2) -> void:
+	dead_zone_width = Vector2(clampf(value.x, 0, 1), clampf(value.y, 0, 1))
+	dead_zone_changed.emit()
+
+func get_dead_zone_width() -> Vector2:
+	return dead_zone_width
+
+
+func set_dead_zone_height(value: Vector2) -> void:
+	dead_zone_height = Vector2(clampf(value.x, 0, 1), clampf(value.y, 0, 1))
+	dead_zone_changed.emit()
+
+func get_dead_zone_height() -> Vector2:
+	return dead_zone_height
+
+
 func set_lookahead(value: bool) -> void:
 	lookahead = value
 	_reset_lookahead()
@@ -1851,7 +1861,7 @@ func _limit_target_exist_error() -> void:
 		printerr("Unable to set Limit Side due to Limit Target ", _limit_node.name, " being assigned")
 
 
-# Sets a [memeber limit_target] node.
+# Sets a [member limit_target] node.
 func set_limit_target(value: NodePath) -> void:
 	limit_target = value
 
@@ -1896,7 +1906,7 @@ func set_limit_target(value: NodePath) -> void:
 
 ## Get [member limit_target] node.
 func get_limit_target() -> NodePath:
-	if not limit_target: # TODO - Fixes an spam error if if limit_taret is empty
+	if not limit_target: # TODO - Fixes an spam error if if limit_target is empty
 		return NodePath("")
 	else:
 		return limit_target
@@ -1911,10 +1921,10 @@ func get_limit_margin() -> Vector4i:
 	return limit_margin
 
 
-### Enables or disables the Limit Smoothing beaviour.
+### Enables or disables the Limit Smoothing behaviour.
 #func set_limit_smoothing(value: bool) -> void:
 	#limit_smoothed = value
-### Returns the Limit Smoothing beaviour.
+### Returns the Limit Smoothing behaviour.
 #func get_limit_smoothing() -> bool:
 	#return limit_smoothed
 
