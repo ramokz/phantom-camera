@@ -47,16 +47,22 @@ public abstract class PhantomCamera
 
     public bool IsFollowing => (bool)Node.Call(PhantomCamera.MethodName.IsFollowing);
 
-    public float DeadZoneWidth
+    public Vector2 DeadZoneWidth
     {
-        get => (float)Node.Get(PropertyName.DeadZoneWidth);
+        get => (Vector2)Node.Get(PropertyName.DeadZoneWidth);
         set => Node.Set(PropertyName.DeadZoneWidth, value);
     }
 
-    public float DeadZoneHeight
+    public Vector2 DeadZoneHeight
     {
-        get => (float)Node.Get(PropertyName.DeadZoneHeight);
+        get => (Vector2)Node.Get(PropertyName.DeadZoneHeight);
         set => Node.Set(PropertyName.DeadZoneHeight, value);
+    }
+
+    public Vector2 CenterOnActive
+    {
+        get => (Vector2)Node.Call(MethodName.GetCenterOnActive);
+        set => Node.Call(MethodName.SetCenterOnActive, value);
     }
 
     public PhantomCameraTween TweenResource
@@ -180,6 +186,9 @@ public abstract class PhantomCamera
 
         public static readonly StringName GetFollowAxisLock = new("get_follow_axis_lock");
         public static readonly StringName SetFollowAxisLock = new("set_follow_axis_lock");
+
+        public static readonly StringName GetCenterOnActive = new("get_center_on_active");
+        public static readonly StringName SetCenterOnActive = new("set_center_on_active");
 
         public static readonly StringName GetTweenResource = new("get_tween_resource");
         public static readonly StringName SetTweenResource = new("set_tween_resource");
