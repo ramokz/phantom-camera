@@ -430,6 +430,11 @@ var _should_rotate_with_target: bool = false
 ## [br]
 ## [param dead zones] will never be visible in build exports.
 @export var show_viewfinder_in_play: bool = false
+## If true, will center the target at the center of the viewport when the [param PhantomCamera3D] becomes active and begins tweening towards it.[br]
+## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
+@export var center_on_active: bool = true:
+	set = set_center_on_active,
+	get = get_center_on_active
 
 
 ## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
@@ -541,6 +546,8 @@ var _follow_velocity_ref: Vector2 = Vector2.ZERO # Stores and applies the veloci
 var _rotation_velocity_ref: float = 0.0 # Stores and applies the velocity of the rotation movement
 
 var _has_follow_path: bool = false
+
+var _center_on_active: bool
 
 var _has_lookahead_acceleration: bool = true
 var _has_lookahead_deceleration: bool = true
@@ -656,6 +663,7 @@ func _validate_property(property: Dictionary) -> void:
 			"dead_zone_width", \
 			"dead_zone_height", \
 			"show_viewfinder_in_play", \
+			"center_on_active", \
 			"interactive_dead_zone":
 				property.usage = PROPERTY_USAGE_NO_EDITOR
 
@@ -861,13 +869,17 @@ func _set_follow_position(delta: float) -> void:
 			) + path_position
 
 		FollowMode.FRAMED:
-			if Engine.is_editor_hint() or not _is_active:
+			if Engine.is_editor_hint():
 				_follow_target_position = _get_target_position_offset()
 			else:
 				var target_position: Vector2 = _get_target_position_offset()
 				var viewport_rect: Vector2 = get_viewport_rect().size
 				if lookahead:
 					target_position = _apply_lookahead(target_position, delta)
+
+				if not _is_active and _center_on_active:
+					_follow_target_position = target_position
+					_center_on_active = false
 
 				var viewport_dead_zone: Vector4 = Vector4(
 					viewport_rect.x / 2 / zoom.x * dead_zone_width.x,     # Left
@@ -882,12 +894,12 @@ func _set_follow_position(delta: float) -> void:
 				var right_dead_zone: float = global_position.x + viewport_dead_zone.z
 
 				## Left Dead Zone
-				if left_dead_zone > target_position.x:
+				if target_position.x < left_dead_zone:
 					viewport_target_offset.x = left_dead_zone - target_position.x
 					_follow_target_position.x -= viewport_target_offset.x
 					dead_zone_side_reached.x = 1
 				## Right Dead Zone
-				elif right_dead_zone < target_position.x:
+				elif target_position.x > right_dead_zone:
 					viewport_target_offset.x = right_dead_zone - target_position.x
 					_follow_target_position.x -= viewport_target_offset.x
 					dead_zone_side_reached.x = -1
@@ -895,12 +907,12 @@ func _set_follow_position(delta: float) -> void:
 				var top_dead_zone: float = global_position.y - viewport_dead_zone.y
 				var bottom_dead_zone: float = global_position.y + viewport_dead_zone.w
 				## Top Dead Zone
-				if top_dead_zone > target_position.y:
+				if target_position.y < top_dead_zone:
 					viewport_target_offset.y = top_dead_zone - target_position.y
 					_follow_target_position.y -= viewport_target_offset.y
 					dead_zone_side_reached.y = 1
 				## Bottom Dead Zone
-				elif bottom_dead_zone < target_position.y:
+				elif target_position.y > bottom_dead_zone:
 					viewport_target_offset.y = bottom_dead_zone - target_position.y
 					_follow_target_position.y -= viewport_target_offset.y
 					dead_zone_side_reached.y = -1
@@ -1436,6 +1448,8 @@ func get_tween_ease() -> int:
 func set_is_active(node, value) -> void:
 	if node is PhantomCameraHost:
 		_is_active = value
+		if follow_mode == FollowMode.FRAMED:
+			_center_on_active = center_on_active
 		queue_redraw()
 	else:
 		printerr("PCams can only be set from the PhantomCameraHost")
@@ -1742,6 +1756,16 @@ func set_dead_zone_height(value: Vector2) -> void:
 
 func get_dead_zone_height() -> Vector2:
 	return dead_zone_height
+
+
+## Sets the [member center_on_active] value.
+func set_center_on_active(value: bool) -> void:
+	center_on_active = value
+	_center_on_active = value
+
+## Sets the [member center_on_active] value.
+func get_center_on_active() -> bool:
+	return center_on_active
 
 
 func set_lookahead(value: bool) -> void:
