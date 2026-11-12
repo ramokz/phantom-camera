@@ -149,6 +149,13 @@ public class PhantomCamera3D : PhantomCamera
         set => Node3D.Call(MethodName.SetCamera3DResource, value.Resource);
     }
 
+    public Vector2 DeadZoneDepth
+    {
+        get => (Vector2)Node3D.Call(MethodName.GetDeadZoneDepth);
+        set => Node3D.Call(MethodName.SetDeadZoneDepth, value);
+    }
+
+
     public float SpringLength
     {
         get => (float)Node3D.Call(MethodName.GetSpringLength);
@@ -366,6 +373,9 @@ public class PhantomCamera3D : PhantomCamera
 
         public static readonly StringName GetCamera3DResource = new("get_camera_3d_resource");
         public static readonly StringName SetCamera3DResource = new("set_camera_3d_resource");
+
+        public static readonly StringName GetDeadZoneDepth = new("get_dead_zone_depth");
+        public static readonly StringName SetDeadZoneDepth = new("set_dead_zone_depth");
 
         public static readonly StringName GetThirdPersonRotation = new("get_third_person_rotation");
         public static readonly StringName SetThirdPersonRotation = new("set_third_person_rotation");

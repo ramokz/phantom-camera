@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://drmv3363t8amc" path="res://addons/phantom_camera/scripts/panel/viewfinder/viewfinder.gd" id="1_utvi8"]
 [ext_resource type="StyleBox" uid="uid://dpa7yvxlq043a" path="res://addons/phantom_camera/panel/viewfinder/deadzone_style_box.tres" id="2_uabt4"]
+[ext_resource type="Script" uid="uid://bk3fnudq5py3l" path="res://addons/phantom_camera/scripts/panel/viewfinder/dead_zone_dragger.gd" id="3_i21vv"]
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="3_li3i3"]
 [ext_resource type="Texture2D" uid="uid://5fatldiu7dd5" path="res://addons/phantom_camera/icons/phantom_camera_host.svg" id="4_lcg1p"]
 [ext_resource type="FontFile" uid="uid://dve7mgsjik4dg" path="res://addons/phantom_camera/fonts/Nunito-Regular.ttf" id="5_4jhax"]
@@ -9,19 +10,22 @@
 [ext_resource type="Script" uid="uid://c84cxry3t35ny" path="res://addons/phantom_camera/scripts/panel/viewfinder/host_list.gd" id="7_kpij0"]
 [ext_resource type="Theme" uid="uid://bhppejri5dbsf" path="res://addons/phantom_camera/themes/theme.tres" id="8_b4akn"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fle8t"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cw1vl"]
 bg_color = Color(0.227451, 0.72549, 0.603922, 0.2)
-draw_center = false
-border_width_left = 2
-border_width_top = 2
 border_width_right = 2
-border_width_bottom = 2
 border_color = Color(0.227451, 0.72549, 0.603922, 1)
 corner_detail = 1
 expand_margin_left = 1.0
 expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_25jaq"]
+bg_color = Color(0.22658296, 0.72538966, 0.6037999, 0.6)
+border_width_left = 1
+border_width_right = 1
+border_color = Color(0.227451, 0.72549, 0.603922, 1)
+border_blend = true
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmo1t"]
 draw_center = false
@@ -84,7 +88,7 @@ border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.5529412, 0.64705884, 0.9529412, 1)
+border_color = Color(0.9882353, 0.49803922, 0.49803922, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
@@ -171,8 +175,8 @@ corner_radius_top_right = 6
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w002y"]
 
 [node name="ViewfinderPanel" type="Control" unique_id=522693372]
-clip_contents = true
 custom_minimum_size = Vector2(0, 300)
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -211,7 +215,7 @@ unique_name_in_owner = true
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 gui_disable_input = true
-size = Vector2i(1152, 648)
+size = Vector2i(1280, 720)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
@@ -220,7 +224,143 @@ unique_name_in_owner = true
 physics_interpolation_mode = 2
 editor_draw_screen = false
 
-[node name="DeadZoneHBoxContainer" type="HBoxContainer" parent="Viewfinder" unique_id=1859896750]
+[node name="DeadZoneContainer" type="Control" parent="Viewfinder" unique_id=384416025]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DeadZoneLeft" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=1804906270]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+grow_vertical = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cw1vl")
+
+[node name="DeadZoneRight" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=557664519]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+size_flags_horizontal = 10
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("2_uabt4")
+
+[node name="DeadZoneTop" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=1222669257]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 240)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+size_flags_horizontal = 10
+size_flags_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("2_uabt4")
+
+[node name="DeadZoneBottom" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=822479655]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 240)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 10
+size_flags_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("2_uabt4")
+
+[node name="DeadZoneLeftDragger" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=1617938230]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.3)
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -966.0
+offset_right = -954.0
+grow_horizontal = 0
+grow_vertical = 2
+offset_transform_enabled = true
+mouse_default_cursor_shape = 10
+theme_override_styles/panel = SubResource("StyleBoxFlat_25jaq")
+script = ExtResource("3_i21vv")
+horizontal_drag = true
+
+[node name="DeadZoneRightDragger" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=416008703]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.3)
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -326.0
+offset_right = -314.0
+grow_horizontal = 0
+grow_vertical = 2
+offset_transform_enabled = true
+mouse_default_cursor_shape = 10
+theme_override_styles/panel = SubResource("StyleBoxFlat_25jaq")
+script = ExtResource("3_i21vv")
+horizontal_drag = true
+placement = 2
+
+[node name="DeadZoneTopDragger" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=1393356729]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.3)
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 234.0
+offset_bottom = 246.0
+grow_horizontal = 2
+offset_transform_enabled = true
+mouse_default_cursor_shape = 9
+theme_override_styles/panel = SubResource("StyleBoxFlat_25jaq")
+script = ExtResource("3_i21vv")
+placement = 1
+
+[node name="DeadZoneBottomDragger" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=1132686106]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.3)
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -246.0
+offset_bottom = -234.0
+grow_horizontal = 2
+grow_vertical = 0
+offset_transform_enabled = true
+mouse_default_cursor_shape = 9
+theme_override_styles/panel = SubResource("StyleBoxFlat_25jaq")
+script = ExtResource("3_i21vv")
+placement = 3
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="Viewfinder" unique_id=1565265981]
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 1
@@ -230,96 +370,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="DeadZoneLeftHBoxContainer" type="VBoxContainer" parent="Viewfinder/DeadZoneHBoxContainer" unique_id=172011758]
-clip_contents = true
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="DeadZoneLeftTopPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer" unique_id=850199399]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneLeftCenterPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer" unique_id=519081738]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneLeftBottomPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneLeftHBoxContainer" unique_id=349855860]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneCenterHBoxContainer" type="VBoxContainer" parent="Viewfinder/DeadZoneHBoxContainer" unique_id=451457723]
-unique_name_in_owner = true
-clip_contents = true
-layout_mode = 2
-size_flags_horizontal = 4
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="DeadZoneCenterTopPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer" unique_id=398947288]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneCenterCenterPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer" unique_id=496409668]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_fle8t")
-
-[node name="DeadZoneCenterBottomPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneCenterHBoxContainer" unique_id=660749582]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneRightHBoxContainer" type="VBoxContainer" parent="Viewfinder/DeadZoneHBoxContainer" unique_id=1036038250]
-clip_contents = true
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = 0
-
-[node name="DeadZoneRightTopPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer" unique_id=1934470798]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneRightCenterPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer" unique_id=518516633]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="DeadZoneRightBottomPanel" type="Panel" parent="Viewfinder/DeadZoneHBoxContainer/DeadZoneRightHBoxContainer" unique_id=135299992]
-layout_mode = 2
-size_flags_vertical = 3
-mouse_filter = 2
-theme_override_styles/panel = ExtResource("2_uabt4")
-
-[node name="AspectRatioContainer" type="AspectRatioContainer" parent="Viewfinder" unique_id=336933516]
-unique_name_in_owner = true
-clip_contents = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-ratio = 1.7777778
+stretch_mode = 3
 
 [node name="CameraViewportPanel" type="Panel" parent="Viewfinder/AspectRatioContainer" unique_id=2044177991]
 layout_mode = 2
@@ -523,7 +574,7 @@ visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 1.0
-offset_top = 588.0
+offset_top = 660.0
 grow_vertical = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
