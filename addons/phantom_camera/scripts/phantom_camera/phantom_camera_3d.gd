@@ -66,6 +66,7 @@ signal physics_target_changed
 signal camera_3d_resource_property_changed(property: StringName, value: Variant)
 signal camera_3d_resource_changed
 
+signal viewfinder_at_runtime_changed
 signal interactive_dead_zone_changed
 
 #endregion

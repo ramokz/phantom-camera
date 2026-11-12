@@ -58,6 +58,7 @@ signal noise_emitted(noise_output: Transform2D)
 
 signal physics_target_changed
 
+signal viewfinder_at_runtime_changed
 signal interactive_dead_zone_changed
 
 #endregion
@@ -437,6 +438,7 @@ var _should_rotate_with_target: bool = false
 @export var show_viewfinder_in_play: bool = false:
 	set(value):
 		show_viewfinder_in_play = value
+		viewfinder_at_runtime_changed.emit()
 
 
 ## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
