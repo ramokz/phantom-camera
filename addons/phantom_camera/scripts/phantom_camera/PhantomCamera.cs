@@ -59,9 +59,9 @@ public abstract class PhantomCamera
         set => Node.Set(PropertyName.DeadZoneHeight, value);
     }
 
-    public Vector2 CenterOnActive
+    public bool CenterOnActive
     {
-        get => (Vector2)Node.Call(MethodName.GetCenterOnActive);
+        get => (bool)Node.Call(MethodName.GetCenterOnActive);
         set => Node.Call(MethodName.SetCenterOnActive, value);
     }
 
