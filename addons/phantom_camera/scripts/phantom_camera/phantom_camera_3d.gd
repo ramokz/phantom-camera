@@ -1418,18 +1418,20 @@ func _set_follow_position(delta: float) -> void:
 				screen_to_orthography.end.y = 2 * screen_size * ((1 - dead_zone_rect.end.y) - 0.5)
 
 				var outside_dead_zone: bool
-				## Checks if target exceeds Dead Zone Width
+				## Left Dead Zone
 				if rel_target_position.x < screen_to_orthography.position.x:
 					camera_offset.x += rel_target_position.x - screen_to_orthography.position.x
 					outside_dead_zone = true
+				## Right Dead Zone
 				elif rel_target_position.x > screen_to_orthography.end.x:
 					camera_offset.x += rel_target_position.x - screen_to_orthography.end.x
 					outside_dead_zone = true
 
-				## Checks if target exceeds Dead Zone Height
+				## Top Dead Zone
 				if rel_target_position.y > screen_to_orthography.position.y:
 					camera_offset.y += rel_target_position.y - screen_to_orthography.position.y
 					outside_dead_zone = true
+				## Bottom Dead Zone
 				elif rel_target_position.y < screen_to_orthography.end.y:
 					camera_offset.y += rel_target_position.y - screen_to_orthography.end.y
 					outside_dead_zone = true

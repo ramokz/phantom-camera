@@ -426,15 +426,17 @@ var _should_rotate_with_target: bool = false
 	set = set_dead_zone_height,
 	get = get_dead_zone_height
 
-## Enables the [param dead zones] to be visible when running the game from the editor.
-## [br]
-## [param dead zones] will never be visible in build exports.
-@export var show_viewfinder_in_play: bool = false
 ## If true, will center the target at the center of the viewport when the [param PhantomCamera3D] becomes active and begins tweening towards it.[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export var center_on_active: bool = true:
 	set = set_center_on_active,
 	get = get_center_on_active
+
+## Enables the dead zones to be visible when running the game from the editor.[br]
+## [b]Note:[/b]Dead zones will never be visible in build exports.
+@export var show_viewfinder_in_play: bool = false:
+	set(value):
+		show_viewfinder_in_play = value
 
 
 ## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
