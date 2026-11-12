@@ -145,7 +145,7 @@ enum InteractiveDeadZone {
 @export var priority_override: bool = false:
 	set(value):
 		priority_override = value
-		if Engine.is_editor_hint():
+		if _is_editor:
 			if value:
 				if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
 				Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_override.emit(self, priority_override)
@@ -533,9 +533,12 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_center_on_active
 
 
-## Enables the dead zones to be visible when running the game from the editor.
-## Dead zones will never be visible in build exports.
-@export var show_viewfinder_in_play: bool = false
+## If enabled, dead zones to be visible when running the game from the editor.[br]
+## [b]Note:[/b]Dead zones will never be visible in build exports.
+@export var show_viewfinder_in_play: bool = false:
+	set(value):
+		show_viewfinder_in_play = value
+		viewfinder_at_runtime_changed.emit()
 
 ## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
 ## By default, it is editable from both the editor viewfinder and at runtime.
@@ -751,6 +754,9 @@ var align_rotation_with_view: Callable = func():
 #endregion
 
 #region Private Variables
+
+var _is_editor: bool
+var _is_editor_runtime: bool
 
 var _is_active: bool = false
 
@@ -1089,6 +1095,9 @@ func _validate_property(property: Dictionary) -> void:
 	):
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
+func _init() -> void:
+	_is_editor = Engine.is_editor_hint()
+	_is_editor_runtime = OS.has_feature("editor")
 
 func _enter_tree() -> void:
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
@@ -1133,7 +1142,7 @@ func _ready():
 		FollowMode.THIRD_PERSON:
 			_is_third_person_follow = true
 			if _should_follow: _transform_output.origin = _get_target_position_offset_distance()
-			if not Engine.is_editor_hint():
+			if not _is_editor:
 				if not is_instance_valid(_follow_third_person_shape_cast):
 					_follow_third_person_shape_cast = ShapeCast3D.new()
 					_follow_third_person_shape_cast.name = name + "ThirdPersonShapeCast3D"
@@ -1164,7 +1173,7 @@ func _ready():
 		_:
 			_transform_output.origin = global_position
 
-	if not Engine.is_editor_hint():
+	if not _is_editor:
 		_preview_noise = true
 
 	## NOTE - Only here to set position for Framed View on startup.
@@ -1175,7 +1184,7 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	if Engine.is_editor_hint() and _draw_gizmo:
+	if _is_editor and _draw_gizmo:
 		update_gizmos()
 
 	if _is_active: return
@@ -1194,7 +1203,6 @@ func process_logic(delta: float) -> void:
 
 	if _should_follow:
 		_set_follow_position(delta)
-		# _interpolate_position(delta)
 	else:
 		_transform_output.origin = global_position
 
@@ -1228,22 +1236,33 @@ func process_logic(delta: float) -> void:
 
 
 func _set_follow_position(delta: float) -> void:
+	var target_position: Vector3
+
 	match follow_mode:
 		FollowMode.GLUED:
-			var target_position: Vector3 = follow_target.get_global_transform_interpolated().origin
-			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-			_set_camera_positions(
-					_interpolate_position(target_position + lookahead_delta, delta)
-			)
+			target_position = follow_target.global_position if _is_editor else follow_target.get_global_transform_interpolated().origin
+
+			if not _is_editor:
+				if follow_lookahead:
+					target_position += _get_follow_lookahead_delta(target_position, delta)
+
+				if follow_damping:
+					target_position = _follow_position_damping(target_position, delta)
+
+			_set_camera_position(target_position)
 			_set_follow_gizmo_line_position(follow_target.global_position)
 
 		FollowMode.SIMPLE:
-			var target_position: Vector3 = _get_target_position_offset()
-			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
+			target_position = _get_target_position_offset()
 
-			_set_camera_positions(
-					_interpolate_position(target_position + lookahead_delta, delta)
-			)
+			if not _is_editor:
+				if follow_lookahead:
+					target_position += _get_follow_lookahead_delta(target_position, delta)
+
+				if follow_damping:
+					target_position = _follow_position_damping(target_position, delta)
+
+			_set_camera_position(target_position)
 			_set_follow_gizmo_line_position(follow_target.global_position)
 
 		FollowMode.GROUP:
@@ -1258,41 +1277,55 @@ func _set_follow_position(delta: float) -> void:
 				else:
 					distance = follow_distance
 
-				var target_position: Vector3 = bounds.get_center() + follow_offset
-				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-				_follow_target_output_position = \
-					target_position + \
-					lookahead_delta + \
+				target_position = bounds.get_center() + follow_offset + global_basis.z * distance
+
+				if not _is_editor:
+					if follow_lookahead:
+						target_position += _get_follow_lookahead_delta(target_position, delta)
+
+					if follow_damping:
+						target_position = _follow_position_damping(target_position, delta)
+
+				_set_camera_position( target_position)
+				_set_follow_gizmo_line_position(bounds.get_center())
+			else:
+				target_position = _get_target_position_offset(_follow_targets[_follow_targets_single_target_index])
+
+				if not _is_editor and follow_lookahead:
+					target_position += _get_follow_lookahead_delta(target_position, delta)
+
+				var distance: float = auto_follow_distance_min if auto_follow_distance else follow_distance
+				target_position += \
 					global_basis.z * \
 					distance
 
-				_set_follow_gizmo_line_position(bounds.get_center())
-			else:
-				var target_position: Vector3 = \
-					_follow_targets[_follow_targets_single_target_index].get_global_transform_interpolated().origin + \
-					follow_offset
-				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-				_follow_target_output_position = \
-					target_position + \
-					lookahead_delta + \
-					global_basis.z * \
-					auto_follow_distance_min
+				if not _is_editor and follow_damping:
+					target_position = _follow_position_damping(target_position, delta)
+
+				_set_camera_position(target_position)
+				_set_follow_gizmo_line_position(target_position)
 
 		FollowMode.PATH:
 			var path_position: Vector3 = follow_path.get_global_transform_interpolated().origin
-			var target_position: Vector3 = _get_target_position_offset()
-			var lookahead_delta: Vector3 = _get_follow_lookahead_delta(target_position, delta)
-			var tracked_position: Vector3 = target_position + lookahead_delta
-			_follow_target_output_position = \
-				follow_path.global_basis * follow_path.curve.get_closest_point(
-					follow_path.global_basis.inverse() * (tracked_position - path_position)
+			target_position = _get_target_position_offset()
+
+			if not _is_editor:
+				if follow_lookahead:
+					target_position += _get_follow_lookahead_delta(target_position, delta)
+
+				if follow_damping:
+					target_position = _follow_position_damping(target_position, delta)
+
+			target_position = follow_path.global_basis * follow_path.curve.get_closest_point(
+				follow_path.global_basis.inverse() * (target_position - path_position)
 				) + path_position
+
+			_set_camera_position(target_position)
 			_set_follow_gizmo_line_position(target_position)
 
 		FollowMode.FRAMED:
-			var target_position: Vector3
-			if Engine.is_editor_hint():
-				target_position = _get_target_position_offset_editor()
+			if _is_editor:
+				target_position = follow_target.global_position + follow_offset + (global_basis.z * follow_distance)
 				var unprojected_position: Vector2 = _get_raw_unprojected_position()
 				var viewport_width: float = get_viewport().size.x
 				var viewport_height: float = get_viewport().size.y
@@ -1312,16 +1345,14 @@ func _set_follow_position(delta: float) -> void:
 					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
 					viewport_position = unprojected_position
-				_set_camera_positions(target_position + (global_basis.z * follow_distance))
+
+				_set_camera_position(target_position)
 				_set_follow_gizmo_line_position(target_position)
 			else:
 				target_position = follow_target.get_global_transform_interpolated().origin + (follow_target.quaternion * follow_offset)
-				if follow_lookahead:
-					target_position = _get_follow_lookahead_delta(target_position, delta)
 
-				var prev_viewport_position: Vector2 = viewport_position
-				viewport_position = get_viewport().get_camera_3d().unproject_position(target_position) \
-				/ get_viewport().get_visible_rect().size
+				if follow_lookahead:
+					target_position += _get_follow_lookahead_delta(target_position, delta)
 
 				var final_position: Vector3 = target_position
 
@@ -1367,8 +1398,7 @@ func _set_follow_position(delta: float) -> void:
 					camera_3d_resource.projection == camera_3d_resource.ProjectionType.ORTHOGONAL else \
 					tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
 
-				## Defines the dead zone rect
-				## TODO - 0 is for potential future Dead Zone Limit
+				## NOTE - 0 is for potential future Dead Zone Limit
 				var dead_zone_rect: Rect2 = Rect2(
 					Vector2(
 						0 - dead_zone_width.x / 2 + 0.5,
@@ -1387,38 +1417,57 @@ func _set_follow_position(delta: float) -> void:
 				screen_to_orthography.position.y = 2 * screen_size * ((1 - dead_zone_rect.position.y) - 0.5)
 				screen_to_orthography.end.y = 2 * screen_size * ((1 - dead_zone_rect.end.y) - 0.5)
 
+				var outside_dead_zone: bool
 				## Checks if target exceeds Dead Zone Width
 				if rel_target_position.x < screen_to_orthography.position.x:
 					camera_offset.x += rel_target_position.x - screen_to_orthography.position.x
+					outside_dead_zone = true
 				elif rel_target_position.x > screen_to_orthography.end.x:
 					camera_offset.x += rel_target_position.x - screen_to_orthography.end.x
+					outside_dead_zone = true
 
 				## Checks if target exceeds Dead Zone Height
 				if rel_target_position.y > screen_to_orthography.position.y:
 					camera_offset.y += rel_target_position.y - screen_to_orthography.position.y
+					outside_dead_zone = true
 				elif rel_target_position.y < screen_to_orthography.end.y:
 					camera_offset.y += rel_target_position.y - screen_to_orthography.end.y
+					outside_dead_zone = true
 
 				if follow_damping:
 					camera_offset = _framed_offset_dampening(camera_offset, follow_damping_value, delta)
 
-				_set_camera_positions(world_pos + quaternion * camera_offset)
+				## Viewport Positioning
+				if show_viewfinder_in_play:
+					var viewport_target_position: Vector3 = follow_target.global_position + (follow_target.quaternion * follow_offset)
+					if not _is_editor and follow_lookahead:
+						viewport_target_position += _get_follow_lookahead_delta(viewport_target_position, delta)
+					var viewport_world_position: Vector3 = target_position if outside_dead_zone else viewport_target_position
+					viewport_position = get_viewport().get_camera_3d().unproject_position(viewport_world_position + (follow_target.quaternion * follow_offset)) \
+						/ get_viewport().get_visible_rect().size
+
+				_set_camera_position(world_pos + quaternion * camera_offset)
+
 				_prev_position = global_position
 				_prev_rotation = quaternion
 				_prev_follow_distance = follow_distance
 
 		FollowMode.THIRD_PERSON:
-			if not Engine.is_editor_hint():
+			if not _is_editor:
 				if not _has_third_person_raycaster: return
-				_follow_target_output_position = _get_target_position_offset() # + lookahead_delta
+				target_position = _get_target_position_offset()
+
+				if follow_lookahead:
+					target_position += _get_follow_lookahead_delta(target_position, delta)
+
+				if follow_damping:
+					target_position = _follow_position_damping(target_position, delta)
 			else:
-				var raw_target_position: Vector3 = _get_target_position_offset_editor()
-				var lookahead_delta: Vector3 = _get_follow_lookahead_delta(raw_target_position, delta)
-				var target_position: Vector3 = _get_target_position_offset_distance_direction()
-				_follow_target_output_position = target_position + lookahead_delta
+				target_position = _get_target_position_offset_distance_direction()
 				_set_follow_gizmo_line_position(follow_target.global_position)
 
-			_set_third_person_camera()
+			_set_third_person_camera(target_position)
+
 
 func _framed_offset_dampening(initial_position: Vector3, damping_value: Vector3, delta: float) -> Vector3:
 	var output: Vector3
@@ -1441,9 +1490,9 @@ func _framed_offset_dampening(initial_position: Vector3, damping_value: Vector3,
 	return output
 
 
-func _set_camera_positions(value: Vector3) -> void:
-	global_position =  value
-	_transform_output.origin = value
+func _set_camera_position(target_position: Vector3) -> void:
+	global_position = target_position
+	_transform_output.origin = target_position
 
 
 func _set_look_at_position(delta: float) -> void:
@@ -1474,12 +1523,11 @@ func _set_look_at_position(delta: float) -> void:
 	var lookahead_delta: Vector3 = _get_look_at_lookahead_delta(target_position, delta, up_direction)
 	_look_at_target_output_position = target_position + lookahead_delta
 
-func _get_target_position_offset() -> Vector3:
-	return follow_target.get_global_transform_interpolated().origin + follow_offset
-
-# Cheaper variant of _get_target_position_offset() for editor use only
-func _get_target_position_offset_editor() -> Vector3:
-	return follow_target.global_position + follow_offset
+func _get_target_position_offset(target: Node3D = follow_target) -> Vector3:
+	if _is_editor:
+		return target.global_position + follow_offset
+	else:
+		return target.get_global_transform_interpolated().origin + follow_offset
 
 func _get_target_position_offset_distance() -> Vector3:
 	return _get_target_position_offset() + \
@@ -1497,46 +1545,30 @@ func _get_target_position_offset_distance_direction() -> Vector3:
 func _set_follow_velocity(index: int, value: float) -> void:
 	_follow_velocity_ref[index] = value
 
-func _interpolate_position(position: Vector3, delta: float) -> Vector3:
-	var output: Vector3 = position
 
-	if follow_damping and not Engine.is_editor_hint():
-		if not _is_third_person_follow:
-			for i in 3:
-				output[i] = _smooth_damp(
-					position[i],
-					_transform_output.origin[i],
-					i,
-					_follow_velocity_ref[i],
-					_set_follow_velocity,
-					follow_damping_value[i],
-					delta
-				)
-		else:
-			for i in 3:
-				_camera_target.global_position[i] = _smooth_damp(
-					position[i],
-					_camera_target.global_position[i],
-					i,
-					_follow_velocity_ref[i],
-					_set_follow_velocity,
-					follow_damping_value[i],
-					delta
-				)
-			_set_third_person_camera()
-	else:
-		if _is_third_person_follow:
-			_set_third_person_camera()
-
+func _follow_position_damping(output_position: Vector3, delta: float) -> Vector3:
+	var output: Vector3 = output_position
+	for i in 3:
+		output[i] = _smooth_damp(
+			output[i],
+			_transform_output.origin[i] if not _is_third_person_follow else _follow_third_person_shape_cast.global_position[i],
+			i,
+			_follow_velocity_ref[i],
+			_set_follow_velocity,
+			follow_damping_value[i],
+			delta
+		)
 	return output
 
-func _set_third_person_camera() -> void:
+
+func _set_third_person_camera(follow_position: Vector3) -> void:
+	var camera_transform: Transform3D
 	if _has_third_person_raycaster:
 		## Forces the raycast to update in-between physics ticks during the _process to avoid jitter when used
 		## alongside get_global_transform_interpolated
+		_follow_third_person_shape_cast.global_position = follow_position
 		_follow_third_person_shape_cast.force_shapecast_update()
 
-		var camera_transform: Transform3D
 		var motion: Vector3 = Vector3(_follow_third_person_shape_cast.global_basis.z * spring_length)
 
 		## Check if the raycast is intersecting with a collider
@@ -1556,8 +1588,6 @@ func _set_third_person_camera() -> void:
 				_follow_third_person_shape_cast.global_basis.z \
 				* (spring_length * casted_motion[1])
 			)
-			global_transform = camera_transform
-			_transform_output = camera_transform
 
 		## If not, copy the PCam's global transform
 		else:
@@ -1565,14 +1595,17 @@ func _set_third_person_camera() -> void:
 					_follow_third_person_shape_cast.global_basis,
 					_follow_third_person_shape_cast.global_position + motion
 			)
-			global_transform = camera_transform
-			_transform_output = camera_transform
-	elif Engine.is_editor_hint():
-		var target_quat: Quaternion = _look_at_target_quat(_get_target_position_offset(), follow_target.global_basis.y)
-		var target_basis: Basis = Basis(target_quat)
-		_transform_output.basis = target_basis
-		global_basis = target_basis
-		_transform_output.origin = global_position
+
+		global_transform = camera_transform
+		_transform_output = camera_transform
+	elif _is_editor:
+		global_position = _get_target_position_offset_distance_direction()
+		global_rotation_degrees = Vector3(
+			rad_to_deg(-vertical_rotation_offset),
+			rad_to_deg(-horizontal_rotation_offset),
+				0
+		)
+		_transform_output = global_transform
 
 
 func _look_at_target_quat(target_position: Vector3, up_direction: Vector3 = Vector3.UP) -> Quaternion:
@@ -1694,7 +1727,7 @@ func _reset_look_at_lookahead() -> void:
 	_lookahead_look_at_smooth_velocity = Vector3.ZERO
 
 
-func _get_follow_target_velocity(delta: float) -> Vector3:
+func _get_follow_target_velocity(target_position: Vector3, delta: float) -> Vector3:
 	# Use cached type check for performance
 	match _follow_target_physics_class:
 		FollowTargetPhysicsClass.CHARACTERBODY:
@@ -1703,25 +1736,33 @@ func _get_follow_target_velocity(delta: float) -> Vector3:
 			return _rigid_body_3d.linear_velocity
 		FollowTargetPhysicsClass.OTHER:
 			# Optional extension points for custom controllers
-			if follow_target.has_method(&"get_velocity"):
-				var v = follow_target.call(&"get_velocity")
-				if v is Vector3:
-					return v
+			if follow_mode != FollowMode.GROUP:
+				if follow_target.has_method(&"get_velocity"):
+					var v = follow_target.call(&"get_velocity")
+					if v is Vector3:
+						return v
 
-			var prop_v = follow_target.get(&"velocity")
-			if prop_v is Vector3:
-				return prop_v
+				var prop_v = follow_target.get(&"velocity")
+				if prop_v is Vector3:
+					return prop_v
 
 	# Fallback: estimate from position delta using raw target position
-	var current_pos: Vector3 = follow_target.get_global_transform_interpolated().origin
+	var current_position: Vector3
+	if follow_mode == FollowMode.GROUP:
+		if _has_multiple_follow_targets:
+			current_position = target_position
+		else:
+			current_position = follow_targets[_follow_targets_single_target_index].global_position + follow_offset
+	else:
+		current_position = _get_target_position_offset()
 
 	if not _lookahead_follow_has_prev_sample:
 		_lookahead_follow_has_prev_sample = true
-		_lookahead_follow_sample_pos_prev = current_pos
+		_lookahead_follow_sample_pos_prev = current_position
 		return Vector3.ZERO
 
-	var vel:Vector3 = (current_pos - _lookahead_follow_sample_pos_prev) / maxf(delta, 0.0001)
-	_lookahead_follow_sample_pos_prev = current_pos
+	var vel: Vector3 = (current_position - _lookahead_follow_sample_pos_prev) / maxf(delta, 0.0001)
+	_lookahead_follow_sample_pos_prev = current_position
 	return vel
 
 
@@ -1769,9 +1810,9 @@ func _get_look_at_target_velocity(delta: float) -> Vector3:
 	return vel
 
 
-func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
+func _get_follow_lookahead_delta(target_position: Vector3, delta: float) -> Vector3:
 	# Lookahead should only run at runtime, not in the editor
-	if not follow_lookahead or Engine.is_editor_hint():
+	if not follow_lookahead:
 		_lookahead_follow_reset = true
 		return Vector3.ZERO
 
@@ -1780,26 +1821,26 @@ func _get_follow_lookahead_delta(position: Vector3, delta: float) -> Vector3:
 		_lookahead_follow_reset = false
 
 	if not is_zero_approx(delta):
-			var velocity: Vector3 = _get_follow_target_velocity(delta)
-			if follow_lookahead_max:
-				velocity = Vector3(
-					clampf(velocity.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x),
-					clampf(velocity.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y),
-					clampf(velocity.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
-				)
+		var velocity: Vector3 = _get_follow_target_velocity(target_position, delta)
+		if follow_lookahead_max:
+			velocity = Vector3(
+				clampf(velocity.x, -follow_lookahead_max_value.x, follow_lookahead_max_value.x),
+				clampf(velocity.y, -follow_lookahead_max_value.y, follow_lookahead_max_value.y),
+				clampf(velocity.z, -follow_lookahead_max_value.z, follow_lookahead_max_value.z)
+			)
 
-			var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
-			var smooth_time: float = follow_lookahead_deceleration if slowing else follow_lookahead_acceleration
-			var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
-			_lookahead_follow_velocity = result[0]
-			_lookahead_follow_smooth_velocity = result[1]
+		var slowing: bool = velocity.length_squared() < _lookahead_follow_velocity.length_squared()
+		var smooth_time: float = follow_lookahead_deceleration if slowing else follow_lookahead_acceleration
+		var result: Array[Vector3] = _smooth_damp_vector(_lookahead_follow_velocity, velocity, _lookahead_follow_smooth_velocity, smooth_time, delta)
+		_lookahead_follow_velocity = result[0]
+		_lookahead_follow_smooth_velocity = result[1]
 
 	return _lookahead_follow_velocity * follow_lookahead_time
 
 
 func _get_look_at_lookahead_delta(position: Vector3, delta: float, up_direction: Vector3) -> Vector3:
 	# Lookahead should only run at runtime, not in the editor
-	if not look_at_lookahead or Engine.is_editor_hint():
+	if not look_at_lookahead or _is_editor:
 		_lookahead_look_at_reset = true
 		return Vector3.ZERO
 
@@ -1900,6 +1941,7 @@ func _follow_targets_size_check() -> void:
 		1:
 			_should_follow = true
 			_has_multiple_follow_targets = false
+			_check_physics_body(_follow_targets[_follow_targets_single_target_index])
 		_:
 			_should_follow = true
 			_has_multiple_follow_targets = true
@@ -1960,31 +2002,31 @@ func _noise_emitted(emitter_noise_output: Transform3D, emitter_layer: int) -> vo
 		noise_emitted.emit(emitter_noise_output)
 
 
-# func _check_physics_body(target: Node3D) -> void:
-# 	# Reset cached physics references
-# 	_character_body_3d = null
-# 	_rigid_body_3d = null
-# 	_follow_target_physics_class = FollowTargetPhysicsClass.OTHER
-#
-# 	if target is PhysicsBody3D:
-# 		# Cache the type and reference for performance
-# 		if target is CharacterBody3D:
-# 			_character_body_3d = target as CharacterBody3D
-# 			_follow_target_physics_class = FollowTargetPhysicsClass.CHARACTERBODY
-# 		elif target is RigidBody3D:
-# 			_rigid_body_3d = target as RigidBody3D
-# 			_follow_target_physics_class = FollowTargetPhysicsClass.RIGIDBODY
-#
-# 		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
-# 		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
-#
-# 		if not physics_interpolation_enabled and _follow_target_physics_based and show_jitter_tips == null:
-# 			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement.")
-# 			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
-# 		_follow_target_physics_based = true
-# 	else:
-# 		_is_parents_physics(target)
-# 	physics_target_changed.emit()
+func _check_physics_body(target: Node3D) -> void:
+	# Reset cached physics references
+	_character_body_3d = null
+	_rigid_body_3d = null
+	_follow_target_physics_class = FollowTargetPhysicsClass.OTHER
+
+	if target is PhysicsBody3D:
+		# Cache the type and reference for performance
+		if target is CharacterBody3D:
+			_character_body_3d = target as CharacterBody3D
+			_follow_target_physics_class = FollowTargetPhysicsClass.CHARACTERBODY
+		elif target is RigidBody3D:
+			_rigid_body_3d = target as RigidBody3D
+			_follow_target_physics_class = FollowTargetPhysicsClass.RIGIDBODY
+
+		var show_jitter_tips := ProjectSettings.get_setting("phantom_camera/tips/show_jitter_tips")
+		var physics_interpolation_enabled := ProjectSettings.get_setting("physics/common/physics_interpolation")
+
+		if not physics_interpolation_enabled and _follow_target_physics_based and show_jitter_tips == null:
+			printerr("Physics Interpolation is disabled in the Project Settings, recommend enabling it to smooth out physics-based camera movement.")
+			print_rich("This tip can be disabled from within [code]Project Settings / Phantom Camera / Tips / Show Jitter Tips[/code]")
+		_follow_target_physics_based = true
+	else:
+		_is_parents_physics(target)
+	physics_target_changed.emit()
 
 
 func _is_parents_physics(target: Node = self) -> void:
@@ -2000,7 +2042,7 @@ func _camera_resource_changed() -> void:
 
 
 func _set_follow_gizmo_line_position(target_position: Vector3) -> void:
-	if Engine.is_editor_hint():
+	if _is_editor:
 		_follow_target_position = target_position
 
 func _check_draw_gizmo() -> void:
@@ -2233,7 +2275,7 @@ func set_follow_target(value: Node3D) -> void:
 				_should_follow = false
 		else:
 			_should_follow = true
-		# _check_physics_body(value)
+		_check_physics_body(value)
 		if follow_mode == FollowMode.THIRD_PERSON and is_instance_valid(_follow_third_person_shape_cast):
 			_follow_third_person_shape_cast.add_exception_rid(follow_target)
 		if not follow_target.tree_exiting.is_connected(_follow_target_tree_exiting):
@@ -2853,7 +2895,7 @@ func set_follow_axis_lock(value: FollowLockAxis) -> void:
 	if not is_node_ready(): await ready
 
 	# Prevent axis lock from working in the editor
-	if value != FollowLockAxis.NONE and not Engine.is_editor_hint():
+	if value != FollowLockAxis.NONE and not _is_editor:
 		_follow_axis_is_locked = true
 		match value:
 			FollowLockAxis.X:
