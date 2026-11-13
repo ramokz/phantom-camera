@@ -2660,7 +2660,7 @@ func set_look_at_targets(value: Array[Node3D]) -> void:
 	notify_property_list_changed()
 
 ## Appends a [Node3D] to [member look_at_targets] array.
-func append_look_at_target(value: Node3D) -> void:
+func append_look_at_targets(value: Node3D) -> void:
 	if not is_instance_valid(value):
 		printerr(value, "is an invalid Node3D instance")
 		return
