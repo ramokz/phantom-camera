@@ -99,7 +99,18 @@ var _camera_zoom: Vector2 = Vector2.ONE
 var _prev_cam_attributes: CameraAttributes = null
 var _cam_attribute_type: int = 0 # 0 = CameraAttributesPractical, 1 = CameraAttributesPhysical
 var _cam_attribute_changed: bool = false
-var _cam_attribute_assigned: bool = false
+
+## Camera3D resource slots the host keeps in sync with the active PCam3D.
+const _SYNCED_CAMERA_SLOTS: Array[StringName] = [&"attributes", &"environment"]
+## Host-owned copies assigned to the Camera3D. The PCam3D's resource is the source of
+## truth; only its values are copied over, so the Camera3D never shares a reference
+## with it and edits to the Camera3D can't leak back into a (possibly saved) resource.
+var _owned_camera_resources: Dictionary[StringName, Resource] = {}
+## What the Camera3D held before the host took over. Put back while the editor saves,
+## so host-generated copies never end up in the .tscn.
+var _camera_original_resources: Dictionary[StringName, Resource] = {}
+## Stored property names per resource class, cached for _copy_stored_properties.
+static var _stored_property_names: Dictionary[StringName, PackedStringArray] = {}
 
 #region CameraAttributes
 
@@ -278,6 +289,9 @@ func _enter_tree() -> void:
 			camera_3d = parent
 			## Forcefully disable Physics Interpolation
 			camera_3d.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+			for slot: StringName in _SYNCED_CAMERA_SLOTS:
+				if not _camera_original_resources.has(slot):
+					_camera_original_resources[slot] = camera_3d.get(slot)
 
 		if not is_node_ready():	return
 
@@ -300,6 +314,17 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	if is_instance_valid(_phantom_camera_manager):
 		_phantom_camera_manager.pcam_host_removed(self)
+
+
+func _notification(what: int) -> void:
+	if _is_2d or not is_instance_valid(camera_3d): return
+	match what:
+		NOTIFICATION_EDITOR_PRE_SAVE:
+			for slot: StringName in _camera_original_resources:
+				camera_3d.set(slot, _camera_original_resources[slot])
+		NOTIFICATION_EDITOR_POST_SAVE:
+			if is_instance_valid(_active_pcam_3d):
+				_sync_camera_resources([])
 
 
 func _ready() -> void:
@@ -574,6 +599,9 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				if Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.is_connected(_camera_3d_edited):
 					Engine.get_singleton(&"EditorInterface").get_inspector().property_edited.disconnect(_camera_3d_edited)
 
+		# Attribute values are left for the tween to interpolate; the environment isn't tweened.
+		_sync_camera_resources([&"environment"])
+
 		if _active_pcam_3d.attributes == null:
 			_cam_attribute_changed = false
 		else:
@@ -581,10 +609,6 @@ func _assign_new_active_pcam(pcam: Node) -> void:
 				_prev_cam_attributes = _active_pcam_3d.attributes
 				_cam_attribute_changed = true
 				var _attributes: CameraAttributes = _active_pcam_3d.attributes
-
-				if camera_3d.attributes == null:
-					camera_3d.attributes = _attributes.duplicate()
-					_cam_attribute_assigned = true
 
 				camera_3d.attributes.auto_exposure_enabled = _attributes.auto_exposure_enabled
 
@@ -888,15 +912,12 @@ func _pcam_follow(_delta: float) -> void:
 	else:
 		camera_3d.global_transform = _active_pcam_3d_glob_transform
 
-	if Engine.is_editor_hint():
-		if not _is_2d:
-			# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99729
-			if _active_pcam_3d.attributes != null:
-				camera_3d.attributes = _active_pcam_3d.attributes.duplicate()
-
-			# TODO - Signal-based solution pending merge of: https://github.com/godotengine/godot/pull/99873
-			if _active_pcam_3d.environment != null:
-				camera_3d.environment = _active_pcam_3d.environment.duplicate()
+	if not _is_2d:
+		# Polled because most CameraAttributes / Environment properties don't emit `changed`.
+		# TODO - Switch to the `changed` signal once these are merged:
+		# https://github.com/godotengine/godot/pull/99729
+		# https://github.com/godotengine/godot/pull/99873
+		_sync_camera_resources()
 
 
 func _noise_emitted_2d(noise_output: Transform2D) -> void:
@@ -935,7 +956,45 @@ func _camera_3d_edited(value: StringName) -> void:
 	push_warning("Camera3D properties are being overridden by ", _active_pcam_3d.name, "'s Camera3DResource")
 
 func _camera_3d_resource_property_changed(property: StringName, value: Variant) -> void:
+	if property in _SYNCED_CAMERA_SLOTS and value != null:
+		_sync_camera_resources()
+		return
 	camera_3d.set(property, value)
+
+
+## Points the Camera3D at host-owned copies of the active PCam3D's resources, and copies the
+## current values of the slots in [param copy_values] into them.
+func _sync_camera_resources(copy_values: Array[StringName] = _SYNCED_CAMERA_SLOTS) -> void:
+	for slot: StringName in _SYNCED_CAMERA_SLOTS:
+		var source: Resource = _active_pcam_3d.get(slot)
+		if source == null: continue
+
+		var owned: Resource = _owned_camera_resources.get(slot)
+		if owned == null or owned.get_class() != source.get_class():
+			owned = source.duplicate()
+			_owned_camera_resources[slot] = owned
+		elif slot in copy_values:
+			_copy_stored_properties(source, owned)
+
+		if camera_3d.get(slot) != owned:
+			camera_3d.set(slot, owned)
+
+
+static func _copy_stored_properties(from: Resource, to: Resource) -> void:
+	var cls: StringName = from.get_class()
+	if not _stored_property_names.has(cls):
+		var names: PackedStringArray = []
+		for property: Dictionary in from.get_property_list():
+			var property_name: String = property.name
+			if property.usage & PROPERTY_USAGE_STORAGE \
+			and not property_name.begins_with("resource_") and property_name != "script":
+				names.append(property_name)
+		_stored_property_names[cls] = names
+
+	for property_name: String in _stored_property_names[cls]:
+		var value: Variant = from.get(property_name)
+		if to.get(property_name) != value:
+			to.set(property_name, value)
 
 
 func _pcam_tween(delta: float) -> void:
@@ -1183,12 +1242,8 @@ func _pcam_tween(delta: float) -> void:
 		if Engine.is_editor_hint():
 			_active_pcam_2d.queue_redraw()
 	else:
-		if _active_pcam_3d.attributes != null:
-			if _cam_attribute_type == 0:
-				if not _active_pcam_3d.attributes.dof_blur_far_enabled:
-					camera_3d.attributes.dof_blur_far_enabled = false
-				if not _active_pcam_3d.attributes.dof_blur_near_enabled:
-					camera_3d.attributes.dof_blur_near_enabled = false
+		# Lands every value exactly on the target, including the DoF toggles forced on for the tween.
+		_sync_camera_resources()
 		_cam_h_offset_changed = false
 		_cam_v_offset_changed = false
 		_cam_fov_changed = false
