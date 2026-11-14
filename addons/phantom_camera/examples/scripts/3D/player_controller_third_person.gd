@@ -24,13 +24,13 @@ func _ready() -> void:
 	if _player_pcam.get_follow_mode() == _player_pcam.FollowMode.THIRD_PERSON:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
+func _process(delta: float) -> void:
+	if not is_zero_approx(velocity.length()):
+		var look_direction: Vector2 = Vector2( velocity.z, velocity.x).normalized()
+		_player_direction.rotation.y = look_direction.angle()
 
 func _physics_process(delta: float) -> void:
 	super(delta)
-
-	if velocity.length() > 0.2:
-		var look_direction: Vector2 = Vector2(velocity.z, velocity.x)
-		_player_direction.rotation.y = look_direction.angle()
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://cpyb3ucwcqj8l"]
+[gd_scene format=4 uid="uid://cpyb3ucwcqj8l"]
 
 [ext_resource type="Texture2D" uid="uid://c77npili4pel4" path="res://addons/phantom_camera/examples/textures/2D/level_spritesheet.png" id="1_h1rbo"]
 [ext_resource type="PackedScene" uid="uid://dg7rhrymsrrrm" path="res://addons/phantom_camera/examples/ui/ui_inventory.tscn" id="2_1f2t2"]
@@ -9,7 +9,6 @@
 [ext_resource type="FontFile" uid="uid://c4mm3of2mc8o5" path="res://addons/phantom_camera/fonts/Nunito-Black.ttf" id="7_ylx0h"]
 [ext_resource type="PackedScene" uid="uid://7kh0xydx0b1o" path="res://addons/phantom_camera/examples/example_scenes/2D/sub_scenes/playable_character_2d.tscn" id="8_ytsgf"]
 [ext_resource type="Script" uid="uid://t8wa4e5y5hcf" path="res://addons/phantom_camera/examples/scripts/2D/2d_trigger_area.gd" id="9_3r1pw"]
-[ext_resource type="Script" uid="uid://cnnaky2ns2pn4" path="res://addons/phantom_camera/examples/scripts/2D/player_character_body_2d_4.3.gd" id="9_5jy5e"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="10_guf2v"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cvmao"]
@@ -187,12 +186,12 @@ script = ExtResource("10_guf2v")
 duration = 1.2
 transition = 10
 
-[node name="Root" type="Node2D"]
+[node name="Root" type="Node2D" unique_id=599891020]
 
-[node name="Background" type="CanvasLayer" parent="."]
+[node name="Background" type="CanvasLayer" parent="." unique_id=742082090]
 layer = -3
 
-[node name="ColorRect" type="ColorRect" parent="Background"]
+[node name="ColorRect" type="ColorRect" parent="Background" unique_id=797057256]
 auto_translate_mode = 2
 anchors_preset = 15
 anchor_right = 1.0
@@ -206,7 +205,7 @@ grow_vertical = 2
 localize_numeral_system = false
 color = Color(0.137255, 0.14902, 0.196078, 1)
 
-[node name="Pillar" type="TileMapLayer" parent="."]
+[node name="Pillar" type="TileMapLayer" parent="." unique_id=866951293]
 use_parent_material = true
 scale = Vector2(3, 3)
 tile_map_data = PackedByteArray("AAAAAPr/AAAKAAIAAAAAAPv/AAAKAAMAAAAAAPz/AAAKAAMAAAAAAP3/AAAKAAMAAAAAAP7/AAAKAAMAAAAAAP//AAAKAAMAAAABAPr/AAALAAIAAAABAPv/AAALAAEAAAABAPz/AAALAAEAAAABAP3/AAALAAEAAAABAP7/AAALAAEAAAABAP//AAALAAEAAAACAPr/AAAMAAIAAAACAPv/AAAMAAMAAAACAPz/AAAMAAMAAAACAP3/AAAMAAMAAAACAP7/AAAMAAMAAAACAP//AAAMAAMAAAA=")
@@ -214,37 +213,75 @@ tile_set = SubResource("TileSet_na7gm")
 collision_enabled = false
 navigation_enabled = false
 
-[node name="Terrain" type="TileMapLayer" parent="."]
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=2040888960]
 use_parent_material = true
 scale = Vector2(3, 3)
 tile_map_data = PackedByteArray("AAABAAAAAAALAAAAAAACAAAAAAALAAAAAAADAAAAAAALAAAAAAAEAAAAAAALAAAAAAAFAAAAAAALAAAAAAAGAAAAAAALAAAAAAAHAAAAAAALAAAAAAAIAAAAAAALAAAAAAAJAAAAAAAMAAAAAAAJAAEAAAAMAAEAAAAJAAIAAAAMAAEAAAAJAAMAAAAMAAEAAAAJAAQAAAAMAAEAAAAJAAUAAAAMAAEAAAAJAAYAAAAMAAEAAAABAAEAAAALAAEAAAABAAIAAAALAAEAAAABAAMAAAALAAEAAAABAAQAAAAHAAEAAAABAAUAAAALAAEAAAABAAYAAAALAAEAAAACAAEAAAALAAEAAAACAAIAAAALAAEAAAACAAMAAAALAAEAAAACAAQAAAALAAEAAAACAAUAAAALAAEAAAACAAYAAAALAAEAAAADAAEAAAALAAEAAAADAAIAAAALAAEAAAADAAMAAAALAAEAAAADAAQAAAALAAEAAAADAAUAAAALAAEAAAADAAYAAAALAAEAAAAEAAEAAAAHAAEAAAAEAAIAAAALAAEAAAAEAAMAAAALAAEAAAAEAAQAAAALAAEAAAAEAAUAAAALAAEAAAAEAAYAAAALAAEAAAAFAAEAAAALAAEAAAAFAAIAAAALAAEAAAAFAAMAAAALAAEAAAAFAAQAAAAHAAEAAAAFAAUAAAALAAEAAAAFAAYAAAALAAEAAAAGAAEAAAALAAEAAAAGAAIAAAALAAEAAAAGAAMAAAALAAEAAAAGAAQAAAALAAEAAAAGAAUAAAALAAEAAAAGAAYAAAALAAEAAAAHAAEAAAALAAEAAAAHAAIAAAALAAEAAAAHAAMAAAALAAEAAAAHAAQAAAALAAEAAAAHAAUAAAALAAEAAAAHAAYAAAAHAAEAAAAIAAEAAAALAAEAAAAIAAIAAAALAAEAAAAIAAMAAAAHAAEAAAAIAAQAAAALAAEAAAAIAAUAAAALAAEAAAAIAAYAAAALAAEAAAAKAAEAAAAIAAUAAAALAAEAAAAIAAUAAAAMAAEAAAAIAAUAAAANAAEAAAAIAAUAAAAKAAIAAAAIAAYAAAALAAIAAAAIAAYAAAAMAAIAAAAIAAYAAAANAAIAAAAIAAYAAAAKAAMAAAALAAEAAAAKAAQAAAALAAEAAAALAAMAAAALAAEAAAALAAQAAAALAAEAAAAMAAMAAAALAAEAAAAMAAQAAAALAAEAAAANAAMAAAALAAEAAAANAAQAAAALAAEAAAAOAAEAAAAIAAUAAAAPAAEAAAAIAAUAAAAQAAEAAAAIAAUAAAAOAAIAAAAIAAYAAAAPAAIAAAAIAAYAAAAQAAIAAAAIAAYAAAAOAAMAAAALAAEAAAAPAAMAAAALAAEAAAAPAAQAAAALAAEAAAAQAAQAAAALAAEAAAAQAAMAAAALAAEAAAAOAAQAAAALAAEAAAARAAAAAAALAAQAAAARAAEAAAALAAUAAAARAAIAAAALAAUAAAARAAMAAAALAAUAAAARAAQAAAALAAUAAAASAAAAAAAMAAQAAAATAAAAAAAMAAQAAAAUAAAAAAAMAAQAAAAVAAAAAAAMAAQAAAAWAAAAAAAMAAQAAAAXAAAAAAAMAAQAAAASAAEAAAAMAAUAAAASAAIAAAAMAAUAAAASAAMAAAAMAAUAAAASAAQAAAAMAAUAAAATAAEAAAAMAAUAAAATAAIAAAAJAAYAAAATAAMAAAAMAAUAAAATAAQAAAAMAAUAAAAUAAEAAAAMAAUAAAAUAAIAAAAMAAUAAAAUAAMAAAAMAAUAAAAUAAQAAAAMAAUAAAAVAAEAAAAMAAUAAAAVAAIAAAAMAAUAAAAVAAMAAAAMAAUAAAAVAAQAAAAMAAUAAAAWAAEAAAAMAAUAAAAWAAIAAAAMAAUAAAAWAAMAAAAMAAUAAAAWAAQAAAAKAAYAAAAXAAEAAAAMAAUAAAAXAAIAAAAMAAUAAAAXAAMAAAAMAAUAAAAXAAQAAAAMAAUAAAARAAUAAAALAAUAAAARAAYAAAALAAUAAAASAAUAAAAJAAYAAAASAAYAAAAMAAUAAAATAAUAAAAMAAUAAAATAAYAAAAMAAUAAAAUAAUAAAAMAAUAAAAUAAYAAAAMAAUAAAAVAAUAAAAMAAUAAAAVAAYAAAAMAAUAAAAWAAUAAAAMAAUAAAAWAAYAAAAMAAUAAAAXAAUAAAAMAAUAAAAXAAYAAAAMAAUAAAAKAP7/AAALAAQAAAALAP7/AAAMAAQAAAAMAP7/AAAMAAQAAAAKAP//AAALAAYAAAALAP//AAAMAAYAAAAMAP//AAAMAAYAAAAQAP7/AAANAAQAAAAQAP//AAANAAYAAAANAP7/AAAMAAQAAAAOAP7/AAAMAAQAAAAPAP7/AAAMAAQAAAANAP//AAAMAAYAAAAOAP//AAAMAAYAAAAPAP//AAAMAAYAAAADAP//AAAOAAIAAAAEAP//AAAPAAIAAAAFAP//AAAQAAIAAAAGAP//AAAOAAIAAAAHAP//AAAPAAIAAAAIAP//AAAQAAIAAAD//wAAAAAKAAAAAAD//wEAAAAKAAEAAAD//wIAAAAKAAEAAAD//wMAAAAKAAEAAAD//wQAAAAKAAEAAAD//wUAAAAKAAEAAAD//wYAAAAKAAEAAAD//wcAAAAKAAEAAAD//wgAAAAKAAEAAAAAAAAAAAALAAAAAAAAAAEAAAALAAEAAAAAAAIAAAALAAEAAAAAAAMAAAALAAEAAAAAAAQAAAALAAEAAAAAAAUAAAALAAEAAAAAAAYAAAALAAEAAAAAAAcAAAALAAEAAAAAAAgAAAALAAEAAAABAAgAAAALAAEAAAACAAgAAAALAAEAAAADAAgAAAALAAEAAAAEAAgAAAALAAEAAAAFAAgAAAALAAEAAAAGAAgAAAALAAEAAAAHAAgAAAALAAEAAAAIAAgAAAALAAEAAAAJAAgAAAAMAAEAAAAJAAcAAAAMAAEAAAAIAAcAAAALAAEAAAAHAAcAAAALAAEAAAAGAAcAAAAHAAEAAAAFAAcAAAALAAEAAAAEAAcAAAALAAEAAAADAAcAAAALAAEAAAACAAcAAAALAAEAAAABAAcAAAALAAEAAAD///v/AAANAAQAAAD///z/AAANAAUAAAD///3/AAANAAUAAAD///7/AAANAAUAAAD/////AAANAAYAAAD+//v/AAAMAAQAAAD9//v/AAAMAAQAAAD+//z/AAAJAAYAAAD9//z/AAAMAAUAAAD6////AAAMAAUAAAD7////AAAMAAUAAAD8////AAAMAAUAAAD9////AAAMAAUAAAD+////AAAMAAUAAAD+//7/AAAMAAUAAAD+//3/AAAMAAUAAAD9//3/AAAMAAUAAAD9//7/AAAKAAYAAAD+/wAAAAANAAUAAAD+/wEAAAANAAUAAAD+/wIAAAANAAUAAAD+/wMAAAANAAUAAAD+/wQAAAANAAUAAAD+/wUAAAANAAUAAAD+/wYAAAANAAUAAAD9/wAAAAAMAAUAAAD8/wAAAAAMAAUAAAD7/wAAAAAMAAUAAAD6/wAAAAAMAAUAAAD5/wAAAAALAAUAAAD6/wEAAAAMAAUAAAD6/wIAAAAMAAUAAAD6/wMAAAAMAAUAAAD7/wMAAAAMAAUAAAD7/wQAAAAMAAUAAAD8/wEAAAAMAAUAAAD9/wEAAAAMAAUAAAD9/wIAAAAMAAUAAAD9/wMAAAAMAAUAAAD9/wQAAAAMAAUAAAD9/wUAAAAMAAUAAAD9/wYAAAAMAAUAAAD8/wUAAAAMAAUAAAD7/wUAAAAMAAUAAAD8/wYAAAAMAAUAAAD8/wQAAAAKAAYAAAD8/wMAAAAMAAUAAAD8/wIAAAAMAAUAAAD7/wEAAAAMAAUAAAD7/wIAAAAJAAYAAAD7/wYAAAAMAAUAAAD6/wYAAAAMAAUAAAD6/wUAAAAMAAUAAAD6/wQAAAAMAAUAAAD5////AAALAAUAAAD5/wEAAAALAAUAAAD5/wIAAAALAAUAAAD5/wMAAAALAAUAAAD5/wQAAAALAAUAAAD5/wUAAAALAAUAAAD5/wYAAAALAAUAAAD8//r/AAALAAMAAAAOAP3/AAALAAMAAAALAP3/AAALAAMAAAASAP//AAALAAMAAAAUAP//AAALAAMAAAD6//r/AAAQAAUAAAD7//r/AAALAAMAAAANAP3/AAAOAAYAAAAWAP//AAAPAAYAAAD9//r/AAAPAAUAAAAXAP//AAAQAAUAAAD5//v/AAALAAQAAAD5//z/AAALAAUAAAD5//3/AAALAAUAAAD5//7/AAALAAUAAAD6//v/AAAMAAQAAAD6//z/AAAKAAYAAAD6//3/AAAMAAUAAAD6//7/AAAMAAUAAAD7//v/AAAMAAQAAAD7//z/AAAMAAUAAAD7//3/AAAMAAUAAAD7//7/AAAMAAUAAAD8//v/AAAMAAQAAAD8//z/AAAMAAUAAAD8//3/AAAMAAUAAAD8//7/AAAMAAUAAAARAAcAAAALAAUAAAARAAgAAAALAAYAAAAXAAcAAAAMAAUAAAAWAAcAAAAMAAUAAAAVAAcAAAAMAAUAAAAUAAcAAAAMAAUAAAATAAcAAAAMAAUAAAASAAcAAAAMAAUAAAASAAgAAAAMAAYAAAATAAgAAAAMAAYAAAAUAAgAAAAMAAYAAAAVAAgAAAAMAAYAAAAWAAgAAAAMAAYAAAAXAAgAAAAMAAYAAAAKAAUAAAALAAEAAAAKAAYAAAALAAEAAAAKAAcAAAALAAEAAAAKAAgAAAALAAEAAAALAAUAAAALAAEAAAALAAYAAAALAAEAAAALAAcAAAALAAEAAAALAAgAAAALAAEAAAAMAAUAAAALAAEAAAAMAAYAAAALAAEAAAAMAAcAAAALAAEAAAAMAAgAAAALAAEAAAANAAUAAAALAAEAAAANAAYAAAALAAEAAAANAAcAAAALAAEAAAANAAgAAAALAAEAAAAOAAUAAAALAAEAAAAOAAYAAAALAAEAAAAOAAcAAAALAAEAAAAOAAgAAAALAAEAAAAPAAUAAAALAAEAAAAPAAYAAAALAAEAAAAPAAcAAAALAAEAAAAPAAgAAAALAAEAAAAQAAUAAAALAAEAAAAQAAYAAAALAAEAAAAQAAcAAAALAAEAAAAQAAgAAAALAAEAAAAdAAAAAAANAAQAAAAdAAEAAAANAAUAAAAdAAIAAAANAAUAAAAdAAMAAAANAAUAAAAdAAQAAAANAAUAAAAdAAUAAAANAAUAAAAdAAYAAAANAAUAAAAdAAcAAAANAAUAAAAdAAgAAAANAAYAAAAYAAAAAAAMAAQAAAAZAAAAAAAMAAQAAAAaAAAAAAAMAAQAAAAbAAAAAAAMAAQAAAAcAAAAAAAMAAQAAAAYAAEAAAAMAAUAAAAZAAEAAAAMAAUAAAAaAAEAAAAMAAUAAAAbAAEAAAAMAAUAAAAcAAEAAAAMAAUAAAAcAAIAAAAMAAUAAAAcAAMAAAAJAAYAAAAbAAIAAAAMAAUAAAAaAAIAAAAMAAUAAAAZAAIAAAAMAAUAAAAYAAIAAAAMAAUAAAAYAAMAAAAMAAUAAAAYAAQAAAAMAAUAAAAYAAUAAAAMAAUAAAAYAAYAAAAMAAUAAAAYAAcAAAAMAAUAAAAYAAgAAAAMAAYAAAAZAAMAAAAMAAUAAAAZAAQAAAAMAAUAAAAZAAUAAAAMAAUAAAAZAAYAAAAMAAUAAAAZAAcAAAAMAAUAAAAZAAgAAAAMAAYAAAAaAAMAAAAMAAUAAAAaAAQAAAAMAAUAAAAaAAUAAAAMAAUAAAAaAAYAAAAKAAYAAAAaAAcAAAAMAAUAAAAaAAgAAAAMAAYAAAAbAAMAAAAMAAUAAAAbAAQAAAAMAAUAAAAbAAUAAAAMAAUAAAAbAAYAAAAMAAUAAAAbAAcAAAAMAAUAAAAbAAgAAAAMAAYAAAAcAAQAAAAMAAUAAAAcAAUAAAAMAAUAAAAcAAYAAAAMAAUAAAAcAAcAAAAMAAUAAAAcAAgAAAAMAAYAAAAPAP3/AAAQAAYAAAAiAPr/AAAQAAYAAAAfAPr/AAAOAAYAAAAkAPr/AAAPAAYAAAAgAPr/AAAPAAUAAAAbAP//AAALAAMAAAAaAP//AAALAAMAAAAjAPr/AAALAAMAAAAhAPr/AAALAAMAAAATAP//AAALAAMAAAAVAP//AAALAAMAAAAeAPv/AAALAAQAAAAeAPz/AAALAAUAAAAeAP3/AAALAAUAAAAeAP7/AAALAAUAAAAeAP//AAALAAUAAAAmAP//AAANAAUAAAAmAP7/AAANAAUAAAAmAP3/AAANAAUAAAAmAPv/AAANAAQAAAAfAPv/AAAMAAQAAAAgAPv/AAAMAAQAAAAhAPv/AAAMAAQAAAAiAPv/AAAMAAQAAAAjAPv/AAAMAAQAAAAkAPv/AAAMAAQAAAAlAPv/AAAMAAQAAAAmAPz/AAANAAUAAAAlAP//AAAMAAUAAAAlAP7/AAAMAAUAAAAlAP3/AAAMAAUAAAAlAPz/AAAMAAUAAAAkAPz/AAAMAAUAAAAjAPz/AAAMAAUAAAAiAPz/AAAMAAUAAAAhAPz/AAAMAAUAAAAgAPz/AAAMAAUAAAAfAPz/AAAMAAUAAAAfAP3/AAAKAAYAAAAfAP7/AAAMAAUAAAAfAP//AAAMAAUAAAAkAP//AAAKAAYAAAAkAP7/AAAJAAYAAAAkAP3/AAAMAAUAAAAjAP3/AAAMAAUAAAAiAP3/AAAMAAUAAAAhAP3/AAAMAAUAAAAgAP3/AAAMAAUAAAAgAP7/AAAJAAYAAAAgAP//AAAMAAUAAAAjAP//AAAMAAUAAAAjAP7/AAAMAAUAAAAiAP7/AAAMAAUAAAAhAP7/AAAMAAUAAAAhAP//AAAMAAUAAAAiAP//AAAMAAUAAAAeAAgAAAALAAYAAAAeAAcAAAALAAUAAAAeAAYAAAALAAUAAAAeAAUAAAALAAUAAAAeAAQAAAALAAUAAAAeAAMAAAALAAUAAAAeAAIAAAALAAUAAAAeAAEAAAALAAUAAAAeAAAAAAALAAUAAAAfAAgAAAAMAAYAAAAgAAgAAAAMAAYAAAAhAAgAAAAMAAYAAAAiAAgAAAAMAAYAAAAjAAgAAAAMAAYAAAAkAAgAAAAMAAYAAAAlAAgAAAAMAAYAAAAmAAgAAAANAAYAAAAmAAAAAAANAAUAAAAmAAEAAAANAAUAAAAmAAIAAAANAAUAAAAmAAMAAAANAAUAAAAmAAQAAAANAAUAAAAmAAUAAAANAAUAAAAmAAYAAAANAAUAAAAmAAcAAAANAAUAAAAfAAAAAAAMAAUAAAAfAAEAAAAMAAUAAAAfAAIAAAAMAAUAAAAfAAMAAAAMAAUAAAAfAAQAAAAMAAUAAAAfAAUAAAAMAAUAAAAfAAYAAAAKAAYAAAAfAAcAAAAMAAUAAAAgAAAAAAAMAAUAAAAgAAEAAAAMAAUAAAAgAAIAAAAMAAUAAAAgAAMAAAAMAAUAAAAgAAQAAAAMAAUAAAAgAAUAAAAMAAUAAAAgAAYAAAAMAAUAAAAgAAcAAAAMAAUAAAAhAAAAAAAMAAUAAAAhAAEAAAAMAAUAAAAhAAIAAAAKAAYAAAAhAAMAAAAMAAUAAAAhAAQAAAAMAAUAAAAhAAUAAAAMAAUAAAAhAAYAAAAMAAUAAAAhAAcAAAAMAAUAAAAiAAAAAAAMAAUAAAAiAAEAAAAMAAUAAAAiAAIAAAAMAAUAAAAiAAMAAAAMAAUAAAAiAAQAAAAKAAYAAAAiAAUAAAAKAAYAAAAiAAYAAAAMAAUAAAAiAAcAAAAMAAUAAAAjAAAAAAAMAAUAAAAjAAEAAAAMAAUAAAAjAAIAAAAMAAUAAAAjAAMAAAAMAAUAAAAjAAQAAAAMAAUAAAAjAAUAAAAMAAUAAAAjAAYAAAAMAAUAAAAjAAcAAAAMAAUAAAAkAAAAAAAKAAYAAAAkAAEAAAAMAAUAAAAkAAIAAAAMAAUAAAAkAAMAAAAMAAUAAAAkAAQAAAAMAAUAAAAkAAUAAAAMAAUAAAAkAAYAAAAMAAUAAAAkAAcAAAAKAAYAAAAlAAAAAAAMAAUAAAAlAAEAAAAMAAUAAAAlAAIAAAAMAAUAAAAlAAMAAAAMAAUAAAAlAAQAAAAMAAUAAAAlAAUAAAAMAAUAAAAlAAYAAAAMAAUAAAAlAAcAAAAMAAUAAAD6/wcAAAAMAAUAAAD7/wcAAAAMAAUAAAD8/wcAAAAMAAUAAAD9/wcAAAAMAAUAAAD5/wcAAAALAAUAAAD+/wcAAAANAAUAAAD5/wgAAAALAAYAAAD6/wgAAAAMAAYAAAD7/wgAAAAMAAYAAAD8/wgAAAAMAAYAAAD9/wgAAAAMAAYAAAD+/wgAAAANAAYAAAA=")
 tile_set = SubResource("TileSet_na7gm")
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=1108048272]
 
-[node name="UIInventory" parent="UI" instance=ExtResource("2_1f2t2")]
+[node name="UIInventory" parent="UI" unique_id=1206115884 instance=ExtResource("2_1f2t2")]
 unique_name_in_owner = true
 visible = false
 
-[node name="UISign" parent="UI" instance=ExtResource("3_o6nri")]
+[node name="UISign" parent="UI" unique_id=682947157 instance=ExtResource("3_o6nri")]
 unique_name_in_owner = true
 visible = false
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1789103511]
 physics_interpolation_mode = 1
+top_level = true
 position = Vector2(227, -28)
 process_callback = 0
 position_smoothing_speed = 10.0
 editor_draw_limits = true
 
-[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+[node name="PhantomCameraHost" type="Node" parent="Camera2D" unique_id=219859310]
 process_priority = 300
 process_physics_priority = 300
 script = ExtResource("4_j7670")
 
-[node name="Player" type="Node" parent="."]
+[node name="Node" type="Node" parent="." unique_id=1756523422]
 
-[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" node_paths=PackedStringArray("follow_target")]
+[node name="HeaderLabel" type="Label" parent="Node" unique_id=70361028]
+offset_left = 114.0
+offset_top = 41.0
+offset_right = 348.0
+offset_bottom = 134.0
+theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("7_ylx0h")
+theme_override_font_sizes/font_size = 32
+text = "Camera Tweening"
+
+[node name="DescLabel" type="Label" parent="Node" unique_id=465675394]
+offset_left = 114.0
+offset_top = 83.0
+offset_right = 444.0
+offset_bottom = 176.0
+theme_override_colors/font_color = Color(0.93199617, 0.9621823, 0.93199617, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("7_ylx0h")
+theme_override_font_sizes/font_size = 18
+text = "Different tweens can be applied
+to different PhantomCameras"
+
+[node name="ControlLabel" type="Label" parent="Node" unique_id=1133011928]
+offset_left = 167.0
+offset_top = -132.0
+offset_right = 332.0
+offset_bottom = -68.0
+theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
+theme_override_fonts/font = ExtResource("7_ylx0h")
+text = "[WASD] to move
+[Space] to jump"
+
+[node name="Player" type="Node" parent="." unique_id=193717957]
+
+[node name="PlayerPhantomCamera2D" type="Node2D" parent="Player" unique_id=591709731 node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
 top_level = true
 position = Vector2(227, -28)
@@ -257,32 +294,21 @@ tween_on_load = false
 follow_damping = true
 draw_limits = true
 
-[node name="Label" type="Label" parent="Player"]
-offset_left = 167.0
-offset_top = -132.0
-offset_right = 332.0
-offset_bottom = -68.0
-theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
-theme_override_fonts/font = ExtResource("7_ylx0h")
-text = "[WASD] to move
-[Space] to jump"
-
-[node name="CharacterBody2D" parent="Player" instance=ExtResource("8_ytsgf")]
+[node name="CharacterBody2D" parent="Player" unique_id=1695826118 instance=ExtResource("8_ytsgf")]
 position = Vector2(227, -28)
-script = ExtResource("9_5jy5e")
 
-[node name="WideArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
+[node name="WideArea" type="Area2D" parent="." unique_id=1052020142 node_paths=PackedStringArray("area_pcam")]
 position = Vector2(393, -40)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("9_3r1pw")
 area_pcam = NodePath("PhantomCamera2D")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WideArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WideArea" unique_id=1728769655]
 position = Vector2(0, -40)
 shape = SubResource("RectangleShape2D_tgk1y")
 
-[node name="ColorRect" type="ColorRect" parent="WideArea"]
+[node name="ColorRect" type="ColorRect" parent="WideArea" unique_id=1714040354]
 offset_left = -70.0
 offset_top = -120.0
 offset_right = 70.0
@@ -291,7 +317,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color(0.556863, 0.447059, 0.545098, 0.698039)
 
-[node name="Label" type="Label" parent="WideArea"]
+[node name="Label" type="Label" parent="WideArea" unique_id=102380529]
 offset_left = -77.0
 offset_top = -250.0
 offset_right = 76.0
@@ -305,29 +331,29 @@ Duration:
 0.6s"
 horizontal_alignment = 1
 
-[node name="PhantomCamera2D" type="Node2D" parent="WideArea"]
+[node name="PhantomCamera2D" type="Node2D" parent="WideArea" unique_id=1954088931]
 position = Vector2(4, -100)
 script = ExtResource("5_gvv7r")
 zoom = Vector2(0.8, 0.8)
 tween_resource = SubResource("Resource_mtp70")
 draw_limits = true
 
-[node name="UpperZoomArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
+[node name="UpperZoomArea" type="Area2D" parent="." unique_id=307187442 node_paths=PackedStringArray("area_pcam")]
 position = Vector2(649, -135)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("9_3r1pw")
 area_pcam = NodePath("PhantomCamera2D")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperZoomArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperZoomArea" unique_id=1521901359]
 position = Vector2(0, -40)
 shape = SubResource("RectangleShape2D_clm0y")
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="UpperZoomArea"]
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="UpperZoomArea" unique_id=631881785]
 position = Vector2(0, -40)
 shape = SubResource("RectangleShape2D_clm0y")
 
-[node name="ColorRect" type="ColorRect" parent="UpperZoomArea"]
+[node name="ColorRect" type="ColorRect" parent="UpperZoomArea" unique_id=1576979152]
 offset_left = -52.0
 offset_top = -120.0
 offset_right = 52.0
@@ -336,7 +362,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color(0.556863, 0.447059, 0.545098, 0.698039)
 
-[node name="Label" type="Label" parent="UpperZoomArea"]
+[node name="Label" type="Label" parent="UpperZoomArea" unique_id=949478751]
 offset_left = -74.0
 offset_top = -251.0
 offset_right = 79.0
@@ -350,25 +376,25 @@ Duration:
 0.3s"
 horizontal_alignment = 1
 
-[node name="PhantomCamera2D" type="Node2D" parent="UpperZoomArea"]
+[node name="PhantomCamera2D" type="Node2D" parent="UpperZoomArea" unique_id=681814594]
 position = Vector2(2, -83)
 script = ExtResource("5_gvv7r")
 zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_8jg5c")
 draw_limits = true
 
-[node name="ForwardArea" type="Area2D" parent="." node_paths=PackedStringArray("area_pcam")]
+[node name="ForwardArea" type="Area2D" parent="." unique_id=1215321111 node_paths=PackedStringArray("area_pcam")]
 position = Vector2(1136, -38)
 collision_layer = 2
 collision_mask = 2
 script = ExtResource("9_3r1pw")
 area_pcam = NodePath("PhantomCamera2D")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ForwardArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ForwardArea" unique_id=1814673745]
 position = Vector2(0, -42)
 shape = SubResource("RectangleShape2D_uka0w")
 
-[node name="ColorRect" type="ColorRect" parent="ForwardArea"]
+[node name="ColorRect" type="ColorRect" parent="ForwardArea" unique_id=1526119727]
 offset_left = -280.0
 offset_top = -122.0
 offset_right = 280.0
@@ -377,7 +403,7 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color(0.556863, 0.447059, 0.545098, 0.698039)
 
-[node name="Label" type="Label" parent="ForwardArea"]
+[node name="Label" type="Label" parent="ForwardArea" unique_id=655851411]
 offset_left = -76.0
 offset_top = -252.0
 offset_right = 77.0
@@ -391,7 +417,7 @@ Duration:
 1.2s"
 horizontal_alignment = 1
 
-[node name="PhantomCamera2D" type="Node2D" parent="ForwardArea"]
+[node name="PhantomCamera2D" type="Node2D" parent="ForwardArea" unique_id=385850186]
 position = Vector2(344, -46)
 script = ExtResource("5_gvv7r")
 zoom = Vector2(0.9, 0.9)

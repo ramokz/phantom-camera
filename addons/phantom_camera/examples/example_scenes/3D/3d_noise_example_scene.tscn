@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://d0fyuvesb472p"]
+[gd_scene format=3 uid="uid://d0fyuvesb472p"]
 
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_25rmy"]
 [ext_resource type="Script" uid="uid://x5g7kf5k2mac" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="2_7nd2u"]
@@ -28,8 +28,7 @@ script = ExtResource("6_dmm4a")
 
 [sub_resource type="Resource" id="Resource_2l4w0"]
 script = ExtResource("3_t4fhv")
-amplitude = 40.0
-randomize_noise_seed = 0
+randomize_noise_seed = false
 rotational_multiplier_z = 0.0
 positional_multiplier_x = 0.1
 positional_multiplier_y = 0.1
@@ -37,8 +36,8 @@ positional_multiplier_z = 0.1
 
 [sub_resource type="Resource" id="Resource_6tnhy"]
 script = ExtResource("3_t4fhv")
-frequency = 20.0
-randomize_noise_seed = 0
+amplitude = 20.608
+frequency = 2.365
 noise_seed = 928
 rotational_multiplier_z = 0.1
 
@@ -55,40 +54,41 @@ border_color = Color(0.227451, 0.72549, 0.603922, 1)
 corner_radius_bottom_right = 20
 expand_margin_bottom = 6.0
 
-[node name="Root" type="Node3D"]
+[node name="Root" type="Node3D" unique_id=946792029]
 
-[node name="MainCamera3D" type="Camera3D" parent="."]
+[node name="MainCamera3D" type="Camera3D" parent="." unique_id=432987684]
 unique_name_in_owner = true
-physics_interpolation_mode = 1
-transform = Transform3D(0.096600816, -0.02989527, 0.9948742, 0, 0.99954885, 0.030035738, -0.99532324, -0.0029014763, 0.09655723, -16.46, 0.5, 4.249)
+physics_interpolation_mode = 2
+transform = Transform3D(0.9997436, 0.0002995081, -0.022642897, -1.4551915e-11, 0.9999125, 0.013226308, 0.02264488, -0.013222916, 0.99965614, 0, 0.5, 4.249)
+top_level = true
 
-[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=253171402]
 process_priority = 300
 process_physics_priority = 300
 script = ExtResource("1_25rmy")
 
-[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="."]
+[node name="PlayerCharacterBody3D" type="CharacterBody3D" parent="." unique_id=1455388191]
 unique_name_in_owner = true
-transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, -16.46, 0.5, 4.249)
+transform = Transform3D(0.999897, 0.0143636, 0, -0.0143636, 0.999897, 0, 0, 0, 1, 0, 0.5, 4.249)
 script = ExtResource("2_7nd2u")
 
-[node name="PlayerVisual" type="MeshInstance3D" parent="PlayerCharacterBody3D"]
+[node name="PlayerVisual" type="MeshInstance3D" parent="PlayerCharacterBody3D" unique_id=355210287]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-05, 0.00331134, 0)
 mesh = SubResource("CapsuleMesh_yvgu3")
 surface_material_override/0 = SubResource("StandardMaterial3D_vc6km")
 
-[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D"]
+[node name="PlayerArea3D" type="Area3D" parent="PlayerCharacterBody3D" unique_id=62299912]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D/PlayerArea3D" unique_id=1676626813]
 shape = SubResource("CapsuleShape3D_lsrh7")
 
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D"]
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="PlayerCharacterBody3D" unique_id=633757656]
 shape = SubResource("CapsuleShape3D_lsrh7")
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="." unique_id=422510276 node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(0.00441533, 0, 0.999915, 0, 0.999995, 0, -0.999923, 0, 0.00441529, -16.46, 0.5, 4.249)
+transform = Transform3D(0.99993294, 0, 0, 0, 0.999995, 0, 0, 0, 0.9999249, 0, 0.5, 4.249)
 top_level = true
 script = ExtResource("4_tnm2f")
 priority = 10
@@ -102,7 +102,7 @@ noise_emitter_layer = 1
 align_transform_with_view = Callable()
 align_position_with_view = Callable()
 
-[node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="."]
+[node name="PlayerPhantomCameraNoiseEmitter3D" type="Node3D" parent="." unique_id=1246161184]
 unique_name_in_owner = true
 transform = Transform3D(-4.37085e-08, 0, 0.999925, 0, 0.999995, 0, -0.999933, 0, -4.37081e-08, -16.46, 0.503767, 4.249)
 script = ExtResource("7_2vtho")
@@ -110,41 +110,60 @@ noise = SubResource("Resource_6tnhy")
 duration = 0.1
 decay_time = 0.1
 
-[node name="Environment" type="Node" parent="."]
+[node name="Environment" type="Node" parent="." unique_id=1949803985]
 
-[node name="Floor" parent="Environment" instance=ExtResource("8_bw5oq")]
+[node name="Floor" parent="Environment" unique_id=58362068 instance=ExtResource("8_bw5oq")]
 transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
 metadata/_edit_lock_ = true
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 6.539, 2.5)
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment" unique_id=1023848775]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.9332724, 6.539, 7.4843373)
 use_collision = true
 size = Vector3(178.429, 14.0773, 1)
 material = SubResource("StandardMaterial3D_qi01t")
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 8.83707, 6.53866, -1.80739)
+[node name="CSGBox3D3" type="CSGBox3D" parent="Environment" unique_id=493692367]
+transform = Transform3D(-1, 0, 8.742279e-08, 0, 1, 0, -8.742279e-08, 0, -1, 6.2406616, 6.53866, 18.846409)
 use_collision = true
 size = Vector3(178.429, 14.0773, 1)
 material = SubResource("StandardMaterial3D_qi01t")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -38.9392, 6.53866, -1.80739)
+[node name="CSGBox3D4" type="CSGBox3D" parent="Environment" unique_id=608608771]
+transform = Transform3D(-1, 0, 8.742279e-08, 0, 1, 0, -8.742279e-08, 0, -1, 6.2406635, 6.53866, -28.929863)
 use_collision = true
 size = Vector3(178.429, 14.0773, 1)
 material = SubResource("StandardMaterial3D_qi01t")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 6.539, 6)
+[node name="CSGBox3D2" type="CSGBox3D" parent="Environment" unique_id=516204886]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -2.5667286, 6.539, 7.484337)
 use_collision = true
 size = Vector3(178.429, 14.0773, 1)
 material = SubResource("StandardMaterial3D_qi01t")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=602492378]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
 metadata/_edit_lock_ = true
 
-[node name="EmitterTip" type="Panel" parent="."]
+[node name="NPCDescriptionLabelHeader" type="Label3D" parent="Environment" unique_id=2062442844]
+transform = Transform3D(0.99999905, 0, 0, 0, 0.9999998, 0, 0, 0, 0.99999905, 0, 2.7580137, 0.21571493)
+pixel_size = 0.0025
+modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
+text = "Framed Follow Example"
+font = ExtResource("11_vp57v")
+font_size = 120
+outline_size = 32
+
+[node name="NPCDescriptionLabelDesc" type="Label3D" parent="Environment" unique_id=642375836]
+transform = Transform3D(0.99999905, 0, 0, 0, 0.9999998, 0, 0, 0, 0.99999905, 0, 2.5615983, 0.21571493)
+pixel_size = 0.0025
+text = "Applies a persistent or manually
+triggered camera shake effect"
+font = ExtResource("11_vp57v")
+font_size = 90
+outline_size = 24
+vertical_alignment = 0
+
+[node name="EmitterTip" type="Panel" parent="." unique_id=1769461711]
 unique_name_in_owner = true
 visible = false
 anchors_preset = -1
@@ -152,7 +171,7 @@ anchor_right = 0.3
 anchor_bottom = 0.1
 theme_override_styles/panel = SubResource("StyleBoxFlat_ey47a")
 
-[node name="Guidance" type="RichTextLabel" parent="EmitterTip"]
+[node name="Guidance" type="RichTextLabel" parent="EmitterTip" unique_id=923998204]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.5

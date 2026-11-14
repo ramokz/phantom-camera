@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhd1kwv2fwj1y"]
+[gd_scene format=3 uid="uid://bhd1kwv2fwj1y"]
 
 [ext_resource type="Script" uid="uid://bkr71vxe2t18n" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_third_person.gd" id="1_skas8"]
 
@@ -12,32 +12,42 @@ albedo_color = Color(0.988235, 0.498039, 0.498039, 1)
 [sub_resource type="PrismMesh" id="PrismMesh_wg1x3"]
 size = Vector3(0.5, 0.5, 0.3)
 
-[node name="PlayerCharacterBody3D" type="CharacterBody3D"]
-transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, -0.0194088, 0.506884, -0.0163251)
+[sub_resource type="CylinderMesh" id="CylinderMesh_eoyiy"]
+top_radius = 0.16357422
+bottom_radius = 0.16357422
+height = 0.77526855
+
+[node name="PlayerCharacterBody3D" type="CharacterBody3D" unique_id=1360606715]
+transform = Transform3D(0.999903, 0.0139622, 0, -0.0139622, 0.999903, 0, 0, 0, 1, 0, 0, 0)
 collision_layer = 2
 script = ExtResource("1_skas8")
 metadata/_edit_group_ = true
 
-[node name="PlayerArea3D" type="Area3D" parent="."]
+[node name="PlayerArea3D" type="Area3D" parent="." unique_id=66304959]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerArea3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerArea3D" unique_id=148745269]
 shape = SubResource("CapsuleShape3D_s61dn")
 
-[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="PlayerCollisionShape3D" type="CollisionShape3D" parent="." unique_id=1640250592]
 shape = SubResource("CapsuleShape3D_s61dn")
 
-[node name="PlayerVisual" type="Node3D" parent="."]
+[node name="PlayerVisual" type="Node3D" parent="." unique_id=1469245359]
 unique_name_in_owner = true
 
-[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerVisual"]
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="PlayerVisual" unique_id=874388549]
 transform = Transform3D(1, 0, 0, 0, 1, 4.65661e-10, 0, 0, 1, 0, 0, 0)
 mesh = SubResource("CapsuleMesh_47f0o")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
 
-[node name="PlayerDirection" type="MeshInstance3D" parent="PlayerVisual"]
+[node name="PlayerDirection" type="MeshInstance3D" parent="PlayerVisual" unique_id=1130455610]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, -9.31323e-10, 1, 4.65661e-10, 2.98023e-08, 0, 1, -0.0156226, 1.08631, 0)
+transform = Transform3D(1, 0, 0, -9.313226e-10, 1, 4.6566104e-10, 2.98023e-08, 0, 1, -0.0156226, 1.0863101, 0)
 mesh = SubResource("PrismMesh_wg1x3")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_mv4do")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PlayerVisual/PlayerDirection" unique_id=335714626]
+transform = Transform3D(1, 1.6653345e-16, 0, 9.313226e-10, -4.417707e-08, -1, -2.9802306e-08, 1, -4.371139e-08, 0.015622606, -0.46853566, 0.6294199)
+mesh = SubResource("CylinderMesh_eoyiy")
+skeleton = NodePath("../../../..")
