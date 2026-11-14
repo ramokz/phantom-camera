@@ -821,7 +821,7 @@ var _viewport_aspect_ratio: float = 1.77:
 	get:
 		var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 		return viewport_size.x / viewport_size.y
-var _is_previous_tick_valid: bool
+var _is_previous_tick_valid: bool = false
 
 var _follow_third_person_shape_cast: ShapeCast3D
 var _has_third_person_raycaster: bool = false

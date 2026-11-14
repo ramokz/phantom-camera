@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 @export var SPEED: float = 5.0
 @export var JUMP_VELOCITY: float = 4.5
-@export var enable_gravity = true
+@export var enable_gravity: bool = true
 
 @onready var _camera: Camera3D
 

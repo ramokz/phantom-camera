@@ -427,7 +427,7 @@ var _should_rotate_with_target: bool = false
 	set = set_dead_zone_height,
 	get = get_dead_zone_height
 
-## If true, will center the target at the center of the viewport when the [param PhantomCamera3D] becomes active and begins tweening towards it.[br]
+## If true, will center the target at the center of the viewport when the [param PhantomCamera2D] becomes active and begins tweening towards it.[br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
 @export var center_on_active: bool = true:
 	set = set_center_on_active,
@@ -551,7 +551,8 @@ var _rotation_velocity_ref: float = 0.0 # Stores and applies the velocity of the
 
 var _has_follow_path: bool = false
 
-var _center_on_active: bool
+var _is_previous_tick_valid: bool = false
+var _center_on_active: bool = true
 
 var _has_lookahead_acceleration: bool = true
 var _has_lookahead_deceleration: bool = true
@@ -567,7 +568,6 @@ var _lookahead_offset_velocity_ref: Vector2 = Vector2.ZERO
 
 var _lookahead_sample_pos_prev: Vector2 = Vector2.ZERO
 var _lookahead_has_prev_sample: bool = false
-
 
 static var _draw_limits: bool = false
 
@@ -880,6 +880,10 @@ func _set_follow_position(delta: float) -> void:
 				var viewport_rect: Vector2 = get_viewport_rect().size
 				if lookahead:
 					target_position = _apply_lookahead(target_position, delta)
+
+				if not _is_previous_tick_valid:
+					_follow_target_position = global_position
+					_is_previous_tick_valid = true
 
 				if not _is_active and _center_on_active:
 					_follow_target_position = target_position
@@ -1333,12 +1337,12 @@ func set_tween_skip(caller: Node, value: bool) -> void:
 func get_tween_skip() -> bool:
 	return _tween_skip
 
-## Returns the [Transform3D] value based on the [member follow_mode] / [member look_at_mode] target value.
+## Returns the [Transform2D] value based on the [member follow_mode] / [member look_at_mode] target value.
 func get_transform_output() -> Transform2D:
 	return _transform_output
 
 
-## Returns the noise [Transform3D] value.
+## Returns the noise [Transform2D] value.
 func get_noise_transform() -> Transform2D:
 	return _transform_noise
 

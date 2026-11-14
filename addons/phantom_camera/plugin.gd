@@ -101,7 +101,6 @@ func _enter_tree() -> void:
 	## Setting for enabling / disabling mixed Follow + LookAt mode tips in the output
 	if not ProjectSettings.has_setting(_settings_show_mixed_mode_tips):
 		ProjectSettings.set_setting(_settings_show_mixed_mode_tips, true)
-		ProjectSettings
 	ProjectSettings.add_property_info({
 		"name": _settings_show_mixed_mode_tips,
 		"type": TYPE_BOOL,
