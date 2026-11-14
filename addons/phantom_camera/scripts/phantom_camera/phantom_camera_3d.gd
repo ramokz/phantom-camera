@@ -495,7 +495,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 @export_subgroup("Dead Zones")
 ## Defines the left and right dead zone areas. While the target is within it, the
 ## [param PhantomCamera3D] will not move in the horizontal axis.
-## If the targeted node leaves the horizontal bounds, the
+## If the [member follow_target] node leaves the horizontal bounds, the
 ## [param PhantomCamera3D] will follow the target horizontally to keep
 ## it within bounds.[br]
 ## [b]X[/b] = Left Dead Zone[br]
@@ -506,9 +506,9 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	get = get_dead_zone_width
 
 ## Defines the top and bottom dead zone areas. While the target is within it, the
-## [param PhantomCamera3D] will not move in the vertical axis.
-## If the targeted node leaves the vertical bounds, the
-## [param PhantomCamera3D] will follow the target vertically to keep
+## [param PCam3D] will not move in the vertical axis.
+## If the [member follow_target] node leaves the vertical bounds, the
+## [param PCam3D] will follow the target vertically to keep
 ## it within bounds.[br]
 ## [b]X[/b] = Top Dead Zone[br]
 ## [b]Y[/b] = Bottom Dead Zone[br]
@@ -517,9 +517,9 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 	set = set_dead_zone_height,
 	get = get_dead_zone_height
 
-## Defines the depth dead zone area, or the local z-axis distance.
-## By default the camera will keep a persistent distance between itself and its target in the forward axis.[br]
-## Changing this value will add a dead zone where the camera will remain still if the target gets further or closer to it.[br]
+## Defines the depth, or the local z-axis distance, dead zone area.
+## By default the camera will keep a persistent distance between itself and the [member follow_target] in the forward axis.[br]
+## Setting a value will add a dead zone where the camera will remain still if the [member follow_target] gets further or closer to it.[br]
 ## [b]X-value[/b] represents the maximum z dead space, i.e. the space behind the [member follow_target] and target itself.[br]
 ## [b]Y-value[/b] represents the minimum z dead space, i.e. between the camera and the [member follow_target].[br][br]
 ## Note: This is only used for the [enum FollowMode.FramedFollow] mode.
@@ -541,7 +541,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 		show_viewfinder_in_play = value
 		viewfinder_at_runtime_changed.emit()
 
-## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable from dragged from.[br]
+## Defines where the [member dead_zone_width] and [member dead_zone_height] edges should be editable by dragging the edges of the dead zone lines.[br]
 ## By default, it is editable from both the editor viewfinder and at runtime.
 @export var interactive_dead_zone: InteractiveDeadZone = InteractiveDeadZone.ALL:
 	set(value):
@@ -762,6 +762,7 @@ var _is_editor_runtime: bool
 var _is_active: bool = false
 
 var _is_third_person_follow: bool = false
+var _has_third_person_shape: bool = true
 var _camera_target: Node3D = self # Calculates the position of the camera in the editor, uses instantiated ShapeCast3D node when running the scene
 
 var _should_follow: bool = false
@@ -1150,8 +1151,15 @@ func _ready():
 					_follow_third_person_shape_cast.top_level = true
 					_follow_third_person_shape_cast.collision_mask = collision_mask
 					_follow_third_person_shape_cast.target_position = Vector3(0, 0, spring_length)
-					if shape: _follow_third_person_shape_cast.shape = shape
 					_follow_third_person_shape_cast.margin = margin
+					if shape:
+						_follow_third_person_shape_cast.shape = shape
+					else: ## Assigning a temporary Shape3D as ShapeCast3D requires one upon initialization
+						var temp_shape: SphereShape3D = SphereShape3D.new()
+						temp_shape.radius = 0.01
+						_follow_third_person_shape_cast.shape = temp_shape
+						_has_third_person_shape = false
+
 					# Stores the rotation value as the rotation gets skewed after
 					# the ShapeCast3D is instantiated for some reason...
 					var initial_rotation: Vector3 = global_rotation
@@ -2252,6 +2260,11 @@ func set_host_layers_value(layer: int, value: bool) -> void:
 ## Gets the current [member host_layers].
 func get_host_layers() -> int:
 	return host_layers
+
+## Used by [PhantomCameraHost] to determine if a default pyramid shape should be assigned to the ShapeCast3D used
+## for Third Person Follow.
+func has_third_person_shape() -> bool:
+	return _has_third_person_shape
 
 
 ## Gets the current follow mode as an enum int based on [member FollowMode] enum.[br]

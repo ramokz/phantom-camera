@@ -1320,7 +1320,7 @@ func _set_layer(current_layers: int, layer_number: int, value: bool) -> int:
 func _assign_default_third_person_shape(pcam: Node) -> void:
 	if _is_2d or Engine.is_editor_hint(): return
 	if pcam.follow_mode != pcam.FollowMode.THIRD_PERSON: return
-	if pcam.shape: return
+	if pcam.has_third_person_shape(): return
 
 	# Assigns a default shape to ShapeCast3D node if none is supplied
 	var pyramid_shape_data = Engine.get_singleton(&"PhysicsServer3D").call("shape_get_data",
