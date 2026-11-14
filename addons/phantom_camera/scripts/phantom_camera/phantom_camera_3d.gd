@@ -1138,6 +1138,17 @@ func _exit_tree() -> void:
 	_phantom_camera_manager.pcam_removed(self)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		# The third-person ShapeCast3D is added to the tree, and this node reparented under it,
+		# with deferred calls. If this node is freed before then, e.g. together with its parent
+		# in the frame it became ready, those calls are dropped and nothing ever frees the
+		# ShapeCast3D, so it would leak as an orphan node.
+		if is_instance_valid(_follow_third_person_shape_cast) and \
+		get_parent() != _follow_third_person_shape_cast:
+			_follow_third_person_shape_cast.queue_free()
+
+
 func _ready():
 	match follow_mode:
 		FollowMode.THIRD_PERSON:
