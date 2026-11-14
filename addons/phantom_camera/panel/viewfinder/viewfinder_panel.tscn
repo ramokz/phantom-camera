@@ -215,7 +215,7 @@ unique_name_in_owner = true
 handle_input_locally = false
 canvas_item_default_texture_filter = 0
 gui_disable_input = true
-size = Vector2i(1280, 720)
+size = Vector2i(1152, 648)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
@@ -232,6 +232,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="DeadZoneLeft" type="Panel" parent="Viewfinder/DeadZoneContainer" unique_id=1804906270]
 unique_name_in_owner = true
