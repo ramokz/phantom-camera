@@ -69,6 +69,7 @@ var _root_node: Node
 
 var _active_scene_root: Node
 
+var _is_editable_instance: bool
 var _prev_drag_dead_zone: Vector2
 
 var _has_pcam_host: bool = false
@@ -136,8 +137,7 @@ func _exit_tree() -> void:
 		add_node_button.pressed.disconnect(_visibility_check)
 
 	if is_instance_valid(_active_pcam):
-		if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
-			_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+		_disconnect_active_pcam_signals()
 
 	if priority_override_button.pressed.is_connected(_select_override_pcam):
 		priority_override_button.pressed.disconnect(_select_override_pcam)
@@ -460,6 +460,7 @@ func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> v
 	if not aspect_ratio_container.resized.is_connected(_resized):
 		aspect_ratio_container.resized.connect(_resized)
 
+	_disconnect_active_pcam_signals()
 	if is_instance_valid(pcam_host.get_active_pcam()):
 		_active_pcam = pcam_host.get_active_pcam()
 	else:
@@ -467,8 +468,7 @@ func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> v
 		_active_pcam = null
 		return
 
-	if not _active_pcam.follow_mode == PhantomCamera2D.FollowMode.FRAMED: return
-
+	if not _active_pcam.follow_mode == _active_pcam.FollowMode.FRAMED: return
 	_framed_view_visible(true)
 	_on_dead_zone_changed()
 	_connect_dead_zone()
@@ -499,6 +499,10 @@ func _disconnect_dead_zone() -> void:
 
 
 func _update_interactive_dead_zone() -> void:
+	if not _is_editable_instance:
+		_hide_interactive_dead_zone()
+		return
+
 	match _active_pcam.interactive_dead_zone:
 		_active_pcam.InteractiveDeadZone.ALL:
 			_show_interactive_dead_zone()
@@ -574,6 +578,15 @@ func _framed_view_visible(should_show: bool) -> void:
 		_on_dead_zone_changed()
 
 		if not is_instance_valid(_active_pcam): return
+
+		var current_scene: Node = get_tree().edited_scene_root if Engine.is_editor_hint() else get_tree().current_scene
+		if _active_pcam.owner != current_scene and not current_scene.is_editable_instance(_active_pcam.owner):
+			if not _active_pcam.owner.editor_state_changed.is_connected(_changed_state):
+				_active_pcam.owner.editor_state_changed.connect(_changed_state)
+			_is_editable_instance = false
+			return
+
+		_is_editable_instance = true
 		if not _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
 			_active_pcam.dead_zone_changed.connect(_on_dead_zone_changed)
 		if not _active_pcam.interactive_dead_zone_changed.is_connected(_update_interactive_dead_zone):
@@ -584,11 +597,11 @@ func _framed_view_visible(should_show: bool) -> void:
 		dead_zone_container.visible = false
 
 		if not is_instance_valid(_active_pcam): return
-		if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
-			_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
 
 		_hide_interactive_dead_zone()
 
+func _changed_state() -> void:
+	_framed_view_visible(true)
 
 func _on_dead_zone_changed() -> void:
 	if not is_instance_valid(_active_pcam): return
@@ -797,6 +810,25 @@ func _set_pcam_host(_pcam_host: PhantomCameraHost) -> void:
 		_has_pcam_host = false
 		_physics_based = false
 		target_point.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_INHERIT
+
+func _disconnect_active_pcam_signals() -> void:
+	if not _active_pcam: return
+
+	if _active_pcam.follow_mode_changed.is_connected(_check_follow_mode):
+		_active_pcam.follow_mode_changed.disconnect(_check_follow_mode)
+
+	if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+		_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+	if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+		_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+
+	if _active_pcam.dead_zone_changed.is_connected(_on_dead_zone_changed):
+		_active_pcam.dead_zone_changed.disconnect(_on_dead_zone_changed)
+
+	if _active_pcam.owner.editor_state_changed.is_connected(_changed_state):
+		_active_pcam.owner.editor_state_changed.disconnect(_changed_state)
 
 #endregion
 
