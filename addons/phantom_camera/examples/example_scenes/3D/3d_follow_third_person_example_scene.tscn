@@ -146,13 +146,12 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9999998, -2.9802322e-08, 0, 2.9802322e-08, 0.9999989, 0, 2.5712123, -8.995357)
 pixel_size = 0.01
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Third Person
-Follow Example"
+text = "Follow Third Person"
 font = ExtResource("7_kg7u1")
 font_size = 64
 
 [node name="NPCDescriptionLabelDesc" type="Label3D" parent="Environment" unique_id=824941030]
-transform = Transform3D(0.9999989, 0, 0, 0, 0.9999998, -2.9802322e-08, 0, 2.9802322e-08, 0.9999989, 0, 1.6914155, -8.995357)
+transform = Transform3D(0.9999989, 0, 0, 0, 0.9999998, -2.9802322e-08, 0, 2.9802322e-08, 0.9999989, 0, 2.2092316, -8.995357)
 pixel_size = 0.0075
 text = "Camera follows and rotates
 around the target"

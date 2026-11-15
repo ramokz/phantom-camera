@@ -59,7 +59,7 @@ expand_margin_bottom = 6.0
 [node name="MainCamera3D" type="Camera3D" parent="." unique_id=432987684]
 unique_name_in_owner = true
 physics_interpolation_mode = 2
-transform = Transform3D(0.9997436, 0.0002995081, -0.022642897, -1.4551915e-11, 0.9999125, 0.013226308, 0.02264488, -0.013222916, 0.99965614, 0, 0.5, 4.249)
+transform = Transform3D(0.99929917, 0.00066183286, -0.037426446, 2.910383e-11, 0.99984366, 0.0176808, 0.037432294, -0.01766841, 0.99914294, 0, 0.5, 4.249)
 top_level = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=253171402]
@@ -148,7 +148,7 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.99999905, 0, 0, 0, 0.9999998, 0, 0, 0, 0.99999905, 0, 2.7580137, 0.21571493)
 pixel_size = 0.0025
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Framed Follow Example"
+text = "Noise"
 font = ExtResource("11_vp57v")
 font_size = 120
 outline_size = 32

@@ -19,7 +19,7 @@ script = ExtResource("4_mqo2b")
 [node name="MainCamera3D" type="Camera3D" parent="." unique_id=1214890544]
 unique_name_in_owner = true
 physics_interpolation_mode = 2
-transform = Transform3D(0.9995945, 0.01898656, -0.021220276, -5.08409e-06, 0.7453603, 0.6666618, 0.028474366, -0.66639143, 0.7450582, -0.137901, 4.834906, 4.8501554)
+transform = Transform3D(0.99959415, 0.018986559, -0.021220295, -5.084088e-06, 0.74536026, 0.66666234, 0.028474357, -0.6663914, 0.7450588, -0.137901, 4.834906, 4.8501554)
 top_level = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=1125607229]
@@ -66,7 +66,7 @@ font_size = 64
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 2.0157459, -2.3039699)
 pixel_size = 0.01
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Look At Simple Example"
+text = "Look At Simple"
 font = ExtResource("7_hudjg")
 font_size = 64
 
