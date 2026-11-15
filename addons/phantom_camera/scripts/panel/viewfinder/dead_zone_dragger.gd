@@ -58,7 +58,6 @@ func _ready() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and _is_draggable:
 		var viewport_size_halved: Vector2 = get_viewport().get_visible_rect().size / 2
-
 		_offset = event.relative * Vector2(1, 0) if horizontal_drag else event.relative * Vector2(0, 1)
 		dragging.emit(placement, _offset, _individual_dead_zone_change, false, false)
 

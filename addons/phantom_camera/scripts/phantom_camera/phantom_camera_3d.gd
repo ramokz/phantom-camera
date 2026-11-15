@@ -768,10 +768,11 @@ var _camera_target: Node3D = self # Calculates the position of the camera in the
 var _should_follow: bool = false
 var _follow_target_physics_based: bool = false
 
-var _prev_position: Vector3
-var _prev_rotation: Quaternion
-var _prev_follow_distance: float
-var _center_on_active: bool
+var _has_scene_camera: bool = false
+var _prev_position: Vector3 = Vector3.ZERO
+var _prev_rotation: Quaternion = quaternion
+var _prev_follow_distance: float = follow_distance
+var _center_on_active: bool = true
 
 var _follow_target_physics_class: FollowTargetPhysicsClass = FollowTargetPhysicsClass.OTHER
 var _character_body_3d: CharacterBody3D = null
@@ -1080,20 +1081,20 @@ func _validate_property(property: Dictionary) -> void:
 	## Align With Viewport
 	##########################
 	if property.name == 'align_transform_with_view' and \
-	(_should_look_at == true or _should_follow == true):
+	(_should_look_at or _should_follow):
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == 'align_position_with_view' and \
 	(
-		_should_follow == true or \
-		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
+		_should_follow or \
+		_should_follow and follow_mode == FollowMode.THIRD_PERSON
 	):
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 	if property.name == 'align_rotation_with_view' and \
 	(
-		_should_look_at == true or \
-		_should_follow == true and follow_mode == FollowMode.THIRD_PERSON
+		_should_look_at or \
+		_should_follow and follow_mode == FollowMode.THIRD_PERSON
 	):
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
@@ -1123,6 +1124,8 @@ func _enter_tree() -> void:
 		FollowMode.GROUP:
 			_follow_targets_size_check()
 			_should_follow_checker()
+		FollowMode.FRAMED:
+			_has_scene_camera = is_instance_valid(get_viewport().get_camera_3d())
 		_:
 			_should_follow_checker()
 
@@ -1335,25 +1338,26 @@ func _set_follow_position(delta: float) -> void:
 		FollowMode.FRAMED:
 			if _is_editor:
 				target_position = follow_target.global_position + follow_offset + (global_basis.z * follow_distance)
-				var unprojected_position: Vector2 = _get_raw_unprojected_position()
-				var viewport_width: float = get_viewport().size.x
-				var viewport_height: float = get_viewport().size.y
-				var camera_aspect: int = get_viewport().get_camera_3d().keep_aspect
-				var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
+				if _has_scene_camera:
+					var unprojected_position: Vector2 = _get_raw_unprojected_position()
+					var viewport_width: float = get_viewport().size.x
+					var viewport_height: float = get_viewport().size.y
+					var camera_aspect: int = get_viewport().get_camera_3d().keep_aspect
+					var visible_rect_size: Vector2 = get_viewport().get_visible_rect().size
 
-				unprojected_position = unprojected_position - visible_rect_size / 2
-				if camera_aspect == Camera3D.KEEP_HEIGHT:
-					# Landscape View
-					var aspect_ratio_scale: float = viewport_width / viewport_height
-					unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
-					unprojected_position.y = (unprojected_position.y + 1) / 2
-				else:
-					# Portrait View
-					var aspect_ratio_scale: float = viewport_height / viewport_width
-					unprojected_position.x = (unprojected_position.x + 1) / 2
-					unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
+					unprojected_position = unprojected_position - visible_rect_size / 2
+					if camera_aspect == Camera3D.KEEP_HEIGHT:
+						# Landscape View
+						var aspect_ratio_scale: float = viewport_width / viewport_height
+						unprojected_position.x = (unprojected_position.x / aspect_ratio_scale + 1) / 2
+						unprojected_position.y = (unprojected_position.y + 1) / 2
+					else:
+						# Portrait View
+						var aspect_ratio_scale: float = viewport_height / viewport_width
+						unprojected_position.x = (unprojected_position.x + 1) / 2
+						unprojected_position.y = (unprojected_position.y / aspect_ratio_scale + 1) / 2
 
-					viewport_position = unprojected_position
+						viewport_position = unprojected_position
 
 				_set_camera_position(target_position)
 				_set_follow_gizmo_line_position(target_position)
