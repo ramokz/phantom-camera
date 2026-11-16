@@ -457,7 +457,7 @@ var _follow_axis_lock_value: Vector3 = Vector3.ZERO
 ## The amount of [param seconds] to look ahead of the [param follow target]'s position per axis based on
 ## the [param follow target]'s velocity.[br]
 ## Each axis has its own prediction time in [param seconds].[br][br]
-## A value of [param 0] can be set either to disable lookahead for the corresponding axis.
+## A value of [param 0] can be set to disable lookahead for the corresponding axis.
 @export_custom(PROPERTY_HINT_LINK, "0, 1, 0.001, suffix:s") var follow_lookahead_time: Vector3 = Vector3(0.1, 0.1, 0.1):
 	set = set_follow_lookahead_time,
 	get = get_follow_lookahead_time
@@ -618,7 +618,7 @@ var horizontal_rotation_offset: float = 0.0:
 	get = get_look_at_lookahead
 
 @export_subgroup("Lookahead")
-## The amount of [param seconds] to look ahead of the the [param follow target]'s position per axis based on
+## The amount of [param seconds] to look ahead of the [param follow target]'s position per axis based on
 ## the [param follow target]'s velocity.
 @export_range(0.0, 1.0, 0.01, "suffix:s") var look_at_lookahead_time: float = 0.1:
 	set = set_look_at_lookahead_time,
@@ -647,8 +647,7 @@ var horizontal_rotation_offset: float = 0.0:
 	set = set_look_at_lookahead_max,
 	get = get_look_at_lookahead_max
 
-## The maximum [member look_at_lookahead] velocity in [param meters per second].
-## The look at target's velocity will be clamped within this bound before applying lookahead time.
+## The maximum [member look_at_lookahead] velocity in [param meters per second] that will be tracked.
 @export_custom(PROPERTY_HINT_NONE, "suffix:m/s") var look_at_lookahead_max_value: float = 5.0:
 	set = set_look_at_max_lookahead_value,
 	get = get_look_at_max_lookahead_value
