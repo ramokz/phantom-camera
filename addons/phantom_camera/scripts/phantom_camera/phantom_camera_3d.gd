@@ -826,7 +826,7 @@ var _is_previous_tick_valid: bool = false
 
 var _follow_third_person_shape_cast: ShapeCast3D
 var _has_third_person_raycaster: bool = false
-var _third_person_excluded_objets: Array[RID]
+var _third_person_excluded_objects: Array[RID]
 
 var _has_noise_resource: bool = false
 
@@ -1167,8 +1167,11 @@ func _ready():
 					# the ShapeCast3D is instantiated for some reason...
 					var initial_rotation: Vector3 = global_rotation
 					if _should_follow:
-						_third_person_excluded_objets.append(follow_target)
-						for excluded_object in _third_person_excluded_objets:
+						if follow_target is CollisionObject3D:
+							var follow_target_rid: RID = follow_target.get_rid()
+							_third_person_excluded_objects.append(follow_target_rid)
+						for excluded_object in _third_person_excluded_objects:
+							if not excluded_object is RID: continue
 							_follow_third_person_shape_cast.add_exception_rid(excluded_object)
 					get_parent().add_child.call_deferred(_follow_third_person_shape_cast)
 
@@ -1591,7 +1594,7 @@ func _set_third_person_camera(follow_position: Vector3) -> void:
 			var shape_params: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 			shape_params.shape = _follow_third_person_shape_cast.shape
 			shape_params.transform = _follow_third_person_shape_cast.global_transform
-			shape_params.exclude = _third_person_excluded_objets
+			shape_params.exclude = _third_person_excluded_objects
 			shape_params.motion = motion
 			shape_params.collision_mask = collision_mask
 
@@ -2590,29 +2593,29 @@ func get_margin() -> float:
 
 ## Adds a [Node3D] by [CollisionObject3D] that should collide with in [enum FollowMode.THIRD_PERSON].
 func add_exception(value: CollisionObject3D) -> void:
-	_third_person_excluded_objets.append(value)
+	_third_person_excluded_objects.append(value)
 
 ## Adds a [Node3D] by [RID] that should collide with in [enum FollowMode.THIRD_PERSON].
 func add_exception_rid(value: RID) -> void:
-	_third_person_excluded_objets.append(value)
+	_third_person_excluded_objects.append(value)
 
 
 ## Excludes a [Node3D] by [CollisionObject3D] from being collided with in [enum FollowMode.THIRD_PERSON].
 func remove_exception(value: CollisionObject3D) -> void:
-	_third_person_excluded_objets.erase(value)
+	_third_person_excluded_objects.erase(value)
 
 ## Excludes a [Node3D] by [RID] from being collided with in [enum FollowMode.THIRD_PERSON].
 func remove_exception_rid(value: RID) -> void:
-	_third_person_excluded_objets.erase(value)
+	_third_person_excluded_objects.erase(value)
 
 
 ## Clears all [Node3D]s from being collided with in [enum FollowMode.THIRD_PERSON].
 func clear_exceptions(include_follow_target: bool = false) -> void:
 	if include_follow_target:
-		_third_person_excluded_objets.clear()
+		_third_person_excluded_objects.clear()
 	else:
-		_third_person_excluded_objets.clear()
-		_third_person_excluded_objets.append(follow_target)
+		_third_person_excluded_objects.clear()
+		_third_person_excluded_objects.append(follow_target)
 
 
 func set_draw_follow_line(value: bool) -> void:
