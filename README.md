@@ -547,9 +547,13 @@ See the [FAQ page on the documentation site](https://phantom-camera.dev/support/
 ## Contribution
 See the [contribution guidelines on the documentation site](https://phantom-camera.dev/support/how-to-contribute).
 
+## AI / LLM Policy
+The use of AI / LLM in any shape or form is **not** permitted.
+
 ## Credits
 - [Unity's Cinemachine Package](https://unity.com/unity/features/editor/art-and-design/cinemachine) for the key
   inspiration
 - [Godot](https://godotengine.org/) for their amazing work creating the engine
+- And all [the project's contributors](https://github.com/ramokz/phantom-camera/graphs/contributors)
 
 [MIT License](https://github.com/ramokz/phantom-camera/blob/main/LICENSE)
