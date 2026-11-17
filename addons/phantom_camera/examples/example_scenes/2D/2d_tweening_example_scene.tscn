@@ -245,21 +245,21 @@ script = ExtResource("4_j7670")
 [node name="Node" type="Node" parent="." unique_id=1756523422]
 
 [node name="HeaderLabel" type="Label" parent="Node" unique_id=70361028]
-offset_left = 114.0
+offset_left = -20.0
 offset_top = 41.0
-offset_right = 348.0
+offset_right = 453.0
 offset_bottom = 134.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
 theme_override_fonts/font = ExtResource("7_ylx0h")
 theme_override_font_sizes/font_size = 32
-text = "Camera Tweening"
+text = "Camera Tweening 2D Example"
 
 [node name="DescLabel" type="Label" parent="Node" unique_id=465675394]
-offset_left = 114.0
+offset_left = -20.0
 offset_top = 83.0
-offset_right = 444.0
+offset_right = 310.0
 offset_bottom = 176.0
 theme_override_colors/font_color = Color(0.93199617, 0.9621823, 0.93199617, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)

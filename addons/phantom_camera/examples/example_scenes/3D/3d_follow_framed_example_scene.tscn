@@ -75,7 +75,7 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0, 3.2187152, -4.805066)
 pixel_size = 0.01
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Follow Framed"
+text = "Framed Follow 3D Example"
 font = ExtResource("8_r5lxj")
 font_size = 64
 

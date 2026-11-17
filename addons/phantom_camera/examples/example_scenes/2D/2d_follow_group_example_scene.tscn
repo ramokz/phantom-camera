@@ -235,7 +235,7 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
 theme_override_fonts/font = ExtResource("5_gaaip")
 theme_override_font_sizes/font_size = 32
-text = "Follow Group"
+text = "Group Follow 2D Example"
 
 [node name="DescLabel" type="Label" parent="SceneText" unique_id=1164417016]
 offset_left = -14.0

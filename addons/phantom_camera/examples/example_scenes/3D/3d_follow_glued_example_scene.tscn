@@ -197,7 +197,7 @@ font_size = 64
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9999999, -7.1054274e-15, 0, -3.5527137e-15, 0.9999989, 0.008592129, 2.0157459, -6.926002)
 pixel_size = 0.01
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Follow Glued"
+text = "Glued Follow 3D Example"
 font = ExtResource("8_vs2gh")
 font_size = 64
 

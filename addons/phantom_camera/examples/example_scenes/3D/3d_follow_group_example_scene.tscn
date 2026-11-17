@@ -88,13 +88,13 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 2.0157459, -2.3039699)
 pixel_size = 0.01
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Follow Group"
+text = "Group Follow 3D Example"
 font = ExtResource("7_ayhbu")
 font_size = 64
 
 [node name="NPCDescriptionDesc" type="Label3D" parent="." unique_id=901517896]
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 1.3240263, -2.3039699)
 pixel_size = 0.0075
-text = "Camera follows the center position of the 3 targets"
+text = "Camera follows the center position of its targets"
 font = ExtResource("7_ayhbu")
 font_size = 64

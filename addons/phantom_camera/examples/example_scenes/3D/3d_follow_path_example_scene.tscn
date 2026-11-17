@@ -180,7 +180,7 @@ metadata/_edit_lock_ = true
 transform = Transform3D(6, 0, 0, 0, 1, 0, 0, 0, 1, -0.44204, 0, 1.76334)
 
 [node name="Floor2" parent="Environment/Floor3" unique_id=1647709187 instance=ExtResource("8_a1h2k")]
-transform = Transform3D(0.166667, 0, 0, 0, 3, 0, 0, 0, 14, -0.516667, 1, -6.5)
+transform = Transform3D(0.31656963, 0, 0, 0, 3, 0, 0, 0, 14, -0.5994271, 1, -6.5)
 
 [node name="Floor5" parent="Environment/Floor3" unique_id=768754614 instance=ExtResource("8_a1h2k")]
 transform = Transform3D(0.166667, 0, 0, 0, 3, 0, 0, 0, 14, 0.65, 1, -6.5)
@@ -205,7 +205,7 @@ transform = Transform3D(0.333333, 0, 0, 0, 3, 0, 0, 0, 1, 0.9, 1, -13)
 mesh = SubResource("BoxMesh_7l3dh")
 
 [node name="NPCDescriptionLabel" type="Label3D" parent="Environment" unique_id=1517941950]
-transform = Transform3D(5.21541e-08, -1, -7.7486e-07, -1.10675e-15, 2.23517e-07, 0.999999, -0.999999, -7.45058e-08, -5.68829e-14, -3.5168037, 2.6, -6.9478264)
+transform = Transform3D(5.21541e-08, -1, -7.7486e-07, -1.10675e-15, 2.23517e-07, 0.999999, -0.999999, -7.45058e-08, -5.68829e-14, -3.3784542, 2.6, -5.765594)
 text = "Camera follows its target while confined to a Path3D"
 font = ExtResource("9_rk5lh")
 font_size = 64
@@ -218,8 +218,8 @@ font = ExtResource("9_rk5lh")
 font_size = 48
 
 [node name="NPCDescriptionLabel2" type="Label3D" parent="Environment" unique_id=555403517]
-transform = Transform3D(-4.222192e-08, -0.9999998, -4.4703484e-08, -1.1313331e-08, 4.4703484e-08, 0.999999, -0.99999905, 4.2221956e-08, -1.1313326e-08, -3.512, 2.6, -1.1655469)
+transform = Transform3D(-4.222192e-08, -0.9999998, -4.4703484e-08, -1.1313331e-08, 4.4703484e-08, 0.999999, -0.99999905, 4.2221956e-08, -1.1313326e-08, -3.8457398, 2.6, -5.765594)
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Follow Path"
+text = "Path Follow 3D Example"
 font = ExtResource("9_rk5lh")
 font_size = 96

@@ -228,7 +228,7 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
 theme_override_fonts/font = ExtResource("3_f42u5")
 theme_override_font_sizes/font_size = 32
-text = "Camera Limit"
+text = "Camera Limit 2D Example"
 
 [node name="DescLabel" type="Label" parent="SceneText" unique_id=598710914]
 offset_left = -276.0
@@ -342,7 +342,7 @@ draw_limits = true
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1779854756]
 physics_interpolation_mode = 1
 top_level = true
-position = Vector2(-75, -51.93)
+position = Vector2(-82.43812, -51.93)
 zoom = Vector2(2, 2)
 process_callback = 0
 limit_left = -363

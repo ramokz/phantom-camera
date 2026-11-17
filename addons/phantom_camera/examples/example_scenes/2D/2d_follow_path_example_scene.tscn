@@ -225,21 +225,21 @@ script = ExtResource("4_w0rat")
 [node name="SceneText" type="Node" parent="." unique_id=686029410]
 
 [node name="HeaderLabel" type="Label" parent="SceneText" unique_id=814581498]
-offset_left = 114.0
+offset_left = 46.0
 offset_top = 41.0
-offset_right = 348.0
+offset_right = 431.0
 offset_bottom = 134.0
 theme_override_colors/font_color = Color(0.294118, 1, 0.631373, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
 theme_override_fonts/font = ExtResource("5_q77r4")
 theme_override_font_sizes/font_size = 32
-text = "Follow Path"
+text = "Path Follow 2D Example"
 
 [node name="DescLabel" type="Label" parent="SceneText" unique_id=300252600]
-offset_left = 114.0
+offset_left = 46.0
 offset_top = 83.0
-offset_right = 444.0
+offset_right = 376.0
 offset_bottom = 176.0
 theme_override_colors/font_color = Color(0.93199617, 0.9621823, 0.93199617, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)

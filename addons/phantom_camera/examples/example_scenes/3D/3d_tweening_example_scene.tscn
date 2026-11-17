@@ -90,13 +90,13 @@ outline_size = 18
 [node name="NPCDescriptionLabel2" type="Label3D" parent="Environment" unique_id=1628268456]
 transform = Transform3D(0.9999989, 0, 0, 0, 5.9604645e-08, 0.9999989, 0, -0.9999999, 5.9604645e-08, 0.008592129, -0.47828707, -6.452328)
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Camera Tweening"
+text = "Camera Tweening 3D Example"
 font = ExtResource("9_ptb3h")
 font_size = 120
 outline_size = 24
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="Environment" unique_id=247940237]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.894452, 6.539, -10.15332)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 6.539, -10.153)
 use_collision = true
 size = Vector3(1, 14, 34)
 material = SubResource("StandardMaterial3D_de3xg")
@@ -114,7 +114,7 @@ size = Vector3(10, 14, 1)
 material = SubResource("StandardMaterial3D_de3xg")
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="Environment" unique_id=1684812652]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.105548, 6.539, -10.15332)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 6.539, -10.153)
 use_collision = true
 size = Vector3(1, 14, 34)
 material = SubResource("StandardMaterial3D_de3xg")
@@ -122,7 +122,7 @@ material = SubResource("StandardMaterial3D_de3xg")
 [node name="MainCamera3D" type="Camera3D" parent="." unique_id=1203986189]
 unique_name_in_owner = true
 physics_interpolation_mode = 2
-transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.70710677, 0, -0.70710677, 0.7071068, 0, 2.5, 3.19136)
+transform = Transform3D(0.999889, 0, 0, 0, 0.707092, 0.707088, 0, -0.707092, 0.707088, 0, 2.5, 3.19136)
 top_level = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=827482648]

@@ -58,7 +58,7 @@ metadata/_edit_lock_ = true
 [node name="NPCDescriptionLabel" type="Label3D" parent="Environment" unique_id=1656572114]
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 1.3240263, -2.3039699)
 pixel_size = 0.0075
-text = "Camera continously looks towards the target"
+text = "Camera continously looks towards its target"
 font = ExtResource("7_hudjg")
 font_size = 64
 
@@ -66,7 +66,7 @@ font_size = 64
 transform = Transform3D(0.9999989, 0, 0, 0, 0.9659257, 0.25881878, 0, -0.258819, 0.9659248, 0.008592129, 2.0157459, -2.3039699)
 pixel_size = 0.01
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Look At Simple"
+text = "Look At Simple Example"
 font = ExtResource("7_hudjg")
 font_size = 64
 

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://d0fyuvesb472p"]
 
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_25rmy"]
-[ext_resource type="Script" uid="uid://x5g7kf5k2mac" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="2_7nd2u"]
+[ext_resource type="Script" uid="uid://b3n22atuw76sm" path="res://addons/phantom_camera/examples/scripts/3D/player_controller_first_person.gd" id="2_7nd2u"]
 [ext_resource type="Script" uid="uid://cuffvge5ad4aa" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_3d.gd" id="3_t4fhv"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="4_tnm2f"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="5_4webr"]
@@ -59,7 +59,7 @@ expand_margin_bottom = 6.0
 [node name="MainCamera3D" type="Camera3D" parent="." unique_id=432987684]
 unique_name_in_owner = true
 physics_interpolation_mode = 2
-transform = Transform3D(0.99929917, 0.00066183286, -0.037426446, 2.910383e-11, 0.99984366, 0.0176808, 0.037432294, -0.01766841, 0.99914294, 0, 0.5, 4.249)
+transform = Transform3D(0.999713, 0.00048791955, 0.023950899, 0, 0.9997926, -0.020367434, -0.023955869, 0.02036159, 0.99950564, 0, 0.5, 4.249)
 top_level = true
 
 [node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=253171402]
@@ -148,7 +148,7 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.99999905, 0, 0, 0, 0.9999998, 0, 0, 0, 0.99999905, 0, 2.7580137, 0.21571493)
 pixel_size = 0.0025
 modulate = Color(0.105882354, 0.61960787, 0.49803922, 1)
-text = "Noise"
+text = "Camera Noise 3D Example"
 font = ExtResource("11_vp57v")
 font_size = 120
 outline_size = 32
