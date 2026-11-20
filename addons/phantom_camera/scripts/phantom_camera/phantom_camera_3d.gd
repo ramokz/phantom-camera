@@ -1409,8 +1409,8 @@ func _set_follow_position(delta: float) -> void:
 					camera_offset.z = dead_zone_depth_max - target_z
 
 				## Defines the screen size based on whether if the perspective or orthogonal projection setting.
-				var screen_size: float = camera_3d_resource.size if \
-					camera_3d_resource.projection == camera_3d_resource.ProjectionType.ORTHOGONAL else \
+				var screen_size: float = size / 2 if \
+					projection == Camera3DResource.ProjectionType.ORTHOGONAL else \
 					tan(deg_to_rad(0.5 * fov)) * (target_z - camera_offset.z)
 
 				## NOTE - 0 is for potential future Dead Zone Limit
