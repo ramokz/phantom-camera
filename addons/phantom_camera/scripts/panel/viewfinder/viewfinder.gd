@@ -94,19 +94,7 @@ var pcam_host: PhantomCameraHost
 #region Private Functions
 
 func _ready() -> void:
-	if not Engine.is_editor_hint():
-		camera_viewport_panel.self_modulate.a = 0
-
-	_root_node = get_tree().current_scene
-
-	if _root_node is Node2D || _root_node is Node3D:
-		%SubViewportContainer.visible = false
-		if _root_node is Node2D:
-			_is_2d = true
-		else:
-			_is_2d = false
-
-		_set_viewfinder(_root_node, false)
+	_assign_manager()
 
 	if not Engine.is_editor_hint():
 		empty_state_control.visible = false
@@ -118,7 +106,6 @@ func _ready() -> void:
 
 	# PCam Host List
 	pcam_host_list.visible = false
-	_assign_manager()
 	_visibility_check()
 
 	if EngineDebugger.is_active():
@@ -421,6 +408,8 @@ func _set_viewfinder(root: Node, editor: bool) -> void:
 
 func _set_viewfinder_camera(new_pcam_host: PhantomCameraHost, editor: bool) -> void:
 	_set_pcam_host(new_pcam_host)
+
+	_is_2d = true if pcam_host.get_parent() is Camera2D else false
 
 	if _is_2d:
 		_selected_camera = pcam_host.camera_2d
