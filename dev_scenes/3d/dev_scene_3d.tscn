@@ -87,22 +87,19 @@ collision_mask = 0
 look_at_damping = true
 look_at_lookahead = true
 look_at_lookahead_max = true
-align_transform_with_view = Callable()
-align_position_with_view = Callable()
 draw_follow_line = true
 
 [node name="PlayerCharacterBody3D" parent="Player" unique_id=1307210851 instance=ExtResource("8_p3ogo")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.7576275)
 
-[node name="ScenePhantomCamera3D" type="Node3D" parent="." unique_id=2134752607 node_paths=PackedStringArray("look_at_target", "look_at_targets")]
+[node name="ScenePhantomCamera3D" type="Node3D" parent="." unique_id=2134752607 node_paths=PackedStringArray("look_at_target")]
 unique_name_in_owner = true
 transform = Transform3D(0.9999993, 0, 0, 0, 0.09852371, 0.99182075, 0, -0.7655691, 0.12764081, 0, 7.3814, -0.00072979927)
 script = ExtResource("3_4sdb7")
 priority = 10
 look_at_mode = 2
 look_at_target = NodePath("../Player/PlayerCharacterBody3D")
-look_at_targets = [NodePath("../Player/PlayerCharacterBody3D"), NodePath("../Other Targets/PlayerMeshInstance3D")]
 tween_resource = SubResource("Resource_sj6ok")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_a3u85")

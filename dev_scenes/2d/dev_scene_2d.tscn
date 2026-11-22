@@ -153,7 +153,6 @@ texture = ExtResource("1_11grc")
 16:6/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_464h1"]
-tile_offset_axis = 1
 physics_layer_0/collision_layer = 1
 physics_layer_1/collision_layer = 2
 physics_layer_1/collision_mask = 2
@@ -165,9 +164,13 @@ sources/0 = SubResource("TileSetAtlasSource_qd8nl")
 script = ExtResource("4_qq8ep")
 duration = 0.6
 transition = 3
+ease = 1
 
 [sub_resource type="Resource" id="Resource_5vctl"]
 script = ExtResource("4_qq8ep")
+duration = 0.6
+transition = 2
+ease = 1
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v3ieq"]
 
@@ -221,12 +224,14 @@ follow_target = NodePath("../PlayerCharacterBody2D")
 zoom = Vector2(1.5, 1.5)
 tween_resource = SubResource("Resource_f4kig")
 tween_on_load = false
+follow_damping = true
+lookahead_max = true
 auto_zoom = true
 auto_zoom_min = 0.001
 auto_zoom_max = 1.0
 auto_zoom_margin = Vector4(50, 0, 50, 0)
-dead_zone_width = 0.363
-dead_zone_height = 0.352
+dead_zone_width = Vector2(0.6306291, 0.6306291)
+dead_zone_height = Vector2(0.67493445, 0.67493445)
 show_viewfinder_in_play = true
 draw_limits = true
 
@@ -236,6 +241,14 @@ position = Vector2(49, -26)
 speed = 600.0
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=34901596]
+
+[node name="Label" type="RichTextLabel" parent="UI" unique_id=1453477612]
+offset_left = 14.0
+offset_top = 609.0
+offset_right = 207.907
+offset_bottom = 632.0
+bbcode_enabled = true
+text = "Press [b]R[/b] to toggle PCam"
 
 [node name="UIInventory" parent="UI" unique_id=20175301 instance=ExtResource("6_cow2s")]
 unique_name_in_owner = true
@@ -247,10 +260,9 @@ visible = false
 
 [node name="SecondPhantomCamera2D" type="Node2D" parent="." unique_id=870745431]
 unique_name_in_owner = true
-position = Vector2(1102, -125)
+position = Vector2(688, -65)
 script = ExtResource("3_tm0ws")
 priority = 20
-zoom = Vector2(2, 2)
 tween_resource = SubResource("Resource_5vctl")
 draw_limits = true
 
