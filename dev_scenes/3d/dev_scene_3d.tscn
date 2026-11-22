@@ -1,30 +1,18 @@
-[gd_scene load_steps=13 format=3 uid="uid://ctqdyuxek2ere"]
+[gd_scene format=3 uid="uid://ctqdyuxek2ere"]
 
 [ext_resource type="PackedScene" uid="uid://cixlwqycoox8h" path="res://addons/phantom_camera/examples/models/3d_cube_dark.tscn" id="1_7n673"]
 [ext_resource type="Script" uid="uid://bipcntac0qilo" path="res://dev_scenes/3d/scripts/dev_scene_3d.gd" id="1_gnrfx"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="3_4sdb7"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_fb4x5"]
-[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="6_g6hwc"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="6_pmc8r"]
 [ext_resource type="Script" uid="uid://b8hhnqsugykly" path="res://addons/phantom_camera/scripts/resources/camera_3d_resource.gd" id="7_fioii"]
+[ext_resource type="PackedScene" uid="uid://cb83in8f0tbb1" path="res://addons/phantom_camera/examples/example_scenes/3D/sub_scenes/playable_character_3d.tscn" id="8_p3ogo"]
 
-[sub_resource type="Environment" id="Environment_0s7cr"]
-ssil_intensity = 3.25
-sdfgi_use_occlusion = true
-fog_enabled = true
-fog_light_color = Color(0.388235, 0.388235, 0.388235, 1)
-fog_density = 0.0392
-adjustment_enabled = true
-adjustment_contrast = 1.19
-
-[sub_resource type="Resource" id="Resource_g6hwc"]
+[sub_resource type="Resource" id="Resource_xuujv"]
 script = ExtResource("6_pmc8r")
+duration = 1.2
 transition = 3
 metadata/_custom_type_script = "uid://8umksf8e80fw"
-
-[sub_resource type="Resource" id="Resource_p3ogo"]
-script = ExtResource("7_fioii")
-metadata/_custom_type_script = "uid://b8hhnqsugykly"
 
 [sub_resource type="Resource" id="Resource_sj6ok"]
 script = ExtResource("6_pmc8r")
@@ -35,65 +23,124 @@ transition = 2
 script = ExtResource("7_fioii")
 far = 2000.0
 
-[node name="Root" type="Node3D"]
+[sub_resource type="Curve3D" id="Curve3D_g6hwc"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14.959, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2h36r"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w3olp"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cw102"]
+albedo_color = Color(0.227451, 0.337255, 0.576471, 1)
+
+[sub_resource type="Environment" id="Environment_0s7cr"]
+ssil_intensity = 3.25
+sdfgi_use_occlusion = true
+fog_enabled = true
+fog_light_color = Color(0.388235, 0.388235, 0.388235, 1)
+fog_density = 0.0392
+adjustment_enabled = true
+adjustment_contrast = 1.19
+
+[node name="Root" type="Node3D" unique_id=964299624]
 script = ExtResource("1_gnrfx")
 
-[node name="MainCamera3D" type="Camera3D" parent="."]
+[node name="MainCamera3D" type="Camera3D" parent="." unique_id=566942509]
 unique_name_in_owner = true
-physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0, 1.5, 2)
+physics_interpolation_mode = 2
+transform = Transform3D(0.9999733, 0, 0, 0, 0.7869066, 0.61702675, 0, -0.6170136, 0.7869234, 0, 5.1096067, 3.8458743)
+top_level = true
 
-[node name="PhantomCameraHost" type="Node" parent="MainCamera3D"]
+[node name="PhantomCameraHost" type="Node" parent="MainCamera3D" unique_id=31145558]
 process_priority = 300
 process_physics_priority = 300
 script = ExtResource("3_fb4x5")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_0s7cr")
+[node name="Player" type="Node" parent="." unique_id=803960697]
 
-[node name="PlayerPhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
+[node name="PlayerPhantomCamera3D" type="Node3D" parent="Player" unique_id=789421762 node_paths=PackedStringArray("follow_target")]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.894407, 0.447205, 0, -0.447204, 0.89441, 0, 1.5, 2)
-top_level = true
+transform = Transform3D(0.9999733, 0, 0, 0, 0.7869066, 0.61702675, 0, -0.6170136, 0.7869234, 0, 5.1096067, 3.8458743)
 script = ExtResource("3_4sdb7")
 priority = 30
-follow_mode = 2
+follow_mode = 5
 follow_target = NodePath("../PlayerCharacterBody3D")
-tween_resource = SubResource("Resource_g6hwc")
+tween_resource = SubResource("Resource_xuujv")
 tween_on_load = false
-camera_3d_resource = SubResource("Resource_p3ogo")
-follow_offset = Vector3(0, 1, 2)
-follow_damping = true
-follow_distance = 1.247
-dead_zone_width = 0.365
-dead_zone_height = 0.467
+follow_distance = 5.85
+auto_follow_distance_min = 11.83
+follow_lookahead_time = Vector3(0.347, 0.347, 0.347)
+follow_lookahead_acceleration = 0.198
+follow_lookahead_deceleration = 0.213
+follow_lookahead_max = true
+dead_zone_width = Vector2(0.469, 0.469)
+dead_zone_height = Vector2(0.2284697, 0.2284697)
+dead_zone_depth = Vector2(15.772, 15.772)
 show_viewfinder_in_play = true
-spring_length = 1.247
+spring_length = 5.85
 collision_mask = 0
+look_at_damping = true
+look_at_lookahead = true
+look_at_lookahead_max = true
 align_transform_with_view = Callable()
 align_position_with_view = Callable()
+draw_follow_line = true
 
-[node name="ScenePhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("look_at_target")]
+[node name="PlayerCharacterBody3D" parent="Player" unique_id=1307210851 instance=ExtResource("8_p3ogo")]
 unique_name_in_owner = true
-transform = Transform3D(-0.99917203, 0.040644497, -1.8626451e-09, -1.8626422e-09, 0, 1, 0.040644497, 0.99917203, 0, 0, 12.1449, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.7576275)
+
+[node name="ScenePhantomCamera3D" type="Node3D" parent="." unique_id=2134752607 node_paths=PackedStringArray("look_at_target", "look_at_targets")]
+unique_name_in_owner = true
+transform = Transform3D(0.9999993, 0, 0, 0, 0.09852371, 0.99182075, 0, -0.7655691, 0.12764081, 0, 7.3814, -0.00072979927)
 script = ExtResource("3_4sdb7")
 priority = 10
 look_at_mode = 2
-look_at_target = NodePath("../PlayerCharacterBody3D")
+look_at_target = NodePath("../Player/PlayerCharacterBody3D")
+look_at_targets = [NodePath("../Player/PlayerCharacterBody3D"), NodePath("../Other Targets/PlayerMeshInstance3D")]
 tween_resource = SubResource("Resource_sj6ok")
 tween_on_load = false
 camera_3d_resource = SubResource("Resource_a3u85")
+look_at_lookahead = true
+look_at_lookahead_time = 0.73
+look_at_lookahead_acceleration = 0.332
+look_at_lookahead_deceleration = 0.396
 align_transform_with_view = Callable()
 align_rotation_with_view = Callable()
 draw_look_at_line = true
 
-[node name="Floor" parent="." instance=ExtResource("1_7n673")]
-transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, -1, 0)
+[node name="Path3D" type="Path3D" parent="." unique_id=1526036497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 8, 0)
+curve = SubResource("Curve3D_g6hwc")
+
+[node name="Other Targets" type="Node3D" parent="." unique_id=1555105410]
+
+[node name="PlayerMeshInstance3D" type="MeshInstance3D" parent="Other Targets" unique_id=1106294342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4225435, 1.5, -6.240685)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_w3olp")
+
+[node name="PlayerMeshInstance3D2" type="MeshInstance3D" parent="Other Targets" unique_id=113124520]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1372566, 1.5, -6.1192436)
+mesh = SubResource("CapsuleMesh_2h36r")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_cw102")
+
+[node name="Environment" type="Node" parent="." unique_id=2026011765]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=160780402]
+transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 0, 8, 0)
 metadata/_edit_lock_ = true
 
-[node name="PlayerCharacterBody3D" parent="." instance=ExtResource("6_g6hwc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=940345501]
+environment = SubResource("Environment_0s7cr")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 8, 0)
+[node name="Floor" parent="Environment" unique_id=1657803546 instance=ExtResource("1_7n673")]
+transform = Transform3D(1000, 0, 0, 0, 1, 0, 0, 0, 1000, 0, 0, 0)
 metadata/_edit_lock_ = true
